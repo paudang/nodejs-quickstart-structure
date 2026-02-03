@@ -1,0 +1,26 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= projectName
+    style.
+      body { font-family: sans-serif; padding: 20px; }
+      h1 { color: #333; }
+      .status { margin-top: 20px; padding: 10px; background: #e0f7fa; border-left: 5px solid #00acc1; }
+  body
+    h1 Welcome to #{projectName}
+    p Architecture: 
+      strong #{architecture}
+    p Database: 
+      strong #{database}
+
+    if communication === 'Kafka'
+      .status
+        h3 Kafka Status
+        p Connected to Kafka Broker.
+        p Check console for messages.
+    else
+      .status
+        h3 API Status
+        p REST API is active.
