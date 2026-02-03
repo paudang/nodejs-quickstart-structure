@@ -6,7 +6,7 @@
   "scripts": {
     "start": "<% if (language === 'TypeScript') { %>node dist/index.js<% } else { %>node src/index.js<% } %>",
     "dev": "<% if (language === 'TypeScript') { %>nodemon --exec ts-node src/index.ts<% } else { %>nodemon src/index.js<% } %>"<% if (language === 'TypeScript') { %>,
-    "build": "rimraf dist && tsc"<% } %>
+    "build": "rimraf dist && tsc<% if (viewEngine && viewEngine !== 'None') { %> && copyfiles -u 1 src/views/**/* dist/<% } %>"<% } %>
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -29,6 +29,7 @@
     "@types/dotenv": "^8.2.0",
     <% if (database === 'PostgreSQL') { %>"@types/pg": "^8.10.9",<% } %>
     "@types/sequelize": "^4.28.19",
-    "rimraf": "^5.0.5"<% } %>
+    "rimraf": "^5.0.5"<% if (viewEngine && viewEngine !== 'None') { %>,
+    "copyfiles": "^2.4.1"<% } %><% } %>
   }
 }

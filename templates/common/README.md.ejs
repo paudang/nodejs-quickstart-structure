@@ -11,8 +11,9 @@ This project was generated using `nodejs-quickstart-structure`.
 
 1.  **Start Infrastructure** (Database<% if (communication === 'Kafka') { %>, Kafka, Zookeeper<% } %>):
     ```bash
-    docker-compose up -d
+    docker-compose up -d db flyway<% if (communication === 'Kafka') { %> zookeeper kafka<% } %>
     ```
+    *Note: We only start the infrastructure (database, etc.) so we can run the API locally.*
 
 2.  **Install Dependencies**:
     ```bash
