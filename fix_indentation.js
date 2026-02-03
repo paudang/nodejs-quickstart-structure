@@ -1,4 +1,8 @@
-version: '3.8'
+import fs from 'fs';
+import path from 'path';
+
+const templatePath = path.resolve('templates/common/docker-compose.yml.ejs');
+const content = `version: '3.8'
 
 services:
   app:
@@ -79,3 +83,7 @@ services:
 
 volumes:
   db_data:
+`;
+
+fs.writeFileSync(templatePath, content, 'utf8');
+console.log('Fixed template successfully');
