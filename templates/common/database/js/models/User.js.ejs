@@ -1,5 +1,5 @@
 const { DataTypes, Model } = require('sequelize');
-const sequelize = require('../database');
+<% if (architecture === 'MVC') { %>const sequelize = require('../config/database');<% } else { %>const sequelize = require('../database');<% } %>
 
 class User extends Model {}
 
