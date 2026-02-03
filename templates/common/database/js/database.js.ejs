@@ -13,7 +13,7 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST || '127.0.0.1',
     dialect: dialect,
     logging: false,
-    port: parseInt(process.env.DB_PORT || '5432')
+    port: parseInt(process.env.DB_PORT || '<% if (database === 'MySQL') { %>3306<% } else { %>5432<% } %>')
   }
 );
 
