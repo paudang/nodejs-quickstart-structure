@@ -59,11 +59,23 @@ curl http://localhost:3000/api/users
 <% } %>
 
 <% if (communication === 'Kafka') { %>
-### Kafka
+### Kafka Demo
+
+The application connects to Kafka on startup and acts as both a **Producer** and a **Consumer**.
+
+1.  **Check Output**:
+    When the server starts, it will automatically send a demo message to the `test-topic`.
+    Check your terminal logs:
+    ```
+    Kafka connected
+    { value: 'Hello Kafka from ...!' }
+    ```
+
+2.  **Manual Test**:
+    You can manually send messages using the configured `kafkajs` client in `src/services/kafkaService.ts`.
+
 - **Zookeeper**: Port `2181`
 - **Kafka Broker**: Port `9092`
-
-You can connect to Kafka using the `kafkajs` library installed in the project.
 <% } %>
 
 ## Database Migrations

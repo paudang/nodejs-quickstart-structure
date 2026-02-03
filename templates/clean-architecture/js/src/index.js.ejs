@@ -1,16 +1,17 @@
 const startServer = require('./infrastructure/webserver/server');
-<% if (communication==='Kafka' ) { %>const { connectKafka } = require('./infrastructure/messaging/kafkaClient');<% } %>
+<% if (communication === 'Kafka') { %>const { connectKafka, sendMessage } = require('./infrastructure/messaging/kafkaClient');<% } %>
 
-        const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
-        // Start the web server
-        startServer(PORT);
+// Start the web server
+startServer(PORT);
 
-        <% if (communication==='Kafka' ) { %>
-            // Connect Kafka
-            connectKafka().then(() => {
-            console.log('Kafka connected');
-            }).catch(err => {
-            console.error('Failed to connect to Kafka:', err);
-            });
-            <% } %>
+<% if (communication === 'Kafka') { %>
+// Connect Kafka
+connectKafka().then(async () => {
+  console.log('Kafka connected');
+  await sendMessage('test-topic', 'Hello Kafka from Clean Arch JS!');
+}).catch(err => {
+  console.error('Failed to connect to Kafka:', err);
+});
+<% } %>

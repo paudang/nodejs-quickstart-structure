@@ -1,32 +1,34 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import apiRoutes from './routes/api';
-<% if (communication==='Kafka' ) { %>import { connectKafka } from './services/kafkaService';<% } %>
+<% if (communication === 'REST APIs') { %>import apiRoutes from './routes/api';<% } %>
+<% if (communication === 'Kafka') { %>import { connectKafka, sendMessage } from './services/kafkaService';<% } %>
 
-        dotenv.config();
+dotenv.config();
 
-        const app = express();
-        const port = process.env.PORT || 3000;
+const app = express();
+const port = process.env.PORT || 3000;
 
-        app.use(cors());
-        app.use(express.json());
+app.use(cors());
+app.use(express.json());
 
-        // Routes
-        app.use('/api', apiRoutes);
+// Routes
+<% if (communication === 'REST APIs') { %>app.use('/api', apiRoutes);<% } %>
 
-        app.get('/health', (req: Request, res: Response) => {
-        res.json({ status: 'UP' });
-        });
+app.get('/health', (req: Request, res: Response) => {
+  res.json({ status: 'UP' });
+});
 
-        app.listen(port, async () => {
-        console.log(`Server running on port ${port}`);
-        <% if (communication==='Kafka' ) { %>
-            try {
-            await connectKafka();
-            console.log('Kafka connected');
-            } catch (err) {
-            console.error('Failed to connect to Kafka:', err);
-            }
-            <% } %>
-                });
+app.listen(port, async () => {
+  console.log(`Server running on port ${port}`);
+  <% if (communication === 'Kafka') { %>
+  try {
+    await connectKafka();
+    console.log('Kafka connected');
+    // Demo: Send a test message
+    await sendMessage('test-topic', 'Hello Kafka from MVC TS!');
+  } catch (err) {
+    console.error('Failed to connect to Kafka:', err);
+  }
+  <% } %>
+});
