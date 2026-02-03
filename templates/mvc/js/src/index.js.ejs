@@ -46,4 +46,13 @@ app.listen(PORT, async () => {
     console.error('Failed to connect to Kafka:', err);
   }
   <% } %>
+
+  // Database Sync
+  try {
+      const sequelize = require('./config/database');
+      await sequelize.sync();
+      console.log('Database synced');
+  } catch (err) {
+      console.error('Database sync failed:', err);
+  }
 });

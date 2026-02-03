@@ -15,3 +15,11 @@ connectKafka().then(async () => {
   console.error('Failed to connect to Kafka:', err);
 });
 <% } %>
+
+// Database Sync
+const sequelize = require('./infrastructure/database/database');
+sequelize.sync().then(() => {
+    console.log('Database synced');
+}).catch(err => {
+    console.error('Database sync failed:', err);
+});
