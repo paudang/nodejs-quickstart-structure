@@ -37,7 +37,7 @@ program
             await generateProject(answers);
 
             console.log(chalk.green('\n✔ Project generated successfully!'));
-            console.log(chalk.cyan(`\nNext steps:\n  cd ${answers.projectName}\n  docker-compose up -d\n  npm install\n  npm start`));
+            console.log(chalk.cyan(`\nNext steps:\n  cd ${answers.projectName}\n  docker-compose up -d\n  npm install\n  npm run dev`));
 
         } catch (error) {
             console.error(chalk.red('Error generating project:'), error);
