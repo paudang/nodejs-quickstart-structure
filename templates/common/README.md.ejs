@@ -1,73 +1,71 @@
 # <%= projectName %>
 
-    This project was generated using `nodejs-quickstart-structure`.
+This project was generated using `nodejs-quickstart-structure`.
 
-    ## Prerequisites
+## Prerequisites
 
-    - Node.js (v18+)
-    - Docker & Docker Compose
+- Node.js (v18+)
+- Docker & Docker Compose
 
-    ## Getting Started
+## Getting Started
 
-    1. **Start Infrastructure** (Database<% if (communication==='Kafka' ) { %>, Kafka, Zookeeper<% } %>):
-            ```bash
-            docker-compose up -d
-            ```
+1.  **Start Infrastructure** (Database<% if (communication === 'Kafka') { %>, Kafka, Zookeeper<% } %>):
+    ```bash
+    docker-compose up -d
+    ```
 
-            2. **Install Dependencies**:
-            ```bash
-            npm install
-            ```
+2.  **Install Dependencies**:
+    ```bash
+    npm install
+    ```
 
-            3. **Run Application**:
-            ```bash
-            npm run dev
-            ```
+3.  **Run Application**:
+    ```bash
+    npm run dev
+    ```
 
-            ## Project Structure
+## Project Structure
 
-            The project uses **<%= architecture %>** with **<%= database %>**.
-                    <% if (communication==='Kafka' ) { %>
-                        Microservices communication handled via **Kafka**.
-                        <% } else { %>
-                            API is exposed via **REST**.
-                            <% } %>
+The project uses **<%= architecture %>** with **<%= database %>**.
+<% if (communication === 'Kafka') { %>
+Microservices communication handled via **Kafka**.
+<% } else { %>
+API is exposed via **REST**.
+<% } %>
 
-                                ## Demo & Testing
+## Demo & Testing
 
-                                ### Health Check
+### Health Check
 
-                                ```bash
-                                curl http://localhost:3000/health
-                                # Output: {"status":"UP"}
-                                ```
+```bash
+curl http://localhost:3000/health
+# Output: {"status":"UP"}
+```
 
-                                <% if (communication==='REST APIs' ) { %>
-                                    ### User API Demo
+<% if (communication === 'REST APIs') { %>
+### User API Demo
 
-                                    **Create a User:**
-                                    ```bash
-                                    curl -X POST http://localhost:3000/api/users \
-                                    -H "Content-Type: application/json" \
-                                    -d '{"name": "Alice", "email": "alice@example.com"}'
-                                    ```
+**Create a User:**
+```bash
+curl -X POST http://localhost:3000/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Alice", "email": "alice@example.com"}'
+```
 
-                                    **Get Users:**
-                                    ```bash
-                                    curl http://localhost:3000/api/users
-                                    ```
-                                    <% } %>
+**Get Users:**
+```bash
+curl http://localhost:3000/api/users
+```
+<% } %>
 
-                                        <% if (communication==='Kafka' ) { %>
-                                            ### Kafka
-                                            - **Zookeeper**: Port `2181`
-                                            - **Kafka Broker**: Port `9092`
+<% if (communication === 'Kafka') { %>
+### Kafka
+- **Zookeeper**: Port `2181`
+- **Kafka Broker**: Port `9092`
 
-                                            You can connect to Kafka using the `kafkajs` library installed in the
-                                            project.
-                                            <% } %>
+You can connect to Kafka using the `kafkajs` library installed in the project.
+<% } %>
 
-                                                ## Database Migrations
+## Database Migrations
 
-                                                **Flyway** is running in Docker and will automatically apply SQL
-                                                migrations from `flyway/sql/` on startup.
+**Flyway** is running in Docker and will automatically apply SQL migrations from `flyway/sql/` on startup.
