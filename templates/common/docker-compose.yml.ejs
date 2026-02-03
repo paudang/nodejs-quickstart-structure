@@ -37,7 +37,7 @@ services:
     ports:
       - "5432:5432"
 <% } %>    volumes:
-      - db_data:/var/lib/<% if (database === 'MySQL') { %>mysql<% } else { %>postgresql/data<% } %>
+      - <%= database.toLowerCase() %>_data:/var/lib/<% if (database === 'MySQL') { %>mysql<% } else { %>postgresql/data<% } %>
 
   flyway:
     image: flyway/flyway
@@ -78,4 +78,4 @@ services:
 <% } %>
 
 volumes:
-  db_data:
+  <%= database.toLowerCase() %>_data:
