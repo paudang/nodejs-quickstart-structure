@@ -1,0 +1,16 @@
+const startServer = require('./infrastructure/webserver/server');
+<% if (communication==='Kafka' ) { %>const { connectKafka } = require('./infrastructure/messaging/kafkaClient');<% } %>
+
+        const PORT = process.env.PORT || 3000;
+
+        // Start the web server
+        startServer(PORT);
+
+        <% if (communication==='Kafka' ) { %>
+            // Connect Kafka
+            connectKafka().then(() => {
+            console.log('Kafka connected');
+            }).catch(err => {
+            console.error('Failed to connect to Kafka:', err);
+            });
+            <% } %>
