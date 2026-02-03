@@ -1,0 +1,29 @@
+{
+  "name": "nodejs-quickstart-structure",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A CLI to scaffold Node.js microservices with MVC or Clean Architecture",
+  "main": "bin/index.js",
+  "bin": {
+    "nodejs-quickstart": "./bin/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodejs",
+    "cli",
+    "scaffold",
+    "mvc",
+    "clean-architecture"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "ejs": "^3.1.10",
+    "fs-extra": "^11.3.0",
+    "inquirer": "^12.4.1"
+  }
+}
