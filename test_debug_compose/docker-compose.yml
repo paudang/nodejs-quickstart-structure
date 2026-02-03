@@ -8,39 +8,27 @@ ports:
 environment:
 - PORT=3000
 - DB_HOST=db
-<% if (database==='MySQL' ) { %> - DB_USER=root
-    - DB_PASSWORD=root
-    - DB_NAME=<%= dbName %>
-        <% } %>
-            <% if (database==='PostgreSQL' ) { %> - DB_USER=postgres
+
+             - DB_USER=postgres
                 - DB_PASSWORD=postgres
-                - DB_NAME=<%= dbName %>
-                    <% } %> depends_on:
+                - DB_NAME=debug_db
+                     depends_on:
                         - db
-                        <% if (communication==='Kafka' ) { %> - kafka
-                            <% } %>
+                         - kafka
+                            
 
                                 db:
-                                <% if (database==='MySQL' ) { %> image: mysql:8.0
-                                    command: --default-authentication-plugin=mysql_native_password
-                                    restart: always
-                                    environment:
-                                    MYSQL_ROOT_PASSWORD: root
-                                    MYSQL_DATABASE: <%= dbName %>
-                                        ports:
-                                        - "3306:3306"
-                                        <% } %>
-                                            <% if (database==='PostgreSQL' ) { %> image: postgres:15
+                                
+                                             image: postgres:15
                                                 restart: always
                                                 environment:
                                                 POSTGRES_USER: postgres
                                                 POSTGRES_PASSWORD: postgres
-                                                POSTGRES_DB: <%= dbName %>
+                                                POSTGRES_DB: debug_db
                                                     ports:
                                                     - "5432:5432"
-                                                    <% } %> volumes:
-                                                        - db_data:/var/lib/<% if (database==='MySQL' ) { %>mysql<% }
-                                                                else { %>postgresql/data<% } %>
+                                                     volumes:
+                                                        - db_data:/var/lib/postgresql/data
 
                                                                     flyway:
                                                                     image: flyway/flyway
@@ -48,23 +36,16 @@ environment:
                                                                     volumes:
                                                                     - ./flyway/sql:/flyway/sql
                                                                     environment:
-                                                                    <% if (database==='MySQL' ) { %> FLYWAY_URL:
-                                                                        jdbc:mysql://db:3306/<%= dbName %>
-                                                                            FLYWAY_USER: root
-                                                                            FLYWAY_PASSWORD: root
-                                                                            <% } %>
-                                                                                <% if (database==='PostgreSQL' ) { %>
+                                                                    
+                                                                                
                                                                                     FLYWAY_URL:
-                                                                                    jdbc:postgresql://db:5432/<%= dbName
-                                                                                        %>
+                                                                                    jdbc:postgresql://db:5432/debug_db
                                                                                         FLYWAY_USER: postgres
                                                                                         FLYWAY_PASSWORD: postgres
-                                                                                        <% } %> depends_on:
+                                                                                         depends_on:
                                                                                             - db
 
-                                                                                            <% if
-                                                                                                (communication==='Kafka'
-                                                                                                ) { %> zookeeper:
+                                                                                             zookeeper:
                                                                                                 image:
                                                                                                 confluentinc/cp-zookeeper:7.4.0
                                                                                                 environment:
@@ -94,7 +75,7 @@ environment:
                                                                                                 PLAINTEXT
                                                                                                 KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR:
                                                                                                 1
-                                                                                                <% } %>
+                                                                                                
 
                                                                                                     volumes:
                                                                                                     db_data:
