@@ -245,13 +245,35 @@ async function main() {
     // Assuming 'docker-compose' based on user interactions
     
     // Parse args
-    const specificIndex = process.argv[2];
+    const arg = process.argv[2];
     
     let testsToRun = combinations;
-    if (specificIndex !== undefined) {
-        const idx = parseInt(specificIndex);
-        if (!isNaN(idx) && idx >= 0 && idx < combinations.length) {
-            testsToRun = [combinations[idx]];
+
+    if (arg !== undefined) {
+        if (arg.includes('/')) {
+            // Batch mode: "1/5" means batch 1 of 5
+            const [batchStr, totalStr] = arg.split('/');
+            const batch = parseInt(batchStr);
+            const totalBatches = parseInt(totalStr);
+
+            if (!isNaN(batch) && !isNaN(totalBatches) && batch > 0 && totalBatches > 0 && batch <= totalBatches) {
+                const totalTests = combinations.length;
+                const batchSize = Math.ceil(totalTests / totalBatches);
+                const start = (batch - 1) * batchSize;
+                const end = Math.min(start + batchSize, totalTests);
+                
+                testsToRun = combinations.slice(start, end);
+                log(`Running Batch ${batch}/${totalBatches} (Indices ${start}-${end - 1})`);
+            } else {
+                log(`Invalid batch format: ${arg}. Expected "k/n" where 1 <= k <= n.`, ANSI_RED);
+                process.exit(1);
+            }
+        } else {
+            // Single index mode
+            const idx = parseInt(arg);
+            if (!isNaN(idx) && idx >= 0 && idx < combinations.length) {
+                testsToRun = [combinations[idx]];
+            }
         }
     }
 
