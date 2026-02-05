@@ -18,9 +18,9 @@ jobs:
     steps:
     - id: set-matrix
       run: |
-        # Generate shard array [1, 2, ..., 8] for 8 parallel jobs
-        # 32 tests / 8 jobs = 4 tests per job
-        echo "matrix=$(jq -cn '[range(1;9)]')" >> $GITHUB_OUTPUT
+        # Generate shard array [1, 2, 3, 4] for 4 parallel jobs
+        # 32 tests / 4 jobs = 8 tests per job
+        echo "matrix=$(jq -cn '[range(1;5)]')" >> $GITHUB_OUTPUT
 
   test:
     needs: setup-matrix
@@ -43,4 +43,4 @@ jobs:
       run: npm install
 
     - name: Run E2E Test Shard
-      run: node scripts/validate-combinations.js ${{ matrix.shard }}/8
+      run: node scripts/validate-combinations.js ${{ matrix.shard }}/4
