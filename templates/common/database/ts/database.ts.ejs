@@ -5,8 +5,8 @@ import path from 'path';
 dotenv.config();
 
 // Determine dialect
-<% if (database === 'MySQL') { %>const dialect = 'mysql';<% } %>
-<% if (database === 'PostgreSQL') { %>const dialect = 'postgres';<% } %>
+<% if (database === 'MySQL') { %>const dialect = 'mysql';<% } -%>
+<% if (database === 'PostgreSQL') { %>const dialect = 'postgres';<% } -%>
 
 const sequelize = new Sequelize(
   process.env.DB_NAME || '<%= dbName %>',

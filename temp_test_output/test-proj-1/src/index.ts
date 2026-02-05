@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-<% if (communication === 'REST APIs') { %>import userRoutes from './interfaces/routes/userRoutes';<% } %>
-<% if (communication === 'Kafka') { %>import { connectKafka, sendMessage } from './infrastructure/messaging/kafkaClient';<% } %>
+
+import { connectKafka, sendMessage } from './services/kafkaService';
 
 dotenv.config();
 
@@ -12,9 +12,9 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-<% if (communication === 'REST APIs') { -%>
-app.use('/api/users', userRoutes);
-<% } -%>
+
+// Routes
+
 
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'UP' });
@@ -25,23 +25,23 @@ const syncDatabase = async () => {
     let retries = 30;
     while (retries) {
         try {
-            const sequelize = require('./infrastructure/database/database').default;
+            const sequelize = require('./config/database').default;
             await sequelize.sync();
             console.log('Database synced');
             
+            // Start Server after DB is ready
             app.listen(port, async () => {
               console.log(`Server running on port ${port}`);
-              <% if (communication === 'Kafka') { %>
+              
               try {
                 await connectKafka();
                 console.log('Kafka connected');
-                // Demo
-                await sendMessage('test-topic', 'Hello Kafka from Clean Arch TS!');
+                // Demo: Send a test message
+                await sendMessage('test-topic', 'Hello Kafka from MVC TS!');
               } catch (err) {
                 console.error('Failed to connect to Kafka:', err);
               }
-              <% } -%>
-            });
+                          });
             break;
         } catch (err) {
             console.error('Database sync failed:', err);

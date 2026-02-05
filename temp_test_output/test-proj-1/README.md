@@ -1,4 +1,4 @@
-# <%= projectName %>
+# test-proj-1
 
 This project was generated using `nodejs-quickstart-structure`.
 
@@ -9,9 +9,9 @@ This project was generated using `nodejs-quickstart-structure`.
 
 ## Getting Started
 
-1.  **Start Infrastructure** (Database<% if (communication === 'Kafka') { %>, Kafka, Zookeeper<% } %>):
+1.  **Start Infrastructure** (Database, Kafka, Zookeeper):
     ```bash
-    docker-compose up -d db flyway<% if (communication === 'Kafka') { %> zookeeper kafka<% } %>
+    docker-compose up -d db flyway zookeeper kafka
     ```
     *Note: We only start the infrastructure (database, etc.) so we can run the API locally.*
 
@@ -27,12 +27,8 @@ This project was generated using `nodejs-quickstart-structure`.
 
 ## Project Structure
 
-The project uses **<%= architecture %>** with **<%= database %>**.
-<% if (communication === 'Kafka') { -%>
+The project uses **MVC** with **MySQL**.
 Microservices communication handled via **Kafka**.
-<% } else { -%>
-API is exposed via **REST**.
-<% } -%>
 
 ## Demo & Testing
 
@@ -43,23 +39,7 @@ curl http://localhost:3000/health
 # Output: {"status":"UP"}
 ```
 
-<% if (communication === 'REST APIs') { -%>
-### User API Demo
 
-**Create a User:**
-```bash
-curl -X POST http://localhost:3000/api/users \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Alice", "email": "alice@example.com"}'
-```
-
-**Get Users:**
-```bash
-curl http://localhost:3000/api/users
-```
-<% } -%>
-
-<% if (communication === 'Kafka') { -%>
 ### Kafka Demo
 
 The application connects to Kafka on startup and acts as both a **Producer** and a **Consumer**.
@@ -77,7 +57,6 @@ The application connects to Kafka on startup and acts as both a **Producer** and
 
 - **Zookeeper**: Port `2181`
 - **Kafka Broker**: Port `9092`
-<% } -%>
 
 ## Database Migrations
 

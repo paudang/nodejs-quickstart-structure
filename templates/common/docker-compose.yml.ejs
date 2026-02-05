@@ -8,7 +8,7 @@ services:
     depends_on:
       - db
 <% if (communication === 'Kafka') { %>      - kafka
-<% } %>
+<% } -%>
 <% if (communication === 'Kafka') { %>    environment:
       - KAFKA_BROKER=kafka:29092
       - KAFKAJS_NO_PARTITIONER_WARNING=1
@@ -20,7 +20,7 @@ services:
 <% } %><% if (database === 'PostgreSQL') { %>      - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_NAME=<%= dbName %>
-<% } %>
+<% } -%>
 <% } else { %>
     environment:
       - PORT=3000
@@ -31,7 +31,7 @@ services:
 <% } %><% if (database === 'PostgreSQL') { %>      - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_NAME=<%= dbName %>
-<% } %>
+<% } -%>
 <% } %>
 
   db:
@@ -90,7 +90,7 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-<% } %>
+<% } -%>
 
 volumes:
   <%= database.toLowerCase() %>_data:

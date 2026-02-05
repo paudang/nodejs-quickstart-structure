@@ -17,11 +17,13 @@ app.use(express.json());
 import path from 'path';
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', '<%= viewEngine.toLowerCase() %>');
-<% } %>
+<% } -%>
 
 // Routes
-<% if (communication === 'REST APIs' || (viewEngine && viewEngine !== 'None')) { %>app.use('/api', apiRoutes);<% } %>
-<% if (viewEngine && viewEngine !== 'None') { %>
+<% if (communication === 'REST APIs' || (viewEngine && viewEngine !== 'None')) { -%>
+app.use('/api', apiRoutes);
+<% } -%>
+<% if (viewEngine && viewEngine !== 'None') { -%>
 app.get('/', (req: Request, res: Response) => {
   res.render('index', { 
     projectName: 'NodeJS Service',
@@ -30,7 +32,7 @@ app.get('/', (req: Request, res: Response) => {
     communication: '<%= communication %>'
   });
 });
-<% } %>
+<% } -%>
 
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'UP' });
@@ -57,7 +59,7 @@ const syncDatabase = async () => {
               } catch (err) {
                 console.error('Failed to connect to Kafka:', err);
               }
-              <% } %>
+              <% } -%>
             });
             break;
         } catch (err) {

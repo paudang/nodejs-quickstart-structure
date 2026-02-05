@@ -1,5 +1,7 @@
 const startServer = require('./infrastructure/webserver/server');
-<% if (communication === 'Kafka') { %>const { connectKafka, sendMessage } = require('./infrastructure/messaging/kafkaClient');<% } %>
+<% if (communication === 'Kafka') { -%>
+const { connectKafka, sendMessage } = require('./infrastructure/messaging/kafkaClient');
+<% } -%>
 
 const PORT = process.env.PORT || 3000;
 
@@ -23,7 +25,7 @@ const syncDatabase = async () => {
             }).catch(err => {
               console.error('Failed to connect to Kafka:', err);
             });
-            <% } %>
+            <% } -%>
 
             break;
         } catch (err) {
