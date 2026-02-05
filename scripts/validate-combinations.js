@@ -20,6 +20,16 @@ function log(msg, color = ANSI_RESET) {
     fs.appendFileSync(LOG_FILE, `[${timestamp}] ${msg}\n`);
 }
 
+process.on('uncaughtException', (err) => {
+    console.error('UNCAUGHT EXCEPTION:', err);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('UNHANDLED REJECTION:', reason);
+    process.exit(1);
+});
+
 const LANGUAGES = ['TypeScript', 'JavaScript'];
 const DATABASES = ['MySQL', 'PostgreSQL'];
 const COMMUNICATIONS = ['REST APIs', 'Kafka']; // Kafka adds complexity (zookeeper), might want to test REST first
