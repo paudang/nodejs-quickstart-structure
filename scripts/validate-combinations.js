@@ -30,7 +30,7 @@ process.on('unhandledRejection', (reason, promise) => {
     process.exit(1);
 });
 
-const LANGUAGES = ['TypeScript', 'JavaScript'];
+const LANGUAGES = ['JavaScript', 'TypeScript'];
 const DATABASES = ['MySQL', 'PostgreSQL'];
 const COMMUNICATIONS = ['REST APIs', 'Kafka']; // Kafka adds complexity (zookeeper), might want to test REST first
 const VIEW_ENGINES_MVC = ['None', 'EJS', 'Pug'];
