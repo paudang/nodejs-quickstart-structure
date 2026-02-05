@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-<% if (communication === 'REST APIs') { %>const apiRoutes = require('./routes/api');<% } %>
+<% if (communication === 'REST APIs' || (viewEngine && viewEngine !== 'None')) { %>const apiRoutes = require('./routes/api');<% } %>
 <% if (communication === 'Kafka') { %>const { connectKafka, sendMessage } = require('./services/kafkaService');<% } %>
 
 const app = express();

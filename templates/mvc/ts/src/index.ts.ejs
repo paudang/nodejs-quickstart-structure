@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-<% if (communication === 'REST APIs') { %>import apiRoutes from './routes/api';<% } %>
+<% if (communication === 'REST APIs' || (viewEngine && viewEngine !== 'None')) { %>import apiRoutes from './routes/api';<% } %>
 <% if (communication === 'Kafka') { %>import { connectKafka, sendMessage } from './services/kafkaService';<% } %>
 
 dotenv.config();
