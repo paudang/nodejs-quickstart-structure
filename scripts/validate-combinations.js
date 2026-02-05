@@ -112,14 +112,16 @@ async function checkHealth(config) {
                                 console.log(`✓ Health & Functional Checks Passed. GET /api/users returned: ${JSON.stringify(users)}`, ANSI_GREEN);
                                 return true;
                             } else {
-                                console.log(`GET /api/users failed: ${getRes.status} (retrying)`);
+                                const errText = await getRes.text();
+                                console.log(`GET /api/users failed: ${getRes.status} - ${errText} (retrying)`);
                             }
                         } else if (postRes.status === 404) {
                              console.log('✓ Health Check Passed (API route not found - expected for non-REST projects)', ANSI_GREEN);
                              return true;
                         } else {
                              // Log but allow retry (DB might be starting)
-                             console.log(`Functional check failed (retrying): ${postRes.status}`);
+                             const errText = await postRes.text();
+                             console.log(`Functional check failed (retrying): ${postRes.status} - ${errText}`);
                         }
                     } catch (err) {
                         console.log(`Functional test error: ${err.message}`);

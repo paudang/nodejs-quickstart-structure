@@ -19,6 +19,7 @@ export class UserController {
             const user = await this.createUserUseCase.execute(name, email);
             res.status(201).json(user);
         } catch (error: any) {
+            console.error('UserController Error:', error);
             res.status(500).json({ error: error.message });
         }
     }
@@ -28,6 +29,7 @@ export class UserController {
             const users = await this.getAllUsersUseCase.execute();
             res.json(users);
         } catch (error: any) {
+            console.error('UserController Error:', error);
             res.status(500).json({ error: error.message });
         }
     }
