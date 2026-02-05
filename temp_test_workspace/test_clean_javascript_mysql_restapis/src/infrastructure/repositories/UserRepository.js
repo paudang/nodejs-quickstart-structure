@@ -1,9 +1,9 @@
 const UserModel = require('../database/models/User');
 
 class UserRepository {
-  async createUser(name, email) {
-    const user = await UserModel.create({ name, email });
-    return { id: user.id, name: user.name, email: user.email };
+  async save(user) {
+    const newUser = await UserModel.create({ name: user.name, email: user.email });
+    return { ...user, id: newUser.id };
   }
 
   async getUsers() {

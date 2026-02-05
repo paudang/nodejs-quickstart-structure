@@ -25,11 +25,21 @@ app.listen(PORT, async () => {
   
 
   // Database Sync
-  try {
-      const sequelize = require('./config/database');
-      await sequelize.sync();
-      console.log('Database synced');
-  } catch (err) {
-      console.error('Database sync failed:', err);
-  }
+  const syncDatabase = async () => {
+      let retries = 30;
+      while (retries) {
+          try {
+              const sequelize = require('./config/database');
+              await sequelize.sync();
+              console.log('Database synced');
+              break;
+          } catch (err) {
+              console.error('Database sync failed:', err);
+              retries -= 1;
+              console.log(`Retries left: ${retries}. Waiting 5s...`);
+              await new Promise(res => setTimeout(res, 5000));
+          }
+      }
+  };
+  syncDatabase();
 });

@@ -5,15 +5,19 @@ services:
     build: .
     ports:
       - "3000:3000"
+    depends_on:
+      - db
+      - kafka
+
     environment:
+      - KAFKA_BROKER=kafka:29092
+      - KAFKAJS_NO_PARTITIONER_WARNING=1
       - PORT=3000
       - DB_HOST=db
       - DB_USER=root
       - DB_PASSWORD=root
       - DB_NAME=testdb
-    depends_on:
-      - db
-      - kafka
+
 
 
   db:

@@ -1,5 +1,5 @@
 const CreateUser = require('../../usecases/CreateUser');
-const UserRepository = require('../../domain/repositories/UserRepository');
+const UserRepository = require('../../infrastructure/repositories/UserRepository');
 
 class UserController {
     constructor() {
