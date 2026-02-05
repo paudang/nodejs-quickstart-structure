@@ -108,8 +108,9 @@ async function checkHealth(config) {
                              // 2. GET /api/users
                             const getRes = await fetch('http://localhost:3000/api/users');
                             if (getRes.ok) {
-                                 console.log('✓ Health & Functional Checks Passed', ANSI_GREEN);
-                                 return true;
+                                const users = await getRes.json();
+                                console.log(`✓ Health & Functional Checks Passed. GET /api/users returned: ${JSON.stringify(users)}`, ANSI_GREEN);
+                                return true;
                             } else {
                                 console.log(`GET /api/users failed: ${getRes.status} (retrying)`);
                             }

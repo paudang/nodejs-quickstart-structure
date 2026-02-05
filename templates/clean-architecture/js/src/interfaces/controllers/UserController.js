@@ -1,17 +1,18 @@
 const CreateUser = require('../../usecases/CreateUser');
+const GetAllUsers = require('../../usecases/GetAllUsers');
 const UserRepository = require('../../infrastructure/repositories/UserRepository');
 
 class UserController {
     constructor() {
         this.userRepository = new UserRepository();
         this.createUserUseCase = new CreateUser(this.userRepository);
+        this.getAllUsersUseCase = new GetAllUsers(this.userRepository);
     }
 
     getUsers(req, res) {
-        // Demo implementation
-        res.json([
-            { id: 1, name: 'John Doe' }
-        ]);
+        this.getAllUsersUseCase.execute()
+            .then(users => res.json(users))
+            .catch(err => res.status(500).json({ error: err.message }));
     }
 
     async createUser(req, res) {
