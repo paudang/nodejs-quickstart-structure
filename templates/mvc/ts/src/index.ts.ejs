@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 <% if (communication === 'REST APIs' || (viewEngine && viewEngine !== 'None')) { %>import apiRoutes from './routes/api';<% } %>
-<% if (communication === 'Kafka') { %>import { connectKafka, sendMessage } from './services/kafkaService';<% } %>
+<% if (communication === 'Kafka') { %>import { KafkaService } from './services/kafkaService';<% } %>
 
 dotenv.config();
 
@@ -52,10 +52,11 @@ const syncDatabase = async () => {
               console.log(`Server running on port ${port}`);
               <% if (communication === 'Kafka') { %>
               try {
-                await connectKafka();
+                const kafkaService = new KafkaService();
+                await kafkaService.connect();
                 console.log('Kafka connected');
                 // Demo: Send a test message
-                await sendMessage('test-topic', 'Hello Kafka from MVC TS!');
+                await kafkaService.sendMessage('test-topic', 'Hello Kafka from MVC TS!');
               } catch (err) {
                 console.error('Failed to connect to Kafka:', err);
               }

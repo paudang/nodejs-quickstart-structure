@@ -1,28 +1,36 @@
 import { kafka } from '../config/kafka';
-import { EachMessagePayload } from 'kafkajs';
+import { EachMessagePayload, Producer, Consumer } from 'kafkajs';
 
-const producer = kafka.producer();
-const consumer = kafka.consumer({ groupId: 'test-group' });
+export class KafkaService {
+    private producer: Producer;
+    private consumer: Consumer;
 
-export const connectKafka = async () => {
-    await producer.connect();
-    await consumer.connect();
-    await consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
+    constructor() {
+        this.producer = kafka.producer();
+        this.consumer = kafka.consumer({ groupId: 'test-group' });
+    }
 
-    await consumer.run({
-        eachMessage: async ({ topic, partition, message }: EachMessagePayload) => {
-            console.log({
-                value: message.value?.toString(),
-            });
-        },
-    });
-};
+    async connect() {
+        await this.producer.connect();
+        await this.consumer.connect();
+        await this.consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
 
-export const sendMessage = async (topic: string, message: string) => {
-    await producer.send({
-        topic,
-        messages: [
-            { value: message },
-        ],
-    });
-};
+        await this.consumer.run({
+            eachMessage: async ({ topic, partition, message }: EachMessagePayload) => {
+                console.log({
+                    value: message.value?.toString(),
+                });
+            },
+        });
+    }
+
+    async sendMessage(topic: string, message: string) {
+        await this.producer.send({
+            topic,
+            messages: [
+                { value: message },
+            ],
+        });
+    }
+}
+

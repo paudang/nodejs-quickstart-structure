@@ -1,8 +1,11 @@
 import { User } from '../domain/user';
 
-export default (userRepository: any) => {
-    return async (name: string, email: string) => {
+export default class CreateUser {
+    constructor(private userRepository: any) {}
+
+    async execute(name: string, email: string) {
         const user = new User(null, name, email);
-        return userRepository.save(user);
-    };
-};
+        return this.userRepository.save(user);
+    }
+}
+

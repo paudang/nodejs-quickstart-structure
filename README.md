@@ -73,14 +73,7 @@ The generated project will include:
 cd <your-project-name>
 
 # Start infrastructure (DB, etc.)
-docker-compose up -d
-
-# Install dependencies
-npm install
-
-# Run in development mode
-npm run dev
-```
+docker-compose up
 
 ## License
 

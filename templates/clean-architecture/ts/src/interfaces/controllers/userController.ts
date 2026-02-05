@@ -3,25 +3,32 @@ import { UserRepository } from '../../infrastructure/repositories/userRepository
 import CreateUser from '../../usecases/createUser';
 import GetAllUsers from '../../usecases/getAllUsers';
 
-const userRepository = new UserRepository();
-const createUserUseCase = CreateUser(userRepository);
-const getAllUsersUseCase = GetAllUsers(userRepository);
+export class UserController {
+    private createUserUseCase: CreateUser;
+    private getAllUsersUseCase: GetAllUsers;
 
-export const createUser = async (req: Request, res: Response) => {
-    try {
-        const { name, email } = req.body;
-        const user = await createUserUseCase(name, email);
-        res.status(201).json(user);
-    } catch (error: any) {
-        res.status(500).json({ error: error.message });
+    constructor() {
+        const userRepository = new UserRepository();
+        this.createUserUseCase = new CreateUser(userRepository);
+        this.getAllUsersUseCase = new GetAllUsers(userRepository);
     }
-};
 
-export const getUsers = async (req: Request, res: Response) => {
-    try {
-        const users = await getAllUsersUseCase();
-        res.json(users);
-    } catch (error: any) {
-        res.status(500).json({ error: error.message });
+    async createUser(req: Request, res: Response) {
+        try {
+            const { name, email } = req.body;
+            const user = await this.createUserUseCase.execute(name, email);
+            res.status(201).json(user);
+        } catch (error: any) {
+            res.status(500).json({ error: error.message });
+        }
     }
-};
+
+    async getUsers(req: Request, res: Response) {
+        try {
+            const users = await this.getAllUsersUseCase.execute();
+            res.json(users);
+        } catch (error: any) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+}
