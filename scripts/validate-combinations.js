@@ -27,6 +27,23 @@ const VIEW_ENGINES_MVC = ['None', 'EJS', 'Pug'];
 
 const combinations = [];
 
+// 2. Clean Architecture Combinations
+LANGUAGES.forEach(lang => {
+    DATABASES.forEach(db => {
+        COMMUNICATIONS.forEach(comm => {
+            combinations.push({
+                projectName: `test_clean_${lang}_${db}_${comm}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                language: lang,
+                architecture: 'Clean Architecture',
+                viewEngine: 'None', // Not used
+                database: db,
+                dbName: 'testdb',
+                communication: comm
+            });
+        });
+    });
+});
+
 // 1. MVC Combinations
 LANGUAGES.forEach(lang => {
     VIEW_ENGINES_MVC.forEach(view => {
@@ -41,23 +58,6 @@ LANGUAGES.forEach(lang => {
                     dbName: 'testdb',
                     communication: comm
                 });
-            });
-        });
-    });
-});
-
-// 2. Clean Architecture Combinations
-LANGUAGES.forEach(lang => {
-    DATABASES.forEach(db => {
-        COMMUNICATIONS.forEach(comm => {
-            combinations.push({
-                projectName: `test_clean_${lang}_${db}_${comm}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-                language: lang,
-                architecture: 'Clean Architecture',
-                viewEngine: 'None', // Not used
-                database: db,
-                dbName: 'testdb',
-                communication: comm
             });
         });
     });

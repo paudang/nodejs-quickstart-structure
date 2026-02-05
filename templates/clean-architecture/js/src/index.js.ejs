@@ -3,19 +3,6 @@ const startServer = require('./infrastructure/webserver/server');
 
 const PORT = process.env.PORT || 3000;
 
-// Start the web server
-startServer(PORT);
-
-<% if (communication === 'Kafka') { %>
-// Connect Kafka
-connectKafka().then(async () => {
-  console.log('Kafka connected');
-  await sendMessage('test-topic', 'Hello Kafka from Clean Arch JS!');
-}).catch(err => {
-  console.error('Failed to connect to Kafka:', err);
-});
-<% } %>
-
 // Database Sync
 const syncDatabase = async () => {
     let retries = 30;
@@ -24,6 +11,20 @@ const syncDatabase = async () => {
             const sequelize = require('./infrastructure/database/database');
             await sequelize.sync();
             console.log('Database synced');
+            
+            // Start the web server after DB sync
+            startServer(PORT);
+            
+            <% if (communication === 'Kafka') { %>
+            // Connect Kafka
+            connectKafka().then(async () => {
+              console.log('Kafka connected');
+              await sendMessage('test-topic', 'Hello Kafka from Clean Arch JS!');
+            }).catch(err => {
+              console.error('Failed to connect to Kafka:', err);
+            });
+            <% } %>
+
             break;
         } catch (err) {
             console.error('Database sync failed:', err);
