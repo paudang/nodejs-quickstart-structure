@@ -25,19 +25,26 @@ program
 program
     .command('init')
     .description('Initialize a new Node.js project')
-    .action(async () => {
+    .option('-n, --project-name <name>', 'Project name')
+    .option('-l, --language <language>', 'Language (JavaScript, TypeScript)')
+    .option('-a, --architecture <architecture>', 'Architecture (MVC, Clean Architecture)')
+    .option('-v, --view-engine <view>', 'View Engine (None, EJS, Pug) - MVC only')
+    .option('-d, --database <database>', 'Database (MySQL, PostgreSQL)')
+    .option('--db-name <name>', 'Database name')
+    .option('-c, --communication <communication>', 'Communication (REST APIs, Kafka)')
+    .action(async (options) => {
         console.log(chalk.blue('Welcome to the Node.js Quickstart Generator!'));
 
         try {
-            const answers = await getProjectDetails();
+            const answers = await getProjectDetails(options);
             console.log(chalk.green('\nConfiguration received:'));
             console.log(JSON.stringify(answers, null, 2));
 
-            console.log(chalk.yellow('\nGeneratng project...'));
+            console.log(chalk.yellow('\nGenerating project...'));
             await generateProject(answers);
 
             console.log(chalk.green('\n✔ Project generated successfully!'));
-            console.log(chalk.cyan(`\nNext steps:\n  cd ${answers.projectName}\n  docker-compose up -d\n start the app manually:\n  npm install\n  npm run dev`));
+            console.log(chalk.cyan(`\nNext steps:\n  cd ${answers.projectName}\n  docker-compose up -d\n-----------------------\nStart the app manually:\n  npm install\n  npm run dev`));
 
         } catch (error) {
             console.error(chalk.red('Error generating project:'), error);

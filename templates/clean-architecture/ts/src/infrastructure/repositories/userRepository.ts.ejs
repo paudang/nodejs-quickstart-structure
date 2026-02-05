@@ -2,9 +2,9 @@ import { User as UserEntity } from '../../domain/user';
 import UserModel from '../database/models/User';
 
 export class UserRepository {
-    async createUser(name: string, email: string): Promise<UserEntity> {
-        const user = await UserModel.create({ name, email });
-        return { id: user.id, name: user.name, email: user.email };
+    async save(user: UserEntity): Promise<UserEntity> {
+        const newUser = await UserModel.create({ name: user.name, email: user.email });
+        return { id: newUser.id, name: newUser.name, email: newUser.email };
     }
 
     async getUsers(): Promise<UserEntity[]> {

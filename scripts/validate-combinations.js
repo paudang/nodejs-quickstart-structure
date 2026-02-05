@@ -65,7 +65,7 @@ LANGUAGES.forEach(lang => {
 
 async function runCommand(command, cwd) {
     return new Promise((resolve, reject) => {
-        exec(command, { cwd }, (error, stdout, stderr) => {
+        exec(command, { cwd, maxBuffer: 20 * 1024 * 1024 }, (error, stdout, stderr) => {
             if (error) {
                 // Attach stdout/stderr for debugging
                 error.stdout = stdout;
@@ -147,10 +147,28 @@ async function runTest(config, index) {
         await fs.remove(projectPath);
         await fs.ensureDir(testDir);
 
-        // 1. Generate
-        process.chdir(testDir); // generateProject expects cwd context sometimes or absolute paths
-        await generateProject(config);
-        log(`✓ Project Generated`);
+        // 1. Generate via CLI
+        const cliPath = path.resolve(__dirname, '../bin/index.js');
+        const args = [
+            'init',
+            '--project-name', config.projectName,
+            '--language', config.language,
+            '--architecture', `"${config.architecture}"`,
+            '--database', config.database,
+            '--db-name', config.dbName,
+            '--communication', `"${config.communication}"`
+        ];
+
+        if (config.architecture === 'MVC') {
+            args.push('--view-engine', config.viewEngine);
+        }
+
+        const command = `node ${cliPath} ${args.join(' ')}`;
+        console.log(`Running: ${command}`); // specific logging for debug
+        
+        process.chdir(testDir); 
+        await runCommand(command, testDir);
+        log(`✓ Project Generated (CLI)`);
 
         // 2. Install Deps (This is the slow part)
         log(`... Installing Dependencies (this takes time) ...`);

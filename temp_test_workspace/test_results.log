@@ -7510,3 +7510,129 @@ Or, if you meant to create an async function, pass `async: true` as an option.
 [2026-02-05T04:44:02.520Z] ✓ Project Generated
 [2026-02-05T04:44:02.520Z] ... Installing Dependencies (this takes time) ...
 [2026-02-05T04:44:05.596Z] ... Starting Docker ...
+[2026-02-05T06:28:20.129Z] ✓ Project Generated
+[2026-02-05T06:28:20.129Z] ... Installing Dependencies (this takes time) ...
+[2026-02-05T06:28:25.109Z] ... Starting Docker ...
+[2026-02-05T06:28:35.352Z] X Test FAILED: Command failed: docker compose up -d --build
+time="2026-02-05T13:28:30+07:00" level=warning msg="D:\\Code\\nodejs-quickstart-structure\\temp_test_workspace\\test_mvc_javascript_none_mysql_restapis\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ test_mvc_javascript_none_mysql_restapis-app  Built
+ Network test_mvc_javascript_none_mysql_restapis_default  Creating
+ Network test_mvc_javascript_none_mysql_restapis_default  Created
+ Volume test_mvc_javascript_none_mysql_restapis_mysql_data  Creating
+ Volume test_mvc_javascript_none_mysql_restapis_mysql_data  Created
+ Container test_mvc_javascript_none_mysql_restapis-db-1  Creating
+ Container test_mvc_javascript_none_mysql_restapis-db-1  Created
+ Container test_mvc_javascript_none_mysql_restapis-app-1  Creating
+ Container test_mvc_javascript_none_mysql_restapis-flyway-1  Creating
+ Container test_mvc_javascript_none_mysql_restapis-flyway-1  Created
+ Container test_mvc_javascript_none_mysql_restapis-app-1  Created
+ Container test_mvc_javascript_none_mysql_restapis-db-1  Starting
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint test_mvc_javascript_none_mysql_restapis-db-1 (2eae72353700b203620c3efcbc5981a0f2a03b95a40d778d7804a52984f7156b): Bind for 0.0.0.0:3306 failed: port is already allocated
+
+[2026-02-05T06:28:35.353Z] Stdout: #1 [internal] load local bake definitions
+#1 reading from stdin 704B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 212B done
+#2 DONE 0.0s
+
+#3 [auth] library/node:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#4 [internal] load metadata for docker.io/library/node:18-alpine
+#4 DONE 1.9s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 160B done
+#5 DONE 0.0s
+
+#6 [1/5] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e
+#6 resolve docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e 0.0s done
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 61.37kB 0.0s done
+#7 DONE 0.1s
+
+#8 [2/5] WORKDIR /app
+#8 CACHED
+
+#9 [3/5] COPY package*.json ./
+#9 CACHED
+
+#10 [4/5] RUN npm install
+#10 CACHED
+
+#11 [5/5] COPY . .
+#11 CACHED
+
+#12 exporting to image
+#12 exporting layers done
+#12 exporting manifest sha256:4f9824ef389503fa236f49882524617ac40a9e759b1424173f3c44975aebaa3e done
+#12 exporting config sha256:b1ed7de399573dd27de7a80aba41797a6d741e133aa546bc1b73b1358e8d4b38 done
+#12 exporting attestation manifest sha256:9ea64e26cb1ac15788ac4eb74318113e7504a04079b8653bd7332bd685d49d1b 0.0s done
+#12 exporting manifest list sha256:2e32b1bd480cbdb9d9eddac80206968b363a8322d3018895ebb633c32e25706c 0.0s done
+#12 naming to docker.io/library/test_mvc_javascript_none_mysql_restapis-app:latest done
+#12 unpacking to docker.io/library/test_mvc_javascript_none_mysql_restapis-app:latest
+#12 unpacking to docker.io/library/test_mvc_javascript_none_mysql_restapis-app:latest 1.3s done
+#12 DONE 1.4s
+
+#13 resolving provenance for metadata file
+#13 DONE 0.0s
+
+[2026-02-05T06:28:35.354Z] ... Cleaning Up ...
+[2026-02-05T06:28:36.070Z] 
+!!! Stopping execution due to test failure. Fix the issue and restart. !!!
+[2026-02-05T06:30:09.147Z] ✓ Project Generated
+[2026-02-05T06:30:09.148Z] ... Installing Dependencies (this takes time) ...
+[2026-02-05T06:30:12.606Z] ... Starting Docker ...
+[2026-02-05T06:30:21.361Z] ... Waiting for Health Check ...
+[2026-02-05T06:30:37.757Z] ✓ Health Check Passed
+[2026-02-05T06:30:37.757Z] ... Cleaning Up ...
+[2026-02-05T06:30:41.053Z] ... Ensuring ports are free (removing 'test_*' containers) ...
+[2026-02-05T06:30:41.131Z] >>> Starting Test 2/32: test_mvc_javascript_none_mysql_kafka
+[2026-02-05T06:30:41.565Z] ✓ Project Generated
+[2026-02-05T06:30:41.565Z] ... Installing Dependencies (this takes time) ...
+[2026-02-05T06:30:44.828Z] ... Starting Docker ...
+[2026-02-05T06:30:55.309Z] ... Waiting for Health Check ...
+[2026-02-05T06:30:57.350Z] ✓ Health Check Passed
+[2026-02-05T06:30:57.350Z] ... Cleaning Up ...
+[2026-02-05T06:34:11.386Z] ✓ Project Generated
+[2026-02-05T06:34:11.386Z] ... Installing Dependencies (this takes time) ...
+[2026-02-05T06:34:17.337Z] ... Starting Docker ...
+[2026-02-05T06:34:27.023Z] ... Waiting for Health Check ...
+[2026-02-05T06:34:43.356Z] ✓ Health Check Passed
+[2026-02-05T06:34:43.357Z] ... Cleaning Up ...
+[2026-02-05T06:34:46.426Z] ... Ensuring ports are free (removing 'test_*' containers) ...
+[2026-02-05T06:34:46.520Z] >>> Starting Test 2/32: test_mvc_javascript_none_mysql_kafka
+[2026-02-05T06:34:46.909Z] ✓ Project Generated
+[2026-02-05T06:34:46.910Z] ... Installing Dependencies (this takes time) ...
+[2026-02-05T06:34:50.324Z] ... Starting Docker ...
+[2026-02-05T06:40:25.770Z] ✓ Project Generated (CLI)
+[2026-02-05T06:40:25.771Z] ... Installing Dependencies (this takes time) ...
+[2026-02-05T06:40:32.051Z] ... Starting Docker ...
+[2026-02-05T06:40:41.587Z] ... Waiting for Health Check ...
+[2026-02-05T06:40:57.949Z] ✓ Health Check Passed
+[2026-02-05T06:40:57.950Z] ... Cleaning Up ...
+[2026-02-05T06:41:01.103Z] ... Ensuring ports are free (removing 'test_*' containers) ...
+[2026-02-05T06:41:01.169Z] >>> Starting Test 2/32: test_mvc_javascript_none_mysql_kafka
+[2026-02-05T06:41:02.035Z] ✓ Project Generated (CLI)
+[2026-02-05T06:41:02.036Z] ... Installing Dependencies (this takes time) ...
+[2026-02-05T06:41:05.977Z] ... Starting Docker ...
+[2026-02-05T06:41:15.983Z] ... Waiting for Health Check ...
+[2026-02-05T06:41:18.001Z] ✓ Health Check Passed
+[2026-02-05T06:41:18.001Z] ... Cleaning Up ...
+[2026-02-05T06:41:21.861Z] ... Ensuring ports are free (removing 'test_*' containers) ...
+[2026-02-05T06:41:21.934Z] >>> Starting Test 3/32: test_mvc_javascript_none_postgresql_restapis
+[2026-02-05T06:41:22.742Z] ✓ Project Generated (CLI)
+[2026-02-05T06:41:22.743Z] ... Installing Dependencies (this takes time) ...
+[2026-02-05T06:41:26.677Z] ... Starting Docker ...
+[2026-02-05T06:41:35.761Z] ... Waiting for Health Check ...
+[2026-02-05T06:41:39.911Z] ✓ Health Check Passed
+[2026-02-05T06:41:39.911Z] ... Cleaning Up ...
+[2026-02-05T06:41:41.880Z] ... Ensuring ports are free (removing 'test_*' containers) ...
+[2026-02-05T06:41:41.956Z] >>> Starting Test 4/32: test_mvc_javascript_none_postgresql_kafka
+[2026-02-05T06:41:42.848Z] ✓ Project Generated (CLI)
+[2026-02-05T06:41:42.848Z] ... Installing Dependencies (this takes time) ...
+[2026-02-05T06:41:46.506Z] ... Starting Docker ...
