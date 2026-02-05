@@ -20,7 +20,7 @@ function log(msg, color = ANSI_RESET) {
     fs.appendFileSync(LOG_FILE, `[${timestamp}] ${msg}\n`);
 }
 
-const LANGUAGES = ['JavaScript', 'TypeScript'];
+const LANGUAGES = ['TypeScript', 'JavaScript'];
 const DATABASES = ['MySQL', 'PostgreSQL'];
 const COMMUNICATIONS = ['REST APIs', 'Kafka']; // Kafka adds complexity (zookeeper), might want to test REST first
 const VIEW_ENGINES_MVC = ['None', 'EJS', 'Pug'];
@@ -213,6 +213,7 @@ async function runTest(config, index) {
     } finally {
         // Cleanup
         log(`... Cleaning Up ...`);
+        await fs.remove(projectPath);
         try {
              await runCommand('docker compose down -v', projectPath);
         } catch (e) {

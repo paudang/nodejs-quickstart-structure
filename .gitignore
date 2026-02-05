@@ -17,6 +17,8 @@ Thumbs.db
 test_output_app/
 test_ts_app/
 test_readme_app/
+test_results.log
+temp_test_workspace
 
 # Editor directories
 .vscode/
