@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-
+const apiRoutes = require('./routes/api');
 const { connectKafka, sendMessage } = require('./services/kafkaService');
 
 const app = express();

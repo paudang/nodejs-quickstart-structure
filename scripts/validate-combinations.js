@@ -120,8 +120,14 @@ async function runTest(config, index) {
         // Use 'docker compose' instead of 'docker-compose'
         const composeCmd = 'docker compose'; 
         
-        await runCommand(`${composeCmd} down -v`, projectPath); 
-        await runCommand(`${composeCmd} up -d`, projectPath); 
+        try {
+            await runCommand(`${composeCmd} down -v`, projectPath);
+        } catch (e) { /* ignore cleanup error on start */ }
+        
+        // Wait for ports to release
+        await new Promise(r => setTimeout(r, 5000));
+        
+        await runCommand(`${composeCmd} up -d --build`, projectPath); 
 
         // 4. Verify Health
         log(`... Waiting for Health Check ...`);
@@ -156,6 +162,21 @@ async function runTest(config, index) {
     return true;
 }
 
+async function cleanupOrphanedContainers() {
+    log(`... Ensuring ports are free (removing 'test_*' containers) ...`, ANSI_CYAN);
+    try {
+        // Find containers starting with test_
+        const stdout = await runCommand('docker ps -a --filter "name=test_" --format "{{.ID}}"');
+        if (stdout.trim()) {
+            const ids = stdout.trim().split(/\s+/).join(' ');
+            await runCommand(`docker rm -f ${ids}`);
+            log(`✓ Removed orphaned containers: ${ids}`);
+        }
+    } catch (e) {
+        // ignore if no containers or error
+    }
+}
+
 async function main() {
     // Check Docker availability using 'docker compose' (v2) or 'docker-compose' (v1)
     // Assuming 'docker-compose' based on user interactions
@@ -177,9 +198,17 @@ async function main() {
     let failed = 0;
 
     for (let i = 0; i < testsToRun.length; i++) {
+        // Force cleanup before every test to ensure ports are free
+        await cleanupOrphanedContainers();
+        
         const result = await runTest(testsToRun[i], i);
-        if (result) passed++;
-        else failed++;
+        if (result) {
+            passed++;
+        } else {
+            failed++;
+            log(`\n!!! Stopping execution due to test failure. Fix the issue and restart. !!!`, ANSI_RED);
+            process.exit(1);
+        }
     }
 
     log(`\n=== Summary ===`);
