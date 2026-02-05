@@ -1600,3 +1600,81 @@ failed to solve: process "/bin/sh -c npm run build" did not complete successfull
 [2026-02-05T02:27:15.707Z] ... Cleaning Up ...
 [2026-02-05T02:27:15.891Z] 
 !!! Stopping execution due to test failure. Fix the issue and restart. !!!
+[2026-02-05T02:28:25.901Z] ✓ Project Generated
+[2026-02-05T02:28:25.902Z] ... Installing Dependencies (this takes time) ...
+[2026-02-05T02:28:31.785Z] ... Starting Docker ...
+[2026-02-05T02:28:41.638Z] X Test FAILED: Command failed: docker compose up -d --build
+time="2026-02-05T09:28:37+07:00" level=warning msg="D:\\Code\\nodejs-quickstart-structure\\temp_test_workspace\\test_clean_typescript_mysql_restapis\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+Dockerfile:12
+
+--------------------
+
+  10 |     
+
+  11 |     # Build for production (TypeScript)
+
+  12 | >>> RUN npm run build
+
+  13 |     
+
+  14 |     EXPOSE 3000
+
+--------------------
+
+failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 2
+
+
+[2026-02-05T02:28:41.639Z] Stdout: #1 [internal] load local bake definitions
+#1 reading from stdin 692B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 229B 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:18-alpine
+#3 DONE 0.9s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 160B done
+#4 DONE 0.0s
+
+#5 [1/6] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e
+#5 resolve docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 96.97kB 0.0s done
+#6 DONE 0.0s
+
+#7 [2/6] WORKDIR /app
+#7 CACHED
+
+#8 [3/6] COPY package*.json ./
+#8 CACHED
+
+#9 [4/6] RUN npm install
+#9 CACHED
+
+#10 [5/6] COPY . .
+#10 DONE 0.0s
+
+#11 [6/6] RUN npm run build
+#11 0.409 
+#11 0.409 > test_clean_typescript_mysql_restapis@1.0.0 build
+#11 0.409 > rimraf dist && tsc
+#11 0.409 
+#11 2.620 src/interfaces/controllers/userController.ts(2,32): error TS2307: Cannot find module '../../infrastructure/repositories/UserRepository' or its corresponding type declarations.
+#11 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 2
+------
+ > [6/6] RUN npm run build:
+0.409 
+0.409 > test_clean_typescript_mysql_restapis@1.0.0 build
+0.409 > rimraf dist && tsc
+0.409 
+2.620 src/interfaces/controllers/userController.ts(2,32): error TS2307: Cannot find module '../../infrastructure/repositories/UserRepository' or its corresponding type declarations.
+------
+
+[2026-02-05T02:28:41.639Z] ... Cleaning Up ...
+[2026-02-05T02:28:41.855Z] 
+!!! Stopping execution due to test failure. Fix the issue and restart. !!!
