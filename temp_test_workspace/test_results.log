@@ -1,0 +1,160 @@
+[2026-02-05T00:40:24.294Z] ✓ Project Generated
+[2026-02-05T00:40:24.294Z] ... Installing Dependencies (this takes time) ...
+[2026-02-05T00:40:29.275Z] ... Starting Docker ...
+[2026-02-05T00:40:29.610Z] X Test FAILED: Command failed: docker-compose down -v
+time="2026-02-05T07:40:29+07:00" level=warning msg="D:\\Code\\nodejs-quickstart-structure\\temp_test_workspace\\test_mvc_javascript_none_mysql_restapis\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+error during connect: Get "http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dtest_mvc_javascript_none_mysql_restapis%22%3Atrue%7D%7D": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+
+[2026-02-05T00:40:29.613Z] Stderr: time="2026-02-05T07:40:29+07:00" level=warning msg="D:\\Code\\nodejs-quickstart-structure\\temp_test_workspace\\test_mvc_javascript_none_mysql_restapis\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+error during connect: Get "http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dtest_mvc_javascript_none_mysql_restapis%22%3Atrue%7D%7D": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+
+[2026-02-05T00:40:29.613Z] ... Cleaning Up ...
+[2026-02-05T00:40:29.860Z] Error in cleanup: Command failed: docker-compose down -v
+time="2026-02-05T07:40:29+07:00" level=warning msg="D:\\Code\\nodejs-quickstart-structure\\temp_test_workspace\\test_mvc_javascript_none_mysql_restapis\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+error during connect: Get "http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/containers/json?all=1&filters=%7B%22label%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.oneoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Dtest_mvc_javascript_none_mysql_restapis%22%3Atrue%7D%7D": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+
+[2026-02-05T00:40:29.860Z] 
+=== Summary ===
+[2026-02-05T00:40:29.861Z] Total: 1
+[2026-02-05T00:40:29.861Z] Passed: 0
+[2026-02-05T00:40:29.862Z] Failed: 1
+[2026-02-05T00:41:17.463Z] ✓ Project Generated
+[2026-02-05T00:41:17.463Z] ... Installing Dependencies (this takes time) ...
+[2026-02-05T00:41:20.451Z] ... Starting Docker ...
+[2026-02-05T00:41:47.044Z] X Test FAILED: Command failed: docker compose up -d
+time="2026-02-05T07:41:20+07:00" level=warning msg="D:\\Code\\nodejs-quickstart-structure\\temp_test_workspace\\test_mvc_javascript_none_mysql_restapis\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+Dockerfile:12
+
+--------------------
+
+  10 |     
+
+  11 |     # Build for production (TypeScript)
+
+  12 | >>> RUN npm run build
+
+  13 |     
+
+  14 |     EXPOSE 3000
+
+--------------------
+
+failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+
+
+[2026-02-05T00:41:47.044Z] Stdout: #1 [internal] load local bake definitions
+#1 reading from stdin 704B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 229B 0.0s done
+#2 DONE 0.1s
+
+#3 [internal] load metadata for docker.io/library/node:18-alpine
+#3 ...
+
+#4 [auth] library/node:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:18-alpine
+#3 DONE 2.2s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.0s
+
+#6 [1/6] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e
+#6 resolve docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e 0.0s done
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 5.04MB 4.9s
+#7 transferring context: 10.30MB 10.0s
+#7 transferring context: 19.27MB 15.0s
+#7 transferring context: 20.50MB 16.6s done
+#7 DONE 16.7s
+
+#8 [2/6] WORKDIR /app
+#8 CACHED
+
+#9 [3/6] COPY package*.json ./
+#9 DONE 0.1s
+
+#10 [4/6] RUN npm install
+#10 4.381 
+#10 4.381 added 131 packages, and audited 132 packages in 4s
+#10 4.381 
+#10 4.381 24 packages are looking for funding
+#10 4.381   run `npm fund` for details
+#10 4.383 
+#10 4.383 found 0 vulnerabilities
+#10 4.386 npm notice
+#10 4.386 npm notice New major version of npm available! 10.8.2 -> 11.9.0
+#10 4.386 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.9.0
+#10 4.386 npm notice To update run: npm install -g npm@11.9.0
+#10 4.386 npm notice
+#10 DONE 4.5s
+
+#11 [5/6] COPY . .
+#11 DONE 1.1s
+
+#12 [6/6] RUN npm run build
+#12 0.507 npm error Missing script: "build"
+#12 0.507 npm error
+#12 0.507 npm error To see a list of scripts, run:
+#12 0.507 npm error   npm run
+#12 0.511 npm error A complete log of this run can be found in: /root/.npm/_logs/2026-02-05T00_41_46_781Z-debug-0.log
+#12 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+------
+ > [6/6] RUN npm run build:
+0.507 npm error Missing script: "build"
+0.507 npm error
+0.507 npm error To see a list of scripts, run:
+0.507 npm error   npm run
+0.511 npm error A complete log of this run can be found in: /root/.npm/_logs/2026-02-05T00_41_46_781Z-debug-0.log
+------
+
+[2026-02-05T00:41:47.045Z] ... Cleaning Up ...
+[2026-02-05T00:41:47.259Z] 
+=== Summary ===
+[2026-02-05T00:41:47.259Z] Total: 1
+[2026-02-05T00:41:47.260Z] Passed: 0
+[2026-02-05T00:41:47.260Z] Failed: 1
+[2026-02-05T00:44:13.125Z] ✓ Project Generated
+[2026-02-05T00:44:13.126Z] ... Installing Dependencies (this takes time) ...
+[2026-02-05T00:44:16.349Z] ... Starting Docker ...
+[2026-02-05T00:44:17.490Z] X Test FAILED: Command failed: docker compose up -d
+time="2026-02-05T07:44:16+07:00" level=warning msg="D:\\Code\\nodejs-quickstart-structure\\temp_test_workspace\\test_mvc_javascript_none_mysql_restapis\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+Dockerfile:12
+
+--------------------
+
+  10 |     
+
+  11 |     # Build for production (TypeScript)
+
+  12 | >>> <% if (language === 'TypeScript') { %>RUN npm run build<% } %>
+
+  13 |     
+
+  14 |     EXPOSE 3000
+
+--------------------
+
+failed to solve: dockerfile parse error on line 12: unknown instruction: <%
+
+
+[2026-02-05T00:44:17.491Z] Stdout: #1 [internal] load local bake definitions
+#1 reading from stdin 704B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 274B done
+#2 DONE 0.0s
+
+[2026-02-05T00:44:17.491Z] ... Cleaning Up ...
+[2026-02-05T00:44:17.729Z] 
+=== Summary ===
+[2026-02-05T00:44:17.730Z] Total: 1
+[2026-02-05T00:44:17.731Z] Passed: 0
+[2026-02-05T00:44:17.731Z] Failed: 1
