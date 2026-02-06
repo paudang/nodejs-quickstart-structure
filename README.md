@@ -28,10 +28,10 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 
 ## Installation
 
-You can install the tool globally directly from GitHub:
+You can install the tool globally directly from npm:
 
 ```bash
-npm install -g paudang/nodejs-quickstart-structure
+npm install -g nodejs-quickstart-structure
 ```
 
 ### Manual Installation (For Development)

@@ -1,0 +1,23 @@
+# Dev & Test
+scripts/
+temp_test_workspace/
+tests/
+.git/
+.github/
+.vscode/
+.gemini/
+.idea/
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Configs
+.env
+.prettierrc
+.eslintrc.json
+jest.config.js
+Dockerfile.validation
+docker-compose.yml
