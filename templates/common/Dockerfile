@@ -1,16 +1,49 @@
-FROM node:18-alpine
+# ==========================================
+# Stage 1: Builder
+# ==========================================
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
 COPY package*.json ./
+COPY tsconfig*.json ./
 
-RUN npm install
+# Install ALL dependencies (including devDeps for build)
+RUN npm ci
 
 COPY . .
 
-# Build for production (TypeScript)
+# Build for production
 <% if (language === 'TypeScript') { %>RUN npm run build<% } %>
 
+# ==========================================
+# Stage 2: Production
+# ==========================================
+FROM node:18-alpine AS production
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY package*.json ./
+
+# Install ONLY production dependencies
+RUN npm ci --only=production --ignore-scripts
+
+# Copy built artifacts from builder
+<% if (language === 'TypeScript') { %>
+COPY --from=builder /app/dist ./dist
+<% } else { %>
+COPY --from=builder /app/src ./src
+<% } %>
+
+# Copy other necessary files (like views if MVC)
+<% if (viewEngine && viewEngine !== 'None') { %>
+COPY --from=builder /app/src/views ./dist/views
+<% } %>
+
 EXPOSE 3000
+
+USER node
 
 CMD ["npm", "start"]

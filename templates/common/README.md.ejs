@@ -1,84 +1,78 @@
 # <%= projectName %>
 
-This project was generated using `nodejs-quickstart-structure`.
+![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)
+![License](https://img.shields.io/badge/License-ISC-blue.svg)
+<% if (language === 'TypeScript') { %>![TypeScript](https://img.shields.io/badge/Language-TypeScript-blue.svg)<% } else { %>![JavaScript](https://img.shields.io/badge/Language-JavaScript-yellow.svg)<% } %>
 
-## Prerequisites
+A production-ready Node.js microservice generated with **<%= architecture %>** and **<%= database %>**.
+This project comes pre-configured with industry-standard tooling for **Code Quality**, **Testing**, and **Security**.
 
-- Node.js (v18+)
-- Docker & Docker Compose
+## 🚀 Key Features
 
-## Getting Started
+-   **Architecture**: <%= architecture %> (<% if (architecture === 'Clean Architecture') { %>Domain, UseCases, Infrastructure<% } else { %>MVC Pattern<% } %>).
+-   **Database**: <%= database %> with **Flyway** migrations.
+-   **Security**: Helmet, CORS, Rate Limiting, HPP.
+-   **Quality**: Eslint, Prettier, Husky, Lint-Staged.
+-   **Testing**: Jest (Unit & Integration).
+-   **DevOps**: Multi-stage Docker build, CI/CD ready.
 
-1.  **Start Infrastructure** (Database<% if (communication === 'Kafka') { %>, Kafka, Zookeeper<% } %>):
-    ```bash
-    docker-compose up -d db flyway<% if (communication === 'Kafka') { %> zookeeper kafka<% } %>
-    ```
-    *Note: We only start the infrastructure (database, etc.) so we can run the API locally.*
+## 🛠️ Getting Started
 
-2.  **Install Dependencies**:
-    ```bash
-    npm install
-    ```
+### 1. Prerequisites
+-   Node.js (v18+)
+-   Docker & Docker Compose
 
-3.  **Run Application**:
-    ```bash
-    npm run dev
-    ```
+### 2. Quick Start
+```bash
+# Install dependencies
+npm install
 
-## Project Structure
+# Setup Git Hooks (Husky)
+npm run prepare
 
-The project uses **<%= architecture %>** with **<%= database %>**.
+# Start Infrastructure (DB, etc.)
+docker-compose up -d
+
+# Run Development Server
+npm run dev
+```
+
+### 3. Development Standards
+Ensure your code meets quality standards before committing:
+
+```bash
+# Run Linter
+npm run lint
+
+# Run Tests
+npm test
+
+# Format Code
+npm run format
+```
+
+## 📂 Project Structure
+
+The project follows **<%= architecture %>** principles.
 <% if (communication === 'Kafka') { -%>
 Microservices communication handled via **Kafka**.
 <% } else { -%>
 API is exposed via **REST**.
 <% } -%>
 
-## Demo & Testing
-
-### Health Check
+## 🐳 Docker Deployment
+This project uses a **Multi-Stage Dockerfile** for optimized production images.
 
 ```bash
-curl http://localhost:3000/health
-# Output: {"status":"UP"}
+# Build Production Image
+docker build -t <%= projectName %> .
+
+# Run Container
+docker run -p 3000:3000 -e DATABASE_URL=... <%= projectName %>
 ```
 
-<% if (communication === 'REST APIs') { -%>
-### User API Demo
-
-**Create a User:**
-```bash
-curl -X POST http://localhost:3000/api/users \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Alice", "email": "alice@example.com"}'
-```
-
-**Get Users:**
-```bash
-curl http://localhost:3000/api/users
-```
-<% } -%>
-
-<% if (communication === 'Kafka') { -%>
-### Kafka Demo
-
-The application connects to Kafka on startup and acts as both a **Producer** and a **Consumer**.
-
-1.  **Check Output**:
-    When the server starts, it will automatically send a demo message to the `test-topic`.
-    Check your terminal logs:
-    ```
-    Kafka connected
-    { value: 'Hello Kafka from ...!' }
-    ```
-
-2.  **Manual Test**:
-    You can manually send messages using the configured `kafkajs` client in `src/services/kafkaService.ts`.
-
-- **Zookeeper**: Port `2181`
-- **Kafka Broker**: Port `9092`
-<% } -%>
-
-## Database Migrations
-
-**Flyway** is running in Docker and will automatically apply SQL migrations from `flyway/sql/` on startup.
+## 🔒 Security Features
+-   **Helmet**: Sets secure HTTP headers.
+-   **CORS**: Configured for cross-origin requests.
+-   **Rate Limiting**: Protects against DDoS / Brute-force.
+-   **HPP**: Prevents HTTP Parameter Pollution attacks.

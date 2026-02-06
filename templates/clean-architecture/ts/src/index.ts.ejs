@@ -1,5 +1,8 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import hpp from 'hpp';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 <% if (communication === 'REST APIs') { %>import userRoutes from './interfaces/routes/userRoutes';<% } %>
 <% if (communication === 'Kafka') { %>import { KafkaService } from './infrastructure/messaging/kafkaClient';<% } %>
@@ -9,7 +12,13 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+// Security Middleware
+app.use(helmet());
+app.use(hpp());
+app.use(cors({ origin: '*', methods: ['GET', 'POST', 'PUT', 'DELETE'] }));
+const limiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 100 });
+app.use(limiter);
+
 app.use(express.json());
 
 <% if (communication === 'REST APIs') { -%>
@@ -25,7 +34,7 @@ const syncDatabase = async () => {
     let retries = 30;
     while (retries) {
         try {
-            const sequelize = require('./infrastructure/database/database').default;
+            const sequelize = (await import('./infrastructure/database/database')).default;
             await sequelize.sync();
             console.log('Database synced');
             

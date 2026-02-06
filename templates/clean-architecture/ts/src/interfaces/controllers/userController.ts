@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { UserRepository } from '../../infrastructure/repositories/userRepository';
+import { UserRepository } from '../../infrastructure/repositories/UserRepository';
 import CreateUser from '../../usecases/createUser';
 import GetAllUsers from '../../usecases/getAllUsers';
 
@@ -18,9 +18,13 @@ export class UserController {
             const { name, email } = req.body;
             const user = await this.createUserUseCase.execute(name, email);
             res.status(201).json(user);
-        } catch (error: any) {
+        } catch (error) {
             console.error('UserController Error:', error);
-            res.status(500).json({ error: error.message });
+            if (error instanceof Error) {
+                res.status(500).json({ error: error.message });
+            } else {
+                res.status(500).json({ error: 'Unknown error occurred' });
+            }
         }
     }
 
@@ -28,9 +32,13 @@ export class UserController {
         try {
             const users = await this.getAllUsersUseCase.execute();
             res.json(users);
-        } catch (error: any) {
+        } catch (error) {
             console.error('UserController Error:', error);
-            res.status(500).json({ error: error.message });
+            if (error instanceof Error) {
+                res.status(500).json({ error: error.message });
+            } else {
+                res.status(500).json({ error: 'Unknown error occurred' });
+            }
         }
     }
 }

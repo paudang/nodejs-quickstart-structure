@@ -8,7 +8,9 @@ This document lists the **32 possible project combinations** supported by the `n
 - **Clean Architecture**: 8 Combinations
   - (2 Languages × 1 View Engine (None) × 2 Databases × 2 Patterns)
 
-**Total Test Cases: 32**
+**Total Core Combinations: 32**
+
+> **Note on CI/CD**: Each of these 32 combinations can be generated with or without the **GitHub Actions CI Workflow** (`--include-ci`). This effectively creates **64 possible project states**. The validation script currently defaults to *including* CI to verify the full "Professional Standards" feature set.
 
 ---
 

@@ -1,0 +1,11 @@
+module.exports = {
+  testEnvironment: 'node',
+  coverageDirectory: 'coverage',
+  collectCoverageFrom: ['src/**/*.{js,ts}'],
+  testMatch: ['**/*.test.ts', '**/*.test.js'],
+  <% if (language === 'TypeScript') { %>preset: 'ts-jest',<% } %>
+  coveragePathIgnorePatterns: [
+    "/node_modules/",
+    "/dist/"
+  ]
+};

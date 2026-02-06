@@ -11,6 +11,18 @@ A powerful CLI tool to scaffold production-ready Node.js microservices with buil
 - **Microservices Ready**: Optional **Kafka** integration for event-driven communication.
 - **Dockerized**: Automatically generates `docker-compose.yml` for DB, Kafka, and Zookeeper.
 - **Database Migrations**: Integrated **Flyway** support for SQL migrations.
+- **Professional Standards**: Generated projects come with highly professional, industry-standard tooling.
+
+## 🏆 Professional Standards (New)
+
+We don't just generate boilerplate; we generate **production-ready** foundations. Every project includes:
+
+-   **🔍 Code Quality**: Pre-configured `Eslint` and `Prettier` for consistent coding standards.
+-   **🛡️ Security**: Built-in `Helmet`, `HPP`, `CORS`, and Rate-Limiting middleware.
+-   **🧪 Testing Strategy**: Integrated `Jest` and `Supertest` setup for Unit and Integration testing.
+-   **🔄 CI/CD Support**: Optional **GitHub Actions** workflow integration.
+-   **⚓ Git Hooks**: `Husky` and `Lint-Staged` to ensure no bad code is ever committed.
+-   **🐳 DevOps**: Highly optimized **Multi-Stage Dockerfile** for small, secure production images.
 
 ## Installation
 
@@ -56,6 +68,7 @@ The CLI will guide you through the following steps:
 4.  **Database**: `MySQL` or `PostgreSQL`.
 5.  **Database Name**: The name of the initial database.
 6.  **Communication**: `REST APIs` (default) or `Kafka`.
+7.  **CI/CD**: `Include GitHub Actions Workflow` (Optional).
 
 ## Generated Project Structure
 
@@ -74,6 +87,7 @@ cd <your-project-name>
 
 # Start infrastructure (DB, etc.)
 docker-compose up
+```
 
 ## License
 

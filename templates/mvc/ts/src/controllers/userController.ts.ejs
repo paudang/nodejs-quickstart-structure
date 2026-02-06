@@ -6,8 +6,12 @@ export class UserController {
         try {
             const users = await User.findAll();
             res.json(users);
-        } catch (error: any) {
-            res.status(500).json({ error: error.message });
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(500).json({ error: error.message });
+            } else {
+                res.status(500).json({ error: 'Unknown error occurred' });
+            }
         }
     }
 
@@ -16,8 +20,12 @@ export class UserController {
             const { name, email } = req.body;
             const user = await User.create({ name, email });
             res.status(201).json(user);
-        } catch (error: any) {
-            res.status(500).json({ error: error.message });
+        } catch (error) {
+            if (error instanceof Error) {
+                res.status(500).json({ error: error.message });
+            } else {
+                res.status(500).json({ error: 'Unknown error occurred' });
+            }
         }
     }
 }

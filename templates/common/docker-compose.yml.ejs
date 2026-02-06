@@ -4,7 +4,7 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "${PORT:-3000}:3000"
     depends_on:
       - db
 <% if (communication === 'Kafka') { %>      - kafka
@@ -42,7 +42,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: <%= dbName %>
     ports:
-      - "3306:3306"
+      - "${DB_PORT:-3306}:3306"
 <% } %><% if (database === 'PostgreSQL') { %>    image: postgres:15
     restart: always
     environment:
@@ -50,7 +50,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: <%= dbName %>
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
 <% } %>    volumes:
       - <%= database.toLowerCase() %>_data:/var/lib/<% if (database === 'MySQL') { %>mysql<% } else { %>postgresql/data<% } %>
 
@@ -75,14 +75,14 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "2181:2181"
+      - "${ZOOKEEPER_PORT:-2181}:2181"
 
   kafka:
     image: confluentinc/cp-kafka:7.4.0
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"
+      - "${KAFKA_PORT:-9092}:9092"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181

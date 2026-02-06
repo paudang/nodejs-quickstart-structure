@@ -28,11 +28,18 @@ program
     .option('-n, --project-name <name>', 'Project name')
     .option('-l, --language <language>', 'Language (JavaScript, TypeScript)')
     .option('-a, --architecture <architecture>', 'Architecture (MVC, Clean Architecture)')
-    .option('-v, --view-engine <view>', 'View Engine (None, EJS, Pug) - MVC only')
+    .option('--view-engine <view>', 'View Engine (None, EJS, Pug) - MVC only')
     .option('-d, --database <database>', 'Database (MySQL, PostgreSQL)')
     .option('--db-name <name>', 'Database name')
     .option('-c, --communication <communication>', 'Communication (REST APIs, Kafka)')
+    .option('--include-ci', 'Include GitHub Actions CI Workflow')
     .action(async (options) => {
+        // Fix for Commander camelCase conversion
+        if (options.includeCi) {
+            options.includeCI = options.includeCi;
+            delete options.includeCi;
+        }
+
         console.log(chalk.blue('Welcome to the Node.js Quickstart Generator!'));
 
         try {

@@ -1,7 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { execSync, exec } from 'child_process';
-import { generateProject } from '../lib/generator.js';
+import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -30,29 +29,12 @@ process.on('unhandledRejection', (reason, promise) => {
     process.exit(1);
 });
 
-const LANGUAGES = ['JavaScript', 'TypeScript'];
+const LANGUAGES = ['TypeScript', 'JavaScript'];
 const DATABASES = ['MySQL', 'PostgreSQL'];
 const COMMUNICATIONS = ['REST APIs', 'Kafka']; // Kafka adds complexity (zookeeper), might want to test REST first
 const VIEW_ENGINES_MVC = ['None', 'EJS', 'Pug'];
 
 const combinations = [];
-
-// 2. Clean Architecture Combinations
-LANGUAGES.forEach(lang => {
-    DATABASES.forEach(db => {
-        COMMUNICATIONS.forEach(comm => {
-            combinations.push({
-                projectName: `test_clean_${lang}_${db}_${comm}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-                language: lang,
-                architecture: 'Clean Architecture',
-                viewEngine: 'None', // Not used
-                database: db,
-                dbName: 'testdb',
-                communication: comm
-            });
-        });
-    });
-});
 
 // 1. MVC Combinations
 LANGUAGES.forEach(lang => {
@@ -73,26 +55,66 @@ LANGUAGES.forEach(lang => {
     });
 });
 
-async function runCommand(command, cwd) {
+// 2. Clean Architecture Combinations
+LANGUAGES.forEach(lang => {
+    DATABASES.forEach(db => {
+        COMMUNICATIONS.forEach(comm => {
+            combinations.push({
+                projectName: `test_clean_${lang}_${db}_${comm}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                language: lang,
+                architecture: 'Clean Architecture',
+                viewEngine: 'None', // Not used
+                database: db,
+                dbName: 'testdb',
+                communication: comm
+            });
+        });
+    });
+});
+
+
+
+async function runCommand(command, cwd, env = {}) {
     return new Promise((resolve, reject) => {
-        exec(command, { cwd, maxBuffer: 20 * 1024 * 1024 }, (error, stdout, stderr) => {
-            if (error) {
-                // Attach stdout/stderr for debugging
-                error.stdout = stdout;
-                error.stderr = stderr;
-                reject(error);
+        const [cmd, ...args] = command.split(' ');
+        // spawn to stream output
+        const child = spawn(cmd, args, { 
+            cwd, 
+            stdio: 'inherit', // Stream to console immediately
+            shell: true,      // Execute in shell to handle command chains/path
+            env: { ...process.env, ...env }
+        });
+
+        child.on('error', (error) => {
+             reject(error);
+        });
+
+        child.on('close', (code) => {
+            if (code === 0) {
+                resolve('Command completed successfully');
             } else {
-                resolve(stdout);
+                reject(new Error(`Command exited with code ${code}`));
             }
         });
     });
 }
 
-async function checkHealth(config) {
+function getRandomPort(usedPorts = new Set()) {
+    let port;
+    do {
+        // Avoid Hyper-V reserved ranges (often 50000+)
+        port = Math.floor(Math.random() * (45000 - 10000) + 10000);
+    } while (usedPorts.has(port));
+    usedPorts.add(port);
+    return port;
+}
+
+async function checkHealth(config, hostPort) {
+    const port = hostPort || 3000;
     const start = Date.now();
     while (Date.now() - start < 120000) { // 120s timeout
         try {
-            const res = await fetch('http://localhost:3000/health');
+            const res = await fetch(`http://localhost:${port}/health`);
             if (res.ok) {
                 // Once health is OK, perform functional tests
                 console.log(`Health check passed. Config: Arch='${config.architecture}', Comm='${config.communication}'`);
@@ -108,7 +130,7 @@ async function checkHealth(config) {
                 if (importsApi) {
                      try {
                         // 1. POST /api/users
-                        const postRes = await fetch('http://localhost:3000/api/users', {
+                        const postRes = await fetch(`http://localhost:${port}/api/users`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ name: 'Test User', email: 'test@example.com' })
@@ -116,7 +138,7 @@ async function checkHealth(config) {
                         
                         if (postRes.ok) {
                              // 2. GET /api/users
-                            const getRes = await fetch('http://localhost:3000/api/users');
+                            const getRes = await fetch(`http://localhost:${port}/api/users`);
                             if (getRes.ok) {
                                 const users = await getRes.json();
                                 console.log(`✓ Health & Functional Checks Passed. GET /api/users returned: ${JSON.stringify(users)}`, ANSI_GREEN);
@@ -153,7 +175,17 @@ async function runTest(config, index) {
     const testDir = path.resolve(__dirname, '../temp_test_workspace');
     const projectPath = path.join(testDir, config.projectName);
 
+    // Generate random ports for this test run
+    const usedPorts = new Set();
+    const TEST_ENV = {
+        PORT: getRandomPort(usedPorts).toString(),
+        DB_PORT: getRandomPort(usedPorts).toString(),
+        ZOOKEEPER_PORT: getRandomPort(usedPorts).toString(),
+        KAFKA_PORT: getRandomPort(usedPorts).toString()
+    };
+
     log(`>>> Starting Test ${index + 1}/${combinations.length}: ${config.projectName}`, ANSI_CYAN);
+    log(`    Ports -> APP:${TEST_ENV.PORT}, DB:${TEST_ENV.DB_PORT}, ZK:${TEST_ENV.ZOOKEEPER_PORT}, KAFKA:${TEST_ENV.KAFKA_PORT}`);
     
     try {
         // Cleanup Project Path
@@ -169,7 +201,8 @@ async function runTest(config, index) {
             '--architecture', `"${config.architecture}"`,
             '--database', config.database,
             '--db-name', config.dbName,
-            '--communication', `"${config.communication}"`
+            '--communication', `"${config.communication}"`,
+            '--include-ci' // Ensure CI is generated for testing professional standards
         ];
 
         if (config.architecture === 'MVC') {
@@ -183,9 +216,31 @@ async function runTest(config, index) {
         await runCommand(command, testDir);
         log(`✓ Project Generated (CLI)`);
 
-        // 2. Install Deps (This is the slow part)
+        // 2. Initialize Git (Required for Husky)
+        await runCommand('git init', projectPath);
+
+        // 3. Install Deps (This is the slow part)
         log(`... Installing Dependencies (this takes time) ...`);
         await runCommand('npm install', projectPath);
+
+        // 2.1 Verify Professional Standards (Configs & Tests)
+        log(`... Verifying Professional Standards ...`);
+        const requiredFiles = ['.eslintrc.json', '.prettierrc', '.lintstagedrc', 'jest.config.js', 'Dockerfile', 'README.md'];
+        for (const file of requiredFiles) {
+            if (!await fs.pathExists(path.join(projectPath, file))) {
+                throw new Error(`Missing Professional Standard File: ${file}`);
+            }
+        }
+        
+        // 2.2 Run Linter & Tests
+        try {
+            log(`... Running Linter ...`);
+            await runCommand('npm run lint', projectPath); // Should pass on fresh project
+            log(`... Running Unit Tests ...`);
+            await runCommand('npm test', projectPath); // Should pass health check test
+        } catch (e) {
+            throw new Error(`Professional Standards Check Failed: ${e.message}\nStdout: ${e.stdout}`);
+        }
         
         // 3. Docker Up
         log(`... Starting Docker ...`);
@@ -193,24 +248,24 @@ async function runTest(config, index) {
         const composeCmd = 'docker compose'; 
         
         try {
-            await runCommand(`${composeCmd} down -v`, projectPath);
+            await runCommand(`${composeCmd} down -v`, projectPath, TEST_ENV);
         } catch (e) { /* ignore cleanup error on start */ }
         
         // Wait for ports to release
-        await new Promise(r => setTimeout(r, 5000));
+        await new Promise(r => setTimeout(r, 2000));
         
-        await runCommand(`${composeCmd} up -d --build`, projectPath); 
+        await runCommand(`${composeCmd} up -d --build`, projectPath, TEST_ENV); 
 
         // 4. Verify Health
         log(`... Waiting for Health Check ...`);
-        const isHealthy = await checkHealth(config);
+        const isHealthy = await checkHealth(config, TEST_ENV.PORT);
         
         if (isHealthy) {
             log(`✓ Health Check Passed`, ANSI_GREEN);
         } else {
             // Logs for debug
             try {
-                const logs = await runCommand(`${composeCmd} logs`, projectPath);
+                const logs = await runCommand(`${composeCmd} logs`, projectPath, TEST_ENV);
                 log(`!!! Health Check FAILED. App Logs:\n${logs}`, ANSI_RED);
             } catch (e) {}
             throw new Error("Health check timeout");
@@ -225,12 +280,12 @@ async function runTest(config, index) {
     } finally {
         // Cleanup
         log(`... Cleaning Up ...`);
-        await fs.remove(projectPath);
         try {
-             await runCommand('docker compose down -v', projectPath);
+             await runCommand('docker compose down -v', projectPath, TEST_ENV);
         } catch (e) {
              // ignore
         }
+        await fs.remove(projectPath);
     }
     return true;
 }
@@ -240,10 +295,16 @@ async function cleanupOrphanedContainers() {
     try {
         // Find containers starting with test_
         const stdout = await runCommand('docker ps -a --filter "name=test_" --format "{{.ID}}"');
-        if (stdout.trim()) {
+        if (typeof stdout === 'string' && stdout.trim()) {
             const ids = stdout.trim().split(/\s+/).join(' ');
             await runCommand(`docker rm -f ${ids}`);
             log(`✓ Removed orphaned containers: ${ids}`);
+        } else if (stdout && stdout.stdout) {
+             if (stdout.stdout.trim()) {
+                const ids = stdout.stdout.trim().split(/\s+/).join(' ');
+                await runCommand(`docker rm -f ${ids}`);
+                log(`✓ Removed orphaned containers: ${ids}`);
+             }
         }
     } catch (e) {
         // ignore if no containers or error
