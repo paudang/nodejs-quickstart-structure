@@ -33,7 +33,6 @@ services:
       - DB_NAME=<%= dbName %>
 <% } -%>
 <% } %>
-
   db:
 <% if (database === 'MySQL') { %>    image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
@@ -68,7 +67,6 @@ services:
       FLYWAY_PASSWORD: postgres
 <% } %>    depends_on:
       - db
-
 <% if (communication === 'Kafka') { %>  zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     environment:
@@ -91,6 +89,5 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 <% } -%>
-
 volumes:
   <%= database.toLowerCase() %>_data:

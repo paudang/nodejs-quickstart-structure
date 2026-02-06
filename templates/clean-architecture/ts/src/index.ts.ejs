@@ -8,8 +8,7 @@ import logger from './infrastructure/log/logger';
 <% if (communication === 'REST APIs') { %>import userRoutes from './interfaces/routes/userRoutes';<% } %>
 <% if (communication === 'REST APIs') { %>
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpecs from './config/swagger';
-<% } %>
+import swaggerSpecs from './config/swagger';<% } %>
 <% if (communication === 'Kafka') { %>import { KafkaService } from './infrastructure/messaging/kafkaClient';<% } %>
 
 dotenv.config();
@@ -27,12 +26,10 @@ app.use(limiter);
 app.use(express.json());
 
 <% if (communication === 'REST APIs') { -%>
-app.use('/api/users', userRoutes);
-<% } -%>
+app.use('/api/users', userRoutes);<% } -%>
 
 <% if (communication === 'REST APIs') { %>
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
-<% } %>
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));<% } %>
 
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'UP' });
