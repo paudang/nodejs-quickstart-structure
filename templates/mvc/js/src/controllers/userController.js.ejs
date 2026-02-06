@@ -1,11 +1,12 @@
 const User = require('../models/User');
+const HTTP_STATUS = require('../utils/httpCodes');
 
 const getUsers = async (req, res) => {
   try {
     const users = await User.findAll();
     res.json(users);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };
 
@@ -13,9 +14,9 @@ const createUser = async (req, res) => {
   try {
     const { name, email } = req.body;
     const user = await User.create({ name, email });
-    res.status(201).json(user);
+    res.status(HTTP_STATUS.CREATED).json(user);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };
 

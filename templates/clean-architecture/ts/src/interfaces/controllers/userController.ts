@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { UserRepository } from '../../infrastructure/repositories/UserRepository';
 import CreateUser from '../../usecases/createUser';
 import GetAllUsers from '../../usecases/getAllUsers';
+import { HTTP_STATUS } from '../../utils/httpCodes';
 
 export class UserController {
     private createUserUseCase: CreateUser;
@@ -17,13 +18,13 @@ export class UserController {
         try {
             const { name, email } = req.body;
             const user = await this.createUserUseCase.execute(name, email);
-            res.status(201).json(user);
+            res.status(HTTP_STATUS.CREATED).json(user);
         } catch (error) {
             console.error('UserController Error:', error);
             if (error instanceof Error) {
-                res.status(500).json({ error: error.message });
+                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
             } else {
-                res.status(500).json({ error: 'Unknown error occurred' });
+                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Unknown error occurred' });
             }
         }
     }
@@ -35,9 +36,9 @@ export class UserController {
         } catch (error) {
             console.error('UserController Error:', error);
             if (error instanceof Error) {
-                res.status(500).json({ error: error.message });
+                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
             } else {
-                res.status(500).json({ error: 'Unknown error occurred' });
+                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Unknown error occurred' });
             }
         }
     }
