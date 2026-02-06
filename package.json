@@ -1,6 +1,6 @@
 {
   "name": "nodejs-quickstart-structure",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "type": "module",
   "description": "A CLI to scaffold Node.js microservices with MVC or Clean Architecture",
   "main": "bin/index.js",
@@ -9,7 +9,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test:e2e": "node scripts/validate-combinations.js"
+    "test:e2e": "npm run test:e2e:windows",
+    "test:e2e:windows": "node scripts/validate-windows.js",
+    "test:e2e:linux": "node scripts/validate-linux.js"
   },
   "keywords": [
     "nodejs",

@@ -1,0 +1,25 @@
+# Use Node.js Alpine as a lightweight Linux environment
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy the generator source code
+COPY . .
+
+# Install generator dependencies
+RUN npm install
+
+# Create the temp directory for workspace
+RUN mkdir -p temp_test_workspace
+
+# Set environment variable to skip Docker-in-Docker check
+ENV SKIP_DOCKER=true
+
+# Run the validation script
+# This will:
+# 1. Generate all 32 project combinations using the CLI (on Linux)
+# 2. Run 'npm install' in each generated project (on Linux)
+# 3. Run 'npm run lint' in each project (validating path helpers/casing)
+# 4. Run 'npm test' (unit tests) in each project
+CMD ["npm", "run", "test:e2e:linux"]
