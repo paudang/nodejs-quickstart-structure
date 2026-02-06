@@ -2,6 +2,8 @@
 
 A powerful CLI tool to scaffold production-ready Node.js microservices with built-in best practices, allowing you to choose between **MVC** or **Clean Architecture**, **JavaScript** or **TypeScript**, and your preferred database.
 
+![Demo](docs/demo.gif)
+
 ## Features
 
 - **Interactive CLI**: Easy-to-use prompts to configure your project.
