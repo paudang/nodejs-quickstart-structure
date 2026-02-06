@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLI Demo</title>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #cccccc;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 18px;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .terminal {
+            width: 800px;
+            height: 500px;
+            background-color: #000000;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        .header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .red { background-color: #ff5f56; }
+        .yellow { background-color: #ffbd2e; }
+        .green { background-color: #27c93f; }
+        
+        .content {
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background-color: #cccccc;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .prompt { color: #27c93f; font-weight: bold; }
+        .query { color: #61dafb; font-weight: bold; }
+        .success { color: #27c93f; }
+        .info { color: #61dafb; }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="header">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+        </div>
+        <div class="content" id="terminal-content"></div>
+    </div>
+
+    <script>
+        const content = document.getElementById('terminal-content');
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        
+        const typeText = async (text, speed = 50, className = '') => {
+            const span = document.createElement('span');
+            if (className) span.className = className;
+            content.appendChild(span);
+            // Append cursor after the current span
+            let cursor = document.getElementById('cursor');
+            if (!cursor) {
+                cursor = document.createElement('span');
+                cursor.id = 'cursor';
+                cursor.className = 'cursor';
+                content.appendChild(cursor);
+            } else {
+                content.appendChild(cursor); // Move to end
+            }
+
+            for (let char of text) {
+                span.textContent += char;
+                await delay(speed);
+            }
+        };
+
+        const runDemo = async () => {
+            await delay(1000);
+            
+            // Initial Prompt
+            await typeText('user@dev:~$ ', 0, 'prompt');
+            await typeText('nodejs-quickstart init\n', 50);
+            await delay(800);
+
+            // Banner
+            await typeText('\n🚀 Welcome to Node.js Quickstart Generator!\n', 10);
+            await typeText('Let\'s scaffold your production-ready microservice.\n\n', 10);
+            await delay(1000);
+
+            // Questions
+            await typeText('? ', 0, 'success');
+            await typeText('Project Name? ', 0, 'query');
+            await delay(500);
+            await typeText('my-awesome-service\n', 50);
+            await delay(500);
+
+            await typeText('? ', 0, 'success');
+            await typeText('Programming Language? ', 0, 'query');
+            await delay(500);
+            await typeText('TypeScript\n', 30);
+            await delay(500);
+
+            await typeText('? ', 0, 'success');
+            await typeText('Select Architecture? ', 0, 'query');
+            await delay(500);
+            await typeText('Clean Architecture\n', 30);
+            await delay(500);
+
+            await typeText('? ', 0, 'success');
+            await typeText('Select Database? ', 0, 'query');
+            await delay(500);
+            await typeText('PostgreSQL\n', 30);
+            await delay(500);
+
+             await typeText('? ', 0, 'success');
+            await typeText('Microservices Communication? ', 0, 'query');
+            await delay(500);
+            await typeText('REST APIs\n', 30);
+            await delay(500);
+
+            await typeText('? ', 0, 'success');
+            await typeText('Include GitHub Actions CI Workflow? ', 0, 'query');
+            await delay(500);
+            await typeText('No\n', 30);
+            await delay(500);
+
+            // Result
+            await typeText('\n----------------------------------------\n', 10);
+            await typeText('✔ Structure created successfully!', 10, 'success');
+            await typeText('\n✔ Dependencies installed.', 10, 'success');
+            await typeText('\n✔ Git initialized.', 10, 'success');
+            
+            await typeText('\n\nNext steps:\n', 10);
+            await typeText('  cd my-awesome-service\n', 10);
+            await typeText('  npm run dev\n', 10);
+            
+            await typeText('\nHappy Coding! 🚀\n', 10);
+            await typeText('\nuser@dev:~$ ', 0, 'prompt');
+            
+            // Keep cursor blinking at the end
+        };
+
+        runDemo();
+    </script>
+</body>
+</html>
