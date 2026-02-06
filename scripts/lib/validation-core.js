@@ -137,13 +137,46 @@ async function checkHealth(config, hostPort) {
     return false;
 }
 
-export async function runTest(config, index, options = {}) {
+// Simple p-limit implementation for concurrency control
+function pLimit(concurrency) {
+    const queue = [];
+    let active = 0;
+    
+    const next = () => {
+        active--;
+        if (queue.length > 0) {
+            queue.shift()();
+        }
+    };
+    
+    return (fn) => new Promise((resolve, reject) => {
+        const run = async () => {
+            active++;
+            try {
+                const result = await fn();
+                resolve(result);
+            } catch (err) {
+                reject(err);
+            } finally {
+                next();
+            }
+        };
+        
+        if (active < concurrency) {
+            run();
+        } else {
+            queue.push(run);
+        }
+    });
+}
+
+export async function runTest(config, index, options = {}, sharedPorts) {
     const { skipDocker = false } = options;
     const testDir = path.resolve(__dirname, '../../temp_test_workspace');
     const projectPath = path.join(testDir, config.projectName);
 
-    // Generate random ports for this test run
-    const usedPorts = new Set();
+    // Use shared ports or local if not provided (fallback)
+    const usedPorts = sharedPorts || new Set();
     const TEST_ENV = {
         PORT: getRandomPort(usedPorts).toString(),
         DB_PORT: getRandomPort(usedPorts).toString(),
@@ -178,7 +211,7 @@ export async function runTest(config, index, options = {}) {
         }
 
         const command = `node ${cliPath} ${args.join(' ')}`;
-        process.chdir(testDir); 
+        // Removed process.chdir(testDir) for parallel safety
         await runCommand(command, testDir);
         log(`✓ Project Generated (CLI)`);
 
@@ -211,7 +244,7 @@ export async function runTest(config, index, options = {}) {
         // SKIP DOCKER IF REQUESTED
         if (skipDocker) {
             log(`✓ Validation Passed (Docker Skipped)`);
-            return true;
+            return { success: true };
         }
 
         // 3. Docker Up
@@ -242,7 +275,7 @@ export async function runTest(config, index, options = {}) {
 
     } catch (err) {
         log(`X Test FAILED: ${err.message}`, ANSI_RED);
-        return false;
+        return { success: false, error: err.message };
     } finally {
         // Cleanup
         log(`... Cleaning Up ...`);
@@ -253,13 +286,13 @@ export async function runTest(config, index, options = {}) {
         }
         await fs.remove(projectPath);
     }
-    return true;
+    return { success: true };
 }
 
 export async function runValidation(options = {}) {
-    const { specificTestIndex } = options;
+    const { specificTestIndex, concurrency = 1 } = options;
     
-    log(`Running ${combinations.length} tests...`, ANSI_CYAN);
+    log(`Running ${combinations.length} tests with concurrency ${concurrency}...`, ANSI_CYAN);
     if (specificTestIndex !== undefined) {
         log(`Targeting single test index: ${specificTestIndex}`, ANSI_CYAN);
     }
@@ -270,24 +303,54 @@ export async function runValidation(options = {}) {
 
     let passed = 0;
     let failed = 0;
+    const failures = [];
+    const sharedPorts = new Set();
+    const limit = pLimit(concurrency);
 
-    for (let i = 0; i < combinations.length; i++) {
-        if (specificTestIndex !== undefined && i !== specificTestIndex) continue;
-
-        const success = await runTest(combinations[i], i, options);
-        if (success) passed++;
-        else failed++;
+    const testPromises = combinations.map((config, i) => {
+        if (specificTestIndex !== undefined && i !== specificTestIndex) return null;
         
-        if (!success && specificTestIndex !== undefined) {
-             console.log("!!! Stopping execution due to test failure. Fix the issue and restart. !!!");
-             process.exit(1);
-        }
-    }
+        return limit(async () => {
+             try {
+                const result = await runTest(config, i, options, sharedPorts);
+                if (result.success) {
+                    passed++;
+                } else {
+                    failed++;
+                    failures.push({
+                        index: i,
+                        name: config.projectName,
+                        error: result.error || "Unknown error"
+                    });
+                }
+                // Fail fast if single test mode
+                if (!result.success && specificTestIndex !== undefined) {
+                     console.log("!!! Stopping execution due to test failure. Fix the issue and restart. !!!");
+                     process.exit(1);
+                }
+            } catch (error) {
+                 failed++;
+                 failures.push({
+                    index: i,
+                    name: config.projectName,
+                    error: error.message
+                });
+            }
+        });
+    });
+
+    await Promise.all(testPromises.filter(p => p !== null));
 
     log('\n=== Summary ===', ANSI_CYAN);
     log(`Total: ${passed + failed}`);
     log(`Passed: ${passed}`, ANSI_GREEN);
     log(`Failed: ${failed}`, ANSI_RED);
 
-    if (failed > 0) process.exit(1);
+    if (failed > 0) {
+        log('\n=== Failed Tests ===', ANSI_RED);
+        failures.forEach(f => {
+            log(`[${f.index + 1}] ${f.name} - Reason: ${f.error || 'Test failed'}`, ANSI_RED);
+        });
+        process.exit(1);
+    }
 }

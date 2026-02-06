@@ -3,12 +3,21 @@ const cors = require('cors');
 require('dotenv').config();
 <% if (communication === 'REST APIs' || (viewEngine && viewEngine !== 'None')) { %>const apiRoutes = require('./routes/api');<% } %>
 <% if (communication === 'Kafka') { %>const { connectKafka, sendMessage } = require('./services/kafkaService');<% } %>
+<% if (communication === 'REST APIs') { %>
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpecs = require('./config/swagger');
+<% } %>
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const logger = require('./utils/logger');
 
 app.use(cors());
 app.use(express.json());
+
+<% if (communication === 'REST APIs') { %>
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+<% } %>
 
 <% if (viewEngine === 'EJS' || viewEngine === 'Pug') { %>
 // View Engine Setup
@@ -43,27 +52,27 @@ const syncDatabase = async () => {
         try {
             const sequelize = require('./config/database');
             await sequelize.sync();
-            console.log('Database synced');
+            logger.info('Database synced');
             
             // Start Server after DB is ready
             app.listen(PORT, async () => {
-              console.log(`Server running on port ${PORT}`);
+              logger.info(`Server running on port ${PORT}`);
               <% if (communication === 'Kafka') { %>
               try {
                 await connectKafka();
-                console.log('Kafka connected');
+                logger.info('Kafka connected');
                 // Demo: Send a test message
                 await sendMessage('test-topic', 'Hello Kafka from MVC JS!');
               } catch (err) {
-                console.error('Failed to connect to Kafka:', err);
+                logger.error('Failed to connect to Kafka:', err);
               }
               <% } -%>
             });
             break;
         } catch (err) {
-            console.error('Database sync failed:', err);
+            logger.error('Database sync failed:', err);
             retries -= 1;
-            console.log(`Retries left: ${retries}. Waiting 5s...`);
+            logger.info(`Retries left: ${retries}. Waiting 5s...`);
             await new Promise(res => setTimeout(res, 5000));
         }
     }

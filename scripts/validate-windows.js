@@ -7,5 +7,6 @@ const specificIndex = args.length > 0 ? parseInt(args[0]) : undefined;
 // Run Full Suite (Docker Enabled)
 runValidation({ 
     skipDocker: false, 
-    specificTestIndex: specificIndex 
+    specificTestIndex: specificIndex,
+    concurrency: 2
 });

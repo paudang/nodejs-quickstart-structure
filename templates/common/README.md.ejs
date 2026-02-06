@@ -58,7 +58,16 @@ The project follows **<%= architecture %>** principles.
 Microservices communication handled via **Kafka**.
 <% } else { -%>
 API is exposed via **REST**.
+A Swagger UI for API documentation is available at:
+- **URL**: `http://localhost:3000/api-docs` (Dynamic based on PORT)
 <% } -%>
+
+## 📝 Logging
+This project uses **Winston** for structured logging.
+- **Development**: Logs are printed to the console.
+- **Production**: Logs are saved to files:
+  - `error.log`: Only error level logs.
+  - `combined.log`: All logs.
 
 ## 🐳 Docker Deployment
 This project uses a **Multi-Stage Dockerfile** for optimized production images.

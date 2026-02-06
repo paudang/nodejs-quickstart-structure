@@ -4,7 +4,12 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
+import logger from './utils/logger';
 <% if (communication === 'REST APIs' || (viewEngine && viewEngine !== 'None')) { %>import apiRoutes from './routes/api';<% } %>
+<% if (communication === 'REST APIs') { %>
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpecs from './config/swagger';
+<% } %>
 <% if (communication === 'Kafka') { %>import { KafkaService } from './services/kafkaService';<% } %>
 
 dotenv.config();
@@ -20,6 +25,10 @@ const limiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 100 });
 app.use(limiter);
 
 app.use(express.json());
+
+<% if (communication === 'REST APIs') { %>
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+<% } %>
 
 <% if (viewEngine === 'EJS' || viewEngine === 'Pug') { %>
 // View Engine Setup
@@ -54,28 +63,28 @@ const syncDatabase = async () => {
         try {
             const sequelize = (await import('./config/database')).default;
             await sequelize.sync();
-            console.log('Database synced');
+            logger.info('Database synced');
             
             // Start Server after DB is ready
             app.listen(port, async () => {
-              console.log(`Server running on port ${port}`);
+              logger.info(`Server running on port ${port}`);
               <% if (communication === 'Kafka') { %>
               try {
                 const kafkaService = new KafkaService();
                 await kafkaService.connect();
-                console.log('Kafka connected');
+                logger.info('Kafka connected');
                 // Demo: Send a test message
                 await kafkaService.sendMessage('test-topic', 'Hello Kafka from MVC TS!');
               } catch (err) {
-                console.error('Failed to connect to Kafka:', err);
+                logger.error('Failed to connect to Kafka:', err);
               }
               <% } -%>
             });
             break;
         } catch (err) {
-            console.error('Database sync failed:', err);
+            logger.error('Database sync failed:', err);
             retries -= 1;
-            console.log(`Retries left: ${retries}. Waiting 5s...`);
+            logger.info(`Retries left: ${retries}. Waiting 5s...`);
             await new Promise(res => setTimeout(res, 5000));
         }
     }
