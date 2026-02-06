@@ -86,6 +86,8 @@ The generated project will include:
 cd <your-project-name>
 
 # Start infrastructure (DB, etc.)
+npm install
+
 docker-compose up
 ```
 
