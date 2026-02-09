@@ -16,7 +16,7 @@ npm-debug.log*
 
 # Configs
 .env
-.prettierrc
+
 .eslintrc.json
 jest.config.js
 Dockerfile.validation
