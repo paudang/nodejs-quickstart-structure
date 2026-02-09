@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { UserRepository } from '../../infrastructure/repositories/UserRepository';
-import CreateUser from '../../usecases/createUser';
-import GetAllUsers from '../../usecases/getAllUsers';
-import { HTTP_STATUS } from '../../utils/httpCodes';
-import logger from '../../infrastructure/log/logger';
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+import CreateUser from '@/usecases/createUser';
+import GetAllUsers from '@/usecases/getAllUsers';
+import { HTTP_STATUS } from '@/utils/httpCodes';
+import logger from '@/infrastructure/log/logger';
 
 export class UserController {
     private createUserUseCase: CreateUser;

@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-<% if (architecture === 'MVC') { %>import sequelize from '../config/database';<% } else { %>import sequelize from '../database';<% } %>
+<% if (architecture === 'MVC') { %>import sequelize from '@/config/database';<% } else { %>import sequelize from '@/infrastructure/database/database';<% } %>
 
 class User extends Model {
   public id!: number;

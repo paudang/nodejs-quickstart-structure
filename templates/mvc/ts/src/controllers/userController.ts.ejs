@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import User from '../models/User';
-import { HTTP_STATUS } from '../utils/httpCodes';
-import logger from '../utils/logger';
+import User from '@/models/User';
+import { HTTP_STATUS } from '@/utils/httpCodes';
+import logger from '@/utils/logger';
 
 export class UserController {
     async getUsers(req: Request, res: Response) {

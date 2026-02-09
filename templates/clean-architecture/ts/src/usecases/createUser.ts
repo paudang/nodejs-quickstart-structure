@@ -1,6 +1,6 @@
-import { User } from '../domain/user';
+import { User } from '@/domain/user';
 
-import { UserRepository } from '../infrastructure/repositories/UserRepository';
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 
 export default class CreateUser {
     constructor(private userRepository: UserRepository) {}

@@ -3,7 +3,10 @@ module.exports = {
   coverageDirectory: 'coverage',
   collectCoverageFrom: ['src/**/*.{js,ts}'],
   testMatch: ['**/*.test.ts', '**/*.test.js'],
-  <% if (language === 'TypeScript') { %>preset: 'ts-jest',<% } %>
+  <% if (language === 'TypeScript') { %>preset: 'ts-jest',
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },<% } %>
   coveragePathIgnorePatterns: [
     "/node_modules/",
     "/dist/"

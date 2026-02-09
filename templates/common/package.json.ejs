@@ -5,8 +5,8 @@
   "main": "<% if (language === 'TypeScript') { %>dist/index.js<% } else { %>src/index.js<% } %>",
   "scripts": {
     "start": "<% if (language === 'TypeScript') { %>node dist/index.js<% } else { %>node src/index.js<% } %>",
-    "dev": "<% if (language === 'TypeScript') { %>nodemon --exec ts-node src/index.ts<% } else { %>nodemon src/index.js<% } %>"<% if (language === 'TypeScript') { %>,
-    "build": "rimraf dist && tsc<% if (viewEngine && viewEngine !== 'None') { %> && copyfiles -u 1 \"src/views/**/*\" dist/<% } %>"<% } %>,
+    "dev": "<% if (language === 'TypeScript') { %>nodemon --exec ts-node -r tsconfig-paths/register src/index.ts<% } else { %>nodemon src/index.js<% } %>"<% if (language === 'TypeScript') { %>,
+    "build": "rimraf dist && tsc && tsc-alias<% if (viewEngine && viewEngine !== 'None') { %> && copyfiles -u 1 \"src/views/**/*\" dist/<% } %>"<% } %>,
     "lint": "eslint . --ext .ts,.js",
     "lint:fix": "eslint . --ext .ts,.js --fix",
     "format": "prettier --write .",
@@ -65,6 +65,8 @@
     "ts-jest": "^29.1.1",
     "@types/jest": "^29.5.11",
     "supertest": "^6.3.3",
+    "tsconfig-paths": "^4.2.0",
+    "tsc-alias": "^1.8.8",
     "@types/supertest": "^6.0.2"<% } else { %>,
     "jest": "^29.7.0",
     "supertest": "^6.3.3"<% } %>

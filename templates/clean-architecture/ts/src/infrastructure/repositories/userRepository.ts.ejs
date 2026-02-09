@@ -1,5 +1,5 @@
-import { User as UserEntity } from '../../domain/user';
-import UserModel from '../database/models/User';
+import { User as UserEntity } from '@/domain/user';
+import UserModel from '@/infrastructure/database/models/User';
 
 export class UserRepository {
     async save(user: UserEntity): Promise<UserEntity> {

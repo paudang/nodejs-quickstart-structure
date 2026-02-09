@@ -1,4 +1,4 @@
-import { UserRepository } from '../infrastructure/repositories/UserRepository';
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 
 export default class GetAllUsers {
     constructor(private userRepository: UserRepository) {}

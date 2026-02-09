@@ -4,12 +4,12 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
-import logger from './infrastructure/log/logger';
-<% if (communication === 'REST APIs') { %>import userRoutes from './interfaces/routes/userRoutes';<% } -%>
+import logger from '@/infrastructure/log/logger';
+<% if (communication === 'REST APIs') { %>import userRoutes from '@/interfaces/routes/userRoutes';<% } -%>
 <% if (communication === 'REST APIs') { -%>
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpecs from './config/swagger';<% } -%>
-<% if (communication === 'Kafka') { %>import { KafkaService } from './infrastructure/messaging/kafkaClient';<% } -%>
+import swaggerSpecs from '@/config/swagger';<% } -%>
+<% if (communication === 'Kafka') { %>import { KafkaService } from '@/infrastructure/messaging/kafkaClient';<% } -%>
 
 dotenv.config();
 
@@ -42,7 +42,7 @@ const syncDatabase = async () => {
     let retries = 30;
     while (retries) {
         try {
-            const sequelize = (await import('./infrastructure/database/database')).default;
+            const sequelize = (await import('@/infrastructure/database/database')).default;
             await sequelize.sync();
             logger.info('Database synced');
             
