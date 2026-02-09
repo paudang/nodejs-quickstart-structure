@@ -40,6 +40,7 @@ COPY --from=builder /app/src ./src
 # Copy other necessary files (like views if MVC)
 <% if (viewEngine && viewEngine !== 'None') { %>
 COPY --from=builder /app/src/views ./dist/views
+<% if (viewEngine && viewEngine !== 'None') { %>COPY --from=builder /app/public ./public<% } %>
 <% } %>
 
 EXPOSE 3000
