@@ -3,10 +3,10 @@
 /temp_test_workspace/
 /tests/
 .git/
-.github/
-.vscode/
-.gemini/
-.idea/
+/.github/
+/.vscode/
+/.gemini/
+/.idea/
 .DS_Store
 
 # Logs
