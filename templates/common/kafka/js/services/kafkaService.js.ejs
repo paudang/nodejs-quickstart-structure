@@ -1,4 +1,5 @@
 const { kafka } = require('../config/kafka');
+const logger = require('<%= loggerPath %>');
 
 const producer = kafka.producer();
 const consumer = kafka.consumer({ groupId: 'test-group' });
@@ -10,7 +11,7 @@ const connectKafka = async () => {
 
     await consumer.run({
         eachMessage: async ({ topic, partition, message }) => {
-            console.log({
+            logger.info({
                 value: message.value.toString(),
             });
         },

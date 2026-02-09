@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const logger = require('../log/logger');
 <% if (communication === 'REST APIs') { %>const apiRoutes = require('../../interfaces/routes/api');<% } -%>
 <% if (communication === 'REST APIs') { -%>
 const swaggerUi = require('swagger-ui-express');
@@ -26,7 +27,7 @@ const startServer = (port) => {
     });
 
     app.listen(port, () => {
-        console.log(`Server running on port ${port}`);
+        logger.info(`Server running on port ${port}`);
     });
 };
 

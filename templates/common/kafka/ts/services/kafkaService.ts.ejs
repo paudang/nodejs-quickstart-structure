@@ -1,5 +1,6 @@
 import { kafka } from '../config/kafka';
 import { EachMessagePayload, Producer, Consumer } from 'kafkajs';
+import logger from '<%= loggerPath %>';
 
 export class KafkaService {
     private producer: Producer;
@@ -17,7 +18,7 @@ export class KafkaService {
 
         await this.consumer.run({
             eachMessage: async ({ topic, partition, message }: EachMessagePayload) => {
-                console.log({
+                logger.info({
                     value: message.value?.toString(),
                 });
             },

@@ -3,6 +3,7 @@ import { UserRepository } from '../../infrastructure/repositories/UserRepository
 import CreateUser from '../../usecases/createUser';
 import GetAllUsers from '../../usecases/getAllUsers';
 import { HTTP_STATUS } from '../../utils/httpCodes';
+import logger from '../../infrastructure/log/logger';
 
 export class UserController {
     private createUserUseCase: CreateUser;
@@ -20,7 +21,7 @@ export class UserController {
             const user = await this.createUserUseCase.execute(name, email);
             res.status(HTTP_STATUS.CREATED).json(user);
         } catch (error) {
-            console.error('UserController Error:', error);
+            logger.error('UserController Error:', error);
             if (error instanceof Error) {
                 res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
             } else {
@@ -34,7 +35,7 @@ export class UserController {
             const users = await this.getAllUsersUseCase.execute();
             res.json(users);
         } catch (error) {
-            console.error('UserController Error:', error);
+            logger.error('UserController Error:', error);
             if (error instanceof Error) {
                 res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
             } else {
