@@ -1,11 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-<% if (communication === 'REST APIs') { %>const apiRoutes = require('../../interfaces/routes/api');<% } %>
-<% if (communication === 'REST APIs') { %>
+<% if (communication === 'REST APIs') { %>const apiRoutes = require('../../interfaces/routes/api');<% } -%>
+<% if (communication === 'REST APIs') { -%>
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./swagger');
-<% } %>
+<% } -%>
 
 const startServer = (port) => {
     const app = express();
@@ -13,11 +13,13 @@ const startServer = (port) => {
     app.use(cors());
     app.use(express.json());
 
-    <% if (communication === 'REST APIs') { %>app.use('/api', apiRoutes);<% } %>
+    <% if (communication === 'REST APIs') { -%>
+    app.use('/api', apiRoutes);
+    <% } -%>
 
-    <% if (communication === 'REST APIs') { %>
+    <% if (communication === 'REST APIs') { -%>
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
-    <% } %>
+    <% } -%>
 
     app.get('/health', (req, res) => {
         res.json({ status: 'UP' });

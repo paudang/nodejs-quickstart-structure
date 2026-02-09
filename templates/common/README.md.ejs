@@ -16,6 +16,23 @@ This project comes pre-configured with industry-standard tooling for **Code Qual
 -   **Testing**: Jest (Unit & Integration).
 -   **DevOps**: Multi-stage Docker build, CI/CD ready.
 
+## 🔄 CI/CD Pipeline
+<% if (ciProvider === 'GitHub Actions') { -%>
+This project includes a **GitHub Actions** workflow located in `.github/workflows/ci.yml`.
+It automatically runs:
+-   Linting
+-   Tests
+-   Builds
+<% } else if (ciProvider === 'Jenkins') { -%>
+This project includes a **Jenkinsfile** for comprehensive CI/CD.
+Pipeline stages:
+-   Install Dependencies
+-   Lint
+-   Test
+<% } else { -%>
+CI/CD is not currently configured, but the project is ready for integration.
+<% } -%>
+
 ## 🛠️ Getting Started
 
 ### 1. Prerequisites

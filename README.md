@@ -22,7 +22,7 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 -   **🔍 Code Quality**: Pre-configured `Eslint` and `Prettier` for consistent coding standards.
 -   **🛡️ Security**: Built-in `Helmet`, `HPP`, `CORS`, and Rate-Limiting middleware.
 -   **🧪 Testing Strategy**: Integrated `Jest` and `Supertest` setup for Unit and Integration testing.
--   **🔄 CI/CD Support**: Optional **GitHub Actions** workflow integration.
+-   **🔄 CI/CD Support**: Choice between **GitHub Actions** and **Jenkins**.
 -   **⚓ Git Hooks**: `Husky` and `Lint-Staged` to ensure no bad code is ever committed.
 -   **🐳 DevOps**: Highly optimized **Multi-Stage Dockerfile** for small, secure production images.
 
@@ -70,7 +70,7 @@ The CLI will guide you through the following steps:
 4.  **Database**: `MySQL` or `PostgreSQL`.
 5.  **Database Name**: The name of the initial database.
 6.  **Communication**: `REST APIs` (default) or `Kafka`.
-7.  **CI/CD**: `Include GitHub Actions Workflow` (Optional).
+7.  **CI/CD**: `GitHub Actions`, `Jenkins`, or `None`.
 
 ## Generated Project Structure
 

@@ -5,11 +5,11 @@ import hpp from 'hpp';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import logger from './infrastructure/log/logger';
-<% if (communication === 'REST APIs') { %>import userRoutes from './interfaces/routes/userRoutes';<% } %>
-<% if (communication === 'REST APIs') { %>
+<% if (communication === 'REST APIs') { %>import userRoutes from './interfaces/routes/userRoutes';<% } -%>
+<% if (communication === 'REST APIs') { -%>
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpecs from './config/swagger';<% } %>
-<% if (communication === 'Kafka') { %>import { KafkaService } from './infrastructure/messaging/kafkaClient';<% } %>
+import swaggerSpecs from './config/swagger';<% } -%>
+<% if (communication === 'Kafka') { %>import { KafkaService } from './infrastructure/messaging/kafkaClient';<% } -%>
 
 dotenv.config();
 
@@ -26,10 +26,12 @@ app.use(limiter);
 app.use(express.json());
 
 <% if (communication === 'REST APIs') { -%>
-app.use('/api/users', userRoutes);<% } -%>
+app.use('/api/users', userRoutes);
+<% } -%>
 
-<% if (communication === 'REST APIs') { %>
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));<% } %>
+<% if (communication === 'REST APIs') { -%>
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+<% } -%>
 
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'UP' });
@@ -46,7 +48,7 @@ const syncDatabase = async () => {
             
             app.listen(port, async () => {
               logger.info(`Server running on port ${port}`);
-              <% if (communication === 'Kafka') { %>
+<%_ if (communication === 'Kafka') { -%>
               try {
                 const kafkaService = new KafkaService();
                 await kafkaService.connect();
@@ -56,7 +58,7 @@ const syncDatabase = async () => {
               } catch (err) {
                 logger.error('Failed to connect to Kafka:', err);
               }
-              <% } -%>
+<%_ } -%>
             });
             break;
         } catch (err) {

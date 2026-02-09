@@ -5,11 +5,11 @@ import hpp from 'hpp';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import logger from './utils/logger';
-<% if (communication === 'REST APIs' || (viewEngine && viewEngine !== 'None')) { %>import apiRoutes from './routes/api';<% } %>
+<% if (communication === 'REST APIs' || (viewEngine && viewEngine !== 'None')) { %>import apiRoutes from './routes/api';<% } -%>
 <% if (communication === 'REST APIs') { %>
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpecs from './config/swagger';<% } %>
-<% if (communication === 'Kafka') { %>import { KafkaService } from './services/kafkaService';<% } %>
+import swaggerSpecs from './config/swagger';<% } -%>
+<% if (communication === 'Kafka') { %>import { KafkaService } from './services/kafkaService';<% } -%>
 
 dotenv.config();
 
@@ -25,18 +25,21 @@ app.use(limiter);
 
 app.use(express.json());
 
-<% if (communication === 'REST APIs') { %>
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));<% } %>
+<% if (communication === 'REST APIs') { -%>
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+<% } -%>
 
-<% if (viewEngine === 'EJS' || viewEngine === 'Pug') { %>
+<% if (viewEngine === 'EJS' || viewEngine === 'Pug') { -%>
 // View Engine Setup
 import path from 'path';
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', '<%= viewEngine.toLowerCase() %>');<% } -%>
+app.set('view engine', '<%= viewEngine.toLowerCase() %>');
+<% } -%>
 
 // Routes
 <% if (communication === 'REST APIs' || (viewEngine && viewEngine !== 'None')) { -%>
-app.use('/api', apiRoutes);<% } -%>
+app.use('/api', apiRoutes);
+<% } -%>
 <% if (viewEngine && viewEngine !== 'None') { -%>
 app.get('/', (req: Request, res: Response) => {
   res.render('index', { 
@@ -64,7 +67,7 @@ const syncDatabase = async () => {
             // Start Server after DB is ready
             app.listen(port, async () => {
               logger.info(`Server running on port ${port}`);
-              <% if (communication === 'Kafka') { %>
+<%_ if (communication === 'Kafka') { -%>
               try {
                 const kafkaService = new KafkaService();
                 await kafkaService.connect();
@@ -74,7 +77,7 @@ const syncDatabase = async () => {
               } catch (err) {
                 logger.error('Failed to connect to Kafka:', err);
               }
-              <% } -%>
+<%_ } -%>
             });
             break;
         } catch (err) {
