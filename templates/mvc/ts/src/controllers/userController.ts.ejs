@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/User';
 import { HTTP_STATUS } from '../utils/httpCodes';
+import logger from '../utils/logger';
 
 export class UserController {
     async getUsers(req: Request, res: Response) {
@@ -8,6 +9,7 @@ export class UserController {
             const users = await User.findAll();
             res.json(users);
         } catch (error) {
+            logger.error('Error fetching users:', error);
             if (error instanceof Error) {
                 res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
             } else {
@@ -22,6 +24,7 @@ export class UserController {
             const user = await User.create({ name, email });
             res.status(HTTP_STATUS.CREATED).json(user);
         } catch (error) {
+            logger.error('Error creating user:', error);
             if (error instanceof Error) {
                 res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
             } else {

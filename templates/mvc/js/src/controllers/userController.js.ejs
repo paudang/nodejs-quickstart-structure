@@ -1,12 +1,14 @@
 const User = require('../models/User');
 const HTTP_STATUS = require('../utils/httpCodes');
+const logger = require('../utils/logger');
 
 const getUsers = async (req, res) => {
   try {
     const users = await User.findAll();
     res.json(users);
   } catch (error) {
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    logger.error('Error fetching users:', error);
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
   }
 };
 

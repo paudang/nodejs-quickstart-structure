@@ -2,6 +2,7 @@ const CreateUser = require('../../usecases/CreateUser');
 const GetAllUsers = require('../../usecases/GetAllUsers');
 const UserRepository = require('../../infrastructure/repositories/UserRepository');
 const HTTP_STATUS = require('../../utils/httpCodes');
+const logger = require('../../infrastructure/log/logger');
 
 class UserController {
     constructor() {
@@ -13,7 +14,10 @@ class UserController {
     getUsers(req, res) {
         this.getAllUsersUseCase.execute()
             .then(users => res.json(users))
-            .catch(err => res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: err.message }));
+            .catch(err => {
+                logger.error('Error getting users:', err);
+                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: err.message });
+            });
     }
 
     async createUser(req, res) {
@@ -22,6 +26,7 @@ class UserController {
             const user = await this.createUserUseCase.execute(name, email);
             res.status(HTTP_STATUS.CREATED).json(user);
         } catch (error) {
+            logger.error('Error creating user:', error);
             res.status(HTTP_STATUS.BAD_REQUEST).json({ error: error.message });
         }
     }

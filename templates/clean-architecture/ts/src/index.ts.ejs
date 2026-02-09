@@ -61,10 +61,10 @@ const syncDatabase = async () => {
 <%_ } -%>
             });
             break;
-        } catch (err) {
-            logger.error('Database sync failed:', err);
+        } catch (error) {
+            logger.error('Error syncing database:', error);
             retries -= 1;
-            logger.info(`Retries left: ${retries}. Waiting 5s...`);
+            logger.info(`Retries left: ${retries}`);
             await new Promise(res => setTimeout(res, 5000));
         }
     }
