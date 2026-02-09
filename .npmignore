@@ -1,7 +1,7 @@
 # Dev & Test
-scripts/
-temp_test_workspace/
-tests/
+/scripts/
+/temp_test_workspace/
+/tests/
 .git/
 .github/
 .vscode/
