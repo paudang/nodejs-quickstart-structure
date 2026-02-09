@@ -32,12 +32,11 @@ program
     .option('-d, --database <database>', 'Database (MySQL, PostgreSQL)')
     .option('--db-name <name>', 'Database name')
     .option('-c, --communication <communication>', 'Communication (REST APIs, Kafka)')
-    .option('--include-ci', 'Include GitHub Actions CI Workflow')
+    .option('--ci-provider <provider>', 'CI/CD Provider (None, GitHub Actions, Jenkins)')
     .action(async (options) => {
         // Fix for Commander camelCase conversion
-        if (options.includeCi) {
-            options.includeCI = options.includeCi;
-            delete options.includeCi;
+        if (options.ciProvider) {
+            options.ciProvider = options.ciProvider;
         }
 
         console.log(chalk.blue('Welcome to the Node.js Quickstart Generator!'));
@@ -58,7 +57,6 @@ program
             process.exit(1);
         }
     });
-
 program.parse(process.argv);
 
 if (!process.argv.slice(2).length) {

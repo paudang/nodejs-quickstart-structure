@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    environment {
+        CI = 'true'
+    }
+
+    stages {
+        stage('Install Dependencies') {
+            steps {
+                // Use npm ci for clean install if package-lock.json exists, else npm install
+                sh 'if [ -f package-lock.json ]; then npm ci; else npm install; fi'
+            }
+        }
+
+        stage('Lint') {
+            steps {
+                sh 'npm run lint'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'npm test'
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up workspace
+            cleanWs()
+        }
+    }
+}

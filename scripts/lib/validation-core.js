@@ -203,7 +203,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             '--database', config.database,
             '--db-name', config.dbName,
             '--communication', `"${config.communication}"`,
-            '--include-ci' 
+            '--ci-provider', '"GitHub Actions"' 
         ];
 
         if (config.architecture === 'MVC') {
