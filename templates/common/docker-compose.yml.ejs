@@ -18,7 +18,7 @@ services:
       - DB_PASSWORD=root
       - DB_NAME=<%= dbName %>
 <% } %><% if (database === 'PostgreSQL') { %>      - DB_USER=postgres
-      - DB_PASSWORD=postgres
+      - DB_PASSWORD=root
       - DB_NAME=<%= dbName %>
 <% } -%>
 <% } else { %>
@@ -29,30 +29,40 @@ services:
       - DB_PASSWORD=root
       - DB_NAME=<%= dbName %>
 <% } %><% if (database === 'PostgreSQL') { %>      - DB_USER=postgres
-      - DB_PASSWORD=postgres
+      - DB_PASSWORD=root
       - DB_NAME=<%= dbName %>
 <% } -%>
 <% } %>
   db:
 <% if (database === 'MySQL') { %>    image: mysql:8.0
-    command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: <%= dbName %>
     ports:
       - "${DB_PORT:-3306}:3306"
-<% } %><% if (database === 'PostgreSQL') { %>    image: postgres:15
+    volumes:
+      - ./flyway/sql:/docker-entrypoint-initdb.d
+<% } else if (database === 'PostgreSQL') { %>    image: postgres:15
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: root
       POSTGRES_DB: <%= dbName %>
     ports:
       - "${DB_PORT:-5432}:5432"
-<% } %>    volumes:
-      - <%= database.toLowerCase() %>_data:/var/lib/<% if (database === 'MySQL') { %>mysql<% } else { %>postgresql/data<% } %>
-
+    volumes:
+      - ./flyway/sql:/docker-entrypoint-initdb.d
+<% } else if (database === 'MongoDB') { %>    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: <%= dbName %>
+    ports:
+      - "${DB_PORT:-27017}:27017"
+    volumes:
+      - mongodb_data:/data/db
+<% } %>
+<% if (database !== 'MongoDB') { %>
   flyway:
     image: flyway/flyway
     command: -connectRetries=60 migrate
@@ -64,9 +74,10 @@ services:
       FLYWAY_PASSWORD: root
 <% } %><% if (database === 'PostgreSQL') { %>      FLYWAY_URL: jdbc:postgresql://db:5432/<%= dbName %>
       FLYWAY_USER: postgres
-      FLYWAY_PASSWORD: postgres
+      FLYWAY_PASSWORD: root
 <% } %>    depends_on:
       - db
+<% } %>
 <% if (communication === 'Kafka') { %>  zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     environment:

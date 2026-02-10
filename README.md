@@ -9,10 +9,10 @@ A powerful CLI tool to scaffold production-ready Node.js microservices with buil
 - **Interactive CLI**: Easy-to-use prompts to configure your project.
 - **Multiple Architectures**: Supports both **MVC** (Model-View-Controller) and **Clean Architecture**.
 - **Language Support**: Choose between **JavaScript** and **TypeScript**.
-- **Database Integration**: Pre-configured setup for **MySQL** or **PostgreSQL**.
+- **Database Integration**: Pre-configured setup for **MySQL**, **PostgreSQL**, or **MongoDB**.
 - **Microservices Ready**: Optional **Kafka** integration for event-driven communication.
 - **Dockerized**: Automatically generates `docker-compose.yml` for DB, Kafka, and Zookeeper.
-- **Database Migrations**: Integrated **Flyway** support for SQL migrations.
+- **Database Migrations/Schemas**: Integrated **Flyway** for SQL migrations or **Mongoose** schemas for MongoDB.
 - **Professional Standards**: Generated projects come with highly professional, industry-standard tooling.
 
 ## 🏆 Professional Standards (New)
@@ -67,7 +67,7 @@ The CLI will guide you through the following steps:
 1.  **Project Name**: The name of the folder to create.
 2.  **Language**: `JavaScript` or `TypeScript`.
 3.  **Architecture**: `MVC` or `Clean Architecture`.
-4.  **Database**: `MySQL` or `PostgreSQL`.
+4.  **Database**: `MySQL`, `PostgreSQL`, or `MongoDB`.
 5.  **Database Name**: The name of the initial database.
 6.  **Communication**: `REST APIs` (default) or `Kafka`.
 7.  **CI/CD**: `GitHub Actions`, `Jenkins`, or `None`.
@@ -77,7 +77,7 @@ The CLI will guide you through the following steps:
 The generated project will include:
 
 -   `src/`: Source code (controllers, routes, services/use-cases).
--   `flyway/sql/`: SQL migration scripts.
+-   `flyway/sql/`: SQL migration scripts (if SQL database selected).
 -   `docker-compose.yml`: Services configuration for DB, Flyway, and Kafka.
 -   `package.json`: Dependencies and scripts (`start`, `dev`, `build`).
 -   `tsconfig.json`: (If TypeScript is selected) Type checking configuration.

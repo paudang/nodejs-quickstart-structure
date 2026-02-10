@@ -1,0 +1,37 @@
+import mongoose from 'mongoose';
+<% if (architecture === 'MVC') { %>
+import User from '../models/User';
+<% } else { %>
+import User from './models/User';
+<% } %>
+
+const connectDB = async (): Promise<void> => {
+    const dbHost = process.env.DB_HOST || 'localhost';
+    const mongoURI = process.env.MONGO_URI || `mongodb://${dbHost}:27017/<%= dbName %>`;
+    
+    let retries = 5;
+    while (retries) {
+        try {
+            await mongoose.connect(mongoURI);
+            console.log('MongoDB Connected...');
+            
+            const adminExists = await User.findOne({ email: 'admin@example.com' });
+            if (!adminExists) {
+                await User.create({
+                    name: 'Admin User',
+                    email: 'admin@example.com'
+                });
+                console.log('Admin User seeded');
+            }
+
+            break;
+        } catch (err) {
+            console.error('MongoDB connection failed:', err);
+            retries -= 1;
+            console.log(`Retries left: ${retries}. Waiting 5s...`);
+            await new Promise(res => setTimeout(res, 5000));
+        }
+    }
+};
+
+export default connectDB;

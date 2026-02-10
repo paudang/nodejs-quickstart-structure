@@ -6,7 +6,9 @@ import logger from '@/utils/logger';
 export class UserController {
     async getUsers(req: Request, res: Response) {
         try {
-            const users = await User.findAll();
+<% if (database === 'MongoDB') { %>            const users = await User.find();
+<% } else { %>            const users = await User.findAll();
+<% } -%>
             res.json(users);
         } catch (error) {
             logger.error('Error fetching users:', error);

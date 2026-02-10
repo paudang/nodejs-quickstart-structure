@@ -60,10 +60,14 @@ const syncDatabase = async () => {
     let retries = 30;
     while (retries) {
         try {
+            <% if (database === 'MongoDB') { %>
+            const connectDB = (await import('@/config/database')).default;
+            await connectDB();
+            <% } else { %>
             const sequelize = (await import('@/config/database')).default;
             await sequelize.sync();
+            <% } %>
             logger.info('Database synced');
-            
             // Start Server after DB is ready
             app.listen(port, async () => {
               logger.info(`Server running on port ${port}`);

@@ -4,7 +4,9 @@ const logger = require('../utils/logger');
 
 const getUsers = async (req, res) => {
   try {
-    const users = await User.findAll();
+<% if (database === 'MongoDB') { %>    const users = await User.find();
+<% } else { %>    const users = await User.findAll();
+<% } -%>
     res.json(users);
   } catch (error) {
     logger.error('Error fetching users:', error);

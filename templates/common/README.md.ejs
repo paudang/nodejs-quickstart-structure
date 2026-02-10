@@ -10,7 +10,7 @@ This project comes pre-configured with industry-standard tooling for **Code Qual
 ## 🚀 Key Features
 
 -   **Architecture**: <%= architecture %> (<% if (architecture === 'Clean Architecture') { %>Domain, UseCases, Infrastructure<% } else { %>MVC Pattern<% } %>).
--   **Database**: <%= database %> with **Flyway** migrations.
+-   **Database**: <%= database %> <% if (database !== 'MongoDB') { %>with **Flyway** migrations<% } else { %>with **Mongoose** schemas<% } %>.
 -   **Security**: Helmet, CORS, Rate Limiting, HPP.
 -   **Quality**: Eslint, Prettier, Husky, Lint-Staged.
 -   **Testing**: Jest (Unit & Integration).

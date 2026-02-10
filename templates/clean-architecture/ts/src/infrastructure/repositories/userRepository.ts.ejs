@@ -4,15 +4,24 @@ import UserModel from '@/infrastructure/database/models/User';
 export class UserRepository {
     async save(user: UserEntity): Promise<UserEntity> {
         const newUser = await UserModel.create({ name: user.name, email: user.email });
-        return { id: newUser.id, name: newUser.name, email: newUser.email };
+<% if (database === 'MongoDB') { %>        return { id: newUser._id.toString(), name: newUser.name, email: newUser.email };
+<% } else { %>        return { id: newUser.id, name: newUser.name, email: newUser.email };
+<% } -%>
     }
 
     async getUsers(): Promise<UserEntity[]> {
-        const users = await UserModel.findAll();
+<% if (database === 'MongoDB') { %>        const users = await UserModel.find();
+        return users.map(user => ({
+            id: user._id.toString(),
+            name: user.name,
+            email: user.email
+        }));
+<% } else { %>        const users = await UserModel.findAll();
         return users.map(user => ({
             id: user.id,
             name: user.name,
             email: user.email
         }));
+<% } -%>
     }
 }

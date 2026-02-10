@@ -50,8 +50,13 @@ const syncDatabase = async () => {
     let retries = 30;
     while (retries) {
         try {
+            <% if (database === 'MongoDB') { %>
+            const connectDB = require('./config/database');
+            await connectDB();
+            <% } else { %>
             const sequelize = require('./config/database');
             await sequelize.sync();
+            <% } %>
             logger.info('Database synced');
             
             // Start Server after DB is ready

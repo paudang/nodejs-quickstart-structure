@@ -1,0 +1,44 @@
+const mongoose = require('mongoose');
+
+const connectDB = async () => {
+    const dbHost = process.env.DB_HOST || 'localhost';
+    const mongoURI = process.env.MONGO_URI || `mongodb://${dbHost}:27017/<%= dbName %>`;
+    
+    let retries = 5;
+    while (retries) {
+        try {
+            await mongoose.connect(mongoURI, {
+                useNewUrlParser: true,
+                useUnifiedTopology: true
+            });
+            console.log('MongoDB Connected...');
+            
+            // Seed Admin User if not exists
+            // Seed Admin User if not exists
+            
+            <% if (architecture === 'MVC') { %>
+            const User = require('../models/User');
+            <% } else { %>
+            const User = require('./models/User');
+            <% } %>
+
+            const adminExists = await User.findOne({ email: 'admin@example.com' });
+            if (!adminExists) {
+                await User.create({
+                    name: 'Admin User',
+                    email: 'admin@example.com'
+                });
+                console.log('Admin User seeded');
+            }
+
+            break;
+        } catch (err) {
+            console.error('MongoDB connection failed:', err);
+            retries -= 1;
+            console.log(`Retries left: ${retries}. Waiting 5s...`);
+            await new Promise(res => setTimeout(res, 5000));
+        }
+    }
+};
+
+module.exports = connectDB; // Export function to call in index.js

@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
+import net from 'net';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 
@@ -20,7 +21,7 @@ function log(msg, color = ANSI_RESET) {
 }
 
 const LANGUAGES = ['TypeScript', 'JavaScript'];
-const DATABASES = ['MySQL', 'PostgreSQL'];
+const DATABASES = ['MySQL', 'PostgreSQL', 'MongoDB'];
 const COMMUNICATIONS = ['REST APIs', 'Kafka']; 
 const VIEW_ENGINES_MVC = ['EJS', 'Pug', 'None'];
 
@@ -86,12 +87,44 @@ async function runCommand(command, cwd, env = {}) {
     });
 }
 
-function getRandomPort(usedPorts) {
+function isPortAvailable(port) {
+    return new Promise((resolve) => {
+        const server = net.createServer();
+        server.once('error', () => resolve(false));
+        server.once('listening', () => {
+            server.close(() => resolve(true));
+        });
+        server.listen(port);
+    });
+}
+
+async function getFreePort(usedPorts) {
     let port;
-    do {
+    let available = false;
+    let attempts = 0;
+    const MAX_ATTEMPTS = 100;
+
+    while (!available && attempts < MAX_ATTEMPTS) {
+        attempts++;
         port = Math.floor(Math.random() * (45000 - 10000) + 10000);
-    } while (usedPorts.has(port));
-    usedPorts.add(port);
+        
+        if (!usedPorts.has(port)) {
+            // Optimistically mark as used to prevent internal race conditions
+            usedPorts.add(port);
+            
+            // Check actual OS availability
+            if (await isPortAvailable(port)) {
+                available = true;
+            } else {
+                usedPorts.delete(port); // Release if actually taken
+            }
+        }
+    }
+    
+    if (!available) {
+        throw new Error("Failed to find a free port after multiple attempts");
+    }
+    
     return port;
 }
 
@@ -178,10 +211,10 @@ export async function runTest(config, index, options = {}, sharedPorts) {
     // Use shared ports or local if not provided (fallback)
     const usedPorts = sharedPorts || new Set();
     const TEST_ENV = {
-        PORT: getRandomPort(usedPorts).toString(),
-        DB_PORT: getRandomPort(usedPorts).toString(),
-        ZOOKEEPER_PORT: getRandomPort(usedPorts).toString(),
-        KAFKA_PORT: getRandomPort(usedPorts).toString()
+        PORT: (await getFreePort(usedPorts)).toString(),
+        DB_PORT: (await getFreePort(usedPorts)).toString(),
+        ZOOKEEPER_PORT: (await getFreePort(usedPorts)).toString(),
+        KAFKA_PORT: (await getFreePort(usedPorts)).toString()
     };
 
     log(`>>> Starting Test ${index + 1}/${combinations.length}: ${config.projectName}`, ANSI_CYAN);
