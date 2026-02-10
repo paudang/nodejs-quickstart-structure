@@ -15,7 +15,7 @@ const program = new Command();
 
 program
     .name('nodejs-quickstart')
-    .description('🚀 CLI to scaffold production-ready Node.js microservices.\n\nGenerates projects with:\n- MVC or Clean Architecture\n- REST or Kafka\n- MySQL or PostgreSQL\n- Docker & Flyway support')
+    .description('🚀 CLI to scaffold production-ready Node.js microservices.\n\nGenerates projects with:\n- MVC or Clean Architecture\n- REST or Kafka\n- MySQL, PostgreSQL, or MongoDB\n- Docker, Flyway & Mongoose support')
     .version(pkg.version, '-v, --version', 'Output the current version')
     .addHelpText('after', `
 \n${chalk.yellow('Example:')}
