@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 <% if (architecture === 'MVC') { %>
-import User from '../models/User';
+import logger from '@/utils/logger';
 <% } else { %>
-import User from './models/User';
+import logger from '@/infrastructure/log/logger';
 <% } %>
 
 const connectDB = async (): Promise<void> => {
@@ -13,22 +13,12 @@ const connectDB = async (): Promise<void> => {
     while (retries) {
         try {
             await mongoose.connect(mongoURI);
-            console.log('MongoDB Connected...');
-            
-            const adminExists = await User.findOne({ email: 'admin@example.com' });
-            if (!adminExists) {
-                await User.create({
-                    name: 'Admin User',
-                    email: 'admin@example.com'
-                });
-                console.log('Admin User seeded');
-            }
-
+            logger.info('MongoDB Connected...');
             break;
         } catch (err) {
-            console.error('MongoDB connection failed:', err);
+            logger.error('MongoDB connection failed:', err);
             retries -= 1;
-            console.log(`Retries left: ${retries}. Waiting 5s...`);
+            logger.info(`Retries left: ${retries}. Waiting 5s...`);
             await new Promise(res => setTimeout(res, 5000));
         }
     }

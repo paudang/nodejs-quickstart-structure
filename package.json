@@ -1,6 +1,6 @@
 {
   "name": "nodejs-quickstart-structure",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "type": "module",
   "description": "A CLI to scaffold Node.js microservices with MVC or Clean Architecture",
   "main": "bin/index.js",
@@ -11,7 +11,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:e2e": "npm run test:e2e:windows",
     "test:e2e:windows": "node scripts/validate-windows.js",
-    "test:e2e:linux": "node scripts/validate-linux.js"
+    "test:e2e:linux": "node scripts/validate-linux.js",
+    "test:verify:mongo": "node scripts/verify-migration.js"
   },
   "keywords": [
     "nodejs",
@@ -20,7 +21,7 @@
     "mvc",
     "clean-architecture"
   ],
-  "author": "Pau Dang <phucdangb1400718@gmail.com>",
+  "author": "Pau Dang <[EMAIL_ADDRESS]>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/paudang/nodejs-quickstart-structure.git"

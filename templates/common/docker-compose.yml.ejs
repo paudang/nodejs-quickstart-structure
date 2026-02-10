@@ -61,6 +61,18 @@ services:
       - "${DB_PORT:-27017}:27017"
     volumes:
       - mongodb_data:/data/db
+
+  mongo-migrate:
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: sh -c "npm install migrate-mongo && npm run migrate"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=<%= dbName %>
+    depends_on:
+      - db
 <% } %>
 <% if (database !== 'MongoDB') { %>
   flyway:
