@@ -5,6 +5,7 @@ import hpp from 'hpp';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import logger from '@/infrastructure/log/logger';
+import morgan from 'morgan';
 <% if (communication === 'REST APIs') { %>import userRoutes from '@/interfaces/routes/userRoutes';<% } -%>
 <% if (communication === 'REST APIs') { -%>
 import swaggerUi from 'swagger-ui-express';
@@ -24,6 +25,7 @@ const limiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 100 });
 app.use(limiter);
 
 app.use(express.json());
+app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
 
 <% if (communication === 'REST APIs') { -%>
 app.use('/api/users', userRoutes);

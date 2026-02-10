@@ -45,6 +45,9 @@ COPY --from=builder /app/src/views ./dist/views
 
 EXPOSE 3000
 
+# Create logs directory and give permissions to node user
+RUN mkdir -p logs && chown -R node:node logs
+
 USER node
 
 CMD ["npm", "start"]

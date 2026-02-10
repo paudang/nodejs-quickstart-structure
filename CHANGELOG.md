@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-02-10
+
+### Added
+- Implemented structured logging with `winston-daily-rotate-file` (14-day retention, daily rotation).
+- Added HTTP request logging using `morgan` middleware.
+
+### Fixed
+- Resolved `EACCES` permission errors for log directories in Docker.
+
 ## [1.4.5] - 2026-02-10
 
 ### Changed

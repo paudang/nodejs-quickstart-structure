@@ -11,9 +11,11 @@ const swaggerSpecs = require('./config/swagger');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const logger = require('./utils/logger');
+const morgan = require('morgan');
 
 app.use(cors());
 app.use(express.json());
+app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
 
 <% if (communication === 'REST APIs') { -%>
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));

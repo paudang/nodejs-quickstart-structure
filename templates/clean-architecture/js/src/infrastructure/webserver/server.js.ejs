@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const logger = require('../log/logger');
+const morgan = require('morgan');
 <% if (communication === 'REST APIs') { %>const apiRoutes = require('../../interfaces/routes/api');<% } -%>
 <% if (communication === 'REST APIs') { -%>
 const swaggerUi = require('swagger-ui-express');
@@ -13,6 +14,7 @@ const startServer = (port) => {
 
     app.use(cors());
     app.use(express.json());
+    app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
 
     <% if (communication === 'REST APIs') { -%>
     app.use('/api', apiRoutes);
