@@ -23,7 +23,7 @@ The generator prompts the user for the following configurations. These determine
 | **Language** | `JavaScript`, `TypeScript` | `TypeScript` | The programming language to use. |
 | **Architecture** | `MVC`, `Clean Architecture` | `MVC` | The architectural pattern. |
 | **View Engine** | `None`, `EJS`, `Pug` | `None` | (MVC Only) Template engine for server-side rendering. |
-| **Database** | `MySQL`, `PostgreSQL`, `MongoDB` | `MySQL` | The primary database. |
+| **Database** | `None`, `MySQL`, `PostgreSQL`, `MongoDB` | `None` | The primary database. |
 | **Database Name** | Input String | `demo` | The name of the database to use/create. |
 | **Communication**| `REST APIs`, `Kafka` | `REST APIs` | The primary communication method. |
 | **CI/CD Provider**| `None`, `GitHub Actions`, `Jenkins`| `None` | Setup for Continuous Integration/Deployment. |
@@ -42,6 +42,7 @@ The `generateProject` function in `lib/generator.js` executes the following step
 4.  **Render `docker-compose.yml`**:
     *   Uses `templates/common/docker-compose.yml.ejs`.
     *   Configures services (DB, Zookeeper/Kafka) based on selection.
+    *   **Note**: If Database is `None`, DB services are excluded.
 5.  **Render `README.md`**:
     *   Generates custom documentation specific to the selected stack.
 6.  **Render `src/index.{js|ts}`**:
@@ -65,11 +66,14 @@ The `generateProject` function in `lib/generator.js` executes the following step
 10. **Database Setup**:
     *   **MongoDB**: Sets up `migrate-mongo-config.js` and initial migration script.
     *   **SQL (MySQL/Postgres)**: Sets up `flyway/sql` directory and copies initial SQL migration files.
+    *   **None**: Skips migration setup.
 11. **Database Connection Config**:
     *   Renders `database.{js|ts}` or `mongoose.{js|ts}` based on DB selection.
     *   Places it in `src/config` (MVC) or `src/infrastructure/database` (Clean Arch).
+    *   **None**: Skips this step.
 12. **Model Generation**:
     *   Renders `User` model (Mongoose schema or Sequelize/TypeORM model) in the appropriate directory.
+    *   **None**: Generates a simple Mock Entity/Model class with in-memory data for testing.
 13. **View Engine Setup (MVC)**:
     *   If selected, copies views (`views/ejs` or `views/pug`) and `public` assets.
 14. **Swagger Config**:

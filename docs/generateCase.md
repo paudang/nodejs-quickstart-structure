@@ -3,12 +3,12 @@
 This document lists the **48 possible project combinations** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases (including MongoDB), and communication patterns.
 
 ## Summary
-- **MVC Architecture**: 36 Combinations
-  - (2 Languages × 3 View Engines × 3 Databases × 2 Patterns)
-- **Clean Architecture**: 12 Combinations
-  - (2 Languages × 1 View Engine (None) × 3 Databases × 2 Patterns)
+- **MVC Architecture**: 48 Combinations
+  - (2 Languages × 3 View Engines × 4 Databases (incl. None) × 2 Patterns)
+- **Clean Architecture**: 16 Combinations
+  - (2 Languages × 1 View Engine (None) × 4 Databases (incl. None) × 2 Patterns)
 
-**Total Core Combinations: 48**
+**Total Core Combinations: 64**
 
 > **Note on CI/CD**: Each of these 48 combinations can be generated with or without the **GitHub Actions CI Workflow** (`--include-ci`). This effectively creates **96 possible project states**. The validation script currently defaults to *including* CI to verify the full "Professional Standards" feature set.
 
@@ -54,13 +54,25 @@ This document lists the **48 possible project combinations** supported by the `n
 | 34 | TypeScript | MVC | Pug | PostgreSQL | Kafka |
 | 35 | TypeScript | MVC | Pug | MongoDB | REST APIs |
 | 36 | TypeScript | MVC | Pug | MongoDB | Kafka |
+| 37 | JavaScript | MVC | None | None | REST APIs |
+| 38 | JavaScript | MVC | None | None | Kafka |
+| 39 | JavaScript | MVC | EJS | None | REST APIs |
+| 40 | JavaScript | MVC | EJS | None | Kafka |
+| 41 | JavaScript | MVC | Pug | None | REST APIs |
+| 42 | JavaScript | MVC | Pug | None | Kafka |
+| 43 | TypeScript | MVC | None | None | REST APIs |
+| 44 | TypeScript | MVC | None | None | Kafka |
+| 45 | TypeScript | MVC | EJS | None | REST APIs |
+| 46 | TypeScript | MVC | EJS | None | Kafka |
+| 47 | TypeScript | MVC | Pug | None | REST APIs |
+| 48 | TypeScript | MVC | Pug | None | Kafka |
 
-## 2. Clean Architecture (12 Cases)
+## 2. Clean Architecture (16 Cases)
 *Note: Clean Architecture does not use server-side view engines (EJS/Pug).*
 
 | # | Language | Architecture | View Engine | Database | Communication |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| 37 | JavaScript | Clean Architecture | N/A | MySQL | REST APIs |
+| 1 | JavaScript | Clean Architecture | N/A | MySQL | REST APIs |
 | 38 | JavaScript | Clean Architecture | N/A | MySQL | Kafka |
 | 39 | JavaScript | Clean Architecture | N/A | PostgreSQL | REST APIs |
 | 40 | JavaScript | Clean Architecture | N/A | PostgreSQL | Kafka |
@@ -72,3 +84,7 @@ This document lists the **48 possible project combinations** supported by the `n
 | 46 | TypeScript | Clean Architecture | N/A | PostgreSQL | Kafka |
 | 47 | TypeScript | Clean Architecture | N/A | MongoDB | REST APIs |
 | 48 | TypeScript | Clean Architecture | N/A | MongoDB | Kafka |
+| 49 | JavaScript | Clean Architecture | N/A | None | REST APIs |
+| 50 | JavaScript | Clean Architecture | N/A | None | Kafka |
+| 51 | TypeScript | Clean Architecture | N/A | None | REST APIs |
+| 52 | TypeScript | Clean Architecture | N/A | None | Kafka |

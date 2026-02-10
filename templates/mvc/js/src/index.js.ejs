@@ -47,34 +47,38 @@ app.get('/health', (req, res) => {
   res.json({ status: 'UP' });
 });
 
+// Start Server Logic
+const startServer = async () => {
+    logger.info(`Server running on port ${PORT}`);
+<%_ if (communication === 'Kafka') { -%>
+    try {
+    await connectKafka();
+    logger.info('Kafka connected');
+    // Demo: Send a test message
+    await sendMessage('test-topic', 'Hello Kafka from MVC JS!');
+    } catch (err) {
+    logger.error('Failed to connect to Kafka:', err);
+    }
+<%_ } -%>
+};
+
+<%_ if (database !== 'None') { -%>
 // Database Sync
 const syncDatabase = async () => {
     let retries = 30;
     while (retries) {
         try {
-            <% if (database === 'MongoDB') { %>
+            <%_ if (database === 'MongoDB') { -%>
             const connectDB = require('./config/database');
             await connectDB();
-            <% } else { %>
+            <%_ } else { -%>
             const sequelize = require('./config/database');
             await sequelize.sync();
-            <% } %>
+            <%_ } -%>
             logger.info('Database synced');
             
             // Start Server after DB is ready
-            app.listen(PORT, async () => {
-              logger.info(`Server running on port ${PORT}`);
-<%_ if (communication === 'Kafka') { -%>
-              try {
-                await connectKafka();
-                logger.info('Kafka connected');
-                // Demo: Send a test message
-                await sendMessage('test-topic', 'Hello Kafka from MVC JS!');
-              } catch (err) {
-                logger.error('Failed to connect to Kafka:', err);
-              }
-<%_ } -%>
-            });
+            app.listen(PORT, startServer);
             break;
         } catch (err) {
             logger.error('Database sync failed:', err);
@@ -86,3 +90,6 @@ const syncDatabase = async () => {
 };
 
 syncDatabase();
+<%_ } else { -%>
+app.listen(PORT, startServer);
+<%_ } -%>

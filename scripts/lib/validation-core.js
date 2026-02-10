@@ -21,7 +21,7 @@ function log(msg, color = ANSI_RESET) {
 }
 
 const LANGUAGES = ['TypeScript', 'JavaScript'];
-const DATABASES = ['MySQL', 'PostgreSQL', 'MongoDB'];
+const DATABASES = ['None','MySQL', 'PostgreSQL', 'MongoDB'];
 const COMMUNICATIONS = ['REST APIs', 'Kafka']; 
 const VIEW_ENGINES_MVC = ['EJS', 'Pug', 'None'];
 
@@ -38,7 +38,7 @@ LANGUAGES.forEach(lang => {
                     architecture: 'MVC',
                     viewEngine: view,
                     database: db,
-                    dbName: 'testdb',
+                    dbName: db !== 'None' ? 'testdb' : undefined,
                     communication: comm
                 });
             });
@@ -56,22 +56,29 @@ LANGUAGES.forEach(lang => {
                 architecture: 'Clean Architecture',
                 viewEngine: 'None', 
                 database: db,
-                dbName: 'testdb',
+                dbName: db !== 'None' ? 'testdb' : undefined,
                 communication: comm
             });
         });
     });
 });
 
-async function runCommand(command, cwd, env = {}) {
+async function runCommand(command, cwd, env = {}, captureOutput = false) {
     return new Promise((resolve, reject) => {
         const [cmd, ...args] = command.split(' ');
         const child = spawn(cmd, args, { 
             cwd, 
-            stdio: 'inherit',
+            stdio: captureOutput ? ['ignore', 'pipe', 'pipe'] : 'inherit',
             shell: true,      
             env: { ...process.env, ...env }
         });
+
+        let output = '';
+
+        if (captureOutput) {
+            child.stdout.on('data', (data) => output += data.toString());
+            child.stderr.on('data', (data) => output += data.toString());
+        }
 
         child.on('error', (error) => {
              reject(error);
@@ -79,9 +86,9 @@ async function runCommand(command, cwd, env = {}) {
 
         child.on('close', (code) => {
             if (code === 0) {
-                resolve('Command completed successfully');
+                resolve(captureOutput ? output : 'Command completed successfully');
             } else {
-                reject(new Error(`Command exited with code ${code}`));
+                reject(new Error(captureOutput ? output : `Command exited with code ${code}`));
             }
         });
     });
@@ -131,7 +138,7 @@ async function getFreePort(usedPorts) {
 async function checkHealth(config, hostPort) {
     const port = hostPort || 3000;
     const start = Date.now();
-    while (Date.now() - start < 30000) { 
+    while (Date.now() - start < 60000) { 
         try {
             const res = await fetch(`http://localhost:${port}/health`);
             if (res.ok) {
@@ -234,7 +241,8 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             '--language', config.language,
             '--architecture', `"${config.architecture}"`,
             '--database', config.database,
-            '--db-name', config.dbName,
+            '--database', config.database,
+            ...(config.dbName ? ['--db-name', config.dbName] : []),
             '--communication', `"${config.communication}"`,
             '--ci-provider', '"GitHub Actions"' 
         ];
@@ -300,7 +308,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             log(`✓ Health Check Passed`, ANSI_GREEN);
         } else {
             try {
-                const logs = await runCommand(`${composeCmd} logs`, projectPath, TEST_ENV);
+                const logs = await runCommand(`${composeCmd} logs`, projectPath, TEST_ENV, true);
                 log(`!!! Health Check FAILED. App Logs:\n${logs}`, ANSI_RED);
             } catch (e) {}
             throw new Error("Health check timeout");

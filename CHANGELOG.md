@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-02-10
+
+### Refactored
+- Modularized `lib/generator.js` into distinct modules (`lib/modules/`) for better maintainability.
+- Extracted logic for project setup, config files, database, app setup, and Kafka.
+
+### Fixed
+- Resolved syntax error in `UserRepository.js` for Clean Architecture projects with 'None' database.
+- Increased health check timeout to 60s in validation scripts to prevent false positives in heavy environments (MySQL + Kafka).
+- Fixed missing `src/views` copy logic for MVC projects, resolving Docker build errors.
+- Corrected CLI argument parsing to properly exclude undefined flags (e.g., `--db-name`).
+- Removed obsolete `version: '3.8'` from `docker-compose.yml`.
+
 ## [1.5.0] - 2026-02-10
 
 ### Added

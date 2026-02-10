@@ -6,22 +6,23 @@ const { connectKafka, sendMessage } = require('./infrastructure/messaging/kafkaC
 
 const PORT = process.env.PORT || 3000;
 
+<%_ if (database !== 'None') { -%>
 // Database Sync
 const syncDatabase = async () => {
     let retries = 30;
     while (retries) {
         try {
-            <% if (database === 'MongoDB') { %>
+            <%_ if (database === 'MongoDB') { -%>
             const connectDB = require('./infrastructure/database/database');
             await connectDB();
-            <% } else { %>
+            <%_ } else { -%>
             const sequelize = require('./infrastructure/database/database');
             await sequelize.sync();
-            <% } %>
+            <%_ } -%>
             logger.info('Database synced');
             // Start the web server after DB sync
             startServer(PORT);
-            <% if (communication === 'Kafka') { %>
+            <%_ if (communication === 'Kafka') { -%>
             // Connect Kafka
             connectKafka().then(async () => {
               logger.info('Kafka connected');
@@ -29,7 +30,7 @@ const syncDatabase = async () => {
             }).catch(err => {
               logger.error('Failed to connect to Kafka:', err);
             });
-            <% } -%>
+            <%_ } -%>
             break;
         } catch (error) {
             logger.error('Error syncing database:', error);
@@ -40,3 +41,15 @@ const syncDatabase = async () => {
     }
 };
 syncDatabase();
+<%_ } else { -%>
+startServer(PORT);
+<%_ if (communication === 'Kafka') { -%>
+// Connect Kafka
+connectKafka().then(async () => {
+  logger.info('Kafka connected');
+  await sendMessage('test-topic', 'Hello Kafka from Clean Arch JS!');
+}).catch(err => {
+  logger.error('Failed to connect to Kafka:', err);
+});
+<%_ } -%>
+<%_ } -%>

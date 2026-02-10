@@ -2,26 +2,38 @@ const UserModel = require('../database/models/User');
 
 class UserRepository {
   async save(user) {
+<%_ if (database === 'None') { -%>
+    const newUser = { ...user, id: String(UserModel.mockData.length + 1) };
+    UserModel.mockData.push(newUser);
+    return newUser;
+<%_ } else { -%>
     const newUser = await UserModel.create({ name: user.name, email: user.email });
-<% if (database === 'MongoDB') { %>    return { ...user, id: newUser._id.toString() };
-<% } else { %>    return { ...user, id: newUser.id };
-<% } -%>
+<%_ if (database === 'MongoDB') { -%>
+    return { ...user, id: newUser._id.toString() };
+<%_ } else { -%>
+    return { ...user, id: newUser.id };
+<%_ } -%>
+<%_ } -%>
   }
 
   async getUsers() {
-<% if (database === 'MongoDB') { %>    const users = await UserModel.find();
+<%_ if (database === 'None') { -%>
+    return UserModel.mockData;
+<%_ } else if (database === 'MongoDB') { -%>
+    const users = await UserModel.find();
     return users.map(user => ({
         id: user._id.toString(),
         name: user.name,
         email: user.email
     }));
-<% } else { %>    const users = await UserModel.findAll();
+<%_ } else { -%>
+    const users = await UserModel.findAll();
     return users.map(user => ({
         id: user.id,
         name: user.name,
         email: user.email
     }));
-<% } -%>
+<%_ } -%>
   }
 }
 

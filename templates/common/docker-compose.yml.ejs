@@ -1,40 +1,54 @@
-version: '3.8'
-
 services:
   app:
     build: .
     ports:
       - "${PORT:-3000}:3000"
+<%_ if (database !== 'None' || communication === 'Kafka') { -%>
     depends_on:
+<%_ if (database !== 'None') { -%>
       - db
-<% if (communication === 'Kafka') { %>      - kafka
-<% } -%>
-<% if (communication === 'Kafka') { %>    environment:
+<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+      - kafka
+<%_ } -%>
+<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+    environment:
       - KAFKA_BROKER=kafka:29092
       - KAFKAJS_NO_PARTITIONER_WARNING=1
       - PORT=3000
+<%_ if (database !== 'None') { -%>
       - DB_HOST=db
-<% if (database === 'MySQL') { %>      - DB_USER=root
+<%_ if (database === 'MySQL') { -%>
+      - DB_USER=root
       - DB_PASSWORD=root
       - DB_NAME=<%= dbName %>
-<% } %><% if (database === 'PostgreSQL') { %>      - DB_USER=postgres
+<%_ } -%><%_ if (database === 'PostgreSQL') { -%>
+      - DB_USER=postgres
       - DB_PASSWORD=root
       - DB_NAME=<%= dbName %>
-<% } -%>
-<% } else { %>
+<%_ } -%>
+<%_ } -%>
+<%_ } else { -%>
     environment:
       - PORT=3000
+<%_ if (database !== 'None') { -%>
       - DB_HOST=db
-<% if (database === 'MySQL') { %>      - DB_USER=root
+<%_ if (database === 'MySQL') { -%>
+      - DB_USER=root
       - DB_PASSWORD=root
       - DB_NAME=<%= dbName %>
-<% } %><% if (database === 'PostgreSQL') { %>      - DB_USER=postgres
+<%_ } -%><%_ if (database === 'PostgreSQL') { -%>
+      - DB_USER=postgres
       - DB_PASSWORD=root
       - DB_NAME=<%= dbName %>
-<% } -%>
-<% } %>
+<%_ } -%>
+<%_ } -%>
+<%_ } -%>
+<%_ if (database !== 'None') { -%>
   db:
-<% if (database === 'MySQL') { %>    image: mysql:8.0
+<%_ if (database === 'MySQL') { -%>
+    image: mysql:8.0
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -43,7 +57,8 @@ services:
       - "${DB_PORT:-3306}:3306"
     volumes:
       - ./flyway/sql:/docker-entrypoint-initdb.d
-<% } else if (database === 'PostgreSQL') { %>    image: postgres:15
+<%_ } else if (database === 'PostgreSQL') { -%>
+    image: postgres:15
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -53,7 +68,8 @@ services:
       - "${DB_PORT:-5432}:5432"
     volumes:
       - ./flyway/sql:/docker-entrypoint-initdb.d
-<% } else if (database === 'MongoDB') { %>    image: mongo:latest
+<%_ } else if (database === 'MongoDB') { -%>
+    image: mongo:latest
     restart: always
     environment:
       MONGO_INITDB_DATABASE: <%= dbName %>
@@ -73,24 +89,29 @@ services:
       - DB_NAME=<%= dbName %>
     depends_on:
       - db
-<% } %>
-<% if (database !== 'MongoDB') { %>
+<%_ } -%>
+<%_ } -%>
+<%_ if (database !== 'MongoDB' && database !== 'None') { -%>
   flyway:
     image: flyway/flyway
     command: -connectRetries=60 migrate
     volumes:
       - ./flyway/sql:/flyway/sql
     environment:
-<% if (database === 'MySQL') { %>      FLYWAY_URL: jdbc:mysql://db:3306/<%= dbName %>
+<%_ if (database === 'MySQL') { -%>
+      FLYWAY_URL: jdbc:mysql://db:3306/<%= dbName %>
       FLYWAY_USER: root
       FLYWAY_PASSWORD: root
-<% } %><% if (database === 'PostgreSQL') { %>      FLYWAY_URL: jdbc:postgresql://db:5432/<%= dbName %>
+<%_ } -%><%_ if (database === 'PostgreSQL') { -%>
+      FLYWAY_URL: jdbc:postgresql://db:5432/<%= dbName %>
       FLYWAY_USER: postgres
       FLYWAY_PASSWORD: root
-<% } %>    depends_on:
+<%_ } -%>
+    depends_on:
       - db
-<% } %>
-<% if (communication === 'Kafka') { %>  zookeeper:
+<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+  zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -111,6 +132,8 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-<% } -%>
+<%_ } -%>
+<%_ if (database !== 'None') { -%>
 volumes:
   <%= database.toLowerCase() %>_data:
+<%_ } -%>

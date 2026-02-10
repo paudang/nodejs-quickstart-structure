@@ -57,34 +57,38 @@ app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'UP' });
 });
 
+// Start Server Logic
+const startServer = async () => {
+    logger.info(`Server running on port ${port}`);
+<%_ if (communication === 'Kafka') { -%>
+    try {
+    const kafkaService = new KafkaService();
+    await kafkaService.connect();
+    logger.info('Kafka connected');
+    // Demo: Send a test message
+    await kafkaService.sendMessage('test-topic', 'Hello Kafka from MVC TS!');
+    } catch (err) {
+    logger.error('Failed to connect to Kafka:', err);
+    }
+<%_ } -%>
+};
+
+<%_ if (database !== 'None') { -%>
 // Database Sync
 const syncDatabase = async () => {
     let retries = 30;
     while (retries) {
         try {
-            <% if (database === 'MongoDB') { %>
+            <%_ if (database === 'MongoDB') { -%>
             const connectDB = (await import('@/config/database')).default;
             await connectDB();
-            <% } else { %>
+            <%_ } else { -%>
             const sequelize = (await import('@/config/database')).default;
             await sequelize.sync();
-            <% } %>
+            <%_ } -%>
             logger.info('Database synced');
             // Start Server after DB is ready
-            app.listen(port, async () => {
-              logger.info(`Server running on port ${port}`);
-<%_ if (communication === 'Kafka') { -%>
-              try {
-                const kafkaService = new KafkaService();
-                await kafkaService.connect();
-                logger.info('Kafka connected');
-                // Demo: Send a test message
-                await kafkaService.sendMessage('test-topic', 'Hello Kafka from MVC TS!');
-              } catch (err) {
-                logger.error('Failed to connect to Kafka:', err);
-              }
-<%_ } -%>
-            });
+            app.listen(port, startServer);
             break;
         } catch (error) {
             logger.error('Error syncing database:', error);
@@ -96,3 +100,6 @@ const syncDatabase = async () => {
 };
 
 syncDatabase();
+<%_ } else { -%>
+app.listen(port, startServer);
+<%_ } -%>

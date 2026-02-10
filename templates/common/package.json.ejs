@@ -13,8 +13,9 @@
     "prepare": "husky install",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "jest --coverage"<%_ if (database === 'MongoDB') { -%>,
     "migrate": "migrate-mongo up"
+<%_ } -%>
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -55,7 +56,9 @@
     "@types/hpp": "^0.2.3",
 <% if (database === 'PostgreSQL') { %>    "@types/pg": "^8.10.9",
 <% } -%>
+<%_ if (database === 'MySQL' || database === 'PostgreSQL') { -%>
     "@types/sequelize": "^4.28.19",
+<%_ } -%>
     "@types/morgan": "^1.9.9",
     "rimraf": "^5.0.5"<% if (viewEngine && viewEngine !== 'None') { %>,
     "copyfiles": "^2.4.1"<% } %><% } %>,
