@@ -1,6 +1,6 @@
 {
   "name": "nodejs-quickstart-structure",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "type": "module",
   "description": "A CLI to scaffold Node.js microservices with MVC or Clean Architecture",
   "main": "bin/index.js",
@@ -37,5 +37,12 @@
     "ejs": "^3.1.10",
     "fs-extra": "^11.3.0",
     "inquirer": "^12.4.1"
-  }
+  },
+  "files": [
+    "bin",
+    "lib",
+    "templates",
+    "docs",
+    "README.md"
+  ]
 }
