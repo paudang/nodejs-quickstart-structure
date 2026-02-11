@@ -43,6 +43,7 @@
     "lib",
     "templates",
     "docs",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ]
 }
