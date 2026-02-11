@@ -62,13 +62,13 @@ const startServer = async () => {
     logger.info(`Server running on port ${port}`);
 <%_ if (communication === 'Kafka') { -%>
     try {
-    const kafkaService = new KafkaService();
-    await kafkaService.connect();
-    logger.info('Kafka connected');
-    // Demo: Send a test message
-    await kafkaService.sendMessage('test-topic', 'Hello Kafka from MVC TS!');
+      const kafkaService = new KafkaService();
+      await kafkaService.connect();
+      logger.info('Kafka connected');
+      // Demo: Send a test message
+      await kafkaService.sendMessage('test-topic', 'Hello Kafka from MVC TS!');
     } catch (err) {
-    logger.error('Failed to connect to Kafka:', err);
+      logger.error('Failed to connect to Kafka:', err);
     }
 <%_ } -%>
 };

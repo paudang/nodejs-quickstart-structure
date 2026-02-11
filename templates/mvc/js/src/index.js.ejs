@@ -52,12 +52,12 @@ const startServer = async () => {
     logger.info(`Server running on port ${PORT}`);
 <%_ if (communication === 'Kafka') { -%>
     try {
-    await connectKafka();
-    logger.info('Kafka connected');
-    // Demo: Send a test message
-    await sendMessage('test-topic', 'Hello Kafka from MVC JS!');
+      await connectKafka();
+      logger.info('Kafka connected');
+      // Demo: Send a test message
+      await sendMessage('test-topic', 'Hello Kafka from MVC JS!');
     } catch (err) {
-    logger.error('Failed to connect to Kafka:', err);
+      logger.error('Failed to connect to Kafka:', err);
     }
 <%_ } -%>
 };

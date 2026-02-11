@@ -2,6 +2,8 @@
 
 A powerful CLI tool to scaffold production-ready Node.js microservices with built-in best practices, allowing you to choose between **MVC** or **Clean Architecture**, **JavaScript** or **TypeScript**, and your preferred database.
 
+[![Medium Article](https://img.shields.io/badge/Medium-Read%20Article-black?logo=medium)](https://medium.com/@paudang/nodejs-quickstart-generator-93c276d60e0b)
+
 ![Demo](docs/demo.gif)
 
 ## Features
@@ -33,24 +35,6 @@ You can install the tool globally directly from npm:
 ```bash
 npm install -g nodejs-quickstart-structure
 ```
-
-### Manual Installation (For Development)
-
-If you want to modify the CLI itself:
-
-1.  Clone this repository:
-    ```bash
-    git clone https://github.com/paudang/nodejs-quickstart-structure.git
-    cd nodejs-quickstart-structure
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Link globally:
-    ```bash
-    npm link
-    ```
 
 ## Usage
 

@@ -69,7 +69,6 @@ const syncDatabase = async () => {
             await sequelize.sync();
             <%_ } -%>
             logger.info('Database synced');
-            
             app.listen(port, startServer);
             break;
         } catch (error) {
