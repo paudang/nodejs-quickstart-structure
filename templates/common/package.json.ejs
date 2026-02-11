@@ -13,7 +13,8 @@
     "prepare": "husky install",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"<%_ if (database === 'MongoDB') { -%>,
+    "test:coverage": "jest --coverage"
+    <%_ if (database === 'MongoDB') { -%>,
     "migrate": "migrate-mongo up"
 <%_ } -%>
   },
