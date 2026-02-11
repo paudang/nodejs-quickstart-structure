@@ -28,6 +28,18 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 -   **⚓ Git Hooks**: `Husky` and `Lint-Staged` to ensure no bad code is ever committed.
 -   **🐳 DevOps**: Highly optimized **Multi-Stage Dockerfile** for small, secure production images.
 
+## 🧩 64+ Project Combinations
+
+The CLI supports a massive number of configurations to fit your exact needs:
+
+-   **64 Core Combinations**:
+    -   **MVC Architecture**: 48 variants (Languages × View Engines × Databases × Communication Patterns)
+    -   **Clean Architecture**: 16 variants (Languages × Databases × Communication Patterns)
+-   **128 Total Scenarios**:
+    -   Every combination can be generated with or without **GitHub Actions CI/CD**, doubling the possibilities.
+
+For a detailed list of all supported cases, check out [docs/generateCase.md](docs/generateCase.md).
+
 ## Installation
 
 You can install the tool globally directly from npm:
