@@ -82,6 +82,13 @@ A Swagger UI for API documentation is available at:
 - **URL**: `http://localhost:3000/api-docs` (Dynamic based on PORT)
 <% } -%>
 
+<% if (caching === 'Redis') { -%>
+## ⚡ Caching
+This project uses **Redis** for caching.
+- **Client**: `ioredis`
+- **Connection**: Configured via `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` in `.env`.
+<% } -%>
+
 ## 📝 Logging
 This project uses **Winston** for structured logging.
 - **Development**: Logs are printed to the console.

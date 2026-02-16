@@ -23,6 +23,7 @@ function log(msg, color = ANSI_RESET) {
 const LANGUAGES = ['TypeScript', 'JavaScript'];
 const DATABASES = ['None','MySQL', 'PostgreSQL', 'MongoDB'];
 const COMMUNICATIONS = ['REST APIs', 'Kafka']; 
+const CACHING = ['None', 'Redis'];
 const VIEW_ENGINES_MVC = ['EJS', 'Pug', 'None'];
 
 export const combinations = [];
@@ -32,14 +33,20 @@ LANGUAGES.forEach(lang => {
     VIEW_ENGINES_MVC.forEach(view => {
         DATABASES.forEach(db => {
             COMMUNICATIONS.forEach(comm => {
-                combinations.push({
-                    projectName: `test_mvc_${lang}_${view}_${db}_${comm}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-                    language: lang,
-                    architecture: 'MVC',
-                    viewEngine: view,
-                    database: db,
-                    dbName: db !== 'None' ? 'testdb' : undefined,
-                    communication: comm
+                // Only test Redis if DB is not None (as per constraint)
+                const cachingOptions = db !== 'None' ? CACHING : ['None'];
+                
+                cachingOptions.forEach(cache => {
+                    combinations.push({
+                        projectName: `test_mvc_${lang}_${view}_${db}_${comm}_${cache}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                        language: lang,
+                        architecture: 'MVC',
+                        viewEngine: view,
+                        database: db,
+                        dbName: db !== 'None' ? 'testdb' : undefined,
+                        communication: comm,
+                        caching: cache
+                    });
                 });
             });
         });
@@ -50,14 +57,20 @@ LANGUAGES.forEach(lang => {
 LANGUAGES.forEach(lang => {
     DATABASES.forEach(db => {
         COMMUNICATIONS.forEach(comm => {
-            combinations.push({
-                projectName: `test_clean_${lang}_${db}_${comm}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-                language: lang,
-                architecture: 'Clean Architecture',
-                viewEngine: 'None', 
-                database: db,
-                dbName: db !== 'None' ? 'testdb' : undefined,
-                communication: comm
+            // Only test Redis if DB is not None
+            const cachingOptions = db !== 'None' ? CACHING : ['None'];
+
+            cachingOptions.forEach(cache => {
+                combinations.push({
+                    projectName: `test_clean_${lang}_${db}_${comm}_${cache}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                    language: lang,
+                    architecture: 'Clean Architecture',
+                    viewEngine: 'None', 
+                    database: db,
+                    dbName: db !== 'None' ? 'testdb' : undefined,
+                    communication: comm,
+                    caching: cache
+                });
             });
         });
     });
@@ -241,11 +254,15 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             '--language', config.language,
             '--architecture', `"${config.architecture}"`,
             '--database', config.database,
-            '--database', config.database,
+
             ...(config.dbName ? ['--db-name', config.dbName] : []),
             '--communication', `"${config.communication}"`,
             '--ci-provider', '"GitHub Actions"' 
         ];
+
+        if (config.caching) {
+            args.push('--caching', config.caching);
+        }
 
         if (config.architecture === 'MVC') {
             args.push('--view-engine', config.viewEngine);
@@ -325,7 +342,22 @@ export async function runTest(config, index, options = {}, sharedPorts) {
                 await runCommand('docker compose down -v', projectPath, TEST_ENV);
             } catch (e) {}
         }
-        await fs.remove(projectPath);
+        
+        // Robust cleanup with retries for Windows EPERM
+        let attempts = 0;
+        while (attempts < 3) {
+            try {
+                await fs.remove(projectPath);
+                break;
+            } catch (e) {
+                attempts++;
+                if (attempts >= 3) {
+                    log(`Warning: Failed to cleanup ${projectPath}: ${e.message}`, ANSI_RED);
+                } else {
+                    await new Promise(r => setTimeout(r, 1000)); // Wait 1s before retry
+                }
+            }
+        }
     }
     return { success: true };
 }

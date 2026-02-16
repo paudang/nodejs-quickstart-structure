@@ -17,6 +17,11 @@ services:
       - KAFKA_BROKER=kafka:29092
       - KAFKAJS_NO_PARTITIONER_WARNING=1
       - PORT=3000
+<%_ if (caching === 'Redis') { -%>
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+<%_ } -%>
 <%_ if (database !== 'None') { -%>
       - DB_HOST=db
 <%_ if (database === 'MySQL') { -%>
@@ -32,6 +37,11 @@ services:
 <%_ } else { -%>
     environment:
       - PORT=3000
+<%_ if (caching === 'Redis') { -%>
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+<%_ } -%>
 <%_ if (database !== 'None') { -%>
       - DB_HOST=db
 <%_ if (database === 'MySQL') { -%>
@@ -132,6 +142,13 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+<%_ } -%>
+<%_ if (caching === 'Redis') { -%>
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
 <%_ } -%>
 <%_ if (database !== 'None') { -%>
 volumes:

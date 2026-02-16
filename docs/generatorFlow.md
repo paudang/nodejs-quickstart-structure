@@ -26,6 +26,7 @@ The generator prompts the user for the following configurations. These determine
 | **Database** | `None`, `MySQL`, `PostgreSQL`, `MongoDB` | `None` | The primary database. |
 | **Database Name** | Input String | `demo` | The name of the database to use/create. |
 | **Communication**| `REST APIs`, `Kafka` | `REST APIs` | The primary communication method. |
+| **Caching Layer**| `None`, `Redis` | `None` | (If DB selected) Caching solution. |
 | **CI/CD Provider**| `None`, `GitHub Actions`, `Jenkins`| `None` | Setup for Continuous Integration/Deployment. |
 
 ## 3. Main Generator Flow
@@ -67,7 +68,13 @@ The `generateProject` function in `lib/generator.js` executes the following step
     *   **MongoDB**: Sets up `migrate-mongo-config.js` and initial migration script.
     *   **SQL (MySQL/Postgres)**: Sets up `flyway/sql` directory and copies initial SQL migration files.
     *   **None**: Skips migration setup.
-11. **Database Connection Config**:
+11. **Caching Setup**:
+    *   **Redis**:
+        *   Injects `ioredis` dependency into `package.json`.
+        *   Generates `redisClient.{js|ts}` config.
+        *   **MVC**: Injects caching logic into `userController`.
+        *   **Clean Architecture**: Overwrites `GetAllUsers` use case with caching-enabled version.
+12. **Database Connection Config**:
     *   Renders `database.{js|ts}` or `mongoose.{js|ts}` based on DB selection.
     *   Places it in `src/config` (MVC) or `src/infrastructure/database` (Clean Arch).
     *   **None**: Skips this step.
@@ -109,7 +116,7 @@ Standard architecture for web APIs.
 ```text
 project-name/
 ├── src/
-│   ├── config/         # Database, Swagger, etc.
+│   ├── config/         # Database, Redis, Swagger, etc.
 │   ├── controllers/    # Request handlers
 │   ├── models/         # Database models
 │   ├── routes/         # Express routes
@@ -149,6 +156,7 @@ project-name/
 │   │   └── routes/
 │   ├── infrastructure/         # Frameworks & Drivers
 │   │   ├── config/             # Environment config
+│   │   ├── caching/            # Redis Client
 │   │   ├── database/           # DB connection & models
 │   │   ├── repositories/       # Data access implementation
 │   │   └── webserver/          # Express server setup

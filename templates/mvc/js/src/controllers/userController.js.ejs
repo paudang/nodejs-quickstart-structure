@@ -1,15 +1,31 @@
 const User = require('../models/User');
 const HTTP_STATUS = require('../utils/httpCodes');
 const logger = require('../utils/logger');
+<%_ if (caching === 'Redis') { -%>
+const redis = require('../config/redisClient');
+<%_ } -%>
 
 const getUsers = async (req, res) => {
   try {
+<%_ if (caching === 'Redis') { -%>
+    const cacheKey = 'users:all';
+    const cachedUsers = await redis.get(cacheKey);
+
+    if (cachedUsers) {
+      logger.info('Serving users from cache');
+      return res.json(JSON.parse(cachedUsers));
+    }
+<%_ } -%>
 <%_ if (database === 'MongoDB') { -%>
     const users = await User.find();
 <%_ } else if (database === 'None') { -%>
     const users = User.mockData;
 <%_ } else { -%>
     const users = await User.findAll();
+<%_ } -%>
+<%_ if (caching === 'Redis') { -%>
+    // Cache for 60 seconds
+    await redis.set(cacheKey, JSON.stringify(users), 'EX', 60);
 <%_ } -%>
     res.json(users);
   } catch (error) {
@@ -24,9 +40,15 @@ const createUser = async (req, res) => {
 <%_ if (database === 'None') { -%>
     const newUser = { id: String(User.mockData.length + 1), name, email };
     User.mockData.push(newUser);
+<%_ if (caching === 'Redis') { -%>
+    await redis.del('users:all');
+<%_ } -%>
     res.status(HTTP_STATUS.CREATED).json(newUser);
 <%_ } else { -%>
     const user = await User.create({ name, email });
+<%_ if (caching === 'Redis') { -%>
+    await redis.del('users:all');
+<%_ } -%>
     res.status(HTTP_STATUS.CREATED).json(user);
 <%_ } -%>
   } catch (error) {
@@ -35,3 +57,4 @@ const createUser = async (req, res) => {
 };
 
 module.exports = { getUsers, createUser };
+

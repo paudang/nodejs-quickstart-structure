@@ -33,6 +33,7 @@ program
     .option('--db-name <name>', 'Database name')
     .option('-c, --communication <communication>', 'Communication (REST APIs, Kafka)')
     .option('--ci-provider <provider>', 'CI/CD Provider (None, GitHub Actions, Jenkins)')
+    .option('--caching <type>', 'Caching Layer (None/Redis)')
     .action(async (options) => {
         // Fix for Commander camelCase conversion
         if (options.ciProvider) {
