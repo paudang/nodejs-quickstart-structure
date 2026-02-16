@@ -4,22 +4,73 @@ import logger from '<%- loggerPath %>';
 
 dotenv.config();
 
-const redis = new Redis({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: Number(process.env.REDIS_PORT) || 6379,
-  password: process.env.REDIS_PASSWORD || undefined,
-  retryStrategy: (times) => {
-    const delay = Math.min(times * 50, 2000);
-    return delay;
-  },
-});
+class RedisService {
+    private client: Redis;
+    private static instance: RedisService;
 
-redis.on('connect', () => {
-  logger.info('Redis connected');
-});
+    private constructor() {
+        this.client = new Redis({
+            host: process.env.REDIS_HOST || 'localhost',
+            port: Number(process.env.REDIS_PORT) || 6379,
+            password: process.env.REDIS_PASSWORD || undefined,
+            retryStrategy: (times) => Math.min(times * 50, 2000),
+        });
 
-redis.on('error', (err) => {
-  logger.error('Redis error:', err);
-});
+        this.client.on('connect', () => {
+            logger.info('Redis connected');
+        });
 
-export default redis;
+        this.client.on('error', (err) => {
+            logger.error('Redis error:', err);
+        });
+    }
+
+    public static getInstance(): RedisService {
+        if (!RedisService.instance) {
+            RedisService.instance = new RedisService();
+        }
+        return RedisService.instance;
+    }
+
+    public async get<T>(key: string): Promise<T | null> {
+        try {
+            const data = await this.client.get(key);
+            return data ? JSON.parse(data) : null;
+        } catch (error) {
+            logger.error(`Redis get error for key ${key}:`, error);
+            return null;
+        }
+    }
+
+    public async set(key: string, value: unknown, ttl?: number): Promise<void> {
+        try {
+            const data = JSON.stringify(value);
+            if (ttl) {
+                await this.client.set(key, data, 'EX', ttl);
+            } else {
+                await this.client.set(key, data);
+            }
+        } catch (error) {
+            logger.error(`Redis set error for key ${key}:`, error);
+        }
+    }
+
+    public async del(key: string): Promise<void> {
+        try {
+            await this.client.del(key);
+        } catch (error) {
+            logger.error(`Redis del error for key ${key}:`, error);
+        }
+    }
+
+    public async getOrSet<T>(key: string, fetcher: () => Promise<T>, ttl: number = 3600): Promise<T> {
+        const cached = await this.get<T>(key);
+        if (cached) return cached;
+
+        const data = await fetcher();
+        if (data) await this.set(key, data, ttl);
+        return data;
+    }
+}
+
+export default RedisService.getInstance();

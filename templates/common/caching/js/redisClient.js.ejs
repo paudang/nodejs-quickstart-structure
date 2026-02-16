@@ -2,22 +2,70 @@ const Redis = require('ioredis');
 require('dotenv').config();
 const logger = require('<%- loggerPath %>');
 
-const redis = new Redis({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: Number(process.env.REDIS_PORT) || 6379,
-  password: process.env.REDIS_PASSWORD || undefined,
-  retryStrategy: (times) => {
-    const delay = Math.min(times * 50, 2000);
-    return delay;
-  },
-});
+class RedisService {
+    constructor() {
+        this.client = new Redis({
+            host: process.env.REDIS_HOST || 'localhost',
+            port: Number(process.env.REDIS_PORT) || 6379,
+            password: process.env.REDIS_PASSWORD || undefined,
+            retryStrategy: (times) => Math.min(times * 50, 2000),
+        });
 
-redis.on('connect', () => {
-  logger.info('Redis connected');
-});
+        this.client.on('connect', () => {
+            logger.info('Redis connected');
+        });
 
-redis.on('error', (err) => {
-  logger.error('Redis error:', err);
-});
+        this.client.on('error', (err) => {
+            logger.error('Redis error:', err);
+        });
+    }
 
-module.exports = redis;
+    static getInstance() {
+        if (!RedisService.instance) {
+            RedisService.instance = new RedisService();
+        }
+        return RedisService.instance;
+    }
+
+    async get(key) {
+        try {
+            const data = await this.client.get(key);
+            return data ? JSON.parse(data) : null;
+        } catch (error) {
+            logger.error(`Redis get error for key ${key}:`, error);
+            return null;
+        }
+    }
+
+    async set(key, value, ttl) {
+        try {
+            const data = JSON.stringify(value);
+            if (ttl) {
+                await this.client.set(key, data, 'EX', ttl);
+            } else {
+                await this.client.set(key, data);
+            }
+        } catch (error) {
+            logger.error(`Redis set error for key ${key}:`, error);
+        }
+    }
+
+    async del(key) {
+        try {
+            await this.client.del(key);
+        } catch (error) {
+            logger.error(`Redis del error for key ${key}:`, error);
+        }
+    }
+
+    async getOrSet(key, fetcher, ttl = 3600) {
+        const cached = await this.get(key);
+        if (cached) return cached;
+
+        const data = await fetcher();
+        if (data) await this.set(key, data, ttl);
+        return data;
+    }
+}
+
+module.exports = RedisService.getInstance();

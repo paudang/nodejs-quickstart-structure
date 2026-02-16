@@ -3,21 +3,23 @@ import User from '@/models/User';
 import { HTTP_STATUS } from '@/utils/httpCodes';
 import logger from '@/utils/logger';
 <%_ if (caching === 'Redis') { -%>
-import redis from '@/config/redisClient';
+import redisService from '@/config/redisClient';
 <%_ } -%>
 
 export class UserController {
     async getUsers(req: Request, res: Response) {
         try {
 <%_ if (caching === 'Redis') { -%>
-            const cacheKey = 'users:all';
-            const cachedUsers = await redis.get(cacheKey);
-
-            if (cachedUsers) {
-                logger.info('Serving users from cache');
-                return res.json(JSON.parse(cachedUsers));
-            }
+            const users = await redisService.getOrSet('users:all', async () => {
+<%_ if (database === 'MongoDB') { -%>
+                return await User.find();
+<%_ } else if (database === 'None') { -%>
+                return User.mockData;
+<%_ } else { -%>
+                return await User.findAll();
 <%_ } -%>
+            }, 60);
+<%_ } else { -%>
 <%_ if (database === 'MongoDB') { -%>
             const users = await User.find();
 <%_ } else if (database === 'None') { -%>
@@ -25,9 +27,6 @@ export class UserController {
 <%_ } else { -%>
             const users = await User.findAll();
 <%_ } -%>
-<%_ if (caching === 'Redis') { -%>
-            // Cache for 60 seconds
-            await redis.set(cacheKey, JSON.stringify(users), 'EX', 60);
 <%_ } -%>
             res.json(users);
         } catch (error) {
@@ -47,13 +46,13 @@ export class UserController {
             const newUser = { id: String(User.mockData.length + 1), name, email };
             User.mockData.push(newUser);
 <%_ if (caching === 'Redis') { -%>
-            await redis.del('users:all');
+            await redisService.del('users:all');
 <%_ } -%>
             res.status(HTTP_STATUS.CREATED).json(newUser);
 <%_ } else { -%>
             const user = await User.create({ name, email });
 <%_ if (caching === 'Redis') { -%>
-            await redis.del('users:all');
+            await redisService.del('users:all');
 <%_ } -%>
             res.status(HTTP_STATUS.CREATED).json(user);
 <%_ } -%>
