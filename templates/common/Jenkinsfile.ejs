@@ -24,6 +24,47 @@ pipeline {
                 sh 'npm test'
             }
         }
+
+        // stage('Build') {
+        //     steps {
+        //         sh 'npm run build'
+        //     }
+        // }
+
+        // stage('SonarQube Analysis') {
+        //     environment {
+        //         scannerHome = tool 'SonarScanner'
+        //     }
+        //     steps {
+        //         withSonarQubeEnv('SonarQube') {
+        //             sh "${scannerHome}/bin/sonar-scanner"
+        //         }
+        //     }
+        // }
+
+        // stage('Security Scan') {
+        //     steps {
+        //         sh 'npm audit --audit-level=high'
+        //     }
+        // }
+
+        // stage('Docker Build & Push') {
+        //     steps {
+        //         script {
+        //             docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+        //                 def appImage = docker.build("my-image:${env.BUILD_ID}")
+        //                 appImage.push()
+        //                 appImage.push("latest")
+        //             }
+        //         }
+        //     }
+        // }
+
+        // stage('Deploy to Staging') {
+        //     steps {
+        //         sh './scripts/deploy.sh staging'
+        //     }
+        // }
     }
 
     post {

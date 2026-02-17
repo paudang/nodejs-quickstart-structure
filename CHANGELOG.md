@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.4] - 2026-02-17
+> Happy Lunar New Year! This release coincides with Tet Vietnam. 🎆
+
+### Fixed
+- Resolved `JSON.parse` error and incorrect Redis arguments in `getAllUsers` usecase for Clean Architecture templates.
+- Fixed `SyntaxError` in `lib/modules/caching-setup.js` preventing project generation.
+
+### Added
+- Implemented automatic cache invalidation in `createUser` usecase (Clean Architecture) to ensure data consistency.
+
+## [1.7.0]
+
+### Added
+- Added support for Redis caching in both MVC and Clean Architecture.
+
 ## [1.6.1] - 2026-02-11
 
 ### Fixed
