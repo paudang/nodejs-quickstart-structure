@@ -277,7 +277,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
 
         // 3. Install Deps
         log(`... Installing Dependencies ...`);
-        await runCommand('npm install', projectPath);
+        await runCommand('npm install --no-audit --no-fund --loglevel=error', projectPath);
 
         // 2.1 Verify Professional Standards
         log(`... Verifying Professional Standards ...`);
