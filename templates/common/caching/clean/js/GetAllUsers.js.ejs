@@ -12,7 +12,7 @@ class GetAllUsers {
             const cachedUsers = await redis.get(cacheKey);
             if (cachedUsers) {
                 logger.info('Serving users from cache');
-                return JSON.parse(cachedUsers);
+                return cachedUsers;
             }
         } catch (error) {
             logger.error('Redis error (get):', error);
@@ -21,7 +21,7 @@ class GetAllUsers {
         const users = await this.userRepository.getUsers();
 
         try {
-            await redis.set(cacheKey, JSON.stringify(users), 'EX', 60);
+            await redis.set(cacheKey, users, 60);
         } catch (error) {
             logger.error('Redis error (set):', error);
         }
