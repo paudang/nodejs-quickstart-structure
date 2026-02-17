@@ -1,0 +1,23 @@
+import { User } from '@/domain/user';
+
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+import redis from '@/infrastructure/caching/redisClient';
+import logger from '@/infrastructure/log/logger';
+
+export default class CreateUser {
+    constructor(private userRepository: UserRepository) {}
+
+    async execute(name: string, email: string) {
+        const user = new User(null, name, email);
+        const savedUser = await this.userRepository.save(user);
+
+        try {
+            await redis.del('users:all');
+            logger.info('Invalidated users:all cache');
+        } catch (error) {
+            logger.error('Redis error (del):', error);
+        }
+
+        return savedUser;
+    }
+}
