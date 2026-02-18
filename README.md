@@ -25,7 +25,7 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 -   **🔍 Code Quality**: Pre-configured `Eslint` and `Prettier` for consistent coding standards.
 -   **🛡️ Security**: Built-in `Helmet`, `HPP`, `CORS`, and Rate-Limiting middleware.
 -   **🧪 Testing Strategy**: Integrated `Jest` and `Supertest` setup for Unit and Integration testing.
--   **🔄CI/CD Integration**: Pre-configured workflows for **GitHub Actions**, **Jenkins**, and **GitLab CI**.
+-   **🔄 CI/CD Integration**: Pre-configured workflows for **GitHub Actions**, **Jenkins**, and **GitLab CI**.
 -   **⚓ Git Hooks**: `Husky` and `Lint-Staged` to ensure no bad code is ever committed.
 -   **🐳 DevOps**: Highly optimized **Multi-Stage Dockerfile** for small, secure production images.
 
