@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2026-02-18
+### Added
+- Introduced **GitLab CI/CD pipeline support**:
+  - Preconfigured `.gitlab-ci.yml` for automated build, test, and deploy steps.
+  - End-to-end (e2e) test job included to ensure project reliability.
+  - Aligns with existing GitHub Actions and Jenkins workflows for consistent CI/CD coverage.
+
+### Improved
+- Documentation updated to highlight GitLab CI/CD as a supported option.
+- Enhanced CI/CD setup instructions in `README.md` for multi-platform pipelines.
+
 ## [1.7.5] - 2026-02-17
 > Happy Lunar New Year! This release coincides with Tet Vietnam. 🎆
 ### Fixed
