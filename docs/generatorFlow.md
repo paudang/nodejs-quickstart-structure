@@ -90,7 +90,11 @@ The `generateProject` function in `lib/generator.js` executes the following step
 16. **Test Setup**:
     *   Generates `jest.config.js` and a sample `health.test.{js|ts}`.
 17. **CI/CD Setup**:
-    *   Copies GitHub Actions workflow or renders `Jenkinsfile` if selected.
+    *   Helper: `setupCiCd`
+    *   Checks `config.ciProvider`:
+        *   **GitHub Actions**: Copies `.github/workflows/ci.yml`.
+        *   **Jenkins**: Renders `Jenkinsfile`.
+        *   **GitLab CI**: Renders `.gitlab-ci.yml` if selected.
 
 ## 4. TypeScript vs JavaScript Generation Steps
 

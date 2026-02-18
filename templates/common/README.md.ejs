@@ -17,8 +17,16 @@ This project comes pre-configured with industry-standard tooling for **Code Qual
 -   **DevOps**: Multi-stage Docker build, CI/CD ready.
 
 ## 🔄 CI/CD Pipeline
-<% if (ciProvider === 'GitHub Actions') { -%>
+<%_ if (ciProvider === 'GitHub Actions') { -%>
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/yourusername/<%= projectName %>/ci.yml?branch=main)
 This project includes a **GitHub Actions** workflow located in `.github/workflows/ci.yml`.
+It automatically runs:
+-   Linting
+-   Tests
+-   Builds
+<%_ } else if (ciProvider === 'GitLab CI') { -%>
+![GitLab CI Status](https://img.shields.io/gitlab/pipeline/yourusername/<%= projectName %>?branch=main)
+This project includes a **GitLab CI** configuration in `.gitlab-ci.yml`.
 It automatically runs:
 -   Linting
 -   Tests

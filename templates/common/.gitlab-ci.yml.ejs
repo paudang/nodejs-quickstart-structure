@@ -1,0 +1,35 @@
+variables:
+  NODE_ENV: 'test'
+
+stages:
+  - lint
+  - test
+  - build
+
+cache:
+  paths:
+    - node_modules/
+
+install_dependencies:
+  stage: .pre
+  image: node:18-alpine
+  script:
+    - npm ci
+
+lint_code:
+  stage: lint
+  image: node:18-alpine
+  script:
+    - npm run lint
+
+run_tests:
+  stage: test
+  image: node:18-alpine
+  script:
+    - npm test
+
+build_app:
+  stage: build
+  image: node:18-alpine
+  script:
+    - npm run build --if-present

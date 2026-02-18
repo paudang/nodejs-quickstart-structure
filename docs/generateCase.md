@@ -3,6 +3,7 @@
 This document lists the **112 possible project combinations** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases, communication patterns, and caching options.
 
 ## Summary
+- **CI Providers**: `None`, `GitHub Actions`, `Jenkins`, `GitLab CI`
 - **MVC Architecture**: 84 Combinations
   - **With Database (36)**: 2 Lang × 3 View × 3 DB × 2 Comm = 36 * 2 (Caching: None/Redis) = 72
   - **No Database (12)**: 2 Lang × 3 View × 1 DB × 2 Comm = 12 * 1 (Caching: None) = 12
