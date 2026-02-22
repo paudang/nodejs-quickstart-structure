@@ -260,7 +260,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         ];
 
         if (config.caching) {
-            args.push('--caching', config.caching);
+            args.push('--caching', `"${config.caching}"`);
         }
 
         if (config.architecture === 'MVC') {
@@ -314,7 +314,11 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         
         await new Promise(r => setTimeout(r, 2000));
         
-        await runCommand(`${composeCmd} up -d --build`, projectPath, TEST_ENV); 
+        try {
+            await runCommand(`${composeCmd} up -d --build`, projectPath, TEST_ENV, true); 
+        } catch (e) {
+            throw new Error(`Docker compose up failed: ${e.message}`);
+        }
 
         // 4. Verify Health
         log(`... Waiting for Health Check ...`);
