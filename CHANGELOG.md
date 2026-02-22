@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-02-22
+### Added
+- Added built-in **Memory Cache** (`node-cache`) integration as an alternative caching layer alongside Redis.
+- Scaled up the generator matrix, now supporting over **160 Core Combinations** and **320 Total Scenarios** (including CI/CD pipelines).
+- Configured dynamic cache service imports across both MVC and Clean Architecture controllers/usecases.
+
+### Fixed
+- Fixed an ESLint TypeScript parsing error (`Type expected`) caused by unescaped EJS template variables in Clean Architecture usecases.
+- Fixed a CLI execution bug where unquoted caching parameters (like `"Memory Cache"`) caused test validation failures.
+- Updated the E2E Windows Validation test core to evaluate ESLint flat config files (`eslint.config.mjs`) instead of `.eslintrc.json`.
+
 ## [1.8.2] - 2026-02-22
 ### Fixed
 - Hotfix: Changed `cpx2` command to its actual executable binary `cpx` in the build script. This resolves `sh: cpx2: not found` failures when running `npm run build` or `docker-compose up --build`.
