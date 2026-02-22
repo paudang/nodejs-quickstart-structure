@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.1] - 2026-02-22
+### Security
+- Resolved all high-severity npm vulnerabilities (0 vulnerabilities detected on install).
+- Upgraded ESLint to v9 and `typescript-eslint` to v8, migrating generated templates from `.eslintrc.json` to Flat Config (`eslint.config.mjs`) to eliminate deprecated `eslint@8` transitive dependencies.
+- Upgraded `supertest` to v7, `rimraf` to v6, and `ejs` to v3.1.10.
+- Replaced vulnerable `copyfiles` dependency with `cpx2` for view template orchestration.
+- Configured npm `overrides` for `minimatch@^10.2.1` to patch outdated `jest` sub-dependencies without breaking the test runner.
+
+### Fixed
+- Fixed `npm install` crashing due to `husky install` expecting an initialized `.git` directory by adding a graceful fallback wrapper.
+
 ## [1.8.0] - 2026-02-18
 ### Added
 - Introduced **GitLab CI/CD pipeline support**:
