@@ -3,14 +3,16 @@ import User from '@/models/User';
 import { HTTP_STATUS } from '@/utils/httpCodes';
 import logger from '@/utils/logger';
 <%_ if (caching === 'Redis') { -%>
-import redisService from '@/config/redisClient';
+import cacheService from '@/config/redisClient';
+<%_ } else if (caching === 'Memory Cache') { -%>
+import cacheService from '@/config/memoryCache';
 <%_ } -%>
 
 export class UserController {
     async getUsers(req: Request, res: Response) {
         try {
-<%_ if (caching === 'Redis') { -%>
-            const users = await redisService.getOrSet('users:all', async () => {
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            const users = await cacheService.getOrSet('users:all', async () => {
 <%_ if (database === 'MongoDB') { -%>
                 return await User.find();
 <%_ } else if (database === 'None') { -%>
@@ -45,14 +47,14 @@ export class UserController {
 <%_ if (database === 'None') { -%>
             const newUser = { id: String(User.mockData.length + 1), name, email };
             User.mockData.push(newUser);
-<%_ if (caching === 'Redis') { -%>
-            await redisService.del('users:all');
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            await cacheService.del('users:all');
 <%_ } -%>
             res.status(HTTP_STATUS.CREATED).json(newUser);
 <%_ } else { -%>
             const user = await User.create({ name, email });
-<%_ if (caching === 'Redis') { -%>
-            await redisService.del('users:all');
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            await cacheService.del('users:all');
 <%_ } -%>
             res.status(HTTP_STATUS.CREATED).json(user);
 <%_ } -%>

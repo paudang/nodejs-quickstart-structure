@@ -26,7 +26,7 @@ The generator prompts the user for the following configurations. These determine
 | **Database** | `None`, `MySQL`, `PostgreSQL`, `MongoDB` | `None` | The primary database. |
 | **Database Name** | Input String | `demo` | The name of the database to use/create. |
 | **Communication**| `REST APIs`, `Kafka` | `REST APIs` | The primary communication method. |
-| **Caching Layer**| `None`, `Redis` | `None` | (If DB selected) Caching solution. |
+| **Caching Layer**| `None`, `Redis`, `Memory Cache` | `None` | (If DB selected) Caching solution. |
 | **CI/CD Provider**| `None`, `GitHub Actions`, `Jenkins`| `None` | Setup for Continuous Integration/Deployment. |
 
 ## 3. Main Generator Flow
@@ -72,8 +72,12 @@ The `generateProject` function in `lib/generator.js` executes the following step
     *   **Redis**:
         *   Injects `ioredis` dependency into `package.json`.
         *   Generates `redisClient.{js|ts}` config.
-        *   **MVC**: Injects caching logic into `userController`.
-        *   **Clean Architecture**: Overwrites `GetAllUsers` use case with caching-enabled version.
+        *   **MVC**: Injects generic caching logic into `userController`.
+        *   **Clean Architecture**: Overwrites UseCases with caching-enabled versions.
+    *   **Memory Cache**:
+        *   Injects `node-cache` dependency.
+        *   Generates `memoryCache.{js|ts}` config.
+        *   **MVC/Clean**: Consumes the generic abstraction injected above.
 12. **Database Connection Config**:
     *   Renders `database.{js|ts}` or `mongoose.{js|ts}` based on DB selection.
     *   Places it in `src/config` (MVC) or `src/infrastructure/database` (Clean Arch).

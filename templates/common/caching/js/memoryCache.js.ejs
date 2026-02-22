@@ -1,0 +1,60 @@
+const NodeCache = require('node-cache');
+const logger = require('<%- loggerPath %>');
+
+class MemoryCacheService {
+    constructor() {
+        // Default TTL of 0 (unlimited), check period of 120s
+        this.cache = new NodeCache({ stdTTL: 0, checkperiod: 120 });
+        logger.info('Memory Cache initialized');
+    }
+
+    static getInstance() {
+        if (!MemoryCacheService.instance) {
+            MemoryCacheService.instance = new MemoryCacheService();
+        }
+        return MemoryCacheService.instance;
+    }
+
+    async get(key) {
+        try {
+            const data = this.cache.get(key);
+            if (data === undefined) return null;
+            return typeof data === 'string' ? JSON.parse(data) : data;
+        } catch (error) {
+            logger.error(`Memory Cache get error for key ${key}:`, error);
+            return null;
+        }
+    }
+
+    async set(key, value, ttl) {
+        try {
+            const data = JSON.stringify(value);
+            if (ttl) {
+                this.cache.set(key, data, ttl);
+            } else {
+                this.cache.set(key, data);
+            }
+        } catch (error) {
+            logger.error(`Memory Cache set error for key ${key}:`, error);
+        }
+    }
+
+    async del(key) {
+        try {
+            this.cache.del(key);
+        } catch (error) {
+            logger.error(`Memory Cache del error for key ${key}:`, error);
+        }
+    }
+
+    async getOrSet(key, fetcher, ttl = 3600) {
+        const cached = await this.get(key);
+        if (cached) return cached;
+
+        const data = await fetcher();
+        if (data) await this.set(key, data, ttl);
+        return data;
+    }
+}
+
+module.exports = MemoryCacheService.getInstance();

@@ -23,3 +23,6 @@
 ## Git Workflow
 - Commit messages should be descriptive.
 - Ensure all tests pass before pushing.
+
+## Verify function before commit
+- npm run test:e2e

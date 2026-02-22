@@ -1,5 +1,9 @@
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
-import redis from '@/infrastructure/caching/redisClient';
+<%_ if (caching === 'Redis') { -%>
+import cacheService from '@/infrastructure/caching/redisClient';
+<%_ } else if (caching === 'Memory Cache') { -%>
+import cacheService from '@/infrastructure/caching/memoryCache';
+<%_ } -%>
 import logger from '@/infrastructure/log/logger';
 
 export default class GetAllUsers {
@@ -8,21 +12,21 @@ export default class GetAllUsers {
     async execute() {
         const cacheKey = 'users:all';
         try {
-            const cachedUsers = await redis.get(cacheKey);
+            const cachedUsers = await cacheService.get(cacheKey);
             if (cachedUsers) {
                 logger.info('Serving users from cache');
                 return cachedUsers;
             }
         } catch (error) {
-            logger.error('Redis error (get):', error);
+            logger.error('Cache error (get):', error);
         }
 
         const users = await this.userRepository.getUsers();
 
         try {
-            await redis.set(cacheKey, users, 60);
+            await cacheService.set(cacheKey, users, 60);
         } catch (error) {
-            logger.error('Redis error (set):', error);
+            logger.error('Cache error (set):', error);
         }
 
         return users;

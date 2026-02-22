@@ -1,5 +1,9 @@
 const User = require('../domain/models/User');
-const redis = require('../infrastructure/caching/redisClient');
+<%_ if (caching === 'Redis') { -%>
+const cacheService = require('../infrastructure/caching/redisClient');
+<%_ } else if (caching === 'Memory Cache') { -%>
+const cacheService = require('../infrastructure/caching/memoryCache');
+<%_ } -%>
 const logger = require('../infrastructure/log/logger');
 
 class CreateUser {
@@ -12,10 +16,10 @@ class CreateUser {
         const savedUser = await this.userRepository.save(user);
 
         try {
-            await redis.del('users:all');
+            await cacheService.del('users:all');
             logger.info('Invalidated users:all cache');
         } catch (error) {
-            logger.error('Redis error (del):', error);
+            logger.error('Cache error (del):', error);
         }
 
         return savedUser;

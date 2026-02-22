@@ -1,7 +1,11 @@
 import { User } from '@/domain/user';
 
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
-import redis from '@/infrastructure/caching/redisClient';
+<%_ if (caching === 'Redis') { -%>
+import cacheService from '@/infrastructure/caching/redisClient';
+<%_ } else if (caching === 'Memory Cache') { -%>
+import cacheService from '@/infrastructure/caching/memoryCache';
+<%_ } -%>
 import logger from '@/infrastructure/log/logger';
 
 export default class CreateUser {
@@ -12,10 +16,10 @@ export default class CreateUser {
         const savedUser = await this.userRepository.save(user);
 
         try {
-            await redis.del('users:all');
+            await cacheService.del('users:all');
             logger.info('Invalidated users:all cache');
         } catch (error) {
-            logger.error('Redis error (del):', error);
+            logger.error('Cache error (del):', error);
         }
 
         return savedUser;

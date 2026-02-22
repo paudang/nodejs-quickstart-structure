@@ -95,6 +95,10 @@ A Swagger UI for API documentation is available at:
 This project uses **Redis** for caching.
 - **Client**: `ioredis`
 - **Connection**: Configured via `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` in `.env`.
+<% } else if (caching === 'Memory Cache') { -%>
+## ⚡ Caching
+This project uses **Memory Cache** for in-memory caching.
+- **Client**: `node-cache`
 <% } -%>
 
 ## 📝 Logging

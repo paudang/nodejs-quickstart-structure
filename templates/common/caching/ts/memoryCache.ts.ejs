@@ -1,0 +1,64 @@
+import NodeCache from 'node-cache';
+import logger from '<%- loggerPath %>';
+
+class MemoryCacheService {
+    private cache: NodeCache;
+    private static instance: MemoryCacheService;
+
+    private constructor() {
+        // Default TTL of 0 (unlimited), check period of 120s
+        this.cache = new NodeCache({ stdTTL: 0, checkperiod: 120 });
+        logger.info('Memory Cache initialized');
+    }
+
+    public static getInstance(): MemoryCacheService {
+        if (!MemoryCacheService.instance) {
+            MemoryCacheService.instance = new MemoryCacheService();
+        }
+        return MemoryCacheService.instance;
+    }
+
+    public async get<T>(key: string): Promise<T | null> {
+        try {
+            const data = this.cache.get<T>(key);
+            // Simulating un-parsed data similar to Redis for consistency
+            if (data === undefined) return null;
+            return typeof data === 'string' ? JSON.parse(data) : data;
+        } catch (error) {
+            logger.error(`Memory Cache get error for key ${key}:`, error);
+            return null;
+        }
+    }
+
+    public async set(key: string, value: unknown, ttl?: number): Promise<void> {
+        try {
+            const data = JSON.stringify(value);
+            if (ttl) {
+                this.cache.set(key, data, ttl);
+            } else {
+                this.cache.set(key, data);
+            }
+        } catch (error) {
+            logger.error(`Memory Cache set error for key ${key}:`, error);
+        }
+    }
+
+    public async del(key: string): Promise<void> {
+        try {
+            this.cache.del(key);
+        } catch (error) {
+            logger.error(`Memory Cache del error for key ${key}:`, error);
+        }
+    }
+
+    public async getOrSet<T>(key: string, fetcher: () => Promise<T>, ttl: number = 3600): Promise<T> {
+        const cached = await this.get<T>(key);
+        if (cached) return cached;
+
+        const data = await fetcher();
+        if (data) await this.set(key, data, ttl);
+        return data;
+    }
+}
+
+export default MemoryCacheService.getInstance();

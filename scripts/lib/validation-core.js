@@ -23,7 +23,7 @@ function log(msg, color = ANSI_RESET) {
 const LANGUAGES = ['TypeScript', 'JavaScript'];
 const DATABASES = ['None','MySQL', 'PostgreSQL', 'MongoDB'];
 const COMMUNICATIONS = ['REST APIs', 'Kafka']; 
-const CACHING = ['None', 'Redis'];
+const CACHING = ['None', 'Redis', 'Memory Cache'];
 const VIEW_ENGINES_MVC = ['EJS', 'Pug', 'None'];
 
 export const combinations = [];
@@ -281,7 +281,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
 
         // 2.1 Verify Professional Standards
         log(`... Verifying Professional Standards ...`);
-        const requiredFiles = ['.eslintrc.json', '.prettierrc', '.lintstagedrc', 'jest.config.js', 'Dockerfile', 'README.md'];
+        const requiredFiles = ['eslint.config.mjs', '.prettierrc', '.lintstagedrc', 'jest.config.js', 'Dockerfile', 'README.md'];
         for (const file of requiredFiles) {
             if (!await fs.pathExists(path.join(projectPath, file))) {
                 throw new Error(`Missing Professional Standard File: ${file}`);
