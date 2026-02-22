@@ -6,7 +6,7 @@
   "scripts": {
     "start": "<% if (language === 'TypeScript') { %>node dist/index.js<% } else { %>node src/index.js<% } %>",
     "dev": "<% if (language === 'TypeScript') { %>nodemon --exec ts-node -r tsconfig-paths/register src/index.ts<% } else { %>nodemon src/index.js<% } %>"<% if (language === 'TypeScript') { %>,
-    "build": "rimraf dist && tsc && tsc-alias<% if (viewEngine && viewEngine !== 'None') { %> && cpx2 \"src/views/**/*\" dist/views<% } %>"<% } %>,
+    "build": "rimraf dist && tsc && tsc-alias<% if (viewEngine && viewEngine !== 'None') { %> && cpx \"src/views/**/*\" dist/views<% } %>"<% } %>,
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
