@@ -1,0 +1,40 @@
+name: Daily Template Audit
+
+on:
+  schedule:
+    # Run at midnight UTC every day automatically
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # Allow manual triggering
+
+jobs:
+  audit-templates:
+    name: Audit EJS Templates
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          
+      - name: Extract Dependencies from Templates
+        run: |
+          mkdir -p temp_audit
+          node scripts/audit-template-deps.js temp_audit/package.json
+          
+      - name: Generate Package Lock & Resolve Tree
+        working-directory: ./temp_audit
+        run: npm install --package-lock-only
+        
+      - name: Run High-Severity NPM Audit
+        working-directory: ./temp_audit
+        run: npm audit --audit-level=high
+
+      - name: Notify on Failure
+        if: failure()
+        run: |
+          echo "::error::High severity vulnerabilities found in templates/common/package.json.ejs. Check the npm audit logs to apply an emergency patch."

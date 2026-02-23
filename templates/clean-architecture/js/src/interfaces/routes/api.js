@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const UserController = require('../controllers/UserController');
+const UserController = require('../controllers/userController');
 
 // Should inject dependencies here in a real app
 const userController = new UserController();

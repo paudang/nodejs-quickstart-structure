@@ -26,3 +26,5 @@
 
 ## Verify function before commit
 - npm run test:e2e
+
+## Verify case sensitivity before commit

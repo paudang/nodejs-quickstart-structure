@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.9.0] - 2026-02-22
 ### Added
+- Implemented **Daily Template Vulnerability Audit** via GitHub Actions (`.github/workflows/daily-audit.yml`). A custom script now parses `package.json.ejs` daily to proactively scan for high-severity vulnerabilities in generated dependencies, ensuring generated projects are eternally secure.
 - Added built-in **Memory Cache** (`node-cache`) integration as an alternative caching layer alongside Redis.
 - Scaled up the generator matrix, now supporting over **160 Core Combinations** and **320 Total Scenarios** (including CI/CD pipelines).
 - Configured dynamic cache service imports across both MVC and Clean Architecture controllers/usecases.

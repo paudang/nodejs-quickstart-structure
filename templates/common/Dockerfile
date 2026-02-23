@@ -9,7 +9,7 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 
 # Install ALL dependencies (including devDeps for build)
-RUN npm ci
+RUN npm ci --no-audit --no-fund || npm ci --no-audit --no-fund || npm ci --no-audit --no-fund
 
 COPY . .
 
@@ -28,7 +28,7 @@ ENV NODE_ENV=production
 COPY package*.json ./
 
 # Install ONLY production dependencies
-RUN npm ci --only=production --ignore-scripts
+RUN npm ci --only=production --ignore-scripts --no-audit --no-fund || npm ci --only=production --ignore-scripts --no-audit --no-fund || npm ci --only=production --ignore-scripts --no-audit --no-fund
 
 # Copy built artifacts from builder
 <% if (language === 'TypeScript') { %>

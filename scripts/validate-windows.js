@@ -8,5 +8,5 @@ const specificIndex = args.length > 0 ? parseInt(args[0]) : undefined;
 runValidation({ 
     skipDocker: false, 
     specificTestIndex: specificIndex,
-    concurrency: 2
+    concurrency: 3
 });
