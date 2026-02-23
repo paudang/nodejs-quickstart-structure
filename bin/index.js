@@ -51,7 +51,23 @@ program
             await generateProject(answers);
 
             console.log(chalk.green('\n✔ Project generated successfully!'));
-            console.log(chalk.cyan(`\nNext steps:\n  cd ${answers.projectName}\n  npm install\n  docker-compose up\n-----------------------\nStart the app manually:\n  cd ${answers.projectName}\n  npm install\n  npm run dev`));
+            
+            let manualStartInstructions = `\nStart the app manually:\n  cd ${answers.projectName}\n  npm install`;
+            
+            const needsInfrastructure = answers.database !== 'None' || answers.caching === 'Redis' || answers.communication === 'Kafka';
+            
+            if (needsInfrastructure) {
+                let servicesToStart = '';
+                if (answers.database !== 'None') servicesToStart += ' db';
+                if (answers.caching === 'Redis') servicesToStart += ' redis';
+                if (answers.communication === 'Kafka') servicesToStart += ' zookeeper kafka';
+                
+                manualStartInstructions += `\n  docker-compose up -d${servicesToStart}  # Start infrastructure first\n  npm run dev`;
+            } else {
+                manualStartInstructions += `\n  npm run dev`;
+            }
+            
+            console.log(chalk.cyan(`\nNext steps:\n  cd ${answers.projectName}\n  npm install\n  docker-compose up\n-----------------------${manualStartInstructions}`));
 
         } catch (error) {
             console.error(chalk.red('Error generating project:'), error);

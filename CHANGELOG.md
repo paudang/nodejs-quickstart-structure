@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.2] - 2026-02-23
+### Fixed
+- Fixed an issue where the generator output misleading instructions (`DATABASE_URL`) for standalone `docker run` executions. The CLI success commands and `README.md` now conditionally include dynamic compose network bindings (`--network`) and accurate environment variables matching the user's selected DB stack.
+- Fixed a bug where `DB_PASSWORD` in `database.ts.ejs` and `database.js.ejs` defaulted to `postgres` instead of `root` for PostgreSQL configurations, causing standalone Node local servers (`npm run dev`) to fail connection handshakes with default `docker-compose` clusters. 
+
 ## [1.9.1] - 2026-02-22
 ### Added
 - Implemented **Daily Template Vulnerability Audit** via GitHub Actions (`.github/workflows/daily-audit.yml`). A custom script now parses `package.json.ejs` daily to proactively scan for high-severity vulnerabilities in generated dependencies, ensuring generated projects are eternally secure.

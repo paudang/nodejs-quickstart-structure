@@ -111,13 +111,50 @@ This project uses **Winston** for structured logging.
 ## 🐳 Docker Deployment
 This project uses a **Multi-Stage Dockerfile** for optimized production images.
 
+<% if (database !== 'None' || caching === 'Redis' || communication === 'Kafka') { -%>
+### 1. Running Locally (Development)
+To run the Node.js application locally while using Docker for the infrastructure (Database, Redis, Kafka, etc.):
+
+```bash
+# Start infrastructure
+docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> zookeeper kafka<% } %>
+
+# Start the application
+npm run dev
+```
+
+### 2. Running the App Container with Compose Infrastructure
+If you want to run the application itself inside a Docker container while connecting to the infrastructure managed by your `docker-compose.yml`:
+
+```bash
+# First, ensure your infrastructure is running
+docker-compose up -d
+
+# Build Production Image
+docker build -t <%= projectName %> .
+
+# Run Container (attached to the compose network)
+docker run -p 3000:3000 --network <%= projectName %>_default \
+<% if (database !== 'None') { -%>
+  -e DB_HOST=db \
+<% } -%>
+<% if (caching === 'Redis') { -%>
+  -e REDIS_HOST=redis \
+<% } -%>
+<% if (communication === 'Kafka') { -%>
+  -e KAFKA_BROKER=kafka:29092 \
+<% } -%>
+  <%= projectName %>
+```
+<% } else { -%>
 ```bash
 # Build Production Image
 docker build -t <%= projectName %> .
 
 # Run Container
-docker run -p 3000:3000 -e DATABASE_URL=... <%= projectName %>
+docker run -p 3000:3000 <%= projectName %>
 ```
+<% } -%>
 
 ## 🔒 Security Features
 -   **Helmet**: Sets secure HTTP headers.

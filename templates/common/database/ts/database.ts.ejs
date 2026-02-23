@@ -3,14 +3,13 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Determine dialect
 <% if (database === 'MySQL') { %>const dialect = 'mysql';<% } -%>
 <% if (database === 'PostgreSQL') { %>const dialect = 'postgres';<% } -%>
 
 const sequelize = new Sequelize(
   process.env.DB_NAME || '<%= dbName %>',
   process.env.DB_USER || '<% if (database === 'MySQL') { %>root<% } else { %>postgres<% } %>',
-  process.env.DB_PASSWORD || '<% if (database === 'MySQL') { %>root<% } else { %>postgres<% } %>',
+  process.env.DB_PASSWORD || '<% if (database === 'MySQL') { %>root<% } else { %>root<% } %>',
   {
     host: process.env.DB_HOST || '127.0.0.1',
     dialect: dialect,
