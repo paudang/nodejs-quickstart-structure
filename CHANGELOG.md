@@ -113,4 +113,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release of `nodejs-quickstart-structure`.
 - Scaffolding for MVC and Clean Architecture.
 - Support for Express.js.
-- Database integration (MongoDB, MySQL, PostgreSQL).
+- Database integration (MongoDB, MySQL, PostgreSQL)
