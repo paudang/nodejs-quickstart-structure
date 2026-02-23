@@ -6,11 +6,6 @@ A powerful CLI tool to scaffold production-ready Node.js microservices with buil
 
 ![Demo](docs/demo.gif)
 
-#### Security & Maintenance
-When generating microservices, you inherit dependencies configured within `templates/common/package.json.ejs`. Since standard repository vulnerability scanners cannot natively parse EJS conditional tags, this generator implements a custom **Daily Template Vulnerability Audit** via GitHub Actions.
-
-Every night, an extraction script compiles all possible template dependencies across all combinations (MongoDB, Kafka, Redis, Memory Cache, MySQL, PostgreSQL, etc) into a single map and performs a comprehensive `npm audit --audit-level=high`. If a severe vulnerability is ever identified in a third-party package utilized by the templates, the repository maintainers are instantly alerted to patch it, ensuring zero-day security gaps are mitigated instantly.
-
 ## Features
 
 - **Interactive CLI**: Easy-to-use prompts to configure your project.
