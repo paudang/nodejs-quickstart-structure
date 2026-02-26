@@ -6,7 +6,7 @@
   "scripts": {
     "start": "<% if (language === 'TypeScript') { %>node dist/index.js<% } else { %>node src/index.js<% } %>",
     "dev": "<% if (language === 'TypeScript') { %>nodemon --exec ts-node -r tsconfig-paths/register src/index.ts<% } else { %>nodemon src/index.js<% } %>"<% if (language === 'TypeScript') { %>,
-    "build": "rimraf dist && tsc && tsc-alias<% if (viewEngine && viewEngine !== 'None') { %> && cpx \"src/views/**/*\" dist/views<% } %>"<% } %>,
+    "build": "rimraf dist && tsc && tsc-alias<% if (viewEngine && viewEngine !== 'None') { %> && cpx \"src/views/**/*\" dist/views<% } %><% if (communication === 'REST APIs') { %> && cpx \"src/**/*.yml\" dist/<% } %>"<% } %>,
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -48,7 +48,7 @@
     "winston-daily-rotate-file": "^5.0.0",
     "morgan": "^1.10.0"<% if (communication === 'REST APIs') { %>,
     "swagger-ui-express": "^5.0.0",
-    "swagger-jsdoc": "^6.2.8"<% } %>
+    "yamljs": "^0.3.0"<% } %>
   },
   "devDependencies": {
     "nodemon": "^3.0.2"<% if (language === 'TypeScript') { %>,
@@ -68,7 +68,7 @@
     "@types/sequelize": "^4.28.19",
 <%_ } -%>
     "@types/morgan": "^1.9.9",
-    "rimraf": "^6.0.1"<% if (viewEngine && viewEngine !== 'None') { %>,
+    "rimraf": "^6.0.1"<% if ((viewEngine && viewEngine !== 'None') || communication === 'REST APIs') { %>,
     "cpx2": "^8.0.0"<% } %><% } %>,
     "eslint": "^9.20.1",
     "@eslint/js": "^9.20.0",
@@ -79,7 +79,7 @@
     "lint-staged": "^15.4.3"<% if (language === 'TypeScript') { %>,
     "typescript-eslint": "^8.24.1",
 <% if (communication === 'REST APIs') { %>    "@types/swagger-ui-express": "^4.1.6",
-    "@types/swagger-jsdoc": "^6.0.4",<% } -%>
+    "@types/yamljs": "^0.2.34",<% } %>
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "@types/jest": "^29.5.14",

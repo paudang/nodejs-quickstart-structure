@@ -233,12 +233,13 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         PORT: (await getFreePort(usedPorts)).toString(),
         DB_PORT: (await getFreePort(usedPorts)).toString(),
         ZOOKEEPER_PORT: (await getFreePort(usedPorts)).toString(),
-        KAFKA_PORT: (await getFreePort(usedPorts)).toString()
+        KAFKA_PORT: (await getFreePort(usedPorts)).toString(),
+        REDIS_PORT: (await getFreePort(usedPorts)).toString()
     };
 
     log(`>>> Starting Test ${index + 1}/${combinations.length}: ${config.projectName}`, ANSI_CYAN);
     if (!skipDocker) {
-        log(`    Ports -> APP:${TEST_ENV.PORT}, DB:${TEST_ENV.DB_PORT}, ZK:${TEST_ENV.ZOOKEEPER_PORT}, KAFKA:${TEST_ENV.KAFKA_PORT}`);
+        log(`    Ports -> APP:${TEST_ENV.PORT}, DB:${TEST_ENV.DB_PORT}, ZK:${TEST_ENV.ZOOKEEPER_PORT}, KAFKA:${TEST_ENV.KAFKA_PORT}, REDIS:${TEST_ENV.REDIS_PORT}`);
     }
     
     try {
@@ -253,7 +254,6 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             '--language', config.language,
             '--architecture', `"${config.architecture}"`,
             '--database', config.database,
-
             ...(config.dbName ? ['--db-name', config.dbName] : []),
             '--communication', `"${config.communication}"`,
             '--ci-provider', '"GitHub Actions"' 

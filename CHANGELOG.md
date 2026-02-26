@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.4] - 2026-02-26
+### Fixed
+- Fixed an `EBADENGINE` compatibility issue during Docker builds by upgrading the default template `Dockerfile` base image from `node:18-alpine` to `node:22-alpine`, supporting modern dependencies like `eslint@9` and `cpx2`.
+- Fixed a port collision bug (`Bind for 0.0.0.0:6379 failed: port is already allocated`) during parallel E2E testing. The `validation-core.js` script now dynamically assigns random network ports for `REDIS_PORT` when running concurrent testing matrices.
+
+## [1.9.3] - 2026-02-26
+### Added
+- Refactored Swagger documentation to use a standalone `swagger.yml` file instead of inline JSDoc comments across all templates (MVC, Clean Architecture, TS, and JS).
+- Integrated `yamljs` to parse the `swagger.yml` file and removed the `swagger-jsdoc` dependency, significantly reducing boilerplate in route files.
+
+### Fixed
+- Fixed an issue in `package.json.ejs` where `jest` configuration had malformed JSON due to whitespace stripping.
+- Fixed a Docker build crash for non-REST API projects caused by the build script unconditionally attempting to copy `swagger.yml` using `cpx2`.
+
 ## [1.9.2] - 2026-02-23
 ### Fixed
 - Fixed an issue where the generator output misleading instructions (`DATABASE_URL`) for standalone `docker run` executions. The CLI success commands and `README.md` now conditionally include dynamic compose network bindings (`--network`) and accurate environment variables matching the user's selected DB stack.
