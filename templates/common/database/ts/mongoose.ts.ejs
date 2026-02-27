@@ -4,7 +4,6 @@ import logger from '@/utils/logger';
 <% } else { %>
 import logger from '@/infrastructure/log/logger';
 <% } %>
-
 const connectDB = async (): Promise<void> => {
     const dbHost = process.env.DB_HOST || 'localhost';
     const mongoURI = process.env.MONGO_URI || `mongodb://${dbHost}:27017/<%= dbName %>`;

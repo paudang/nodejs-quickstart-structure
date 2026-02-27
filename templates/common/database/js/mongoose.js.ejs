@@ -6,7 +6,6 @@ logger = require('../utils/logger');
 <% } else { %>
 logger = require('../log/logger');
 <% } %>
-
 const connectDB = async () => {
     const dbHost = process.env.DB_HOST || 'localhost';
     const mongoURI = process.env.MONGO_URI || `mongodb://${dbHost}:27017/<%= dbName %>`;

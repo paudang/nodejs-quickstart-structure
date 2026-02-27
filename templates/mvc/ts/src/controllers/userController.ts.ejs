@@ -12,23 +12,6 @@ import cacheService from '@/config/memoryCache';
 
 export class UserController {
 <% if (communication === 'GraphQL') { -%>
-    async getUser(id: string) {
-        try {
-<%_ if (database === 'MongoDB') { -%>
-            const user = await User.findById(id);
-<%_ } else if (database === 'None') { -%>
-            const user = User.mockData.find((u: { id: string }) => u.id === id);
-<%_ } else { -%>
-            const user = await User.findByPk(id);
-<%_ } -%>
-            if (!user) throw new Error('User not found');
-            return user;
-        } catch (error) {
-            logger.error('Error fetching user:', error);
-            throw error;
-        }
-    }
-
     async getUsers() {
         try {
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
@@ -80,31 +63,6 @@ export class UserController {
         }
     }
 <% } else { -%>
-    async getUser(req: Request, res: Response) {
-        try {
-            const { id } = req.params;
-<%_ if (database === 'MongoDB') { -%>
-            const user = await User.findById(id);
-<%_ } else if (database === 'None') { -%>
-            const user = User.mockData.find((u: { id: string }) => u.id === id);
-<%_ } else { -%>
-            const user = await User.findByPk(id);
-<%_ } -%>
-            if (!user) {
-                res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'User not found' });
-                return;
-            }
-            res.json(user);
-        } catch (error) {
-            logger.error('Error fetching user:', error);
-            if (error instanceof Error) {
-                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
-            } else {
-                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Unknown error occurred' });
-            }
-        }
-    }
-
     async getUsers(req: Request, res: Response) {
         try {
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
