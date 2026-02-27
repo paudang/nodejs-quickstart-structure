@@ -88,6 +88,29 @@ Microservices communication handled via **Kafka**.
 API is exposed via **GraphQL**.
 The Apollo Sandbox UI for API exploration and documentation is available natively, fully embedded for offline development:
 - **URL**: `http://localhost:3000/graphql` (Dynamic based on PORT)
+If you are opening `http://localhost:3000/graphql` in your browser, you can directly run the following in the Apollo Sandbox UI:
+
+**Query to get all users:**
+```graphql
+query GetAllUsers {
+  getAllUsers {
+    id
+    name
+    email
+  }
+}
+```
+
+**Mutation to create a user:**
+```graphql
+mutation CreateUser {
+  createUser(name: "John Doe", email: "john@example.com") {
+    id
+    name
+    email
+  }
+}
+```
 <% } else { -%>
 API is exposed via **REST**.
 A Swagger UI for API documentation is available at:
