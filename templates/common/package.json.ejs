@@ -48,7 +48,10 @@
     "winston-daily-rotate-file": "^5.0.0",
     "morgan": "^1.10.0"<% if (communication === 'REST APIs') { %>,
     "swagger-ui-express": "^5.0.0",
-    "yamljs": "^0.3.0"<% } %>
+    "yamljs": "^0.3.0"<% } %><% if (communication === 'GraphQL') { %>,
+    "@apollo/server": "^4.10.0",
+    "graphql": "^16.8.1",
+    "@graphql-tools/merge": "^9.0.3"<% } %>
   },
   "devDependencies": {
     "nodemon": "^3.0.2"<% if (language === 'TypeScript') { %>,

@@ -1,0 +1,13 @@
+const UserRepository = require('../../infrastructure/repositories/UserRepository');
+
+const gqlContext = async ({ req }) => {
+  const token = req.headers.authorization || '';
+  const userRepository = new UserRepository();
+  
+  return { 
+    token, 
+    userRepository 
+  };
+};
+
+module.exports = { gqlContext };

@@ -1,0 +1,17 @@
+const userTypes = `#graphql
+  type User {
+    id: ID!
+    name: String!
+    email: String!
+  }
+
+  type Query {
+    getAllUsers: [User]
+  }
+
+  type Mutation {
+    createUser(name: String!, email: String!): User
+  }
+`;
+
+module.exports = { userTypes };

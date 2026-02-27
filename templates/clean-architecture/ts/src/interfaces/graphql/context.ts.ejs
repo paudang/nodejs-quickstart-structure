@@ -1,0 +1,17 @@
+import { Request } from 'express';
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+
+export interface MyContext {
+  token?: string;
+  userRepository: UserRepository;
+}
+
+export const gqlContext = async ({ req }: { req: Request }): Promise<MyContext> => {
+  const token = req.headers.authorization || '';
+  const userRepository = new UserRepository();
+  
+  return { 
+    token, 
+    userRepository 
+  };
+};

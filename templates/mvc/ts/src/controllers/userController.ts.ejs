@@ -1,6 +1,8 @@
+<% if (communication !== 'GraphQL') { -%>
 import { Request, Response } from 'express';
-import User from '@/models/User';
 import { HTTP_STATUS } from '@/utils/httpCodes';
+<% } -%>
+import User from '@/models/User';
 import logger from '@/utils/logger';
 <%_ if (caching === 'Redis') { -%>
 import cacheService from '@/config/redisClient';
@@ -9,6 +11,100 @@ import cacheService from '@/config/memoryCache';
 <%_ } -%>
 
 export class UserController {
+<% if (communication === 'GraphQL') { -%>
+    async getUser(id: string) {
+        try {
+<%_ if (database === 'MongoDB') { -%>
+            const user = await User.findById(id);
+<%_ } else if (database === 'None') { -%>
+            const user = User.mockData.find((u: { id: string }) => u.id === id);
+<%_ } else { -%>
+            const user = await User.findByPk(id);
+<%_ } -%>
+            if (!user) throw new Error('User not found');
+            return user;
+        } catch (error) {
+            logger.error('Error fetching user:', error);
+            throw error;
+        }
+    }
+
+    async getUsers() {
+        try {
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            const users = await cacheService.getOrSet('users:all', async () => {
+<%_ if (database === 'MongoDB') { -%>
+                return await User.find();
+<%_ } else if (database === 'None') { -%>
+                return User.mockData;
+<%_ } else { -%>
+                return await User.findAll();
+<%_ } -%>
+            }, 60);
+<%_ } else { -%>
+<%_ if (database === 'MongoDB') { -%>
+            const users = await User.find();
+<%_ } else if (database === 'None') { -%>
+            const users = User.mockData;
+<%_ } else { -%>
+            const users = await User.findAll();
+<%_ } -%>
+<%_ } -%>
+            return users;
+        } catch (error) {
+            logger.error('Error fetching users:', error);
+            throw error;
+        }
+    }
+
+    async createUser(data: { name: string, email: string }) {
+        try {
+            const { name, email } = data;
+<%_ if (database === 'None') { -%>
+            const newUser = { id: String(User.mockData.length + 1), name, email };
+            User.mockData.push(newUser);
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            await cacheService.del('users:all');
+<%_ } -%>
+            return newUser;
+<%_ } else { -%>
+            const user = await User.create({ name, email });
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            await cacheService.del('users:all');
+<%_ } -%>
+            return user;
+<%_ } -%>
+        } catch (error) {
+            logger.error('Error creating user:', error);
+            throw error;
+        }
+    }
+<% } else { -%>
+    async getUser(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+<%_ if (database === 'MongoDB') { -%>
+            const user = await User.findById(id);
+<%_ } else if (database === 'None') { -%>
+            const user = User.mockData.find((u: { id: string }) => u.id === id);
+<%_ } else { -%>
+            const user = await User.findByPk(id);
+<%_ } -%>
+            if (!user) {
+                res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'User not found' });
+                return;
+            }
+            res.json(user);
+        } catch (error) {
+            logger.error('Error fetching user:', error);
+            if (error instanceof Error) {
+                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+            } else {
+                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Unknown error occurred' });
+            }
+        }
+    }
+
     async getUsers(req: Request, res: Response) {
         try {
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
@@ -67,5 +163,6 @@ export class UserController {
             }
         }
     }
+<% } -%>
 }
 

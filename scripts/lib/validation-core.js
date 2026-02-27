@@ -22,7 +22,7 @@ function log(msg, color = ANSI_RESET) {
 
 const LANGUAGES = ['TypeScript', 'JavaScript'];
 const DATABASES = ['None','MySQL', 'PostgreSQL', 'MongoDB'];
-const COMMUNICATIONS = ['REST APIs', 'Kafka']; 
+const COMMUNICATIONS = ['REST APIs', 'GraphQL', 'Kafka']; 
 const CACHING = ['None', 'Redis', 'Memory Cache'];
 const VIEW_ENGINES_MVC = ['EJS', 'Pug', 'None'];
 
@@ -150,18 +150,28 @@ async function getFreePort(usedPorts) {
 async function checkHealth(config, hostPort) {
     const port = hostPort || 3000;
     const start = Date.now();
-    while (Date.now() - start < 60000) { 
+    while (Date.now() - start < 120000) { 
         try {
-            const res = await fetch(`http://localhost:${port}/health`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
+            const res = await fetch(`http://127.0.0.1:${port}/health`, {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
             if (res.ok) {
                  // Additional functional checks for REST APIs
                  if (config.communication === 'REST APIs' && (config.viewEngine !== 'None' || config.architecture === 'Clean Architecture')) {
                     try {
-                        const postRes = await fetch(`http://localhost:${port}/api/users`, {
+                        const postController = new AbortController();
+                        const postTimeoutId = setTimeout(() => postController.abort(), 5000);
+                        const postRes = await fetch(`http://127.0.0.1:${port}/api/users`, {
                              method: 'POST',
                              headers: { 'Content-Type': 'application/json' },
-                             body: JSON.stringify({ name: 'Test User', email: `test${Date.now()}@example.com` })
+                             body: JSON.stringify({ name: 'Test User', email: `test${Date.now()}@example.com` }),
+                             signal: postController.signal
                         });
+                        clearTimeout(postTimeoutId);
                         
                         if (postRes.ok) {
                              console.log('✓ Health Check Passed (API functional)', ANSI_GREEN);
@@ -176,6 +186,28 @@ async function checkHealth(config, hostPort) {
                     } catch (err) {
                         console.log(`Functional test error: ${err.message}`);
                     }
+                } else if (config.communication === 'GraphQL') {
+                     try {
+                         const gqlController = new AbortController();
+                         const gqlTimeoutId = setTimeout(() => gqlController.abort(), 5000);
+                         const graphqlRes = await fetch(`http://127.0.0.1:${port}/graphql`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ query: 'query { getAllUsers { id name email } }' }),
+                              signal: gqlController.signal
+                         });
+                         clearTimeout(gqlTimeoutId);
+                         
+                         if (graphqlRes.ok) {
+                              console.log('✓ Health Check Passed (GraphQL functional)', ANSI_GREEN);
+                              return true;
+                         } else {
+                              const errText = await graphqlRes.text();
+                              console.log(`Functional GraphQL check failed (retrying): ${graphqlRes.status} - ${errText}`);
+                         }
+                     } catch (err) {
+                         console.log(`Functional GraphQL test error: ${err.message}`);
+                     }
                 } else {
                      console.log('✓ Health Check Passed', ANSI_GREEN);
                      return true;

@@ -1,0 +1,7 @@
+const gqlContext = async ({ req }) => {
+  // Setup authorization or context here
+  const token = req.headers.authorization || '';
+  return { token };
+};
+
+module.exports = { gqlContext };

@@ -84,6 +84,10 @@ npm run format
 The project follows **<%= architecture %>** principles.
 <% if (communication === 'Kafka') { -%>
 Microservices communication handled via **Kafka**.
+<% } else if (communication === 'GraphQL') { -%>
+API is exposed via **GraphQL**.
+The Apollo Sandbox UI for API exploration and documentation is available natively, fully embedded for offline development:
+- **URL**: `http://localhost:3000/graphql` (Dynamic based on PORT)
 <% } else { -%>
 API is exposed via **REST**.
 A Swagger UI for API documentation is available at:

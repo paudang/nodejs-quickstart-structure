@@ -1,8 +1,10 @@
+<% if (communication !== 'GraphQL') { -%>
 import { Request, Response } from 'express';
+import { HTTP_STATUS } from '@/utils/httpCodes';
+<% } -%>
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 import CreateUser from '@/usecases/createUser';
 import GetAllUsers from '@/usecases/getAllUsers';
-import { HTTP_STATUS } from '@/utils/httpCodes';
 import logger from '@/infrastructure/log/logger';
 
 export class UserController {
@@ -15,6 +17,30 @@ export class UserController {
         this.getAllUsersUseCase = new GetAllUsers(userRepository);
     }
 
+<% if (communication === 'GraphQL') { -%>
+    async createUser(data: { name: string, email: string }) {
+        try {
+            const { name, email } = data;
+            const user = await this.createUserUseCase.execute(name, email);
+            return user;
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            logger.error('UserController Error:', message);
+            throw error;
+        }
+    }
+
+    async getUsers() {
+        try {
+            const users = await this.getAllUsersUseCase.execute();
+            return users;
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            logger.error('UserController Error:', message);
+            throw error;
+        }
+    }
+<% } else { -%>
     async createUser(req: Request, res: Response) {
         try {
             const { name, email } = req.body;
@@ -43,4 +69,5 @@ export class UserController {
             }
         }
     }
+<% } -%>
 }

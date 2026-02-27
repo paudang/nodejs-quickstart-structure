@@ -12,7 +12,7 @@ A powerful CLI tool to scaffold production-ready Node.js microservices with buil
 - **Multiple Architectures**: Supports both **MVC** (Model-View-Controller) and **Clean Architecture**.
 - **Language Support**: Choose between **JavaScript** and **TypeScript**.
 - **Database Integration**: Pre-configured setup for **MySQL**, **PostgreSQL**, or **MongoDB**.
-- **Microservices Ready**: Optional **Kafka** integration for event-driven communication.
+- **Communication Flow**: Scaffold APIs using **REST**, **GraphQL** (with Apollo Server), or **Kafka** (event-driven).
 - **Caching Layer**: Choose between **Redis** or built-in **Memory Cache** for data caching.
 - **Dockerized**: Automatically generates `docker-compose.yml` for DB, Kafka, Redis, and Zookeeper.
 - **Database Migrations/Schemas**: Integrated **Flyway** for SQL migrations or **Mongoose** schemas for MongoDB.
@@ -29,14 +29,14 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 -   **⚓ Git Hooks**: `Husky` and `Lint-Staged` to ensure no bad code is ever committed.
 -   **🐳 DevOps**: Highly optimized **Multi-Stage Dockerfile** for small, secure production images.
 
-## 🧩 160+ Project Combinations
+## 🧩 240+ Project Combinations
 
 The CLI supports a massive number of configurations to fit your exact needs:
 
--   **160 Core Combinations**:
-    -   **MVC Architecture**: 120 variants (Languages × View Engines × Databases × Communication Patterns × Caching)
-    -   **Clean Architecture**: 40 variants (Languages × Databases × Communication Patterns × Caching)
--   **320 Total Scenarios**:
+-   **240 Core Combinations**:
+    -   **MVC Architecture**: 180 variants (Languages × View Engines × Databases × Communication Patterns × Caching)
+    -   **Clean Architecture**: 60 variants (Languages × Databases × Communication Patterns × Caching)
+-   **480 Total Scenarios**:
     -   Every combination can be generated with or without **GitHub Actions CI/CD**, doubling the possibilities.
 
 For a detailed list of all supported cases, check out [docs/generateCase.md](docs/generateCase.md).
@@ -66,7 +66,7 @@ The CLI will guide you through the following steps:
 3.  **Architecture**: `MVC` or `Clean Architecture`.
 4.  **Database**: `MySQL`, `PostgreSQL`, or `MongoDB`.
 5.  **Database Name**: The name of the initial database.
-6.  **Communication**: `REST APIs` (default) or `Kafka`.
+6.  **Communication**: `REST APIs` (default), `GraphQL`, or `Kafka`.
 7.  **Caching**: `None`, `Redis`, or `Memory Cache`.
 8.  **CI/CD**: `GitHub Actions`, `Jenkins`, `GitLab CI` or `None`.
 

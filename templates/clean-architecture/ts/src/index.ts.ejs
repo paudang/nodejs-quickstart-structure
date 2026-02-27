@@ -6,11 +6,18 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import logger from '@/infrastructure/log/logger';
 import morgan from 'morgan';
-<% if (communication === 'REST APIs') { %>import userRoutes from '@/interfaces/routes/userRoutes';<% } -%>
+<%_ if (communication === 'REST APIs') { -%>import userRoutes from '@/interfaces/routes/userRoutes';<%_ } -%>
 <% if (communication === 'REST APIs') { -%>
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpecs from '@/config/swagger';<% } -%>
-<% if (communication === 'Kafka') { %>import { KafkaService } from '@/infrastructure/messaging/kafkaClient';<% } -%>
+<%_ if (communication === 'Kafka') { -%>import { KafkaService } from '@/infrastructure/messaging/kafkaClient';<%_ } -%>
+<%_ if (communication === 'GraphQL') { -%>
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { typeDefs, resolvers } from '@/interfaces/graphql';
+import { gqlContext, MyContext } from '@/interfaces/graphql/context';
+<% } -%>
 
 dotenv.config();
 
@@ -18,7 +25,21 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Security Middleware
+<%_ if (communication === 'GraphQL') { -%>
+app.use(helmet({
+  crossOriginEmbedderPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      imgSrc: [`'self'`, 'data:', 'apollo-server-landing-page.cdn.apollographql.com'],
+      scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
+      manifestSrc: [`'self'`, 'apollo-server-landing-page.cdn.apollographql.com'],
+      frameSrc: [`'self'`, 'sandbox.embed.apollographql.com'],
+    },
+  },
+}));
+<%_ } else { -%>
 app.use(helmet());
+<%_ } -%>
 app.use(hpp());
 app.use(cors({ origin: '*', methods: ['GET', 'POST', 'PUT', 'DELETE'] }));
 const limiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 100 });
@@ -27,32 +48,42 @@ app.use(limiter);
 app.use(express.json());
 app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
 
-<% if (communication === 'REST APIs') { -%>
+<%_ if (communication === 'REST APIs') { -%>
 app.use('/api/users', userRoutes);
-<% } -%>
-
-<% if (communication === 'REST APIs') { -%>
+<%_ } -%>
+<%_ if (communication === 'REST APIs') { -%>
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
-<% } -%>
-
+<%_ } -%>
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'UP' });
 });
 
 // Start Server Logic
 const startServer = async () => {
-    logger.info(`Server running on port ${port}`);
-<%_ if (communication === 'Kafka') { -%>
-    try {
-    const kafkaService = new KafkaService();
-    await kafkaService.connect();
-    logger.info('Kafka connected');
-    // Demo
-    await kafkaService.sendMessage('test-topic', 'Hello Kafka from Clean Arch TS!');
-    } catch (err) {
-    logger.error('Failed to connect to Kafka:', err);
-    }
+<%_ if (communication === 'GraphQL') { -%>
+    // GraphQL Setup
+    const server = new ApolloServer<MyContext>({
+      typeDefs,
+      resolvers,
+      plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
+    });
+    await server.start();
+    app.use('/graphql', expressMiddleware(server, { context: gqlContext }));
 <%_ } -%>
+    app.listen(port, () => {
+        logger.info(`Server running on port ${port}`);
+<%_ if (communication === 'Kafka') { -%>
+        try {
+          const kafkaService = new KafkaService();
+          kafkaService.connect().then(() => {
+            logger.info('Kafka connected');
+            kafkaService.sendMessage('test-topic', 'Hello Kafka from Clean Arch TS!');
+          });
+        } catch (err) {
+          logger.error('Failed to connect to Kafka:', err);
+        }
+<%_ } -%>
+    });
 };
 
 <%_ if (database !== 'None') { -%>
@@ -69,7 +100,7 @@ const syncDatabase = async () => {
             await sequelize.sync();
             <%_ } -%>
             logger.info('Database synced');
-            app.listen(port, startServer);
+            await startServer();
             break;
         } catch (error) {
             logger.error('Error syncing database:', error);
@@ -82,5 +113,5 @@ const syncDatabase = async () => {
 
 syncDatabase();
 <%_ } else { -%>
-app.listen(port, startServer);
+startServer();
 <%_ } -%>

@@ -1,7 +1,9 @@
 const CreateUser = require('../../usecases/CreateUser');
 const GetAllUsers = require('../../usecases/GetAllUsers');
 const UserRepository = require('../../infrastructure/repositories/UserRepository');
+<% if (communication !== 'GraphQL') { -%>
 const HTTP_STATUS = require('../../utils/httpCodes');
+<% } -%>
 const logger = require('../../infrastructure/log/logger');
 
 class UserController {
@@ -11,6 +13,26 @@ class UserController {
         this.getAllUsersUseCase = new GetAllUsers(this.userRepository);
     }
 
+<% if (communication === 'GraphQL') { -%>
+    async getUsers() {
+        try {
+            return await this.getAllUsersUseCase.execute();
+        } catch (error) {
+            logger.error('Error getting users:', error);
+            throw error;
+        }
+    }
+
+    async createUser(data) {
+        const { name, email } = data;
+        try {
+            return await this.createUserUseCase.execute(name, email);
+        } catch (error) {
+            logger.error('Error creating user:', error);
+            throw error;
+        }
+    }
+<% } else { -%>
     getUsers(req, res) {
         this.getAllUsersUseCase.execute()
             .then(users => res.json(users))
@@ -30,6 +52,7 @@ class UserController {
             res.status(HTTP_STATUS.BAD_REQUEST).json({ error: error.message });
         }
     }
+<% } -%>
 }
 
 module.exports = UserController;

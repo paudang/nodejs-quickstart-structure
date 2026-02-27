@@ -31,7 +31,7 @@ program
     .option('--view-engine <view>', 'View Engine (None, EJS, Pug) - MVC only')
     .option('-d, --database <database>', 'Database (MySQL, PostgreSQL)')
     .option('--db-name <name>', 'Database name')
-    .option('-c, --communication <communication>', 'Communication (REST APIs, Kafka)')
+    .option('-c, --communication <communication>', 'Communication (REST APIs, GraphQL, Kafka)')
     .option('--ci-provider <provider>', 'CI/CD Provider (None, GitHub Actions, Jenkins)')
     .option('--caching <type>', 'Caching Layer (None/Redis)')
     .action(async (options) => {

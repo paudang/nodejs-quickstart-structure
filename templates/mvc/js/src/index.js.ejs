@@ -1,12 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-<% if (communication === 'REST APIs' || (viewEngine && viewEngine !== 'None')) { %>const apiRoutes = require('./routes/api');<% } -%>
-<% if (communication === 'Kafka') { %>const { connectKafka, sendMessage } = require('./services/kafkaService');<% } -%>
-<% if (communication === 'REST APIs') { -%>
+<%_ if (communication === 'REST APIs') { -%>const apiRoutes = require('./routes/api');<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>const { connectKafka, sendMessage } = require('./services/kafkaService');<%_ } -%>
+<%_ if (communication === 'GraphQL') { -%>
+const { ApolloServer } = require('@apollo/server');
+const { expressMiddleware } = require('@apollo/server/express4');
+const { ApolloServerPluginLandingPageLocalDefault } = require('@apollo/server/plugin/landingPage/default');
+const { typeDefs, resolvers } = require('./graphql');
+const { gqlContext } = require('./graphql/context');
+<% } -%>
+<%_ if (communication === 'REST APIs') { -%>
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./config/swagger');
-<% } -%>
+<%_ } -%>
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,22 +24,18 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
 
-<% if (communication === 'REST APIs') { -%>
+<%_ if (communication === 'REST APIs') { -%>
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
-<% } -%>
-
-<% if (viewEngine === 'EJS' || viewEngine === 'Pug') { -%>
+<%_ } -%>
+<%_ if (viewEngine === 'EJS' || viewEngine === 'Pug') { -%>
 // View Engine Setup
 const path = require('path');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', '<%= viewEngine.toLowerCase() %>');
-app.use(express.static(path.join(__dirname, '../public')));<% } -%>
-
-// Routes
-<% if (communication === 'REST APIs' || (viewEngine && viewEngine !== 'None')) { -%>
+app.use(express.static(path.join(__dirname, '../public')));<%_ } %>
+<%_ if (communication === 'REST APIs') { -%>
 app.use('/api', apiRoutes);
-<% } -%>
-<% if (viewEngine && viewEngine !== 'None') { -%>
+<%_ } -%><% if (viewEngine && viewEngine !== 'None') { -%>
 app.get('/', (req, res) => {
   res.render('index', { 
     projectName: 'NodeJS Service',
@@ -42,24 +45,33 @@ app.get('/', (req, res) => {
   });
 });
 <% } -%>
-
 app.get('/health', (req, res) => {
   res.json({ status: 'UP' });
 });
 
 // Start Server Logic
 const startServer = async () => {
-    logger.info(`Server running on port ${PORT}`);
-<%_ if (communication === 'Kafka') { -%>
-    try {
-      await connectKafka();
-      logger.info('Kafka connected');
-      // Demo: Send a test message
-      await sendMessage('test-topic', 'Hello Kafka from MVC JS!');
-    } catch (err) {
-      logger.error('Failed to connect to Kafka:', err);
-    }
+<%_ if (communication === 'GraphQL') { -%>
+    // GraphQL Setup
+    const server = new ApolloServer({
+      typeDefs,
+      resolvers,
+      plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
+    });
+    await server.start();
+    app.use('/graphql', expressMiddleware(server, { context: gqlContext }));
 <%_ } -%>
+    app.listen(PORT, () => {
+        logger.info(`Server running on port ${PORT}`);
+<%_ if (communication === 'Kafka') { -%>
+        connectKafka().then(() => {
+          logger.info('Kafka connected');
+          sendMessage('test-topic', 'Hello Kafka from MVC JS!');
+        }).catch(err => {
+          logger.error('Failed to connect to Kafka:', err);
+        });
+<%_ } -%>
+    });
 };
 
 <%_ if (database !== 'None') { -%>
@@ -78,7 +90,7 @@ const syncDatabase = async () => {
             logger.info('Database synced');
             
             // Start Server after DB is ready
-            app.listen(PORT, startServer);
+            await startServer();
             break;
         } catch (err) {
             logger.error('Database sync failed:', err);
@@ -91,5 +103,5 @@ const syncDatabase = async () => {
 
 syncDatabase();
 <%_ } else { -%>
-app.listen(PORT, startServer);
+startServer();
 <%_ } -%>

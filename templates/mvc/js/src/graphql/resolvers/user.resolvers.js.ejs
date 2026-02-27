@@ -1,0 +1,35 @@
+const { GraphQLError } = require('graphql');
+const userController = require('../../controllers/userController');
+
+const userResolvers = {
+  Query: {
+    getUser: async (_, { id }) => {
+      try {
+        return await userController.getUser(id);
+      } catch (error) {
+        if (error.message === 'User not found') {
+          throw new GraphQLError('User not found', { extensions: { code: 'NOT_FOUND' } });
+        }
+        throw new GraphQLError(error.message || 'Internal server error', { extensions: { code: 'INTERNAL_SERVER_ERROR' } });
+      }
+    },
+    getAllUsers: async () => {
+      try {
+        return await userController.getUsers();
+      } catch (error) {
+        throw new GraphQLError(error.message || 'Internal server error', { extensions: { code: 'INTERNAL_SERVER_ERROR' } });
+      }
+    }
+  },
+  Mutation: {
+    createUser: async (_, { name, email }) => {
+      try {
+        return await userController.createUser({ name, email });
+      } catch (error) {
+        throw new GraphQLError(error.message || 'Internal server error', { extensions: { code: 'INTERNAL_SERVER_ERROR' } });
+      }
+    }
+  }
+};
+
+module.exports = { userResolvers };

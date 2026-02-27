@@ -3,27 +3,41 @@ const cors = require('cors');
 require('dotenv').config();
 const logger = require('../log/logger');
 const morgan = require('morgan');
-<% if (communication === 'REST APIs') { %>const apiRoutes = require('../../interfaces/routes/api');<% } -%>
-<% if (communication === 'REST APIs') { -%>
+<%_ if (communication === 'REST APIs') { -%>const apiRoutes = require('../../interfaces/routes/api');<%_ } -%>
+<%_ if (communication === 'REST APIs') { -%>
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./swagger');
-<% } -%>
+<%_ } -%>
+<%_ if (communication === 'GraphQL') { -%>
+const { ApolloServer } = require('@apollo/server');
+const { expressMiddleware } = require('@apollo/server/express4');
+const { ApolloServerPluginLandingPageLocalDefault } = require('@apollo/server/plugin/landingPage/default');
+const { typeDefs, resolvers } = require('../../interfaces/graphql');
+const { gqlContext } = require('../../interfaces/graphql/context');
+<%_ } -%>
 
-const startServer = (port) => {
+const startServer = async (port) => {
     const app = express();
 
     app.use(cors());
     app.use(express.json());
     app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
-
-    <% if (communication === 'REST APIs') { -%>
+    <%_ if (communication === 'REST APIs') { -%>
     app.use('/api', apiRoutes);
-    <% } -%>
-
-    <% if (communication === 'REST APIs') { -%>
+    <%_ } -%>
+    <%_ if (communication === 'REST APIs') { -%>
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
-    <% } -%>
-
+    <%_ } -%>
+    <%_ if (communication === 'GraphQL') { -%>
+    // GraphQL Setup
+    const server = new ApolloServer({
+        typeDefs,
+        resolvers,
+        plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
+    });
+    await server.start();
+    app.use('/graphql', expressMiddleware(server, { context: gqlContext }));
+    <%_ } -%>
     app.get('/health', (req, res) => {
         res.json({ status: 'UP' });
     });

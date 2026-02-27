@@ -5,8 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2026-02-27
+### Added
+- **GraphQL Support:** The generator now supports scaffolding GraphQL APIs using Apollo Server (v4) alongside standard REST APIs. This feature includes built-in integrations for both MVC and Clean Architecture designs across TypeScript and JavaScript.
+  - Generates strongly-typed schemas (`typeDefs`) and structured `resolvers`.
+  - Automatically provisions Apollo Sandbox for local development.
+  - Integrates smoothly with existing databases (MySQL, PostgreSQL, MongoDB) and caching (Redis, Memory Cache) layouts.
+- Automatically configures Content Security Policy (Helmet) to allow embeddable Apollo Sandbox UI out of the box.
+
 ## [1.9.4] - 2026-02-26
 ### Fixed
+- Fixed intermittent "Health check timeout" errors in concurrent (concurrency > 1) E2E validation scripts. Increased the total verification timeout window to 120s to accommodate heavy Docker image cluster instantiations (Kafka/MySQL/Redis), and enhanced the Node.js `fetch` client to use `127.0.0.1` IPv4 loopback resolution alongside strict 5-second `AbortSignal` timeouts to mitigate dangling TCP connections resulting from overloaded internal Docker proxy bridges.
 - Fixed an `EBADENGINE` compatibility issue during Docker builds by upgrading the default template `Dockerfile` base image from `node:18-alpine` to `node:22-alpine`, supporting modern dependencies like `eslint@9` and `cpx2`.
 - Fixed a port collision bug (`Bind for 0.0.0.0:6379 failed: port is already allocated`) during parallel E2E testing. The `validation-core.js` script now dynamically assigns random network ports for `REDIS_PORT` when running concurrent testing matrices.
 
