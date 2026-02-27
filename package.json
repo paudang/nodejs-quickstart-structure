@@ -19,7 +19,9 @@
     "cli",
     "scaffold",
     "mvc",
-    "clean-architecture"
+    "clean-architecture",
+    "microservices",
+    "backend"
   ],
   "author": "Pau Dang <[EMAIL_ADDRESS]>",
   "repository": {
