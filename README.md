@@ -56,6 +56,15 @@ Once installed, simply run the following command in any directory where you want
 ```bash
 nodejs-quickstart init
 ```
+or
+
+## Quick Start
+
+You can run the generator directly without installing it globally:
+
+```bash
+npx nodejs-quickstart-structure init
+```
 
 ### Configuration Options
 
