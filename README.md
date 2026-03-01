@@ -63,7 +63,7 @@ nodejs-quickstart init
 ```
 or
 
-## Quick Start
+## Quick Start (Recommended)
 
 You can run the generator directly without installing it globally:
 
