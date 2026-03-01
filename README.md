@@ -103,3 +103,13 @@ docker-compose up
 ## License
 
 ISC
+
+## 🚀 Roadmap & Upcoming Features
+
+We are constantly working to improve `nodejs-quickstart-structure` and make it the most robust boilerplate generator for Node.js. 
+
+You can track our current progress, see what features are being worked on, and vote for your favorites on our public Trello board:
+
+👉 **[View our Public Roadmap on Trello](https://trello.com/b/TPTo8ylF/nodejs-quickstart-structure-product)**
+
+If you have a feature request or want to contribute, feel free to check the board and open an issue or pull request!
