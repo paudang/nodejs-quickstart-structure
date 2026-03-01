@@ -104,6 +104,15 @@ docker-compose up
 
 ISC
 
+---
+
+[![npm version](https://img.shields.io/npm/v/nodejs-quickstart-structure.svg?style=flat-square)](https://www.npmjs.com/package/nodejs-quickstart-structure)
+[![npm total downloads](https://img.shields.io/npm/dt/nodejs-quickstart-structure.svg?style=flat-square)](https://www.npmjs.com/package/nodejs-quickstart-structure)
+[![npm monthly downloads](https://img.shields.io/npm/dm/nodejs-quickstart-structure.svg?style=flat-square)](https://www.npmjs.com/package/nodejs-quickstart-structure)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg?style=flat-square)](https://opensource.org/licenses/ISC)
+
+> 🚀 A robust CLI tool to generate a production-ready Node.js project structure in seconds.
+
 ## 🚀 Roadmap & Upcoming Features
 
 We are constantly working to improve `nodejs-quickstart-structure` and make it the most robust boilerplate generator for Node.js. 
