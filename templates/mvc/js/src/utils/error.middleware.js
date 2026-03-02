@@ -2,7 +2,7 @@ const logger = require('./logger');
 const { ApiError } = require('../errors/ApiError');
 const HTTP_STATUS = require('./httpCodes');
 
-const errorMiddleware = (err, req, res, next) => {
+const errorMiddleware = (err, req, res) => {
   let error = err;
 
   if (!(error instanceof ApiError)) {
