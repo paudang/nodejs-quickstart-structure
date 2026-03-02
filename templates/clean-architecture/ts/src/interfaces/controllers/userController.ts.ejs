@@ -25,7 +25,7 @@ export class UserController {
             return user;
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : 'Unknown error';
-            logger.error('UserController Error:', message);
+            logger.error('UserController CreateUser Error:', message);
             throw error;
         }
     }
@@ -36,7 +36,7 @@ export class UserController {
             return users;
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : 'Unknown error';
-            logger.error('UserController Error:', message);
+            logger.error('UserController GetUsers Error:', message);
             throw error;
         }
     }
@@ -47,6 +47,7 @@ export class UserController {
             const user = await this.createUserUseCase.execute(name, email);
             res.status(HTTP_STATUS.CREATED).json(user);
         } catch (error) {
+            logger.error('UserController CreateUser Error:', message);
             next(error);
         }
     }
@@ -56,6 +57,7 @@ export class UserController {
             const users = await this.getAllUsersUseCase.execute();
             res.json(users);
         } catch (error) {
+            logger.error('UserController GetUsers Error:', message); 
             next(error);
         }
     }
