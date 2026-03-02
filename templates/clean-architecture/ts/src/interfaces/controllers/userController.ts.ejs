@@ -47,6 +47,7 @@ export class UserController {
             const user = await this.createUserUseCase.execute(name, email);
             res.status(HTTP_STATUS.CREATED).json(user);
         } catch (error) {
+            const message = error ? error.message : 'Unknown error';
             logger.error('UserController CreateUser Error:', message);
             next(error);
         }
@@ -57,6 +58,7 @@ export class UserController {
             const users = await this.getAllUsersUseCase.execute();
             res.json(users);
         } catch (error) {
+            const message = error ? error.message : 'Unknown error';
             logger.error('UserController GetUsers Error:', message); 
             next(error);
         }
