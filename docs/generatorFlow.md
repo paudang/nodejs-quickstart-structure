@@ -25,7 +25,7 @@ The generator prompts the user for the following configurations. These determine
 | **View Engine** | `None`, `EJS`, `Pug` | `None` | (MVC Only) Template engine for server-side rendering. |
 | **Database** | `None`, `MySQL`, `PostgreSQL`, `MongoDB` | `None` | The primary database. |
 | **Database Name** | Input String | `demo` | The name of the database to use/create. |
-| **Communication**| `REST APIs`, `Kafka` | `REST APIs` | The primary communication method. |
+| **Communication**| `REST APIs`, `GraphQL`, `Kafka` | `REST APIs` | The primary communication method. |
 | **Caching Layer**| `None`, `Redis`, `Memory Cache` | `None` | (If DB selected) Caching solution. |
 | **CI/CD Provider**| `None`, `GitHub Actions`, `Jenkins`| `None` | Setup for Continuous Integration/Deployment. |
 
@@ -47,13 +47,23 @@ The `generateProject` function in `lib/generator.js` executes the following step
 5.  **Render `README.md`**:
     *   Generates custom documentation specific to the selected stack.
 6.  **Render `src/index.{js|ts}`**:
-    *   Processes the entry point file to wire up the selected DB and Architecture.
-7.  **Dynamic Component Generation**:
-    *   **MVC**: Generates `userController` (imports specific DB service).
+    *   Processes the entry point file to wire up the selected DB, Architecture, and Communication type.
+    *   **GraphQL**: Wires up Apollo Server middleware with `formatError` hook for centralized error handling.
+    *   **REST APIs / Kafka**: Registers `app.use(errorMiddleware)` at the end of the Express chain.
+7.  **Render Error Middleware** (`renderErrorMiddleware`):
+    *   Processes `error.middleware.{ts|js}.ejs` template from the target directory's `src/utils/` path.
+    *   Renders to `src/utils/error.middleware.{ts|js}` in the generated project.
+    *   **Clean Architecture**: Also handles `src/infrastructure/webserver/middlewares/error.middleware.{js}` path.
+8.  **Dynamic Component Generation**:
+    *   **MVC**: Generates `userController` (imports specific DB service, uses `next(error)`).
     *   **Clean Architecture**: Generates `UserRepository` (infrastructure layer implementation).
     *   **Clean Architecture (JS only)**: Generates `server.js` (webserver setup).
-8.  **Communication Setup (Kafka)**:
-    *   If **Kafka** is selected:
+9.  **Communication Setup**:
+    *   **GraphQL**:
+        *   Generates Apollo Server v4 schema (`typeDefs`) and resolvers.
+        *   Configures `formatError` hook with `unwrapResolverError` for structured error mapping.
+        *   Automatically embeds Apollo Sandbox with local CSP headers (no CDN dependency).
+    *   **Kafka**:
         *   Copies Kafka client/service templates.
         *   **Clean Architecture Restructuring**:
             *   Moves service to `src/infrastructure/messaging`.
@@ -61,14 +71,14 @@ The `generateProject` function in `lib/generator.js` executes the following step
             *   Removes REST-specific folders (`interfaces/routes`, `interfaces/controllers`).
         *   **MVC Cleanup**:
             *   If no View Engine is selected, removes `src/controllers` and `src/routes` (assumes pure worker).
-9.  **Common Configuration**:
+10. **Common Configuration**:
     *   Copies `.gitignore`, `.dockerignore`, `Dockerfile`.
     *   Copies `tsconfig.json` (if TypeScript).
-10. **Database Setup**:
+11. **Database Setup**:
     *   **MongoDB**: Sets up `migrate-mongo-config.js` and initial migration script.
     *   **SQL (MySQL/Postgres)**: Sets up `flyway/sql` directory and copies initial SQL migration files.
     *   **None**: Skips migration setup.
-11. **Caching Setup**:
+12. **Caching Setup**:
     *   **Redis**:
         *   Injects `ioredis` dependency into `package.json`.
         *   Generates `redisClient.{js|ts}` config.
@@ -78,22 +88,23 @@ The `generateProject` function in `lib/generator.js` executes the following step
         *   Injects `node-cache` dependency.
         *   Generates `memoryCache.{js|ts}` config.
         *   **MVC/Clean**: Consumes the generic abstraction injected above.
-12. **Database Connection Config**:
+13. **Database Connection Config**:
     *   Renders `database.{js|ts}` or `mongoose.{js|ts}` based on DB selection.
     *   Places it in `src/config` (MVC) or `src/infrastructure/database` (Clean Arch).
     *   **None**: Skips this step.
-12. **Model Generation**:
+14. **Model Generation**:
     *   Renders `User` model (Mongoose schema or Sequelize/TypeORM model) in the appropriate directory.
     *   **None**: Generates a simple Mock Entity/Model class with in-memory data for testing.
-13. **View Engine Setup (MVC)**:
+15. **View Engine Setup (MVC)**:
     *   If selected, copies views (`views/ejs` or `views/pug`) and `public` assets.
-14. **Swagger Config**:
-    *   If **REST APIs** is selected, generates Swagger configuration.
-15. **Code Quality Setup**:
+16. **Swagger Config** (`renderSwaggerConfig`):
+    *   If **REST APIs** is selected, generates `swagger.yml` and `swagger.{ts|js}` config.
+    *   Cleans up `.ejs` template copies for non-REST configs (GraphQL, Kafka).
+17. **Code Quality Setup**:
     *   Generates `.eslintrc.json`, `.prettierrc`, `.lintstagedrc`.
-16. **Test Setup**:
+18. **Test Setup**:
     *   Generates `jest.config.js` and a sample `health.test.{js|ts}`.
-17. **CI/CD Setup**:
+19. **CI/CD Setup**:
     *   Helper: `setupCiCd`
     *   Checks `config.ciProvider`:
         *   **GitHub Actions**: Copies `.github/workflows/ci.yml`.
@@ -125,14 +136,39 @@ Standard architecture for web APIs.
 project-name/
 ├── src/
 │   ├── config/         # Database, Redis, Swagger, etc.
-│   ├── controllers/    # Request handlers
+│   ├── controllers/    # Request handlers (use next(error))
+│   ├── errors/         # ApiError, NotFoundError, BadRequestError
 │   ├── models/         # Database models
 │   ├── routes/         # Express routes
-│   └── index.js|ts     # Entry point
+│   ├── utils/
+│   │   ├── error.middleware.{ts|js}  # Global error handler
+│   │   ├── logger.{ts|js}
+│   │   └── httpCodes.{ts|js}
+│   └── index.js|ts     # Entry point (registers errorMiddleware last)
 ├── tests/              # Jest tests
 ├── package.json
 ├── Dockerfile
 └── docker-compose.yml
+```
+
+### Case A2: MVC (GraphQL)
+Apollo Server v4 mounted as Express middleware.
+
+```text
+project-name/
+├── src/
+│   ├── config/         # Database, Redis config
+│   ├── controllers/    # GraphQL resolver backing logic (throws errors)
+│   ├── errors/         # ApiError, NotFoundError, BadRequestError
+│   ├── graphql/
+│   │   ├── schema/     # typeDefs
+│   │   └── resolvers/  # user.resolvers (calls controllers, throws errors)
+│   ├── models/
+│   ├── utils/
+│   │   ├── error.middleware.{ts|js}  # Express-level fallback error handler
+│   │   └── logger.{ts|js}
+│   └── index.js|ts     # Apollo Server + formatError hook
+└── ...
 ```
 
 ### Case B: MVC (Web App with Views)
@@ -158,17 +194,23 @@ Separation of concerns with Domain, Use Cases, and Infrastructure.
 project-name/
 ├── src/
 │   ├── domain/                 # Entities (Enterprise rules)
+│   ├── errors/                 # ApiError, NotFoundError, BadRequestError
 │   ├── use_cases/              # Application business rules
 │   ├── interfaces/             # Adapters
-│   │   ├── controllers/
-│   │   └── routes/
+│   │   ├── controllers/        # Use next(error) for error propagation
+│   │   └── routes/             # Pass NextFunction through handlers
 │   ├── infrastructure/         # Frameworks & Drivers
 │   │   ├── config/             # Environment config
 │   │   ├── caching/            # Redis Client
 │   │   ├── database/           # DB connection & models
 │   │   ├── repositories/       # Data access implementation
-│   │   └── webserver/          # Express server setup
-│   └── index.js|ts
+│   │   └── webserver/
+│   │       ├── middlewares/
+│   │       │   └── error.middleware.js  # JS only — Express error handler
+│   │       └── server.js       # Express app setup
+│   ├── utils/
+│   │   └── error.middleware.ts  # TS — global error handler
+│   └── index.js|ts              # Registers errorMiddleware after Apollo/Express
 └── ...
 ```
 

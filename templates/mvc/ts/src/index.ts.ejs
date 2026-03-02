@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import logger from '@/utils/logger';
 import morgan from 'morgan';
+import { errorMiddleware } from '@/utils/error.middleware';
 <%_ if (communication === 'REST APIs') { -%>
 import apiRoutes from '@/routes/api';<%_ } -%>
 <% if (communication === 'REST APIs') { %>
@@ -16,6 +17,8 @@ import swaggerSpecs from '@/config/swagger';<% } -%>
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { unwrapResolverError } from '@apollo/server/errors';
+import { ApiError } from '@/errors/ApiError';
 import { typeDefs, resolvers } from '@/graphql';
 import { gqlContext, MyContext } from '@/graphql/context';
 <% } -%>
@@ -81,10 +84,30 @@ const startServer = async () => {
       typeDefs,
       resolvers,
       plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
+      formatError: (formattedError, error) => {
+        const originalError = unwrapResolverError(error);
+        if (originalError instanceof ApiError) {
+          return {
+            ...formattedError,
+            message: originalError.message,
+            extensions: {
+              ...formattedError.extensions,
+              code: originalError.statusCode.toString(),
+            }
+          };
+        }
+        
+        logger.error(`GraphQL Error: ${formattedError.message}`);
+        if (originalError instanceof Error && originalError.stack && process.env.NODE_ENV === 'development') {
+           logger.error(originalError.stack);
+        }
+        return formattedError;
+      },
     });
     await server.start();
     app.use('/graphql', expressMiddleware(server, { context: gqlContext }));
 <%_ } -%>
+    app.use(errorMiddleware);
     app.listen(port, () => {
         logger.info(`Server running on port ${port}`);
 <%_ if (communication === 'Kafka') { -%>

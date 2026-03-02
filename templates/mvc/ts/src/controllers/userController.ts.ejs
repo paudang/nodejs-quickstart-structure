@@ -1,5 +1,5 @@
 <% if (communication !== 'GraphQL') { -%>
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { HTTP_STATUS } from '@/utils/httpCodes';
 <% } -%>
 import User from '@/models/User';
@@ -63,7 +63,7 @@ export class UserController {
         }
     }
 <% } else { -%>
-    async getUsers(req: Request, res: Response) {
+    async getUsers(req: Request, res: Response, next: NextFunction) {
         try {
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
             const users = await cacheService.getOrSet('users:all', async () => {
@@ -86,16 +86,11 @@ export class UserController {
 <%_ } -%>
             res.json(users);
         } catch (error) {
-            logger.error('Error fetching users:', error);
-            if (error instanceof Error) {
-                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
-            } else {
-                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Unknown error occurred' });
-            }
+            next(error);
         }
     }
 
-    async createUser(req: Request, res: Response) {
+    async createUser(req: Request, res: Response, next: NextFunction) {
         try {
             const { name, email } = req.body;
 <%_ if (database === 'None') { -%>
@@ -113,12 +108,7 @@ export class UserController {
             res.status(HTTP_STATUS.CREATED).json(user);
 <%_ } -%>
         } catch (error) {
-            logger.error('Error creating user:', error);
-            if (error instanceof Error) {
-                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
-            } else {
-                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Unknown error occurred' });
-            }
+            next(error);
         }
     }
 <% } -%>

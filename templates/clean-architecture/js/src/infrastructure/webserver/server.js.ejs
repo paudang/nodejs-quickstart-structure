@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const logger = require('../log/logger');
 const morgan = require('morgan');
+const { errorMiddleware } = require('./middlewares/error.middleware');
 <%_ if (communication === 'REST APIs') { -%>const apiRoutes = require('../../interfaces/routes/api');<%_ } -%>
 <%_ if (communication === 'REST APIs') { -%>
 const swaggerUi = require('swagger-ui-express');
@@ -12,6 +13,8 @@ const swaggerSpecs = require('./swagger');
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
 const { ApolloServerPluginLandingPageLocalDefault } = require('@apollo/server/plugin/landingPage/default');
+const { unwrapResolverError } = require('@apollo/server/errors');
+const { ApiError } = require('../../errors/ApiError');
 const { typeDefs, resolvers } = require('../../interfaces/graphql');
 const { gqlContext } = require('../../interfaces/graphql/context');
 <%_ } -%>
@@ -34,6 +37,25 @@ const startServer = async (port) => {
         typeDefs,
         resolvers,
         plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
+        formatError: (formattedError, error) => {
+            const originalError = unwrapResolverError(error);
+            if (originalError instanceof ApiError) {
+              return {
+                ...formattedError,
+                message: originalError.message,
+                extensions: {
+                  ...formattedError.extensions,
+                  code: originalError.statusCode.toString(),
+                }
+              };
+            }
+            
+            logger.error(`GraphQL Error: ${formattedError.message}`);
+            if (originalError && originalError.stack && process.env.NODE_ENV === 'development') {
+               logger.error(originalError.stack);
+            }
+            return formattedError;
+        },
     });
     await server.start();
     app.use('/graphql', expressMiddleware(server, { context: gqlContext }));
@@ -41,6 +63,8 @@ const startServer = async (port) => {
     app.get('/health', (req, res) => {
         res.json({ status: 'UP' });
     });
+
+    app.use(errorMiddleware);
 
     app.listen(port, () => {
         logger.info(`Server running on port ${port}`);

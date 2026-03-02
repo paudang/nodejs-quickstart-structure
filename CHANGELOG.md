@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2026-03-02
+### Added
+- **Centralized Error Handling Mechanism:** All generated projects now include a standardized, predictable error response structure for both REST APIs and GraphQL communication types.
+  - New `src/errors/` directory with custom error classes: `ApiError`, `NotFoundError`, `BadRequestError`.
+  - New `error.middleware.{ts|js}` global error handler placed at the end of the Express middleware chain in `src/utils/` (MVC) and `src/utils/` + `src/infrastructure/webserver/middlewares/` (Clean Architecture).
+  - Integrates `winston` logger to automatically log 500-level errors to persistent log files.
+  - All controllers updated to pass errors via `next(error)` instead of manually sending responses.
+  - **GraphQL:** Apollo Server `formatError` hook configured with `unwrapResolverError` to intercept resolver errors and map `ApiError` instances to structured GraphQL extension codes.
+  - **REST APIs:** Express error middleware returns a consistent `{ statusCode, message, stack? }` JSON body.
+- **Error Response Standardization:** All error responses follow the same schema regardless of database, caching, or communication type selected.
+
+### Fixed
+- Fixed `swagger.js` / `swagger.yml` being incorrectly generated for non-REST API configurations (GraphQL, Kafka). Converted static `swagger.js` to `swagger.js.ejs` in MVC JS and Clean Architecture JS templates so `renderSwaggerConfig` can conditionally control its generation.
+- Fixed `userRoutes.ts` in Clean Architecture TypeScript template not passing `NextFunction` to controller methods, causing `TypeScript TS2554: Expected 3 arguments` compile errors during Docker builds.
+- Fixed incorrect relative import paths (`../../../../`) in Clean Architecture JS `error.middleware.js` — changed to correct 3-level relative paths (`../../../`).
+- Fixed `HTTP_STATUS` being imported without destructuring from `httpCodes.js` (which uses a plain `module.exports = HTTP_STATUS` default export), causing `Cannot read properties of undefined` runtime errors.
+- Fixed `renderErrorMiddleware` in `app-setup.js` deleting from the **template source directory** instead of the generated project's target directory. This caused error middleware templates to disappear from disk after the first test run, breaking all subsequent generations.
+
 ## [1.10.1] - 2026-03-02
 ### Added
 -  Roadmap & Upcoming Features. **[View our Public Roadmap on Trello](https://trello.com/b/TPTo8ylF/nodejs-quickstart-structure-product)**

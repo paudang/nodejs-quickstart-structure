@@ -1,4 +1,3 @@
-const { GraphQLError } = require('graphql');
 const UserController = require('../../controllers/userController');
 
 const userController = new UserController();
@@ -6,20 +5,12 @@ const userController = new UserController();
 const userResolvers = {
   Query: {
     getAllUsers: async () => {
-      try {
-        return await userController.getUsers();
-      } catch (error) {
-        throw new GraphQLError(error.message || 'Internal server error', { extensions: { code: 'INTERNAL_SERVER_ERROR' } });
-      }
+      return await userController.getUsers();
     }
   },
   Mutation: {
     createUser: async (_, { name, email }) => {
-      try {
-        return await userController.createUser({ name, email });
-      } catch (error) {
-        throw new GraphQLError(error.message || 'Internal server error', { extensions: { code: 'INTERNAL_SERVER_ERROR' } });
-      }
+      return await userController.createUser({ name, email });
     }
   }
 };

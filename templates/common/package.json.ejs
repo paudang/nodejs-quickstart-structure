@@ -11,12 +11,11 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "prepare": "node -e \"try { require('child_process').execSync('husky install'); } catch (e) { console.log('Not a git repository, skipping husky install'); }\"",
+<% if (database === 'MongoDB') { %>    "migrate": "migrate-mongo up",
+<% } -%>
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
-    <%_ if (database === 'MongoDB') { -%>,
-    "migrate": "migrate-mongo up"
-<%_ } -%>
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -80,9 +79,9 @@
     "eslint-config-prettier": "^10.0.1",
     "husky": "^8.0.3",
     "lint-staged": "^15.4.3"<% if (language === 'TypeScript') { %>,
-    "typescript-eslint": "^8.24.1",
-<% if (communication === 'REST APIs') { %>    "@types/swagger-ui-express": "^4.1.6",
-    "@types/yamljs": "^0.2.34",<% } %>
+    "typescript-eslint": "^8.24.1",<%_ if (communication === 'REST APIs') { %>
+    "@types/swagger-ui-express": "^4.1.6",
+    "@types/yamljs": "^0.2.34",<%_ } -%>
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "@types/jest": "^29.5.14",

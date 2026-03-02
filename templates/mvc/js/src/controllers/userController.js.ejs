@@ -61,7 +61,7 @@ const createUser = async (data) => {
   }
 };
 <% } else { -%>
-const getUsers = async (req, res) => {
+const getUsers = async (req, res, next) => {
   try {
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
     const users = await cacheService.getOrSet('users:all', async () => {
@@ -84,12 +84,11 @@ const getUsers = async (req, res) => {
 <%_ } -%>
     res.json(users);
   } catch (error) {
-    logger.error('Error fetching users:', error);
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+    next(error);
   }
 };
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   try {
     const { name, email } = req.body;
 <%_ if (database === 'None') { -%>
@@ -107,7 +106,7 @@ const createUser = async (req, res) => {
     res.status(HTTP_STATUS.CREATED).json(user);
 <%_ } -%>
   } catch (error) {
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    next(error);
   }
 };
 <% } -%>

@@ -7,6 +7,8 @@ require('dotenv').config();
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
 const { ApolloServerPluginLandingPageLocalDefault } = require('@apollo/server/plugin/landingPage/default');
+const { unwrapResolverError } = require('@apollo/server/errors');
+const { ApiError } = require('./errors/ApiError');
 const { typeDefs, resolvers } = require('./graphql');
 const { gqlContext } = require('./graphql/context');
 <% } -%>
@@ -19,6 +21,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const logger = require('./utils/logger');
 const morgan = require('morgan');
+const { errorMiddleware } = require('./utils/error.middleware');
 
 app.use(cors());
 app.use(express.json());
@@ -57,10 +60,30 @@ const startServer = async () => {
       typeDefs,
       resolvers,
       plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
+      formatError: (formattedError, error) => {
+        const originalError = unwrapResolverError(error);
+        if (originalError instanceof ApiError) {
+          return {
+            ...formattedError,
+            message: originalError.message,
+            extensions: {
+              ...formattedError.extensions,
+              code: originalError.statusCode.toString(),
+            }
+          };
+        }
+        
+        logger.error(`GraphQL Error: ${formattedError.message}`);
+        if (originalError && originalError.stack && process.env.NODE_ENV === 'development') {
+           logger.error(originalError.stack);
+        }
+        return formattedError;
+      },
     });
     await server.start();
     app.use('/graphql', expressMiddleware(server, { context: gqlContext }));
 <%_ } -%>
+    app.use(errorMiddleware);
     app.listen(PORT, () => {
         logger.info(`Server running on port ${PORT}`);
 <%_ if (communication === 'Kafka') { -%>

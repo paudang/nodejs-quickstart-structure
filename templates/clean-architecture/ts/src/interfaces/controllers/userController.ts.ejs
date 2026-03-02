@@ -1,5 +1,5 @@
 <% if (communication !== 'GraphQL') { -%>
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { HTTP_STATUS } from '@/utils/httpCodes';
 <% } -%>
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
@@ -41,32 +41,22 @@ export class UserController {
         }
     }
 <% } else { -%>
-    async createUser(req: Request, res: Response) {
+    async createUser(req: Request, res: Response, next: NextFunction) {
         try {
             const { name, email } = req.body;
             const user = await this.createUserUseCase.execute(name, email);
             res.status(HTTP_STATUS.CREATED).json(user);
         } catch (error) {
-            logger.error('UserController Error:', error);
-            if (error instanceof Error) {
-                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
-            } else {
-                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Unknown error occurred' });
-            }
+            next(error);
         }
     }
 
-    async getUsers(req: Request, res: Response) {
+    async getUsers(req: Request, res: Response, next: NextFunction) {
         try {
             const users = await this.getAllUsersUseCase.execute();
             res.json(users);
         } catch (error) {
-            logger.error('UserController Error:', error);
-            if (error instanceof Error) {
-                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message });
-            } else {
-                res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Unknown error occurred' });
-            }
+            next(error);
         }
     }
 <% } -%>
