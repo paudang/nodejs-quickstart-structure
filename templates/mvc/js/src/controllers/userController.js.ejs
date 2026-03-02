@@ -84,6 +84,7 @@ const getUsers = async (req, res, next) => {
 <%_ } -%>
     res.json(users);
   } catch (error) {
+    logger.error('Error fetching users:', error);
     next(error);
   }
 };
@@ -106,6 +107,7 @@ const createUser = async (req, res, next) => {
     res.status(HTTP_STATUS.CREATED).json(user);
 <%_ } -%>
   } catch (error) {
+    logger.error('Error creating user:', error);
     next(error);
   }
 };
