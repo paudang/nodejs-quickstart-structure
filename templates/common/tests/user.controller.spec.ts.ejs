@@ -1,0 +1,287 @@
+<%_ if (language === 'TypeScript') { _%>
+import { UserController } from '<% if (architecture === "Clean Architecture") { %>@/interfaces/controllers/userController<% } else { %>@/controllers/userController<% } %>';
+<%_ if (architecture === 'Clean Architecture') { _%>
+import CreateUser from '@/usecases/createUser';
+import GetAllUsers from '@/usecases/getAllUsers';
+<%_ } else { _%>
+import User from '@/models/User';
+<%_ if (caching === 'Redis') { _%>
+import cacheService from '@/config/redisClient';
+<%_ } else if (caching === 'Memory Cache') { _%>
+import cacheService from '@/config/memoryCache';
+<%_ } _%>
+<%_ } _%>
+import { Request, Response, NextFunction } from 'express';
+import { HTTP_STATUS } from '<% if (architecture === "Clean Architecture") { %>@/utils/httpCodes<% } else { %>@/utils/httpCodes<% } %>';
+<%_ } else { _%>
+const { UserController } = require('<% if (architecture === "Clean Architecture") { %>../src/interfaces/controllers/userController<% } else { %>../src/controllers/userController<% } %>');
+<%_ if (architecture === 'Clean Architecture') { _%>
+const CreateUser = require('../src/usecases/createUser').default || require('../src/usecases/createUser');
+const GetAllUsers = require('../src/usecases/getAllUsers').default || require('../src/usecases/getAllUsers');
+<%_ } else { _%>
+const User = require('../src/models/User').default || require('../src/models/User');
+<%_ if (caching === 'Redis') { _%>
+const cacheService = require('../src/config/redisClient').default || require('../src/config/redisClient');
+<%_ } else if (caching === 'Memory Cache') { _%>
+const cacheService = require('../src/config/memoryCache').default || require('../src/config/memoryCache');
+<%_ } _%>
+<%_ } _%>
+const { HTTP_STATUS } = require('../src/utils/httpCodes');
+<%_ } _%>
+
+<%_ if (architecture === 'Clean Architecture') { _%>
+jest.mock('../src/usecases/createUser');
+jest.mock('../src/usecases/getAllUsers');
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { _%>
+jest.mock('<%_ if (caching === "Redis") { _%>../src/infrastructure/caching/redisClient<%_ } else { _%>../src/infrastructure/caching/memoryCache<%_ } _%>', () => ({
+  __esModule: true,
+  default: { get: jest.fn(), set: jest.fn(), del: jest.fn(), getOrSet: jest.fn() },
+  get: jest.fn(),
+  set: jest.fn(),
+  del: jest.fn(),
+  getOrSet: jest.fn()
+}));
+<%_ } _%>
+<%_ } else { _%>
+jest.mock('../src/models/User');
+<%_ if (caching === 'Redis') { _%>
+jest.mock('../src/config/redisClient');
+<%_ } else if (caching === 'Memory Cache') { _%>
+jest.mock('../src/config/memoryCache');
+<%_ } _%>
+<%_ } _%>
+jest.mock('<% if (architecture === "Clean Architecture") { %>@infra/log/logger<% } else { %>@/utils/logger<% } %>', () => ({
+  __esModule: true,
+  default: { info: jest.fn(), error: jest.fn() },
+  info: jest.fn(),
+  error: jest.fn()
+}));
+
+describe('UserController', () => {
+  let controller<%_ if (language === 'TypeScript') { _%>: UserController<%_ } _%>;
+  let mockReq<%_ if (language === 'TypeScript') { _%>: Partial<Request><%_ } _%>;
+  let mockRes<%_ if (language === 'TypeScript') { _%>: Partial<Response><%_ } _%>;
+  let mockNext<%_ if (language === 'TypeScript') { _%>: NextFunction<%_ } _%>;
+
+  beforeEach(() => {
+    controller = new UserController();
+    mockReq = { body: { name: 'Test', email: 'test@t.com' } };
+    mockRes = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+    mockNext = jest.fn();
+    jest.clearAllMocks();
+  });
+
+<%_ if (communication === 'GraphQL') { _%>
+  it('should getUsers successfully', async () => {
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    const mockUsers = [{ id: '1', name: 'Test' }];
+    <%_ if (language === 'TypeScript') { _%>(GetAllUsers.prototype.execute as jest.Mock)<%_ } else { _%>GetAllUsers.prototype.execute<%_ } _%>.mockResolvedValue(mockUsers);
+    <%_ } else { _%>
+    <%_ if (caching === 'Redis' || caching === 'Memory Cache') { _%>
+    <%_ if (language === 'TypeScript') { _%>(cacheService.getOrSet as jest.Mock)<%_ } else { _%>cacheService.getOrSet<%_ } _%>.mockImplementation((<%_ if (language === 'TypeScript') { _%>k: string, cb: () => Promise<unknown><%_ } else { _%>k, cb<%_ } _%>) => cb());
+    <%_ } _%>
+    <%_ if (database === "None") { _%> User.mockData = [{ id: '1', name: 'Test' }]; <%_ } else if (database === "MongoDB") { _%> <%_ if (language === 'TypeScript') { _%>(User.find as jest.Mock)<%_ } else { _%>User.find<%_ } _%>.mockResolvedValue([{ id: '1', name: 'Test' }]); <%_ } else { _%> <%_ if (language === 'TypeScript') { _%>(User.findAll as jest.Mock)<%_ } else { _%>User.findAll<%_ } _%>.mockResolvedValue([{ id: '1', name: 'Test' }]); <%_ } _%>
+    <%_ } _%>
+    const result = await controller.getUsers(<%_ if (language === 'TypeScript') { _%>mockReq as Request, mockRes as Response, mockNext<%_ } else { _%>mockReq, mockRes, mockNext<%_ } _%>);
+    expect(result).toBeDefined();
+  });
+
+  it('should createUser successfully', async () => {
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    <%_ if (language === 'TypeScript') { _%>(CreateUser.prototype.execute as jest.Mock)<%_ } else { _%>CreateUser.prototype.execute<%_ } _%>.mockResolvedValue({ id: '1', name: 'Test' });
+    <%_ } else { _%>
+    <%_ if (database === "None") { _%> User.mockData = []; <%_ } else { _%> <%_ if (language === 'TypeScript') { _%>(User.create as jest.Mock)<%_ } else { _%>User.create<%_ } _%>.mockResolvedValue({ id: '1', name: 'Test' }); <%_ } _%>
+    <%_ } _%>
+    const result = await controller.createUser(<%_ if (language === 'TypeScript') { _%>{ name: 'Test', email: 'test@t.com' }<%_ } else { _%>mockReq, mockRes, mockNext<%_ } _%>);
+    expect(result).toBeDefined();
+  });
+<%_ } else { _%>
+  it('should getUsers successfully', async () => {
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    const mockUsers = [{ id: '1', name: 'Test' }];
+    <%_ if (language === 'TypeScript') { _%>
+    (GetAllUsers.prototype.execute as jest.Mock).mockResolvedValue(mockUsers);
+    <%_ } else { _%>
+    GetAllUsers.prototype.execute.mockResolvedValue(mockUsers);
+    <%_ } _%>
+    <%_ } else { _%>
+    <%_ if (caching === 'Redis' || caching === 'Memory Cache') { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (cacheService.getOrSet as jest.Mock).mockImplementation((k: string, cb: () => Promise<unknown>) => cb());
+    <%_ } else { _%>
+    cacheService.getOrSet.mockImplementation((k, cb) => cb());
+    <%_ } _%>
+    <%_ } _%>
+    <%_ if (database === "None") { _%>
+    User.mockData = [{ id: '1', name: 'Test' }];
+    <%_ } else if (database === "MongoDB") { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (User.find as jest.Mock).mockResolvedValue([{ id: '1', name: 'Test' }]);
+    <%_ } else { _%>
+    User.find.mockResolvedValue([{ id: '1', name: 'Test' }]);
+    <%_ } _%>
+    <%_ } else { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (User.findAll as jest.Mock).mockResolvedValue([{ id: '1', name: 'Test' }]);
+    <%_ } else { _%>
+    User.findAll.mockResolvedValue([{ id: '1', name: 'Test' }]);
+    <%_ } _%>
+    <%_ } _%>
+    <%_ } _%>
+    await controller.getUsers(<%_ if (language === 'TypeScript') { _%>mockReq as Request, mockRes as Response, mockNext<%_ } else { _%>mockReq, mockRes, mockNext<%_ } _%>);
+    expect(mockRes.json).toHaveBeenCalled();
+  });
+
+  it('should return error if getUsers fails', async () => {
+    const error = new Error('Failed');
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (GetAllUsers.prototype.execute as jest.Mock).mockRejectedValue(error);
+    <%_ } else { _%>
+    GetAllUsers.prototype.execute.mockRejectedValue(error);
+    <%_ } _%>
+    <%_ } else { _%>
+    <%_ if (caching === 'Redis' || caching === 'Memory Cache') { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (cacheService.getOrSet as jest.Mock).mockRejectedValue(error);
+    <%_ } else { _%>
+    cacheService.getOrSet.mockRejectedValue(error);
+    <%_ } _%>
+    <%_ } else { _%>
+    <%_ if (database === "None") { _%>
+    // cannot easily trigger err
+    <%_ } else if (database === "MongoDB") { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (User.find as jest.Mock).mockRejectedValue(error);
+    <%_ } else { _%>
+    User.find.mockRejectedValue(error);
+    <%_ } _%>
+    <%_ } else { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (User.findAll as jest.Mock).mockRejectedValue(error);
+    <%_ } else { _%>
+    User.findAll.mockRejectedValue(error);
+    <%_ } _%>
+    <%_ } _%>
+    <%_ } _%>
+    <%_ } _%>
+    <%_ if (database !== "None" || architecture === "Clean Architecture" || caching === 'Redis' || caching === 'Memory Cache') { _%>
+    await controller.getUsers(<%_ if (language === 'TypeScript') { _%>mockReq as Request, mockRes as Response, mockNext<%_ } else { _%>mockReq, mockRes, mockNext<%_ } _%>);
+    expect(mockNext).toHaveBeenCalledWith(error);
+    <%_ } _%>
+  });
+
+  it('should createUser successfully', async () => {
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (CreateUser.prototype.execute as jest.Mock).mockResolvedValue({ id: '1', name: 'Test' });
+    <%_ } else { _%>
+    CreateUser.prototype.execute.mockResolvedValue({ id: '1', name: 'Test' });
+    <%_ } _%>
+    <%_ } else { _%>
+    <%_ if (database === "None") { _%>
+    User.mockData = [];
+    <%_ } else { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (User.create as jest.Mock).mockResolvedValue({ id: '1', name: 'Test' });
+    <%_ } else { _%>
+    User.create.mockResolvedValue({ id: '1', name: 'Test' });
+    <%_ } _%>
+    <%_ } _%>
+    <%_ } _%>
+    await controller.createUser(<%_ if (language === 'TypeScript') { _%>mockReq as Request, mockRes as Response, mockNext<%_ } else { _%>mockReq, mockRes, mockNext<%_ } _%>);
+    <%_ if (database !== 'None' || architecture === 'Clean Architecture') { _%>
+    expect(mockRes.status).toHaveBeenCalledWith(HTTP_STATUS.CREATED);
+    <%_ } _%>
+  });
+
+  it('should return error if createUser fails', async () => {
+    const error = new Error('Failed');
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (CreateUser.prototype.execute as jest.Mock).mockRejectedValue(error);
+    <%_ } else { _%>
+    CreateUser.prototype.execute.mockRejectedValue(error);
+    <%_ } _%>
+    <%_ } else { _%>
+    <%_ if (database === "None") { _%>
+    // No error possible
+    <%_ } else { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (User.create as jest.Mock).mockRejectedValue(error);
+    <%_ } else { _%>
+    User.create.mockRejectedValue(error);
+    <%_ } _%>
+    <%_ } _%>
+    <%_ } _%>
+    <%_ if (database !== "None" || architecture === "Clean Architecture") { _%>
+    await controller.createUser(<%_ if (language === 'TypeScript') { _%>mockReq as Request, mockRes as Response, mockNext<%_ } else { _%>mockReq, mockRes, mockNext<%_ } _%>);
+    expect(mockNext).toHaveBeenCalledWith(error);
+    <%_ if (database !== 'None') { _%>
+    <%_ } _%>
+    <%_ } _%>
+  });
+
+  it('should handle non-Error thrown in getUsers', async () => {
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (GetAllUsers.prototype.execute as jest.Mock).mockRejectedValue('string error');
+    <%_ } else { _%>
+    GetAllUsers.prototype.execute.mockRejectedValue('string error');
+    <%_ } _%>
+    <%_ } else { _%>
+    <%_ if (caching === 'Redis' || caching === 'Memory Cache') { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (cacheService.getOrSet as jest.Mock).mockRejectedValue('string error');
+    <%_ } else { _%>
+    cacheService.getOrSet.mockRejectedValue('string error');
+    <%_ } _%>
+    <%_ } else { _%>
+    <%_ if (database === "None") { _%>
+    // skip
+    <%_ } else if (database === "MongoDB") { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (User.find as jest.Mock).mockRejectedValue('string error');
+    <%_ } else { _%>
+    User.find.mockRejectedValue('string error');
+    <%_ } _%>
+    <%_ } else { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (User.findAll as jest.Mock).mockRejectedValue('string error');
+    <%_ } else { _%>
+    User.findAll.mockRejectedValue('string error');
+    <%_ } _%>
+    <%_ } _%>
+    <%_ } _%>
+    <%_ } _%>
+    <%_ if (database !== "None" || architecture === "Clean Architecture" || caching === 'Redis' || caching === 'Memory Cache') { _%>
+    await controller.getUsers(<%_ if (language === 'TypeScript') { _%>mockReq as Request, mockRes as Response, mockNext<%_ } else { _%>mockReq, mockRes, mockNext<%_ } _%>);
+    expect(mockNext).toHaveBeenCalledWith('string error');
+    <%_ } _%>
+  });
+
+  it('should handle non-Error thrown in createUser', async () => {
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (CreateUser.prototype.execute as jest.Mock).mockRejectedValue('string error');
+    <%_ } else { _%>
+    CreateUser.prototype.execute.mockRejectedValue('string error');
+    <%_ } _%>
+    <%_ } else { _%>
+    <%_ if (database === "None") { _%>
+    // skip
+    <%_ } else { _%>
+    <%_ if (language === 'TypeScript') { _%>
+    (User.create as jest.Mock).mockRejectedValue('string error');
+    <%_ } else { _%>
+    User.create.mockRejectedValue('string error');
+    <%_ } _%>
+    <%_ } _%>
+    <%_ } _%>
+    <%_ if (database !== "None" || architecture === "Clean Architecture") { _%>
+    await controller.createUser(<%_ if (language === 'TypeScript') { _%>mockReq as Request, mockRes as Response, mockNext<%_ } else { _%>mockReq, mockRes, mockNext<%_ } _%>);
+    expect(mockNext).toHaveBeenCalledWith('string error');
+    <%_ } _%>
+  });
+<%_ } _%>
+});

@@ -1,6 +1,12 @@
-<% if (language === 'TypeScript') { %>import request from 'supertest';
-import express from 'express';<% } else { %>const request = require('supertest');
-const express = require('express');<% } %>
+<%_ if (language === 'TypeScript') { _%>
+import request from 'supertest';
+import express from 'express';
+import { HTTP_STATUS } from '@/utils/httpCodes';
+<%_ } else { _%>
+const request = require('supertest');
+const express = require('express');
+const { HTTP_STATUS } = require('../src/utils/httpCodes');
+<%_ } _%>
 
 const app = express();
 app.get('/health', (req, res) => res.json({ status: 'UP' }));
@@ -8,7 +14,7 @@ app.get('/health', (req, res) => res.json({ status: 'UP' }));
 describe('Health Check', () => {
   it('should return 200 OK', async () => {
     const res = await request(app).get('/health');
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(HTTP_STATUS.OK);
     expect(res.body).toEqual({ status: 'UP' });
   });
 });

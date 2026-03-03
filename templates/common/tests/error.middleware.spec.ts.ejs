@@ -1,0 +1,114 @@
+<%_ if (language === 'TypeScript') { _%>
+import { errorMiddleware } from '<% if (architecture === "Clean Architecture") { %>@/utils/error.middleware<% } else { %>@/utils/error.middleware<% } %>';
+import { ApiError } from '@/errors/ApiError';
+import { HTTP_STATUS } from '@/utils/httpCodes';
+import { Request, Response, NextFunction } from 'express';
+<%_ } else { _%>
+const { errorMiddleware } = require('<% if (architecture === "Clean Architecture" && false) { %>../src/infrastructure/webserver/middlewares/error.middleware<% } else { %>../src/utils/error.middleware<% } %>');
+const { ApiError } = require('../src/errors/ApiError');
+const { HTTP_STATUS } = require('../src/utils/httpCodes');
+<%_ } _%>
+
+// Mocking the logger to avoid console spam during tests
+jest.mock('<% if (architecture === "Clean Architecture") { %>@infra/log/logger<% } else { %>@/utils/logger<% } %>', () => ({
+<%_ if (language === 'TypeScript') { _%>
+  __esModule: true,
+  default: {
+    error: jest.fn(),
+    info: jest.fn(),
+  }
+<%_ } else { _%>
+  error: jest.fn(),
+  info: jest.fn()
+<%_ } _%>
+}));
+
+describe('Error Middleware', () => {
+  let mockRequest<% if (language === 'TypeScript') { %>: Partial<Request><% } %>;
+  let mockResponse<% if (language === 'TypeScript') { %>: Partial<Response><% } %>;
+  let nextFunction<% if (language === 'TypeScript') { %>: NextFunction<% } %>;
+
+  beforeEach(() => {
+    mockRequest = {
+      originalUrl: '/test',
+      method: 'GET',
+      ip: '127.0.0.1'
+    };
+    mockResponse = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn()
+    };
+    nextFunction = jest.fn();
+  });
+
+  it('should handle standard Errors by converting them to 500 ApiError', () => {
+    const error = new Error('Generic failure');
+    errorMiddleware(error<% if (language === 'TypeScript') { %> as Error, mockRequest as Request, mockResponse as Response, nextFunction<% } else { %>, mockRequest, mockResponse, nextFunction<% } %>);
+
+    expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    expect(mockResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        message: 'Generic failure'
+      })
+    );
+  });
+
+  it('should preserve ApiError status code and message', () => {
+    const apiError = new ApiError(HTTP_STATUS.BAD_REQUEST, 'Invalid payload');
+    errorMiddleware(apiError<% if (language === 'TypeScript') { %> as ApiError, mockRequest as Request, mockResponse as Response, nextFunction<% } else { %>, mockRequest, mockResponse, nextFunction<% } %>);
+
+    expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.BAD_REQUEST);
+    expect(mockResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: HTTP_STATUS.BAD_REQUEST,
+        message: 'Invalid payload'
+      })
+    );
+  });
+
+  it('should use fallback message when Error has no message', () => {
+    const error = new Error();
+    error.message = '';
+    errorMiddleware(error<% if (language === 'TypeScript') { %> as Error, mockRequest as Request, mockResponse as Response, nextFunction<% } else { %>, mockRequest, mockResponse, nextFunction<% } %>);
+
+    expect(mockResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Internal Server Error'
+      })
+    );
+  });
+
+  it('should include stack in response in development mode', () => {
+    const origEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'development';
+    const error = new Error('Dev error');
+    errorMiddleware(error<% if (language === 'TypeScript') { %> as Error, mockRequest as Request, mockResponse as Response, nextFunction<% } else { %>, mockRequest, mockResponse, nextFunction<% } %>);
+
+    expect(mockResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        stack: expect.any(String)
+      })
+    );
+    process.env.NODE_ENV = origEnv;
+  });
+
+  it('should not include stack in production mode', () => {
+    const origEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+    const error = new ApiError(HTTP_STATUS.BAD_REQUEST, 'Prod error');
+    errorMiddleware(error<% if (language === 'TypeScript') { %> as Error, mockRequest as Request, mockResponse as Response, nextFunction<% } else { %>, mockRequest, mockResponse, nextFunction<% } %>);
+
+    const jsonCall = (mockResponse.json as jest.Mock).mock.calls[0][0];
+    expect(jsonCall.stack).toBeUndefined();
+    process.env.NODE_ENV = origEnv;
+  });
+
+  it('should log 500 errors with stack or fallback', () => {
+    const error = new Error('Server crash');
+    delete error.stack;
+    errorMiddleware(error<% if (language === 'TypeScript') { %> as Error, mockRequest as Request, mockResponse as Response, nextFunction<% } else { %>, mockRequest, mockResponse, nextFunction<% } %>);
+
+    expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.INTERNAL_SERVER_ERROR);
+  });
+});

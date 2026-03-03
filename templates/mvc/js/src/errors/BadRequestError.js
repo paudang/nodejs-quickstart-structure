@@ -1,5 +1,5 @@
 const { ApiError } = require('./ApiError');
-const { HTTP_STATUS } = require('../../utils/httpCodes');
+const { HTTP_STATUS } = require('../utils/httpCodes');
 
 class BadRequestError extends ApiError {
   constructor(message = 'Bad request') {

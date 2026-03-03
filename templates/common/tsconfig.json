@@ -10,7 +10,9 @@
         "forceConsistentCasingInFileNames": true,
         "baseUrl": ".",
         "paths": {
-            "@/*": ["src/*"]
+            "@/*": ["src/*"],
+            "@core/*": ["src/*"],
+            "@infra/*": ["src/infrastructure/*"]
         }
     },
     "include": [
