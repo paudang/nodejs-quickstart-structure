@@ -325,7 +325,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             log(`... Running Linter ...`);
             await runCommand('npm run lint', projectPath); 
             log(`... Running Unit Tests ...`);
-            await runCommand('npm test', projectPath); 
+            await runCommand('npm run test:cov', projectPath); 
         } catch (e) {
             throw new Error(`Professional Standards Check Failed: ${e.message}`);
         }

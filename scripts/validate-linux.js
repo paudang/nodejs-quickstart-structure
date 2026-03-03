@@ -8,5 +8,6 @@ const specificIndex = args.length > 0 ? parseInt(args[0]) : undefined;
 // Suitable for Linux environments without rootless Docker or for fast validation
 runValidation({ 
     skipDocker: true, 
-    specificTestIndex: specificIndex 
+    specificTestIndex: specificIndex,
+    concurrency: 1
 });

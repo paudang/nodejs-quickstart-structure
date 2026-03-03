@@ -1,0 +1,13 @@
+<%_ if (language === 'TypeScript') { _%>import { HTTP_STATUS } from '@/utils/httpCodes';
+<%_ } else { _%>const { HTTP_STATUS } = require('../src/utils/httpCodes');
+<%_ } _%>
+
+describe('HTTP Status Codes', () => {
+  it('should export correct status codes', () => {
+    expect(HTTP_STATUS.OK).toBe(200);
+    expect(HTTP_STATUS.CREATED).toBe(201);
+    expect(HTTP_STATUS.BAD_REQUEST).toBe(400);
+    expect(HTTP_STATUS.NOT_FOUND).toBe(404);
+    expect(HTTP_STATUS.INTERNAL_SERVER_ERROR).toBe(500);
+  });
+});

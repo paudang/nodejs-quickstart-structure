@@ -1,0 +1,54 @@
+<%_ if (architecture === 'Clean Architecture') { _%>
+<%_ if (language === 'TypeScript') { _%>import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+import { User as UserEntity } from '@/domain/user';
+<%_ } else { _%>const { UserRepository } = require('../src/infrastructure/repositories/UserRepository');
+const { User: UserEntity } = require('../src/domain/user');
+<%_ } _%>
+
+// Mock the Sequelize User model
+jest.mock('<% if (architecture === "Clean Architecture") { %>@infra/database/models/User<% } else { %>@/models/User<% } %>', () => ({
+  __esModule: true,
+  default: {
+    create: jest.fn(),
+    findAll: jest.fn()
+  }
+}));
+
+<%_ if (language === 'TypeScript') { _%>import UserModel from '@infra/database/models/User';
+<%_ } else { _%>const UserModel = require('../src/infrastructure/database/models/User').default || require('../src/infrastructure/database/models/User');
+<%_ } _%>
+
+describe('UserRepository', () => {
+  let repo<% if (language === 'TypeScript') { %>: UserRepository<% } %>;
+
+  beforeEach(() => {
+    repo = new UserRepository();
+    jest.clearAllMocks();
+  });
+
+  it('save() should create a user and return a domain entity', async () => {
+    const mockResult = { id: 1, name: 'John', email: 'john@test.com' };
+    (UserModel.create<% if (language === 'TypeScript') { %> as jest.Mock<% } %>).mockResolvedValue(mockResult);
+
+    const entity = new UserEntity(null, 'John', 'john@test.com');
+    const result = await repo.save(entity);
+
+    expect(UserModel.create).toHaveBeenCalledWith({ name: 'John', email: 'john@test.com' });
+    expect(result).toEqual({ id: 1, name: 'John', email: 'john@test.com' });
+  });
+
+  it('getUsers() should return mapped domain entities', async () => {
+    const mockRows = [
+      { id: 1, name: 'Alice', email: 'alice@test.com' },
+      { id: 2, name: 'Bob', email: 'bob@test.com' }
+    ];
+    (UserModel.findAll<% if (language === 'TypeScript') { %> as jest.Mock<% } %>).mockResolvedValue(mockRows);
+
+    const result = await repo.getUsers();
+
+    expect(UserModel.findAll).toHaveBeenCalled();
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual({ id: 1, name: 'Alice', email: 'alice@test.com' });
+  });
+});
+<% } %>

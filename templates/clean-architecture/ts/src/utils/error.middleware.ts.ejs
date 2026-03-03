@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import logger from '@/infrastructure/log/logger';
 import { ApiError } from '@/errors/ApiError';
 import { HTTP_STATUS } from '@/utils/httpCodes';
 
-export const errorMiddleware = (err: Error, req: Request, res: Response, _: unknown) => {
+export const errorMiddleware = (err: Error, req: Request, res: Response, _next: NextFunction) => {
   let error = err;
 
   if (!(error instanceof ApiError)) {

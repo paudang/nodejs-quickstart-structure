@@ -1,0 +1,126 @@
+<%_ if (language === 'TypeScript') { _%>
+import CreateUser from '@/usecases/createUser';
+import GetAllUsers from '@/usecases/getAllUsers';
+import { User } from '@/domain/user';
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+<%_ if (caching === 'Redis') { _%>
+import cacheService from '@/infrastructure/caching/redisClient';
+<%_ } else if (caching === 'Memory Cache') { _%>
+import cacheService from '@/infrastructure/caching/memoryCache';
+<%_ } _%>
+<%_ } else { _%>
+const CreateUser = require('../src/usecases/createUser').default || require('../src/usecases/createUser');
+const GetAllUsers = require('../src/usecases/getAllUsers').default || require('../src/usecases/getAllUsers');
+const { User } = require('../src/domain/user');
+<%_ if (caching === 'Redis') { _%>
+const cacheService = require('../src/infrastructure/caching/redisClient').default || require('../src/infrastructure/caching/redisClient');
+<%_ } else if (caching === 'Memory Cache') { _%>
+const cacheService = require('../src/infrastructure/caching/memoryCache').default || require('../src/infrastructure/caching/memoryCache');
+<%_ } _%>
+<%_ } _%>
+
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { _%>
+jest.mock('<% if (caching === "Redis") { %>@infra/caching/redisClient<% } else { %>@infra/caching/memoryCache<% } %>', () => ({
+  __esModule: true,
+  default: { del: jest.fn(), get: jest.fn(), set: jest.fn(), getOrSet: jest.fn() },
+  del: jest.fn(),
+  get: jest.fn(),
+  set: jest.fn(),
+  getOrSet: jest.fn()
+}));
+<%_ } _%>
+
+jest.mock('@infra/log/logger', () => ({
+  __esModule: true,
+  default: { info: jest.fn(), error: jest.fn() },
+  info: jest.fn(),
+  error: jest.fn()
+}));
+
+describe('User UseCases', () => {
+  let mockUserRepository: jest.Mocked<UserRepository>;
+
+  beforeEach(() => {
+    mockUserRepository = {
+      getUsers: jest.fn(),
+      save: jest.fn()
+    } as unknown as jest.Mocked<UserRepository>;
+    jest.clearAllMocks();
+  });
+
+  it('CreateUser should save user and invalidate cache', async () => {
+    const createUser = new CreateUser(mockUserRepository);
+    const savedUser = new User('1', 'Test Name', 'test@test.com');
+    mockUserRepository.save.mockResolvedValue(savedUser);
+
+    const result = await createUser.execute('Test Name', 'test@test.com');
+
+    expect(mockUserRepository.save).toHaveBeenCalled();
+    expect(result.name).toBe('Test Name');
+    <%_ if (caching === 'Redis' || caching === 'Memory Cache') { _%>
+    expect(cacheService.del).toHaveBeenCalledWith('users:all');
+    <%_ } _%>
+  });
+
+  it('CreateUser should handle cache error gracefully', async () => {
+    const createUser = new CreateUser(mockUserRepository);
+    const savedUser = new User('1', 'Test Name', 'test@test.com');
+    mockUserRepository.save.mockResolvedValue(savedUser);
+    <%_ if (caching === 'Redis' || caching === 'Memory Cache') { _%>
+    (cacheService.del as jest.Mock).mockRejectedValue(new Error('Cache down'));
+    <%_ } _%>
+
+    const result = await createUser.execute('Test Name', 'test@test.com');
+    expect(result.name).toBe('Test Name');
+  });
+
+  it('GetAllUsers should return users from repository when cache misses', async () => {
+    const getAllUsers = new GetAllUsers(mockUserRepository);
+    const users = [new User('1', 'Test Name', 'test@test.com')];
+    mockUserRepository.getUsers.mockResolvedValue(users);
+    <%_ if (caching === 'Redis' || caching === 'Memory Cache') { _%>
+    (cacheService.get as jest.Mock).mockResolvedValue(null);
+    (cacheService.set as jest.Mock).mockResolvedValue(undefined);
+    <%_ } _%>
+
+    const result = await getAllUsers.execute()<% if (language === 'TypeScript') { %> as User[]<% } %>;
+
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('Test Name');
+  });
+
+  <%_ if (caching === 'Redis' || caching === 'Memory Cache') { _%>
+  it('GetAllUsers should return cached data when cache hits', async () => {
+    const getAllUsers = new GetAllUsers(mockUserRepository);
+    const cachedUsers = [{ id: '1', name: 'Cached User', email: 'cached@test.com' }];
+    (cacheService.get as jest.Mock).mockResolvedValue(cachedUsers);
+
+    const result = await getAllUsers.execute();
+
+    expect(result).toEqual(cachedUsers);
+    expect(mockUserRepository.getUsers).not.toHaveBeenCalled();
+  });
+
+  it('GetAllUsers should handle cache get error gracefully', async () => {
+    const getAllUsers = new GetAllUsers(mockUserRepository);
+    const users = [new User('1', 'Test Name', 'test@test.com')];
+    mockUserRepository.getUsers.mockResolvedValue(users);
+    (cacheService.get as jest.Mock).mockRejectedValue(new Error('Cache error'));
+    (cacheService.set as jest.Mock).mockResolvedValue(undefined);
+
+    const result = await getAllUsers.execute();
+    expect(result).toHaveLength(1);
+  });
+
+  it('GetAllUsers should handle cache set error gracefully', async () => {
+    const getAllUsers = new GetAllUsers(mockUserRepository);
+    const users = [new User('1', 'Test Name', 'test@test.com')];
+    mockUserRepository.getUsers.mockResolvedValue(users);
+    (cacheService.get as jest.Mock).mockResolvedValue(null);
+    (cacheService.set as jest.Mock).mockRejectedValue(new Error('Cache set error'));
+
+    const result = await getAllUsers.execute();
+    expect(result).toHaveLength(1);
+  });
+  <%_ } _%>
+});

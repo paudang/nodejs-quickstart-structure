@@ -1,0 +1,20 @@
+<%_ if (language === 'TypeScript') { _%>
+import { User } from '@/domain/user';
+<%_ } else { _%>
+const { User } = require('../src/domain/user');
+<%_ } _%>
+
+describe('User Domain Entity', () => {
+  it('should create a User with all properties', () => {
+    const user = new User(1, 'John Doe', 'john@example.com');
+    expect(user.id).toBe(1);
+    expect(user.name).toBe('John Doe');
+    expect(user.email).toBe('john@example.com');
+  });
+
+  it('should allow null id for new users', () => {
+    const user = new User(null, 'Jane Doe', 'jane@example.com');
+    expect(user.id).toBeNull();
+    expect(user.name).toBe('Jane Doe');
+  });
+});

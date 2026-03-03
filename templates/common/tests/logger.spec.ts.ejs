@@ -1,0 +1,22 @@
+<%_ if (language === 'TypeScript') { -%>
+<%_ if (architecture === 'Clean Architecture') { _%>
+import logger from '../src/infrastructure/log/logger';
+<%_ } else { _%>
+import logger from '../src/utils/logger';
+<%_ } _%>
+<%_ } else { _%>
+const winston = require('winston');
+<%_ if (architecture === 'Clean Architecture') { _%>
+const logger = require('../src/infrastructure/log/logger').default || require('../src/infrastructure/log/logger');
+<%_ } else { _%>
+const logger = require('../src/utils/logger').default || require('../src/utils/logger');
+<%_ } _%>
+<%_ } _%>
+
+describe('Logger', () => {
+  it('should be defined and have info/error functions', () => {
+    expect(logger).toBeDefined();
+    expect(typeof logger.info).toBe('function');
+    expect(typeof logger.error).toBe('function');
+  });
+});

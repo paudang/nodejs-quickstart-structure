@@ -2,13 +2,34 @@ module.exports = {
   testEnvironment: 'node',
   coverageDirectory: 'coverage',
   collectCoverageFrom: ['src/**/*.{js,ts}'],
-  testMatch: ['**/*.test.ts', '**/*.test.js'],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
+    }
+  },
+  testMatch: ['**/*.spec.ts', '**/*.spec.js', '**/*.test.ts', '**/*.test.js'],
   <% if (language === 'TypeScript') { %>preset: 'ts-jest',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-  },<% } %>
+<% if (architecture === 'Clean Architecture') { %>    '^@core/(.*)$': '<rootDir>/src/$1',
+    '^@infra/(.*)$': '<rootDir>/src/infrastructure/$1',
+<% } %>  },<% } %>
   coveragePathIgnorePatterns: [
     "/node_modules/",
-    "/dist/"
+    "/dist/",
+    "src/index\\.ts$",
+    "src/index\\.js$",
+<% if (architecture === 'Clean Architecture') { %>    "src/infrastructure/database/",
+    "src/infrastructure/caching/",
+<% } else { %>    "src/config/database",
+    "src/config/redisClient",
+    "src/config/memoryCache",
+    "src/models/",
+<% } %>    "src/config/swagger",
+    "src/interfaces/routes/",
+    "src/routes/"
   ]
 };
