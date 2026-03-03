@@ -19,7 +19,7 @@ A powerful CLI tool to scaffold production-ready Node.js microservices with buil
 - **Database Integration**: Pre-configured setup for **MySQL**, **PostgreSQL**, or **MongoDB**.
 - **Communication Flow**: Scaffold APIs using **REST**, **GraphQL** (with Apollo Server), or **Kafka** (event-driven).
 - **Caching Layer**: Choose between **Redis** or built-in **Memory Cache** for data caching.
-- **Centralized Error Handling**: Every project ships with a global error handler, custom error classes (`ApiError`, `NotFoundError`, `BadRequestError`), and structured JSON error responses — consistent across REST & GraphQL.
+- **Centralized Error Handling**: Every project ships with a global error handler, custom error classes and structured JSON error responses — consistent across REST & GraphQL.
 - **Dockerized**: Automatically generates `docker-compose.yml` for DB, Kafka, Redis, and Zookeeper.
 - **Database Migrations/Schemas**: Integrated **Flyway** for SQL migrations or **Mongoose** schemas for MongoDB.
 - **Professional Standards**: Generated projects come with highly professional, industry-standard tooling.
@@ -30,7 +30,7 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 
 -   **🔍 Code Quality**: Pre-configured `Eslint` and `Prettier` for consistent coding standards.
 -   **🛡️ Security**: Built-in `Helmet`, `HPP`, `CORS`, and Rate-Limiting middleware.
--   **🚨 Error Handling**: Centralized global error middleware with custom error classes and structured `{ statusCode, message }` JSON responses. GraphQL uses Apollo's `formatError` hook; REST uses Express error middleware. Both integrate with Winston for automatic 500-level logging.
+-   **🚨 Error Handling**: Centralized global error middleware with custom error classes and structured JSON responses. GraphQL uses Apollo's `formatError` hook; REST uses Express error middleware.
 -   **🧪 Testing Strategy**: Integrated `Jest` and `Supertest` setup for Unit and Integration testing.
 -   **🔄 CI/CD Integration**: Pre-configured workflows for **GitHub Actions**, **Jenkins**, and **GitLab CI**.
 -   **⚓ Git Hooks**: `Husky` and `Lint-Staged` to ensure no bad code is ever committed.
