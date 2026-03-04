@@ -52,7 +52,7 @@ program
 
             console.log(chalk.green('\n✔ Project generated successfully!'));
             
-            let manualStartInstructions = `\nStart the app manually:\n  cd ${answers.projectName}\n  npm install`;
+            let manualStartInstructions = `\n${chalk.yellow('Development:')}\n  cd ${answers.projectName}\n  npm install`;
             
             const needsInfrastructure = answers.database !== 'None' || answers.caching === 'Redis' || answers.communication === 'Kafka';
             
@@ -67,7 +67,7 @@ program
                 manualStartInstructions += `\n  npm run dev`;
             }
             
-            console.log(chalk.cyan(`\nNext steps:\n  cd ${answers.projectName}\n  npm install\n  docker-compose up\n-----------------------${manualStartInstructions}`));
+            console.log(chalk.cyan(`\nNext steps:\n  cd ${answers.projectName}\n  npm install\n  docker-compose up\n-----------------------${manualStartInstructions}\n\n${chalk.yellow('Production (PM2):')}\n  npm run build\n  npm run deploy\n  npx pm2 logs`));
 
         } catch (error) {
             console.error(chalk.red('Error generating project:'), error);

@@ -4,7 +4,6 @@ const logger = require('./infrastructure/log/logger');
 const { connectKafka, sendMessage } = require('./infrastructure/messaging/kafkaClient');
 <% } -%>
 
-const PORT = process.env.PORT || 3000;
 
 <%_ if (database !== 'None') { -%>
 // Database Sync
@@ -21,7 +20,7 @@ const syncDatabase = async () => {
             <%_ } -%>
             logger.info('Database synced');
             // Start the web server after DB sync
-            startServer(PORT);
+            startServer();
             <%_ if (communication === 'Kafka') { -%>
             // Connect Kafka
             connectKafka().then(async () => {
@@ -42,7 +41,7 @@ const syncDatabase = async () => {
 };
 syncDatabase();
 <%_ } else { -%>
-startServer(PORT);
+startServer();
 <%_ if (communication === 'Kafka') { -%>
 // Connect Kafka
 connectKafka().then(async () => {

@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2026-03-04
+### Added
+- **Zod Environment Validation:** Replaced manual `dotenv` process calls in server entry points with a centralized schema parser.
+  - Automatically generates `src/config/env.ts` (or `.js`) evaluating `NODE_ENV`, `PORT`, and strictly mapping database, cache, and Kafka connection definitions gracefully crashing the app at startup if missing.
+- **PM2 Deployment Configuration:** Natively supports PM2 ecosystem clustering for VPS and EC2 configurations out-of-the-box.
+  - Generates `ecosystem.config.js` intelligently mapping dynamic environments for Redis, Databases, and Kafka without user prompts.
+  - Modifies `package.json` with an out-of-the-box `npm run deploy` script bound to `pm2 start ecosystem.config.js --env production`.
+  - Upgraded generated README deployment guides for transparent CLI instruction workflows outlining the contrast between running Docker vs PM2.
+
 ## [1.11.1] - 2026-03-03
 ### Fixed
 - Fixed relative import paths in Clean Architecture JS `error.middleware.js` — changed to correct 3-level relative paths (`../../../`).

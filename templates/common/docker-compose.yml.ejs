@@ -28,10 +28,15 @@ services:
       - DB_USER=root
       - DB_PASSWORD=root
       - DB_NAME=<%= dbName %>
+      - DB_PORT=3306
 <%_ } -%><%_ if (database === 'PostgreSQL') { -%>
       - DB_USER=postgres
       - DB_PASSWORD=root
       - DB_NAME=<%= dbName %>
+      - DB_PORT=5432
+<%_ } -%><%_ if (database === 'MongoDB') { -%>
+      - DB_NAME=<%= dbName %>
+      - DB_PORT=27017
 <%_ } -%>
 <%_ } -%>
 <%_ } else { -%>
@@ -48,10 +53,15 @@ services:
       - DB_USER=root
       - DB_PASSWORD=root
       - DB_NAME=<%= dbName %>
+      - DB_PORT=3306
 <%_ } -%><%_ if (database === 'PostgreSQL') { -%>
       - DB_USER=postgres
       - DB_PASSWORD=root
       - DB_NAME=<%= dbName %>
+      - DB_PORT=5432
+<%_ } -%><%_ if (database === 'MongoDB') { -%>
+      - DB_NAME=<%= dbName %>
+      - DB_PORT=27017
 <%_ } -%>
 <%_ } -%>
 <%_ } -%>
@@ -89,7 +99,7 @@ services:
       - mongodb_data:/data/db
 
   mongo-migrate:
-    image: node:18-alpine
+    image: node:22-alpine
     working_dir: /app
     volumes:
       - .:/app

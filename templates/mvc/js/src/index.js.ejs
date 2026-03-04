@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
 <%_ if (communication === 'REST APIs') { -%>const apiRoutes = require('./routes/api');<%_ } -%>
 <%_ if (communication === 'Kafka') { -%>const { connectKafka, sendMessage } = require('./services/kafkaService');<%_ } -%>
 <%_ if (communication === 'GraphQL') { -%>
@@ -17,8 +16,10 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./config/swagger');
 <%_ } -%>
 
+const { env } = require('./config/env');
+
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = env.PORT;
 const logger = require('./utils/logger');
 const morgan = require('morgan');
 const { errorMiddleware } = require('./utils/error.middleware');

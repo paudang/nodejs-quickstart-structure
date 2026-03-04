@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
 const logger = require('../log/logger');
 const morgan = require('morgan');
 const { errorMiddleware } = require('./middlewares/error.middleware');
@@ -19,7 +18,11 @@ const { typeDefs, resolvers } = require('../../interfaces/graphql');
 const { gqlContext } = require('../../interfaces/graphql/context');
 <%_ } -%>
 
-const startServer = async (port) => {
+const { env } = require('../config/env');
+
+const startServer = async () => {
+    // Determine port using the validated env
+    const port = env.PORT;
     const app = express();
 
     app.use(cors());

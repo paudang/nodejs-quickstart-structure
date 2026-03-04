@@ -1,0 +1,40 @@
+module.exports = {
+  apps: [{
+    name: "<%= projectName %>",
+    script: "<% if (language === 'TypeScript') { %>./dist/index.js<% } else { %>./src/index.js<% } %>", // Entry point
+    instances: "max",           // Run in Cluster Mode to utilize all CPUs (Note: On Windows, cluster mode may throw `spawn wmic ENOENT` errors due to missing WMIC in Windows 11. To fix, change instances to 1, or install wmic)
+    exec_mode: "cluster",
+    watch: false,               // Disable watch in production
+    max_memory_restart: "1G",
+    env_production: {
+      NODE_ENV: "production",
+      PORT: 3000,
+<%_ if (caching === 'Redis') { -%>
+      REDIS_HOST: "127.0.0.1",
+      REDIS_PORT: 6379,
+      REDIS_PASSWORD: "",
+<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+      KAFKA_BROKER: "127.0.0.1:9092",
+      KAFKAJS_NO_PARTITIONER_WARNING: 1,
+<%_ } -%>
+<%_ if (database !== 'None') { -%>
+      DB_HOST: "127.0.0.1",
+<%_ if (database === 'MySQL') { -%>
+      DB_USER: "root",
+      DB_PASSWORD: "root",
+      DB_NAME: "<%= dbName %>",
+      DB_PORT: 3306
+<%_ } else if (database === 'PostgreSQL') { -%>
+      DB_USER: "postgres",
+      DB_PASSWORD: "root",
+      DB_NAME: "<%= dbName %>",
+      DB_PORT: 5432
+<%_ } else if (database === 'MongoDB') { -%>
+      DB_NAME: "<%= dbName %>",
+      DB_PORT: 27017
+<%_ } -%>
+<%_ } -%>
+    }
+  }]
+};

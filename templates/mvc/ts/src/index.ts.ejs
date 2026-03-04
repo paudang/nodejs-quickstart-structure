@@ -1,9 +1,9 @@
+import { env } from '@/config/env';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
 import logger from '@/utils/logger';
 import morgan from 'morgan';
 import { errorMiddleware } from '@/utils/error.middleware';
@@ -23,10 +23,9 @@ import { typeDefs, resolvers } from '@/graphql';
 import { gqlContext, MyContext } from '@/graphql/context';
 <% } -%>
 
-dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = env.PORT;
 
 // Security Middleware
 <%_ if (communication === 'GraphQL') { -%>
@@ -111,15 +110,13 @@ const startServer = async () => {
     app.listen(port, () => {
         logger.info(`Server running on port ${port}`);
 <%_ if (communication === 'Kafka') { -%>
-        try {
-          const kafkaService = new KafkaService();
-          kafkaService.connect().then(() => {
-            logger.info('Kafka connected');
-            kafkaService.sendMessage('test-topic', 'Hello Kafka from MVC TS!');
-          });
-        } catch (err) {
+        const kafkaService = new KafkaService();
+        kafkaService.connect().then(() => {
+          logger.info('Kafka connected');
+          kafkaService.sendMessage('test-topic', 'Hello Kafka from MVC TS!');
+        }).catch(err => {
           logger.error('Failed to connect to Kafka:', err);
-        }
+        });
 <%_ } -%>
     });
 };

@@ -183,6 +183,36 @@ docker run -p 3000:3000 <%= projectName %>
 ```
 <% } -%>
 
+## 🚀 PM2 Deployment (VPS/EC2)
+This project is pre-configured for direct deployment to a VPS/EC2 instance using **PM2** (via `ecosystem.config.js`).
+1. Install dependencies
+```bash
+npm install
+```
+2. **Start Infrastructure (DB, Redis, Kafka, etc.) in the background**
+*(This specifically starts the background services without running the application inside Docker, allowing PM2 to handle it).*
+```bash
+docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> zookeeper kafka<% } %>
+```
+3. **Wait 5-10s** for the database to fully initialize.
+4. **Deploy the App using PM2 in Cluster Mode**
+```bash
+<% if (language === 'TypeScript') { %>npm run build
+<% } %>npm run deploy
+```
+5. **Check logs**
+```bash
+npx pm2 logs
+```
+6. Stop and remove the PM2 application
+```bash
+npx pm2 delete <%= projectName %>
+```
+7. Stop and remove the Docker infrastructure
+```bash
+docker-compose down
+```
+
 ## 🔒 Security Features
 -   **Helmet**: Sets secure HTTP headers.
 -   **CORS**: Configured for cross-origin requests.
