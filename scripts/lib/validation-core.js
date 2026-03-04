@@ -398,11 +398,13 @@ export async function runTest(config, index, options = {}, sharedPorts) {
 }
 
 export async function runValidation(options = {}) {
-    const { specificTestIndex, concurrency = 1 } = options;
+    const { specificTestIndex, startIndex = 0, endIndex = combinations.length - 1, concurrency = 1 } = options;
     
     log(`Running ${combinations.length} tests with concurrency ${concurrency}...`, ANSI_CYAN);
     if (specificTestIndex !== undefined) {
         log(`Targeting single test index: ${specificTestIndex}`, ANSI_CYAN);
+    } else if (startIndex !== 0 || endIndex !== combinations.length - 1) {
+        log(`Targeting range from index ${startIndex} to ${endIndex}`, ANSI_CYAN);
     }
 
     try {
@@ -416,7 +418,11 @@ export async function runValidation(options = {}) {
     const limit = pLimit(concurrency);
 
     const testPromises = combinations.map((config, i) => {
-        if (specificTestIndex !== undefined && i !== specificTestIndex) return null;
+        if (specificTestIndex !== undefined) {
+            if (i !== specificTestIndex) return null;
+        } else {
+            if (i < startIndex || i > endIndex) return null;
+        }
         
         return limit(async () => {
              try {

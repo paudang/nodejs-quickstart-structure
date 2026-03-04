@@ -35,6 +35,7 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 -   **🔄 CI/CD Integration**: Pre-configured workflows for **GitHub Actions**, **Jenkins**, and **GitLab CI**.
 -   **⚓ Git Hooks**: `Husky` and `Lint-Staged` to ensure no bad code is ever committed.
 -   **🐳 DevOps**: Highly optimized **Multi-Stage Dockerfile** for small, secure production images.
+-   **🚀 Deployment**: Ship confidently with an integrated **PM2 Ecosystem Configuration** for zero-downtime reloads and robust process management.
 
 ## 🧩 240+ Project Combinations
 
@@ -92,7 +93,6 @@ The generated project will include:
 
 -   `src/`: Source code (controllers, routes, services/use-cases).
 -   `src/errors/`: Custom error classes — `ApiError`, `NotFoundError`, `BadRequestError`.
--   `src/utils/error.middleware.{ts|js}`: Global Express error handler (logs 500s, returns `{ statusCode, message }`).
 -   `flyway/sql/`: SQL migration scripts (if SQL database selected).
 -   `docker-compose.yml`: Services configuration for DB, Flyway, and Kafka.
 -   `package.json`: Dependencies and scripts (`start`, `dev`, `build`).

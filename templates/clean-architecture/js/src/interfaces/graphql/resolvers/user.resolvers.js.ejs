@@ -12,7 +12,10 @@ const userResolvers = {
     createUser: async (_, { name, email }) => {
       return await userController.createUser({ name, email });
     }
-  }
+  }<%_ if (database === 'MongoDB') { -%>,
+  User: {
+    id: (parent) => parent.id || parent._id
+  }<%_ } %>
 };
 
 module.exports = { userResolvers };

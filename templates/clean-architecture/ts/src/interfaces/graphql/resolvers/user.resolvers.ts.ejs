@@ -14,5 +14,8 @@ export const userResolvers = {
       const user = await userController.createUser({ name, email });
       return user;
     }
-  }
+  }<%_ if (database === 'MongoDB') { -%>,
+  User: {
+    id: (parent: { id?: string; _id?: unknown }) => parent.id || parent._id
+  }<%_ } %>
 };
