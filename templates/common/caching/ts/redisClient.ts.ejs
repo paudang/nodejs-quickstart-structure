@@ -71,6 +71,10 @@ class RedisService {
         if (data) await this.set(key, data, ttl);
         return data;
     }
+
+    public async quit(): Promise<'OK'> {
+        return await this.client.quit();
+    }
 }
 
 export default RedisService.getInstance();

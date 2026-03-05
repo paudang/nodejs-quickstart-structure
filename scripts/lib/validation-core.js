@@ -160,6 +160,17 @@ async function checkHealth(config, hostPort) {
             });
             clearTimeout(timeoutId);
             if (res.ok) {
+                 // Strong Payload Validation for Advanced Health Check
+                 const healthPayload = await res.json();
+                 if (
+                    healthPayload.status !== 'UP' || 
+                    typeof healthPayload.uptime !== 'number' ||
+                    typeof healthPayload.memory !== 'object'
+                 ) {
+                     console.log(`!!! Health payload malformed: ${JSON.stringify(healthPayload)}`, ANSI_RED);
+                     return false;
+                 }
+                 
                  // Additional functional checks for REST APIs
                  if (config.communication === 'REST APIs' && (config.viewEngine !== 'None' || config.architecture === 'Clean Architecture')) {
                     try {
@@ -300,6 +311,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         }
 
         const command = `node ${cliPath} ${args.join(' ')}`;
+        console.log('>>> DEBUG CMD:', command);
         // Removed process.chdir(testDir) for parallel safety
         await runCommand(command, testDir);
         log(`✓ Project Generated (CLI)`);

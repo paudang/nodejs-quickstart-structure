@@ -50,10 +50,10 @@ The `generateProject` function in `lib/generator.js` executes the following step
     *   Processes the entry point file to wire up the selected DB, Architecture, and Communication type.
     *   **GraphQL**: Wires up Apollo Server middleware with `formatError` hook for centralized error handling.
     *   **REST APIs / Kafka**: Registers `app.use(errorMiddleware)` at the end of the Express chain.
-7.  **Render Error Middleware** (`renderErrorMiddleware`):
-    *   Processes `error.middleware.{ts|js}.ejs` template from the target directory's `src/utils/` path.
-    *   Renders to `src/utils/error.middleware.{ts|js}` in the generated project.
-    *   **Clean Architecture**: Also handles `src/infrastructure/webserver/middlewares/error.middleware.{js}` path.
+7.  **Error Middleware setup** (`renderErrorMiddleware`):
+    *   Processes `errorMiddleware.{ts|js}.ejs` template from the target directory's `src/utils/` path.
+    *   Renders to `src/utils/errorMiddleware.{ts|js}` in the generated project.
+    *   **Clean Architecture**: Also handles `src/infrastructure/webserver/middleware/errorMiddleware.{js}` path.
 8.  **Dynamic Component Generation**:
     *   **MVC**: Generates `userController` (imports specific DB service, uses `next(error)`).
     *   **Clean Architecture**: Generates `UserRepository` (infrastructure layer implementation).
@@ -141,7 +141,7 @@ project-name/
 │   ├── models/         # Database models
 │   ├── routes/         # Express routes
 │   ├── utils/
-│   │   ├── error.middleware.{ts|js}  # Global error handler
+│   │   ├── errorMiddleware.{ts|js}  # Global error handler
 │   │   ├── logger.{ts|js}
 │   │   └── httpCodes.{ts|js}
 │   └── index.js|ts     # Entry point (registers errorMiddleware last)
@@ -165,7 +165,7 @@ project-name/
 │   │   └── resolvers/  # user.resolvers (calls controllers, throws errors)
 │   ├── models/
 │   ├── utils/
-│   │   ├── error.middleware.{ts|js}  # Express-level fallback error handler
+│   │   ├── errorMiddleware.{ts|js}  # Express-level fallback error handler
 │   │   └── logger.{ts|js}
 │   └── index.js|ts     # Apollo Server + formatError hook
 └── ...
@@ -205,11 +205,11 @@ project-name/
 │   │   ├── database/           # DB connection & models
 │   │   ├── repositories/       # Data access implementation
 │   │   └── webserver/
-│   │       ├── middlewares/
-│   │       │   └── error.middleware.js  # JS only — Express error handler
+│   │       ├── middleware/
+│   │       │   └── errorMiddleware.js  # JS only — Express error handler
 │   │       └── server.js       # Express app setup
 │   ├── utils/
-│   │   └── error.middleware.ts  # TS — global error handler
+│   │   └── errorMiddleware.ts  # TS — global error handler
 │   └── index.js|ts              # Registers errorMiddleware after Apollo/Express
 └── ...
 ```

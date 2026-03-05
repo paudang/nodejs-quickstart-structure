@@ -1,13 +1,15 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import rateLimit from 'express-rate-limit';
 import logger from '@/infrastructure/log/logger';
 import morgan from 'morgan';
-import { errorMiddleware } from '@/utils/error.middleware';
-<%_ if (communication === 'REST APIs') { -%>import userRoutes from '@/interfaces/routes/userRoutes';<%_ } -%>
+import { errorMiddleware } from '@/utils/errorMiddleware';
+import { setupGracefulShutdown } from '@/utils/gracefulShutdown';
+import healthRoutes from '@/interfaces/routes/healthRoute';
 <% if (communication === 'REST APIs') { -%>
+import userRoutes from '@/interfaces/routes/userRoutes';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpecs from '@/config/swagger';<% } -%>
 <%_ if (communication === 'Kafka') { -%>import { KafkaService } from '@/infrastructure/messaging/kafkaClient';<%_ } -%>
@@ -56,15 +58,13 @@ app.use('/api/users', userRoutes);
 <%_ if (communication === 'REST APIs') { -%>
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 <%_ } -%>
-app.get('/health', (req: Request, res: Response) => {
-  res.json({ status: 'UP' });
-});
+app.use('/health', healthRoutes);
 
 // Start Server Logic
 const startServer = async () => {
 <%_ if (communication === 'GraphQL') { -%>
     // GraphQL Setup
-    const server = new ApolloServer<MyContext>({
+    const apolloServer = new ApolloServer<MyContext>({
       typeDefs,
       resolvers,
       plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
@@ -88,14 +88,16 @@ const startServer = async () => {
         return formattedError;
       },
     });
-    await server.start();
-    app.use('/graphql', expressMiddleware(server, { context: gqlContext }));
+    await apolloServer.start();
+    app.use('/graphql', expressMiddleware(apolloServer, { context: gqlContext }));
 <%_ } -%>
     app.use(errorMiddleware);
-    app.listen(port, () => {
+<%_ if (communication === 'Kafka') { -%>
+    const kafkaService = new KafkaService();
+<%_ } -%>
+    const server = app.listen(port, () => {
         logger.info(`Server running on port ${port}`);
 <%_ if (communication === 'Kafka') { -%>
-        const kafkaService = new KafkaService();
         kafkaService.connect().then(() => {
           logger.info('Kafka connected');
           kafkaService.sendMessage('test-topic', 'Hello Kafka from Clean Arch TS!');
@@ -104,6 +106,8 @@ const startServer = async () => {
         });
 <%_ } -%>
     });
+
+    setupGracefulShutdown(server<% if(communication === 'Kafka') { %>, kafkaService<% } %>);
 };
 
 <%_ if (database !== 'None') { -%>

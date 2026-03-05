@@ -2,9 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const logger = require('../log/logger');
 const morgan = require('morgan');
-const { errorMiddleware } = require('./middlewares/error.middleware');
-<%_ if (communication === 'REST APIs') { -%>const apiRoutes = require('../../interfaces/routes/api');<%_ } -%>
+const { errorMiddleware } = require('./middleware/errorMiddleware');
+const healthRoutes = require('../../interfaces/routes/healthRoute');
 <%_ if (communication === 'REST APIs') { -%>
+const apiRoutes = require('../../interfaces/routes/api');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./swagger');
 <%_ } -%>
@@ -36,7 +37,7 @@ const startServer = async () => {
     <%_ } -%>
     <%_ if (communication === 'GraphQL') { -%>
     // GraphQL Setup
-    const server = new ApolloServer({
+    const apolloServer = new ApolloServer({
         typeDefs,
         resolvers,
         plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
@@ -60,18 +61,28 @@ const startServer = async () => {
             return formattedError;
         },
     });
-    await server.start();
-    app.use('/graphql', expressMiddleware(server, { context: gqlContext }));
+    await apolloServer.start();
+    app.use('/graphql', expressMiddleware(apolloServer, { context: gqlContext }));
     <%_ } -%>
-    app.get('/health', (req, res) => {
-        res.json({ status: 'UP' });
-    });
+    app.use('/health', healthRoutes);
 
     app.use(errorMiddleware);
 
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
         logger.info(`Server running on port ${port}`);
+<%_ if (communication === 'Kafka') { -%>
+        const { connectKafka, sendMessage } = require('../../infrastructure/messaging/kafkaClient');
+        connectKafka().then(() => {
+          logger.info('Kafka connected');
+          sendMessage('test-topic', 'Hello Kafka from Clean Arch JS!');
+        }).catch(err => {
+          logger.error('Failed to connect to Kafka:', err);
+        });
+<%_ } -%>
     });
+
+    const setupGracefulShutdown = require('../../utils/gracefulShutdown');
+    setupGracefulShutdown(server);
 };
 
 module.exports = startServer;

@@ -1,0 +1,58 @@
+import { Server } from 'http';
+<%_ if (architecture === 'MVC') { -%>
+import logger from '@/utils/logger';
+<%_ } else { -%>
+import logger from '@/infrastructure/log/logger';
+<%_ } -%>
+
+export const setupGracefulShutdown = (server: Server<% if (communication === 'Kafka') { %>, kafkaService: { disconnect: () => Promise<void> }<% } %>) => {
+    const gracefulShutdown = async (signal: string) => {
+        logger.info(`Received ${signal}. Shutting down gracefully...`);
+        server.close(async () => {
+            logger.info('HTTP server closed.');
+            try {
+<%_ if (database !== 'None') { -%>
+<%_ if (database === 'MongoDB') { -%>
+                const mongoose = (await import('mongoose')).default;
+                await mongoose.connection.close(false);
+                logger.info('MongoDB connection closed.');
+<%_ } else { -%>
+                <%_ if (architecture === 'MVC') { -%>
+                const sequelize = (await import('@/config/database')).default;
+                <%_ } else { -%>
+                const sequelize = (await import('@/infrastructure/database/database')).default;
+                <%_ } -%>
+                await sequelize.close();
+                logger.info('Database connection closed.');
+<%_ } -%>
+<%_ } -%>
+<%_ if (caching === 'Redis') { -%>
+                <%_ if (architecture === 'MVC') { -%>
+                const redisService = (await import('@/config/redisClient')).default;
+                <%_ } else { -%>
+                const redisService = (await import('@/infrastructure/caching/redisClient')).default;
+                <%_ } -%>
+                await redisService.quit();
+                logger.info('Redis connection closed.');
+<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+                await kafkaService.disconnect();
+                logger.info('Kafka connection closed.');
+<%_ } -%>
+                logger.info('Graceful shutdown fully completed.');
+                process.exit(0);
+            } catch (err) {
+                logger.error('Error during shutdown:', err);
+                process.exit(1);
+            }
+        });
+
+        setTimeout(() => {
+            logger.error('Could not close connections in time, forcefully shutting down');
+            process.exit(1);
+        }, 15000);
+    };
+
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+};

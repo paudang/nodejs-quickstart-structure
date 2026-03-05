@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.0] - 2026-03-05
+### Added
+- **Enhanced Health Check System:**
+  - Standardized health logic for both MVC and Clean Architecture.
+  - Deep verification: Automatically pings the selected database (MySQL, PostgreSQL, MongoDB) during health checks and returns a `DOWN` status with 500 code if the connection is lost.
+  - Structured response including `uptime`, `memoryUsage`, `database` connectivity status, and `timestamp`.
+- **Improved Graceful Shutdown:**
+  - Standardized signal handling (`SIGINT`, `SIGTERM`) across all architecture types to ensure clean disposal of database and caching resources.
+  - Integrated proper shutdown sequences for Redis, MySQL, PostgreSQL, and MongoDB.
+
 ## [1.12.0] - 2026-03-04
 ### Added
 - **Zod Environment Validation:** Replaced manual `dotenv` process calls in server entry points with a centralized schema parser.
@@ -16,13 +26,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.11.1] - 2026-03-03
 ### Fixed
-- Fixed relative import paths in Clean Architecture JS `error.middleware.js` — changed to correct 3-level relative paths (`../../../`).
+- Fixed relative import paths in Clean Architecture JS `errorMiddleware.js` — changed to correct 3-level relative paths (`../../../`).
 
 ## [1.11.0] - 2026-03-02
 ### Added
 - **Centralized Error Handling Mechanism:** All generated projects now include a standardized, predictable error response structure for both REST APIs and GraphQL communication types.
   - New `src/errors/` directory with custom error classes: `ApiError`, `NotFoundError`, `BadRequestError`.
-  - New `error.middleware.{ts|js}` global error handler placed at the end of the Express middleware chain in `src/utils/` (MVC) and `src/utils/` + `src/infrastructure/webserver/middlewares/` (Clean Architecture).
+  - New `error.middleware.{ts|js}` global error handler placed at the end of the Express middleware chain in `src/utils/` (MVC) and `src/utils/` + `src/infrastructure/webserver/middleware/` (Clean Architecture).
   - Integrates `winston` logger to automatically log 500-level errors to persistent log files.
   - All controllers updated to pass errors via `next(error)` instead of manually sending responses.
   - **GraphQL:** Apollo Server `formatError` hook configured with `unwrapResolverError` to intercept resolver errors and map `ApiError` instances to structured GraphQL extension codes.
@@ -32,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed `swagger.js` / `swagger.yml` being incorrectly generated for non-REST API configurations (GraphQL, Kafka). Converted static `swagger.js` to `swagger.js.ejs` in MVC JS and Clean Architecture JS templates so `renderSwaggerConfig` can conditionally control its generation.
 - Fixed `userRoutes.ts` in Clean Architecture TypeScript template not passing `NextFunction` to controller methods, causing `TypeScript TS2554: Expected 3 arguments` compile errors during Docker builds.
-- Fixed incorrect relative import paths (`../../../../`) in Clean Architecture JS `error.middleware.js` — changed to correct 3-level relative paths (`../../../`).
+- Fixed incorrect relative import paths (`../../../../`) in Clean Architecture JS `errorMiddleware.js` — changed to correct 3-level relative paths (`../../../`).
 - Fixed `HTTP_STATUS` being imported without destructuring from `httpCodes.js` (which uses a plain `module.exports = HTTP_STATUS` default export), causing `Cannot read properties of undefined` runtime errors.
 - Fixed `renderErrorMiddleware` in `app-setup.js` deleting from the **template source directory** instead of the generated project's target directory. This caused error middleware templates to disappear from disk after the first test run, breaking all subsequent generations.
 

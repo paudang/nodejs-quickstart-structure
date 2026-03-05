@@ -1,0 +1,43 @@
+import { Router, Request, Response } from 'express';
+import logger from '<% if (architecture === "MVC") { %>@/utils/logger<% } else { %>@/infrastructure/log/logger<% } %>';
+import { HTTP_STATUS } from '@/utils/httpCodes';
+
+const router = Router();
+
+router.get('/', async (req: Request, res: Response) => {
+  const healthData: Record<string, unknown> = {
+    status: 'UP',
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    database: 'disconnected',
+    timestamp: Date.now()
+  };
+  logger.info('Health Check');
+
+<%_ if (database !== 'None') { -%>
+  try {
+<%_ if (database === 'MongoDB') { -%>
+    const mongoose = (await import('mongoose')).default;
+    if (mongoose.connection.readyState === 1) {
+      await mongoose.connection.db?.admin().ping();
+      healthData.database = 'connected';
+    }
+<%_ } else { -%>
+    const sequelize = (await import('<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>')).default;
+    await sequelize.authenticate();
+    healthData.database = 'connected';
+<%_ } -%>
+  } catch (err) {
+    healthData.database = 'error';
+    healthData.status = 'DOWN';
+    logger.error('Health Check Database Ping Failed:', err);
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(healthData);
+  }
+<%_ } else { -%>
+  healthData.database = 'None';
+<%_ } -%>
+
+  res.status(HTTP_STATUS.OK).json(healthData);
+});
+
+export default router;

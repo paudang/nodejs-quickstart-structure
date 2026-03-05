@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 <%_ if (communication === 'REST APIs') { -%>const apiRoutes = require('./routes/api');<%_ } -%>
+const healthRoutes = require('./routes/healthRoute');
 <%_ if (communication === 'Kafka') { -%>const { connectKafka, sendMessage } = require('./services/kafkaService');<%_ } -%>
 <%_ if (communication === 'GraphQL') { -%>
 const { ApolloServer } = require('@apollo/server');
@@ -21,7 +22,7 @@ const app = express();
 const PORT = env.PORT;
 const logger = require('./utils/logger');
 const morgan = require('morgan');
-const { errorMiddleware } = require('./utils/error.middleware');
+const { errorMiddleware } = require('./utils/errorMiddleware');
 
 app.use(cors());
 app.use(express.json());
@@ -48,15 +49,13 @@ app.get('/', (req, res) => {
   });
 });
 <% } -%>
-app.get('/health', (req, res) => {
-  res.json({ status: 'UP' });
-});
+app.use('/health', healthRoutes);
 
 // Start Server Logic
 const startServer = async () => {
 <%_ if (communication === 'GraphQL') { -%>
     // GraphQL Setup
-    const server = new ApolloServer({
+    const apolloServer = new ApolloServer({
       typeDefs,
       resolvers,
       plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
@@ -80,11 +79,11 @@ const startServer = async () => {
         return formattedError;
       },
     });
-    await server.start();
-    app.use('/graphql', expressMiddleware(server, { context: gqlContext }));
+    await apolloServer.start();
+    app.use('/graphql', expressMiddleware(apolloServer, { context: gqlContext }));
 <%_ } -%>
     app.use(errorMiddleware);
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
         logger.info(`Server running on port ${PORT}`);
 <%_ if (communication === 'Kafka') { -%>
         connectKafka().then(() => {
@@ -95,6 +94,9 @@ const startServer = async () => {
         });
 <%_ } -%>
     });
+
+    const setupGracefulShutdown = require('./utils/gracefulShutdown');
+    setupGracefulShutdown(server);
 };
 
 <%_ if (database !== 'None') { -%>

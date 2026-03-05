@@ -27,4 +27,9 @@ const sendMessage = async (topic, message) => {
     });
 };
 
-module.exports = { connectKafka, sendMessage };
+const disconnectKafka = async () => {
+    await producer.disconnect();
+    await consumer.disconnect();
+};
+
+module.exports = { connectKafka, sendMessage, disconnectKafka };

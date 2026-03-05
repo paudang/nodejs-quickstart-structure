@@ -34,6 +34,7 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 -   **🧪 Testing Strategy**: Integrated `Jest` and `Supertest` setup for Unit and Integration testing.
 -   **🔄 CI/CD Integration**: Pre-configured workflows for **GitHub Actions**, **Jenkins**, and **GitLab CI**.
 -   **⚓ Git Hooks**: `Husky` and `Lint-Staged` to ensure no bad code is ever committed.
+-   **🤝 Reliability**: Advanced Health Checks (`/health`) with deep database pings and Graceful Shutdown workflows for zero-downtime rollouts.
 -   **🐳 DevOps**: Highly optimized **Multi-Stage Dockerfile** for small, secure production images.
 -   **🚀 Deployment**: Ship confidently with an integrated **PM2 Ecosystem Configuration** for zero-downtime reloads and robust process management.
 
