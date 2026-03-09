@@ -1,0 +1,64 @@
+import GetAllUsers from '@/usecases/getAllUsers';
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+<%_ if (caching !== 'None') { -%>
+import cacheService from '<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>';
+<%_ } -%>
+
+jest.mock('@/infrastructure/repositories/UserRepository');
+<%_ if (caching !== 'None') { -%>
+jest.mock('<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>', () => ({
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn()
+}));
+<%_ } -%>
+
+describe('GetAllUsers UseCase', () => {
+    let getAllUsers: GetAllUsers;
+    let mockUserRepository: jest.Mocked<UserRepository>;
+
+    beforeEach(() => {
+        mockUserRepository = new UserRepository() as jest.Mocked<UserRepository>;
+        getAllUsers = new GetAllUsers(mockUserRepository);
+        jest.clearAllMocks();
+    });
+
+    it('should retrieve all users', async () => {
+        const expectedUsers = [{ id: 1, name: 'Alice', email: 'alice@example.com' }];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        mockUserRepository.getUsers.mockResolvedValue(expectedUsers as any);
+<%_ if (caching !== 'None') { -%>
+        (cacheService.get as jest.Mock).mockResolvedValue(null);
+<%_ } -%>
+
+        const result = await getAllUsers.execute();
+
+        expect(mockUserRepository.getUsers).toHaveBeenCalledTimes(1);
+        expect(result).toEqual(expectedUsers);
+<%_ if (caching !== 'None') { -%>
+        expect(cacheService.set).toHaveBeenCalled();
+<%_ } -%>
+    });
+
+<%_ if (caching !== 'None') { -%>
+    it('should return from cache if available', async () => {
+        const cachedUsers = [{ id: 1, name: 'Cached', email: 'cached@example.com' }];
+        (cacheService.get as jest.Mock).mockResolvedValue(cachedUsers);
+
+        const result = await getAllUsers.execute();
+
+        expect(mockUserRepository.getUsers).not.toHaveBeenCalled();
+        expect(result).toEqual(cachedUsers);
+    });
+<%_ } -%>
+
+    it('should throw an error if repository fails', async () => {
+        const error = new Error('Database error');
+        mockUserRepository.getUsers.mockRejectedValue(error);
+<%_ if (caching !== 'None') { -%>
+        (cacheService.get as jest.Mock).mockResolvedValue(null);
+<%_ } -%>
+
+        await expect(getAllUsers.execute()).rejects.toThrow(error);
+    });
+});

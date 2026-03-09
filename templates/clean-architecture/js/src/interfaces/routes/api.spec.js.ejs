@@ -1,0 +1,35 @@
+const request = require('supertest');
+const express = require('express');
+const router = require('./api');
+const UserController = require('../controllers/userController');
+
+jest.mock('../controllers/userController');
+
+describe('ApiRoutes', () => {
+    let app;
+    let mockController;
+
+    beforeEach(() => {
+        app = express();
+        app.use(express.json());
+        app.use('/api', router);
+        
+        // Get mock instance
+        mockController = UserController.mock.instances[0];
+    });
+
+    it('POST /api/users should call controller.createUser', async () => {
+        await request(app)
+            .post('/api/users')
+            .send({ name: 'Test', email: 'test@example.com' });
+
+        expect(mockController.createUser).toHaveBeenCalled();
+    });
+
+    it('GET /api/users should call controller.getUsers', async () => {
+        await request(app)
+            .get('/api/users');
+
+        expect(mockController.getUsers).toHaveBeenCalled();
+    });
+});

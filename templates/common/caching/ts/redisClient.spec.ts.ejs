@@ -1,0 +1,132 @@
+jest.mock('ioredis', () => {
+    const mRedis = jest.fn().mockImplementation(() => ({
+        on: jest.fn(),
+        get: jest.fn(),
+        set: jest.fn(),
+        del: jest.fn(),
+        quit: jest.fn().mockResolvedValue('OK'),
+    }));
+    return mRedis;
+});
+
+const mockLogger = {
+    info: jest.fn(),
+    error: jest.fn(),
+};
+
+jest.mock('<%- loggerPath %>', () => mockLogger);
+
+describe('Redis Client', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let RedisService: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let logger: any;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        jest.resetModules();
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        logger = require('<%- loggerPath %>');
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        RedisService = require('<% if (architecture === "MVC") { %>@/config/redisClient<% } else { %>@/infrastructure/caching/redisClient<% } %>').default;
+    });
+
+    it('should handle redis events', () => {
+        // Find the event handlers
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const handlers: { [key: string]: (...args: any[]) => any } = {};
+        (RedisService.client.on as jest.Mock).mock.calls.forEach(([event, handler]) => {
+            handlers[event] = handler;
+        });
+
+        if (handlers['connect']) {
+            handlers['connect']();
+            expect(logger.info).toHaveBeenCalledWith('Redis connected');
+        }
+
+        if (handlers['error']) {
+            handlers['error'](new Error('Test Error'));
+            expect(logger.error).toHaveBeenCalledWith('Redis error:', expect.any(Error));
+        }
+    });
+
+    it('should get data from redis', async () => {
+        const mockData = { test: 'data' };
+        RedisService.client.get.mockResolvedValue(JSON.stringify(mockData));
+        
+        const data = await RedisService.get('test-key');
+        expect(data).toEqual(mockData);
+        expect(RedisService.client.get).toHaveBeenCalledWith('test-key');
+    });
+
+    it('should return null when key not found in redis', async () => {
+        RedisService.client.get.mockResolvedValue(null);
+        const data = await RedisService.get('non-existent');
+        expect(data).toBeNull();
+    });
+
+    it('should handle errors in get', async () => {
+        RedisService.client.get.mockRejectedValue(new Error('Redis Error'));
+        const result = await RedisService.get('test-key');
+        expect(result).toBeNull();
+        expect(logger.error).toHaveBeenCalled();
+    });
+
+    it('should set data to redis without TTL', async () => {
+        const mockData = { test: 'data' };
+        await RedisService.set('test-key', mockData);
+        expect(RedisService.client.set).toHaveBeenCalledWith('test-key', JSON.stringify(mockData));
+    });
+
+    it('should set data to redis with TTL', async () => {
+        const mockData = { test: 'data' };
+        await RedisService.set('test-key', mockData, 3600);
+        expect(RedisService.client.set).toHaveBeenCalledWith('test-key', JSON.stringify(mockData), 'EX', 3600);
+    });
+
+    it('should handle errors in set', async () => {
+        RedisService.client.set.mockRejectedValue(new Error('Redis Error'));
+        await RedisService.set('test-key', 'value');
+        expect(logger.error).toHaveBeenCalled();
+    });
+
+    it('should delete data from redis', async () => {
+        await RedisService.del('test-key');
+        expect(RedisService.client.del).toHaveBeenCalledWith('test-key');
+    });
+
+    it('should handle errors in del', async () => {
+        RedisService.client.del.mockRejectedValue(new Error('Redis Error'));
+        await RedisService.del('test-key');
+        expect(logger.error).toHaveBeenCalled();
+    });
+
+    it('should use getOrSet and call fetcher if not cached', async () => {
+        RedisService.get = jest.fn().mockResolvedValue(null);
+        RedisService.set = jest.fn();
+        const fetcher = jest.fn().mockResolvedValue({ new: 'data' });
+
+        const result = await RedisService.getOrSet('new-key', fetcher);
+        
+        expect(result).toEqual({ new: 'data' });
+        expect(fetcher).toHaveBeenCalled();
+        expect(RedisService.set).toHaveBeenCalledWith('new-key', { new: 'data' }, 3600);
+    });
+
+    it('should use getOrSet and return cached data', async () => {
+        const cachedData = { cached: 'data' };
+        RedisService.get = jest.fn().mockResolvedValue(cachedData);
+        const fetcher = jest.fn();
+
+        const result = await RedisService.getOrSet('cached-key', fetcher);
+        
+        expect(result).toEqual(cachedData);
+        expect(fetcher).not.toHaveBeenCalled();
+    });
+
+    it('should quit the redis client', async () => {
+        const result = await RedisService.quit();
+        expect(result).toBe('OK');
+        expect(RedisService.client.quit).toHaveBeenCalled();
+    });
+});

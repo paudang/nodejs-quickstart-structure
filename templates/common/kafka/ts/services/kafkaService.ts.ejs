@@ -17,7 +17,7 @@ export class KafkaService {
         await this.consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
 
         await this.consumer.run({
-            eachMessage: async ({ topic, partition, message }: EachMessagePayload) => {
+            eachMessage: async ({ message }: EachMessagePayload) => {
                 logger.info({
                     value: message.value?.toString(),
                 });

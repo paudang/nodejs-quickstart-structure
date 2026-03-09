@@ -1,0 +1,43 @@
+const mongoose = require('mongoose');
+
+jest.mock('mongoose', () => ({
+    connect: jest.fn().mockResolvedValue(true),
+}));
+
+const logger = {
+    info: jest.fn(),
+    error: jest.fn(),
+};
+
+jest.mock('<% if (architecture === "MVC") { %>@/utils/logger<% } else { %>@/infrastructure/log/logger<% } %>', () => logger);
+
+describe('Mongoose Configuration', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        jest.resetModules();
+    });
+
+    it('should call mongoose.connect with correct parameters', async () => {
+        const connectDB = require('<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>');
+        await connectDB();
+        expect(mongoose.connect).toHaveBeenCalledWith(
+            expect.stringContaining('mongodb://'),
+            expect.any(Object)
+        );
+    });
+
+    it('should handle connection failure and retry', async () => {
+        const connectDB = require('<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>');
+        mongoose.connect
+            .mockRejectedValueOnce(new Error('Connection failed'))
+            .mockResolvedValueOnce(true);
+
+        const timeoutSpy = jest.spyOn(global, 'setTimeout').mockImplementation(cb => cb());
+        
+        await connectDB();
+        
+        expect(logger.error).toHaveBeenCalled();
+        expect(mongoose.connect).toHaveBeenCalledTimes(2);
+        timeoutSpy.mockRestore();
+    });
+});

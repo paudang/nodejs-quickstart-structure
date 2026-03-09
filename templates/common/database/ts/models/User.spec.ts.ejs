@@ -1,0 +1,49 @@
+<% if (database === 'MongoDB') { _%>
+import mongoose from 'mongoose';
+
+jest.mock('mongoose', () => {
+    const mSchema = jest.fn();
+    const mModel = jest.fn();
+    return {
+        Schema: mSchema,
+        model: mModel,
+    };
+});
+<% } else { _%>
+import { Model } from 'sequelize';
+
+jest.mock('sequelize', () => {
+    const mDataTypes = {
+        INTEGER: 'INTEGER',
+        STRING: 'STRING',
+    };
+    const mModel = class {
+        static init = jest.fn();
+    };
+    return { DataTypes: mDataTypes, Model: mModel };
+});
+
+<% if (architecture === 'MVC') { _%>
+jest.mock('@/config/database', () => ({}));
+<% } else { _%>
+jest.mock('@/infrastructure/database/database', () => ({}));
+<% } _%>
+<% } _%>
+
+describe('User Model', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should be defined and initialized', () => {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const User = require('<% if (architecture === "MVC") { %>@/models/User<% } else { %>@/infrastructure/database/models/User<% } %>').default;
+        expect(User).toBeDefined();
+        <% if (database === 'MongoDB') { %>
+        expect(mongoose.model).toHaveBeenCalled();
+        <% } else { %>
+        // Sequelize init is called on the class
+        expect(Model.init).toHaveBeenCalled();
+        <% } %>
+    });
+});

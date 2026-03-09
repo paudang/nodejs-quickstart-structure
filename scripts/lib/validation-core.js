@@ -335,9 +335,23 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         // 2.2 Run Linter & Tests
         try {
             log(`... Running Linter ...`);
-            await runCommand('npm run lint', projectPath); 
-            log(`... Running Unit Tests ...`);
-            await runCommand('npm test', projectPath); 
+            await runCommand('npm run lint', projectPath, {}, true); 
+            log(`... Running Unit Tests & Coverage ...`);
+            const testOutput = await runCommand('npm run test:coverage', projectPath, {}, true); 
+            
+            // Explicit condition for > 80% line and > 75% function coverage
+            const coverageMatch = testOutput.match(/All files\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)/);
+            if (coverageMatch) {
+                const funcsCov = parseFloat(coverageMatch[3]);
+                const linesCov = parseFloat(coverageMatch[4]);
+                if (linesCov < 80 || funcsCov < 75) {
+                    throw new Error(`Coverage below threshold: Lines ${linesCov}% (min 80%), Functions ${funcsCov}% (min 75%)`);
+                } else {
+                    log(`✓ Coverage verified: Lines ${linesCov}% (> 80%), Functions ${funcsCov}% (> 75%)`, ANSI_GREEN);
+                }
+            } else {
+                log(`✓ Unit tests passed. Coverage enforced by Jest config.`, ANSI_GREEN);
+            }
         } catch (e) {
             throw new Error(`Professional Standards Check Failed: ${e.message}`);
         }

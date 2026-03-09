@@ -1,0 +1,51 @@
+const GetAllUsers = require('@/usecases/GetAllUsers');
+const UserRepository = require('@/infrastructure/repositories/UserRepository');
+const cacheService = require('@/infrastructure/caching/memoryCache');
+
+jest.mock('@/infrastructure/repositories/UserRepository');
+jest.mock('@/infrastructure/caching/memoryCache', () => ({
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn()
+}));
+
+describe('GetAllUsers UseCase', () => {
+    let getAllUsers;
+    let mockUserRepository;
+
+    beforeEach(() => {
+        mockUserRepository = new UserRepository();
+        getAllUsers = new GetAllUsers(mockUserRepository);
+        jest.clearAllMocks();
+    });
+
+    it('should retrieve all users', async () => {
+        const expectedUsers = [{ id: 1, name: 'Alice', email: 'alice@example.com' }];
+        mockUserRepository.getUsers.mockResolvedValue(expectedUsers);
+        cacheService.get.mockResolvedValue(null); // Cache miss
+
+        const result = await getAllUsers.execute();
+
+        expect(mockUserRepository.getUsers).toHaveBeenCalledTimes(1);
+        expect(result).toEqual(expectedUsers);
+        expect(cacheService.set).toHaveBeenCalled();
+    });
+
+    it('should return from cache if available', async () => {
+        const cachedUsers = [{ id: 1, name: 'Cached', email: 'cached@example.com' }];
+        cacheService.get.mockResolvedValue(cachedUsers);
+
+        const result = await getAllUsers.execute();
+
+        expect(mockUserRepository.getUsers).not.toHaveBeenCalled();
+        expect(result).toEqual(cachedUsers);
+    });
+
+    it('should throw an error if repository fails', async () => {
+        const error = new Error('Database error');
+        mockUserRepository.getUsers.mockRejectedValue(error);
+        cacheService.get.mockResolvedValue(null); // Cache miss
+
+        await expect(getAllUsers.execute()).rejects.toThrow(error);
+    });
+});

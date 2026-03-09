@@ -1,0 +1,21 @@
+import { Sequelize } from 'sequelize';
+
+jest.mock('sequelize', () => {
+    const mSequelize = jest.fn(() => ({
+        authenticate: jest.fn().mockResolvedValue(true),
+        define: jest.fn(),
+    }));
+    return { Sequelize: mSequelize };
+});
+
+describe('Database Configuration', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should initialize Sequelize', () => {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        require('<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>');
+        expect(Sequelize).toHaveBeenCalled();
+    });
+});

@@ -1,0 +1,166 @@
+<% if (communication !== 'GraphQL') { -%>
+import { Request, Response, NextFunction } from 'express';
+import { HTTP_STATUS } from '@/utils/httpCodes';
+<% } -%>
+import { UserController } from '@/interfaces/controllers/userController';
+import CreateUser from '@/usecases/createUser';
+import GetAllUsers from '@/usecases/getAllUsers';
+
+// Mock dependencies
+jest.mock('@/infrastructure/repositories/UserRepository');
+jest.mock('@/usecases/createUser');
+jest.mock('@/usecases/getAllUsers');
+jest.mock('@/infrastructure/log/logger');
+
+describe('UserController (Clean Architecture)', () => {
+    let userController: UserController;
+    let mockCreateUserUseCase: jest.Mocked<CreateUser>;
+    let mockGetAllUsersUseCase: jest.Mocked<GetAllUsers>;
+<% if (communication !== 'GraphQL') { -%>
+    let mockRequest: Partial<Request>;
+    let mockResponse: Partial<Response>;
+    let mockNext: NextFunction;
+<% } -%>
+
+    beforeEach(() => {
+        // Clear all mocks
+        jest.clearAllMocks();
+
+        userController = new UserController();
+
+        // Retrieve the mocked instances created inside UserController constructor
+        mockCreateUserUseCase = (CreateUser as jest.Mock).mock.instances[0] as jest.Mocked<CreateUser>;
+        mockGetAllUsersUseCase = (GetAllUsers as jest.Mock).mock.instances[0] as jest.Mocked<GetAllUsers>;
+
+<% if (communication !== 'GraphQL') { -%>
+        mockRequest = {};
+        mockResponse = {
+            json: jest.fn(),
+            status: jest.fn().mockReturnThis(),
+        };
+        mockNext = jest.fn();
+<% } -%>
+    });
+
+    describe('getUsers', () => {
+        it('should return successfully (Happy Path)', async () => {
+            // Arrange
+            const usersMock = [{ id: '1', name: 'Test', email: 'test@example.com' }];
+            mockGetAllUsersUseCase.execute.mockResolvedValue(usersMock);
+
+            // Act
+<% if (communication === 'GraphQL') { -%>
+            const result = await userController.getUsers();
+
+            // Assert
+            expect(result).toEqual(usersMock);
+<% } else { -%>
+            await userController.getUsers(mockRequest as Request, mockResponse as Response, mockNext);
+
+            // Assert
+            expect(mockResponse.json).toHaveBeenCalledWith(usersMock);
+<% } -%>
+            expect(mockGetAllUsersUseCase.execute).toHaveBeenCalled();
+        });
+
+        it('should handle errors correctly (Error Handling)', async () => {
+            // Arrange
+            const error = new Error('UseCase Error');
+            mockGetAllUsersUseCase.execute.mockRejectedValue(error);
+
+            // Act & Assert
+<% if (communication === 'GraphQL') { -%>
+            await expect(userController.getUsers()).rejects.toThrow(error);
+<% } else { -%>
+            await userController.getUsers(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+<% } -%>
+        });
+
+        it('should handle non-Error objects in catch block', async () => {
+            // Arrange
+            const error = 'String Error';
+            mockGetAllUsersUseCase.execute.mockRejectedValue(error);
+
+            // Act & Assert
+<% if (communication === 'GraphQL') { -%>
+            await expect(userController.getUsers()).rejects.toEqual(error);
+<% } else { -%>
+            await userController.getUsers(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+<% } -%>
+        });
+    });
+
+    describe('createUser', () => {
+        it('should successfully create a new user (Happy Path)', async () => {
+            // Arrange
+            const payload = { name: 'Alice', email: 'alice@example.com' };
+<% if (communication === 'GraphQL') { -%>
+            const dataArg = payload;
+<% } else { -%>
+            mockRequest.body = payload;
+<% } -%>
+            const expectedUser = { id: '1', ...payload };
+            
+            mockCreateUserUseCase.execute.mockResolvedValue(expectedUser);
+
+            // Act
+<% if (communication === 'GraphQL') { -%>
+            const result = await userController.createUser(dataArg);
+
+            // Assert
+            expect(result).toEqual(expectedUser);
+<% } else { -%>
+            await userController.createUser(mockRequest as Request, mockResponse as Response, mockNext);
+
+            // Assert
+            expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.CREATED);
+            expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
+<% } -%>
+            expect(mockCreateUserUseCase.execute).toHaveBeenCalledWith(payload.name, payload.email);
+        });
+
+        it('should handle errors when creation fails (Error Handling)', async () => {
+            // Arrange
+            const error = new Error('Creation Error');
+            const payload = { name: 'Bob', email: 'bob@example.com' };
+<% if (communication === 'GraphQL') { -%>
+            const dataArg = payload;
+<% } else { -%>
+            mockRequest.body = payload;
+<% } -%>
+
+            mockCreateUserUseCase.execute.mockRejectedValue(error);
+
+            // Act & Assert
+<% if (communication === 'GraphQL') { -%>
+            await expect(userController.createUser(dataArg)).rejects.toThrow(error);
+<% } else { -%>
+            await userController.createUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+<% } -%>
+        });
+
+        it('should handle non-Error objects in catch block when creation fails', async () => {
+            // Arrange
+            const error = 'Creation String Error';
+            const payload = { name: 'Bob', email: 'bob@example.com' };
+<% if (communication === 'GraphQL') { -%>
+            const dataArg = payload;
+<% } else { -%>
+            mockRequest.body = payload;
+<% } -%>
+
+            mockCreateUserUseCase.execute.mockRejectedValue(error);
+
+            // Act & Assert
+<% if (communication === 'GraphQL') { -%>
+            await expect(userController.createUser(dataArg)).rejects.toEqual(error);
+<% } else { -%>
+            await userController.createUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+<% } -%>
+        });
+    });
+});

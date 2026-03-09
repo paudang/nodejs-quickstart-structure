@@ -1,0 +1,57 @@
+const NodeCache = require('node-cache');
+const logger = require('<%- loggerPath %>');
+
+jest.mock('node-cache', () => {
+    return jest.fn().mockImplementation(() => ({
+        get: jest.fn(),
+        set: jest.fn(),
+        del: jest.fn(),
+    }));
+});
+
+jest.mock('<%- loggerPath %>', () => ({
+    info: jest.fn(),
+    error: jest.fn(),
+}));
+
+describe('Memory Cache Client', () => {
+    let memoryCacheService;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        jest.resetModules();
+        memoryCacheService = require('<% if (architecture === "MVC") { %>@/config/memoryCache<% } else { %>@/infrastructure/caching/memoryCache<% } %>');
+    });
+
+    it('should get data from memory cache', async () => {
+        const mockData = { test: 'data' };
+        memoryCacheService.cache.get.mockReturnValue(JSON.stringify(mockData));
+        
+        const data = await memoryCacheService.get('test-key');
+        expect(data).toEqual(mockData);
+        expect(memoryCacheService.cache.get).toHaveBeenCalledWith('test-key');
+    });
+
+    it('should set data to memory cache', async () => {
+        const mockData = { test: 'data' };
+        await memoryCacheService.set('test-key', mockData, 3600);
+        expect(memoryCacheService.cache.set).toHaveBeenCalledWith('test-key', JSON.stringify(mockData), 3600);
+    });
+
+    it('should delete data from memory cache', async () => {
+        await memoryCacheService.del('test-key');
+        expect(memoryCacheService.cache.del).toHaveBeenCalledWith('test-key');
+    });
+
+    it('should use getOrSet and call fetcher if not cached', async () => {
+        memoryCacheService.get = jest.fn().mockResolvedValue(null);
+        memoryCacheService.set = jest.fn();
+        const fetcher = jest.fn().mockResolvedValue({ new: 'data' });
+
+        const result = await memoryCacheService.getOrSet('new-key', fetcher);
+        
+        expect(result).toEqual({ new: 'data' });
+        expect(fetcher).toHaveBeenCalled();
+        expect(memoryCacheService.set).toHaveBeenCalledWith('new-key', { new: 'data' }, 3600);
+    });
+});

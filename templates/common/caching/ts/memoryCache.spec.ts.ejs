@@ -1,0 +1,57 @@
+import NodeCache from 'node-cache';
+import logger from '<%- loggerPath %>';
+
+jest.mock('node-cache', () => {
+    return jest.fn().mockImplementation(() => ({
+        get: jest.fn(),
+        set: jest.fn(),
+        del: jest.fn(),
+    }));
+});
+
+jest.mock('<%- loggerPath %>', () => ({
+    info: jest.fn(),
+    error: jest.fn(),
+}));
+
+describe('Memory Cache Client', () => {
+    let MemoryCacheService: any;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        jest.resetModules();
+        MemoryCacheService = require('<% if (architecture === "MVC") { %>@/config/memoryCache<% } else { %>@/infrastructure/caching/memoryCache<% } %>').default;
+    });
+
+    it('should get data from memory cache', async () => {
+        const mockData = { test: 'data' };
+        MemoryCacheService.cache.get.mockReturnValue(JSON.stringify(mockData));
+        
+        const data = await MemoryCacheService.get('test-key');
+        expect(data).toEqual(mockData);
+        expect(MemoryCacheService.cache.get).toHaveBeenCalledWith('test-key');
+    });
+
+    it('should set data to memory cache', async () => {
+        const mockData = { test: 'data' };
+        await MemoryCacheService.set('test-key', mockData, 3600);
+        expect(MemoryCacheService.cache.set).toHaveBeenCalledWith('test-key', JSON.stringify(mockData), 3600);
+    });
+
+    it('should delete data from memory cache', async () => {
+        await MemoryCacheService.del('test-key');
+        expect(MemoryCacheService.cache.del).toHaveBeenCalledWith('test-key');
+    });
+
+    it('should use getOrSet and call fetcher if not cached', async () => {
+        MemoryCacheService.get = jest.fn().mockResolvedValue(null);
+        MemoryCacheService.set = jest.fn();
+        const fetcher = jest.fn().mockResolvedValue({ new: 'data' });
+
+        const result = await MemoryCacheService.getOrSet('new-key', fetcher);
+        
+        expect(result).toEqual({ new: 'data' });
+        expect(fetcher).toHaveBeenCalled();
+        expect(MemoryCacheService.set).toHaveBeenCalledWith('new-key', { new: 'data' }, 3600);
+    });
+});

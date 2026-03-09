@@ -1,0 +1,159 @@
+import { setupGracefulShutdown } from '@/utils/gracefulShutdown';
+import { Server } from 'http';
+<%_ if (database === 'MongoDB') { -%>
+import mongoose from 'mongoose';
+<%_ } else if (database !== 'None') { -%>
+import sequelize from '<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>';
+<%_ } -%>
+<%_ if (caching === 'Redis') { -%>
+import redisService from '<% if (architecture === "MVC") { %>@/config/redisClient<% } else { %>@/infrastructure/caching/redisClient<% } %>';
+<%_ } -%>
+
+<%_ if (database === 'MongoDB') { -%>
+jest.mock('mongoose', () => {
+    return {
+        __esModule: true,
+        default: {
+            connection: {
+                close: jest.fn().mockResolvedValue(true)
+            }
+        }
+    };
+});
+<%_ } else if (database !== 'None') { -%>
+jest.mock('<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>', () => {
+    return {
+        __esModule: true,
+        default: {
+            close: jest.fn().mockResolvedValue(true)
+        }
+    };
+});
+<%_ } -%>
+
+<%_ if (caching === 'Redis') { -%>
+jest.mock('<% if (architecture === "MVC") { %>@/config/redisClient<% } else { %>@/infrastructure/caching/redisClient<% } %>', () => {
+    return {
+        __esModule: true,
+        default: {
+            quit: jest.fn().mockResolvedValue(true)
+        }
+    };
+});
+<%_ } -%>
+
+const flushPromises = () => new Promise((resolve) => setImmediate(resolve));
+
+describe('Graceful Shutdown', () => {
+    let mockServer: Partial<Server>;
+    let mockExit: jest.SpyInstance;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let processListeners: Record<string, (...args: any[]) => void>;
+    <%_ if (communication === 'Kafka') { -%>
+    let mockKafkaService: { disconnect: jest.Mock };
+    <%_ } -%>
+
+    beforeEach(() => {
+        jest.useFakeTimers({ legacyFakeTimers: true });
+        jest.clearAllMocks();
+        processListeners = {};
+
+        mockServer = {
+            close: jest.fn().mockImplementation((cb?: (err?: Error) => void) => {
+                if (cb) Promise.resolve().then(() => cb());
+                return mockServer;
+            })
+        };
+
+        mockExit = jest.spyOn(process, 'exit').mockImplementation((() => {}) as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+        jest.spyOn(process, 'on').mockImplementation(((event: string, handler: (...args: any[]) => void) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+            processListeners[event] = handler;
+            return process;
+        }) as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+
+        <%_ if (communication === 'Kafka') { -%>
+        mockKafkaService = { disconnect: jest.fn().mockResolvedValue(true) };
+        <%_ } -%>
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+        jest.useRealTimers();
+    });
+
+    it('should register SIGTERM and SIGINT events', () => {
+        setupGracefulShutdown(mockServer as Server<% if (communication === 'Kafka') { %>, mockKafkaService<% } %>);
+        expect(processListeners['SIGTERM']).toBeDefined();
+        expect(processListeners['SIGINT']).toBeDefined();
+    });
+
+    it('should cleanly shutdown all connections and exit 0 on SIGTERM', async () => {
+        setupGracefulShutdown(mockServer as Server<% if (communication === 'Kafka') { %>, mockKafkaService<% } %>);
+        
+        processListeners['SIGTERM']();
+        
+        // Flush microtask queue multiple times for nested async operations
+        await flushPromises();
+        await flushPromises();
+        await flushPromises();
+
+        expect(mockServer.close).toHaveBeenCalled();
+
+        <%_ if (database === 'MongoDB') { -%>
+        expect(mongoose.connection.close).toHaveBeenCalledWith(false);
+        <%_ } else if (database !== 'None') { -%>
+        expect(sequelize.close).toHaveBeenCalled();
+        <%_ } -%>
+
+        <%_ if (caching === 'Redis') { -%>
+        expect(redisService.quit).toHaveBeenCalled();
+        <%_ } -%>
+
+        <%_ if (communication === 'Kafka') { -%>
+        expect(mockKafkaService.disconnect).toHaveBeenCalled();
+        <%_ } -%>
+
+        expect(mockExit).toHaveBeenCalledWith(0);
+    });
+
+    it('should exit 0 on SIGINT', async () => {
+        setupGracefulShutdown(mockServer as Server<% if (communication === 'Kafka') { %>, mockKafkaService<% } %>);
+        processListeners['SIGINT']();
+        await flushPromises();
+        await flushPromises();
+        expect(mockExit).toHaveBeenCalledWith(0);
+    });
+
+<%_ if (communication === 'Kafka' || database !== 'None' || caching === 'Redis') { _%>
+    it('should handle errors during shutdown and exit 1', async () => {
+        <%_ if (communication === 'Kafka') { _%>
+        mockKafkaService.disconnect.mockRejectedValueOnce(new Error('Shutdown Error'));
+        <%_ } else if (database === 'MongoDB') { _%>
+        (mongoose.connection.close as jest.Mock).mockRejectedValueOnce(new Error('Shutdown Error'));
+        <%_ } else if (database !== 'None') { _%>
+        (sequelize.close as jest.Mock).mockRejectedValueOnce(new Error('Shutdown Error'));
+        <%_ } else if (caching === 'Redis') { _%>
+        (redisService.quit as jest.Mock).mockRejectedValueOnce(new Error('Shutdown Error'));
+        <%_ } _%>
+
+        setupGracefulShutdown(mockServer as Server<% if (communication === 'Kafka') { %>, mockKafkaService<% } %>);
+        processListeners['SIGTERM']();
+        
+        await flushPromises();
+        await flushPromises();
+        await flushPromises();
+
+        expect(mockExit).toHaveBeenCalledWith(1);
+    });
+
+    it('should forcefully shutdown if cleanup takes too long', async () => {
+        setupGracefulShutdown(mockServer as Server<% if (communication === 'Kafka') { %>, mockKafkaService<% } %>);
+        processListeners['SIGTERM']();
+        
+        jest.advanceTimersByTime(15000);
+        
+        expect(mockExit).toHaveBeenCalledWith(1);
+    });
+<%_ } _%>
+
+});

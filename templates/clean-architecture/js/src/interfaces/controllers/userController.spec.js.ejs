@@ -1,0 +1,80 @@
+const UserController = require('@/interfaces/controllers/userController');
+const CreateUser = require('@/usecases/CreateUser');
+const GetAllUsers = require('@/usecases/GetAllUsers');
+
+jest.mock('@/usecases/CreateUser');
+jest.mock('@/usecases/GetAllUsers');
+
+describe('UserController (Clean Architecture)', () => {
+    let userController;
+    let mockCreateUserUseCase;
+    let mockGetAllUsersUseCase;
+    let mockRequest;
+    let mockResponse;
+    let mockNext;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+
+        userController = new UserController();
+
+        // Retrieve the mocked instances created inside UserController constructor
+        mockCreateUserUseCase = CreateUser.mock.instances[0];
+        mockGetAllUsersUseCase = GetAllUsers.mock.instances[0];
+
+        mockRequest = {
+            body: {}
+        };
+        mockResponse = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        };
+        mockNext = jest.fn();
+    });
+
+    describe('getUsers', () => {
+        it('should return successfully (Happy Path)', async () => {
+            const usersMock = [{ id: '1', name: 'Test', email: 'test@example.com' }];
+            mockGetAllUsersUseCase.execute.mockResolvedValue(usersMock);
+
+            await userController.getUsers(mockRequest, mockResponse, mockNext);
+
+            expect(mockGetAllUsersUseCase.execute).toHaveBeenCalled();
+            expect(mockResponse.json).toHaveBeenCalledWith(usersMock);
+        });
+
+        it('should handle errors correctly (Error Handling)', async () => {
+            const error = new Error('UseCase Error');
+            mockGetAllUsersUseCase.execute.mockRejectedValue(error);
+
+            await userController.getUsers(mockRequest, mockResponse, mockNext);
+
+            expect(mockNext).toHaveBeenCalledWith(error);
+        });
+    });
+
+    describe('createUser', () => {
+        it('should successfully create a new user (Happy Path)', async () => {
+            const payload = { name: 'Alice', email: 'alice@example.com' };
+            mockRequest.body = payload;
+            const expectedUser = { id: '1', ...payload };
+            
+            mockCreateUserUseCase.execute.mockResolvedValue(expectedUser);
+
+            await userController.createUser(mockRequest, mockResponse, mockNext);
+
+            expect(mockCreateUserUseCase.execute).toHaveBeenCalledWith(payload.name, payload.email);
+            expect(mockResponse.status).toHaveBeenCalledWith(201);
+            expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
+        });
+
+        it('should handle errors when creation fails (Error Handling)', async () => {
+            const error = new Error('Creation Error');
+            mockCreateUserUseCase.execute.mockRejectedValue(error);
+
+            await userController.createUser(mockRequest, mockResponse, mockNext);
+
+            expect(mockNext).toHaveBeenCalledWith(error);
+        });
+    });
+});

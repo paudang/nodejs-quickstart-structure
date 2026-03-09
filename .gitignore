@@ -19,6 +19,7 @@ test_ts_app/
 test_readme_app/
 test_results.log
 temp_test_workspace
+coverage/
 
 # Editor directories
 .vscode/
