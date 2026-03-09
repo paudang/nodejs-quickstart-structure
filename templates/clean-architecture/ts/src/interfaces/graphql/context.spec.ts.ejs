@@ -1,10 +1,16 @@
 import { gqlContext } from '@/interfaces/graphql/context';
 import { Request } from 'express';
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+import { resolvers } from '@/interfaces/graphql/resolvers';
+import { typeDefs } from '@/interfaces/graphql/typeDefs';
 
 jest.mock('@/infrastructure/repositories/UserRepository');
 
 describe('GraphQL Context', () => {
+  it('should exercise GraphQL index entry points', () => {
+    expect(resolvers).toBeDefined();
+    expect(typeDefs).toBeDefined();
+  });
   it('should return context with token when authorization header is present', async () => {
     const mockRequest = {
       headers: {

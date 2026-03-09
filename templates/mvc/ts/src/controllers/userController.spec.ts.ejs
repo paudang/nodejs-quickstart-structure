@@ -56,10 +56,8 @@ describe('UserController', () => {
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
             (cacheService.getOrSet as jest.Mock).mockResolvedValue(usersMock);
 <%_ } else { -%>
-<%_ if (database === 'MongoDB') { -%>
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
             (User.find as jest.Mock).mockResolvedValue(usersMock);
-<%_ } else if (database === 'None') { -%>
-            User.mockData = usersMock;
 <%_ } else { -%>
             (User.findAll as jest.Mock).mockResolvedValue(usersMock);
 <%_ } -%>
@@ -96,10 +94,8 @@ describe('UserController', () => {
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
             (cacheService.getOrSet as jest.Mock).mockRejectedValue(error);
 <%_ } else { -%>
-<%_ if (database === 'MongoDB') { -%>
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
             (User.find as jest.Mock).mockRejectedValue(error);
-<%_ } else if (database === 'None') { -%>
-            mockResponse.json = jest.fn().mockImplementation(() => { throw error; });
 <%_ } else { -%>
             (User.findAll as jest.Mock).mockRejectedValue(error);
 <%_ } -%>
@@ -125,12 +121,12 @@ describe('UserController', () => {
             mockRequest.body = payload;
 <% } -%>
             
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
             const expectedUser = { id: '1', ...payload };
-<%_ if (database === 'MongoDB') { -%>
             (User.create as jest.Mock).mockResolvedValue(expectedUser);
-<%_ } else if (database === 'None') { -%>
-            User.mockData = []; // clear previous
+            <%_ if (database === 'None') { -%>User.mockData = [expectedUser];<%_ } -%>
 <%_ } else { -%>
+            const expectedUser = { id: '1', ...payload };
             (User.create as jest.Mock).mockResolvedValue(expectedUser);
 <%_ } -%>
 
@@ -175,11 +171,7 @@ describe('UserController', () => {
             mockRequest.body = payload;
 <% } -%>
 
-<%_ if (database !== 'None') { -%>
             (User.create as jest.Mock).mockRejectedValue(error);
-<%_ } else { -%>
-            mockResponse.status = jest.fn().mockImplementation(() => { throw error; });
-<%_ } -%>
 
             // Act & Assert
 <% if (communication === 'GraphQL') { -%>

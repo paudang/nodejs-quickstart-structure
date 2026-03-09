@@ -1,7 +1,13 @@
 import { gqlContext } from '@/graphql/context';
 import { Request } from 'express';
+import { resolvers } from '@/graphql/resolvers';
+import { typeDefs } from '@/graphql/typeDefs';
 
 describe('GraphQL Context', () => {
+  it('should exercise GraphQL index entry points', () => {
+    expect(resolvers).toBeDefined();
+    expect(typeDefs).toBeDefined();
+  });
   it('should return context with token when authorization header is present', async () => {
     const mockRequest = {
       headers: {

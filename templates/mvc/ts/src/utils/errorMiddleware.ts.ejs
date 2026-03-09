@@ -3,7 +3,7 @@ import logger from '@/utils/logger';
 import { ApiError } from '@/errors/ApiError';
 import { HTTP_STATUS } from '@/utils/httpCodes';
 
-export const errorMiddleware = (err: Error, req: Request, res: Response, next: unknown) => {
+export const errorMiddleware = (err: Error, req: Request, res: Response, _next: unknown) => {
   let error = err;
 
   if (!(error instanceof ApiError)) {

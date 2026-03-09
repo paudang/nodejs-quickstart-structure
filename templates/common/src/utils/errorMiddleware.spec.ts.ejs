@@ -82,4 +82,13 @@ describe('Error Middleware', () => {
         const jsonArg = (mockResponse.json as jest.Mock).mock.calls[0][0];
         expect(jsonArg.stack).toBeUndefined();
     });
+
+    it('should handle error without stack trace', () => {
+        const customError = new ApiError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'No Stack', false);
+        delete customError.stack;
+        errorMiddleware(customError, mockRequest as Request, mockResponse as Response, nextFunction);
+
+        expect(logger.error).toHaveBeenCalledWith(expect.stringContaining('No Stack'));
+        expect(logger.error).toHaveBeenCalledWith('No stack trace');
+    });
 });
