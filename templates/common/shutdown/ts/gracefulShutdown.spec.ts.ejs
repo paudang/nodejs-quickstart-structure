@@ -47,7 +47,6 @@ const flushPromises = () => new Promise((resolve) => setImmediate(resolve));
 describe('Graceful Shutdown', () => {
     let mockServer: Partial<Server>;
     let mockExit: jest.SpyInstance;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let processListeners: Record<string, (...args: any[]) => void>;
     <%_ if (communication === 'Kafka') { -%>
     let mockKafkaService: { disconnect: jest.Mock };
@@ -65,11 +64,11 @@ describe('Graceful Shutdown', () => {
             })
         };
 
-        mockExit = jest.spyOn(process, 'exit').mockImplementation((() => {}) as any); // eslint-disable-line @typescript-eslint/no-explicit-any
-        jest.spyOn(process, 'on').mockImplementation(((event: string, handler: (...args: any[]) => void) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+        mockExit = jest.spyOn(process, 'exit').mockImplementation((() => {}) as any);
+        jest.spyOn(process, 'on').mockImplementation(((event: string, handler: (...args: any[]) => void) => {
             processListeners[event] = handler;
             return process;
-        }) as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+        }) as any);
 
         <%_ if (communication === 'Kafka') { -%>
         mockKafkaService = { disconnect: jest.fn().mockResolvedValue(true) };

@@ -9,9 +9,11 @@ describe('UserController (Clean Architecture)', () => {
     let userController;
     let mockCreateUserUseCase;
     let mockGetAllUsersUseCase;
+<%_ if (communication !== 'GraphQL') { -%>
     let mockRequest;
     let mockResponse;
     let mockNext;
+<%_ } -%>
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -22,6 +24,7 @@ describe('UserController (Clean Architecture)', () => {
         mockCreateUserUseCase = CreateUser.mock.instances[0];
         mockGetAllUsersUseCase = GetAllUsers.mock.instances[0];
 
+<%_ if (communication !== 'GraphQL') { -%>
         mockRequest = {
             body: {}
         };
@@ -30,6 +33,7 @@ describe('UserController (Clean Architecture)', () => {
             json: jest.fn()
         };
         mockNext = jest.fn();
+<%_ } -%>
     });
 
     describe('getUsers', () => {
@@ -37,44 +41,62 @@ describe('UserController (Clean Architecture)', () => {
             const usersMock = [{ id: '1', name: 'Test', email: 'test@example.com' }];
             mockGetAllUsersUseCase.execute.mockResolvedValue(usersMock);
 
+<%_ if (communication === 'GraphQL') { -%>
+            const result = await userController.getUsers();
+            expect(result).toEqual(usersMock);
+<%_ } else { -%>
             await userController.getUsers(mockRequest, mockResponse, mockNext);
-
-            expect(mockGetAllUsersUseCase.execute).toHaveBeenCalled();
             expect(mockResponse.json).toHaveBeenCalledWith(usersMock);
+<%_ } -%>
+            expect(mockGetAllUsersUseCase.execute).toHaveBeenCalled();
         });
 
         it('should handle errors correctly (Error Handling)', async () => {
             const error = new Error('UseCase Error');
             mockGetAllUsersUseCase.execute.mockRejectedValue(error);
 
+<%_ if (communication === 'GraphQL') { -%>
+            await expect(userController.getUsers()).rejects.toThrow(error);
+<%_ } else { -%>
             await userController.getUsers(mockRequest, mockResponse, mockNext);
-
             expect(mockNext).toHaveBeenCalledWith(error);
+<%_ } -%>
         });
     });
 
     describe('createUser', () => {
         it('should successfully create a new user (Happy Path)', async () => {
             const payload = { name: 'Alice', email: 'alice@example.com' };
+<%_ if (communication === 'GraphQL') { -%>
+            const dataArg = payload;
+<%_ } else { -%>
             mockRequest.body = payload;
+<%_ } -%>
             const expectedUser = { id: '1', ...payload };
             
             mockCreateUserUseCase.execute.mockResolvedValue(expectedUser);
 
+<%_ if (communication === 'GraphQL') { -%>
+            const result = await userController.createUser(dataArg);
+            expect(result).toEqual(expectedUser);
+<%_ } else { -%>
             await userController.createUser(mockRequest, mockResponse, mockNext);
-
-            expect(mockCreateUserUseCase.execute).toHaveBeenCalledWith(payload.name, payload.email);
             expect(mockResponse.status).toHaveBeenCalledWith(201);
             expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
+<%_ } -%>
+            expect(mockCreateUserUseCase.execute).toHaveBeenCalledWith(payload.name, payload.email);
         });
 
         it('should handle errors when creation fails (Error Handling)', async () => {
             const error = new Error('Creation Error');
             mockCreateUserUseCase.execute.mockRejectedValue(error);
 
+<%_ if (communication === 'GraphQL') { -%>
+            await expect(userController.createUser({ name: 'Bob', email: 'bob@example.com' })).rejects.toThrow(error);
+<%_ } else { -%>
             await userController.createUser(mockRequest, mockResponse, mockNext);
-
             expect(mockNext).toHaveBeenCalledWith(error);
+<%_ } -%>
         });
     });
 });

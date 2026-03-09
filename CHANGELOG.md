@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.0] - 2026-03-09
+### Added
+- **Unit test:**
+  - Unit Testing Framework: Integrated Jest and ts-jest as the core testing suite.
+
+  - Scaffolding Logic: Automatically generates .spec.ts files in the tests/ directory mirroring the src/ structure during project initialization.
+
+  - Quality Gates: Implemented a mandatory Coverage Threshold (>=70%) for lines and functions to ensure long-term maintainability.
+
+  - Mocking Standards: Included pre-configured mocks for Mongoose (database pings) and Express request/response objects.
+
+  - NPM Scripts: Added npm test, npm run test:watch, and npm run test:coverage for seamless developer workflow.
+
 ## [1.13.0] - 2026-03-05
 ### Added
 - **Enhanced Health Check System:**

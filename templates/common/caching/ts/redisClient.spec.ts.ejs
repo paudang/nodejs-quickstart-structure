@@ -1,13 +1,17 @@
 jest.mock('ioredis', () => {
-    const mRedis = jest.fn().mockImplementation(() => ({
-        on: jest.fn(),
-        get: jest.fn(),
-        set: jest.fn(),
-        del: jest.fn(),
-        quit: jest.fn().mockResolvedValue('OK'),
-    }));
-    return mRedis;
+  const mRedis = jest.fn(() => ({
+    on: jest.fn(),
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn(),
+    quit: jest.fn().mockResolvedValue('OK'),
+  }));
+  return mRedis;
 });
+
+jest.mock('dotenv', () => ({
+    config: jest.fn()
+}));
 
 const mockLogger = {
     info: jest.fn(),
@@ -17,23 +21,33 @@ const mockLogger = {
 jest.mock('<%- loggerPath %>', () => mockLogger);
 
 describe('Redis Client', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let RedisService: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let logger: any;
 
     beforeEach(() => {
         jest.clearAllMocks();
         jest.resetModules();
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        
+        // Clean environment
+        const envVars = ['REDIS_HOST', 'REDIS_PORT', 'REDIS_PASSWORD'];
+        envVars.forEach(v => delete process.env[v]);
+        
         logger = require('<%- loggerPath %>');
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
         RedisService = require('<% if (architecture === "MVC") { %>@/config/redisClient<% } else { %>@/infrastructure/caching/redisClient<% } %>').default;
+    });
+
+    it('should initialize with default values when env vars are missing', () => {
+        delete process.env.REDIS_HOST;
+        delete process.env.REDIS_PORT;
+        delete process.env.REDIS_PASSWORD;
+        
+        jest.resetModules();
+        const NewRedisService = require('<% if (architecture === "MVC") { %>@/config/redisClient<% } else { %>@/infrastructure/caching/redisClient<% } %>').default;
+        expect(NewRedisService).toBeDefined();
     });
 
     it('should handle redis events', () => {
         // Find the event handlers
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handlers: { [key: string]: (...args: any[]) => any } = {};
         (RedisService.client.on as jest.Mock).mock.calls.forEach(([event, handler]) => {
             handlers[event] = handler;
@@ -122,6 +136,17 @@ describe('Redis Client', () => {
         
         expect(result).toEqual(cachedData);
         expect(fetcher).not.toHaveBeenCalled();
+    });
+
+    it('should handle falsy data from fetcher in getOrSet', async () => {
+        RedisService.get = jest.fn().mockResolvedValue(null);
+        RedisService.set = jest.fn();
+        const fetcher = jest.fn().mockResolvedValue(null);
+
+        const result = await RedisService.getOrSet('empty-key', fetcher);
+        
+        expect(result).toBeNull();
+        expect(RedisService.set).not.toHaveBeenCalled();
     });
 
     it('should quit the redis client', async () => {

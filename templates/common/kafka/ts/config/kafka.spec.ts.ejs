@@ -15,7 +15,6 @@ describe('Kafka Configuration', () => {
     });
 
     it('should initialize Kafka', () => {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
         require('<% if (architecture === "MVC") { %>@/config/kafka<% } else { %>@/infrastructure/config/kafka<% } %>');
         expect(Kafka).toHaveBeenCalled();
     });

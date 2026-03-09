@@ -24,7 +24,7 @@ describe('Kafka Client', () => {
         jest.resetModules();
         jest.clearAllMocks();
         kafka = require('<%= configPath %>').kafka;
-        ({ connectKafka, sendMessage, disconnectKafka } = require('@/services/kafkaService'));
+        ({ connectKafka, sendMessage, disconnectKafka } = require('<%= servicePath %>'));
         await connectKafka();
     });
 

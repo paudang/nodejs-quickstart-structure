@@ -54,7 +54,7 @@ describe('Health Route', () => {
 
 <%_ if (database === 'MongoDB') { -%>
     it('should handle database ping failure and return 500', async () => {
-        (mongoose.connection.db.admin as jest.Mock).mockReturnValueOnce({
+        ((mongoose.connection.db as any).admin as jest.Mock).mockReturnValueOnce({
             ping: jest.fn().mockRejectedValueOnce(new Error('DB Error'))
         });
 

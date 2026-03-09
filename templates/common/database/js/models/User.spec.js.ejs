@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 jest.mock('mongoose', () => {
     const mSchema = jest.fn();
-    const mModel = jest.fn();
+    const mModel = jest.fn().mockReturnValue({});
     return {
         Schema: mSchema,
         model: mModel,

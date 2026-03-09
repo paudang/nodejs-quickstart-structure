@@ -1,13 +1,17 @@
 const GetAllUsers = require('@/usecases/GetAllUsers');
 const UserRepository = require('@/infrastructure/repositories/UserRepository');
-const cacheService = require('@/infrastructure/caching/memoryCache');
+<%_ if (caching !== 'None') { -%>
+const cacheService = require('<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>');
+<%_ } -%>
 
 jest.mock('@/infrastructure/repositories/UserRepository');
-jest.mock('@/infrastructure/caching/memoryCache', () => ({
+<%_ if (caching !== 'None') { -%>
+jest.mock('<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>', () => ({
     get: jest.fn(),
     set: jest.fn(),
     del: jest.fn()
 }));
+<%_ } -%>
 
 describe('GetAllUsers UseCase', () => {
     let getAllUsers;
@@ -22,15 +26,19 @@ describe('GetAllUsers UseCase', () => {
     it('should retrieve all users', async () => {
         const expectedUsers = [{ id: 1, name: 'Alice', email: 'alice@example.com' }];
         mockUserRepository.getUsers.mockResolvedValue(expectedUsers);
+<%_ if (caching !== 'None') { -%>
         cacheService.get.mockResolvedValue(null); // Cache miss
-
+<%_ } -%>
         const result = await getAllUsers.execute();
 
         expect(mockUserRepository.getUsers).toHaveBeenCalledTimes(1);
         expect(result).toEqual(expectedUsers);
+<%_ if (caching !== 'None') { -%>
         expect(cacheService.set).toHaveBeenCalled();
+<%_ } -%>
     });
 
+<%_ if (caching !== 'None') { -%>
     it('should return from cache if available', async () => {
         const cachedUsers = [{ id: 1, name: 'Cached', email: 'cached@example.com' }];
         cacheService.get.mockResolvedValue(cachedUsers);
@@ -40,12 +48,14 @@ describe('GetAllUsers UseCase', () => {
         expect(mockUserRepository.getUsers).not.toHaveBeenCalled();
         expect(result).toEqual(cachedUsers);
     });
+<%_ } -%>
 
     it('should throw an error if repository fails', async () => {
         const error = new Error('Database error');
         mockUserRepository.getUsers.mockRejectedValue(error);
+<%_ if (caching !== 'None') { -%>
         cacheService.get.mockResolvedValue(null); // Cache miss
-
+<%_ } -%>
         await expect(getAllUsers.execute()).rejects.toThrow(error);
     });
 });

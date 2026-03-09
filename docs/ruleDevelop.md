@@ -20,6 +20,10 @@
 - Success: `{ status: string, data: any }` or direct JSON object.
 - Error: `{ error: string }`
 
+### Apply unit test
+- Apply unit test for each layer
+- Apply unit test for each usecase
+
 ## Git Workflow
 - Commit messages should be descriptive.
 - Ensure all tests pass before pushing.

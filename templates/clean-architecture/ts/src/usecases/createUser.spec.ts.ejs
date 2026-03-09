@@ -28,7 +28,6 @@ describe('CreateUser UseCase', () => {
         const email = 'test@example.com';
         const expectedResult = { id: 1, name, email };
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mockUserRepository.save.mockResolvedValue(expectedResult as any);
 
         const result = await createUser.execute(name, email);
@@ -40,7 +39,7 @@ describe('CreateUser UseCase', () => {
         expect(result).toEqual(expectedResult);
 <%_ if (caching !== 'None') { -%>
         expect(cacheService.del).toHaveBeenCalledWith('users:all');
-<%_ } -%>
+<%_ } %>
     });
 
     it('should throw an error if repository fails', async () => {

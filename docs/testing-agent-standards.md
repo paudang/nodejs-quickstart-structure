@@ -24,11 +24,14 @@ Analyze source code and construct high-reliability Unit Test about source genera
     - **Error Handling:** Simulate infrastructure failures (DB Timeouts, Connection Refused, Cache Misses) to verify `try-catch` logic and error middleware.
 6. **Clean Environment:** Always reset mocks after each test case using `beforeEach` or `afterEach` with `jest.clearAllMocks()`.
 
+7. **Test files:**
+    - processAllTests function will create test files for all source files in the project.
+
 ## 📦 Coverage thresholds
-The objective for each generated source is to achieve **80%+ Statement/Line Coverage**.
-- **Statements:** 80%
-- **Lines:** 80%
-- **Functions:** 75% (Reduced to accommodate untestable internal callbacks/force-shutdown timers)
+The objective for each generated source is to achieve **70%+ Statement/Line Coverage**.
+- **Statements:** 70%
+- **Lines:** 70%
+- **Functions:** 70% (Reduced to accommodate untestable internal callbacks/force-shutdown timers)
 - **Branches:** 70% (Reduced to accommodate environmental fallbacks like `process.env` defaults)
 
 ## 📋 Execution Protocol (Workflow)

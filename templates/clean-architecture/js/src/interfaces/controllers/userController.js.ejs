@@ -38,6 +38,7 @@ class UserController {
         const users = await this.getAllUsersUseCase.execute();
         res.json(users);
       } catch (error) {
+        logger.error('Error getting users:', error);
         next(error);
       }
     }

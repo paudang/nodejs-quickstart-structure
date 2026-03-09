@@ -1,0 +1,47 @@
+const { userResolvers } = require('@/graphql/resolvers/user.resolvers');
+
+const mockGetUsers = jest.fn().mockResolvedValue([{ id: '1', name: 'John Doe', email: 'john@example.com' }]);
+const mockCreateUser = jest.fn().mockResolvedValue({ id: '1', name: 'Jane', email: 'jane@example.com' });
+
+jest.mock('@/controllers/userController', () => ({
+  getUsers: (...args) => mockGetUsers(...args),
+  createUser: (...args) => mockCreateUser(...args)
+}));
+
+describe('User Resolvers', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('Query.getAllUsers', () => {
+    it('should return all users', async () => {
+      const result = await userResolvers.Query.getAllUsers();
+      expect(result).toEqual([{ id: '1', name: 'John Doe', email: 'john@example.com' }]);
+      expect(mockGetUsers).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Mutation.createUser', () => {
+    it('should create and return a new user', async () => {
+      const result = await userResolvers.Mutation.createUser(null, { name: 'Jane', email: 'jane@example.com' });
+      expect(result).toEqual({ id: '1', name: 'Jane', email: 'jane@example.com' });
+      expect(mockCreateUser).toHaveBeenCalledWith({ name: 'Jane', email: 'jane@example.com' });
+      expect(mockCreateUser).toHaveBeenCalledTimes(1);
+    });
+  });
+<%_ if (database === 'MongoDB') { -%>
+  describe('User.id', () => {
+    it('should return parent.id if available', () => {
+      const parent = { id: '123' };
+      const result = userResolvers.User.id(parent);
+      expect(result).toBe('123');
+    });
+
+    it('should fallback to parent._id if id is not available', () => {
+      const parent = { _id: '456' };
+      const result = userResolvers.User.id(parent);
+      expect(result).toBe('456');
+    });
+  });
+<%_ } -%>
+});

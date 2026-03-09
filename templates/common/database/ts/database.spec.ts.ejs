@@ -1,5 +1,3 @@
-import { Sequelize } from 'sequelize';
-
 jest.mock('sequelize', () => {
     const mSequelize = jest.fn(() => ({
         authenticate: jest.fn().mockResolvedValue(true),
@@ -8,14 +6,51 @@ jest.mock('sequelize', () => {
     return { Sequelize: mSequelize };
 });
 
+jest.mock('dotenv', () => ({
+    config: jest.fn()
+}));
+
 describe('Database Configuration', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        jest.resetModules();
+        
+        // Clean environment
+        const envVars = ['DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST', 'DB_PORT'];
+        envVars.forEach(v => delete process.env[v]);
     });
 
-    it('should initialize Sequelize', () => {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
+    it('should initialize Sequelize with environment variables', () => {
+        const { Sequelize: SequelizeMock } = require('sequelize');
+        process.env.DB_NAME = 'testdb';
+        process.env.DB_USER = 'testuser';
+        process.env.DB_PASSWORD = 'testpassword';
+        process.env.DB_HOST = 'localhost';
+        process.env.DB_PORT = '5432';
+
         require('<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>');
-        expect(Sequelize).toHaveBeenCalled();
+        
+        expect(SequelizeMock).toHaveBeenLastCalledWith(
+            'testdb',
+            'testuser',
+            'testpassword',
+            expect.objectContaining({
+                host: 'localhost',
+                port: 5432
+            })
+        );
+    });
+
+    it('should initialize Sequelize with default values when env vars are missing', () => {
+        const { Sequelize: SequelizeMock } = require('sequelize');
+        delete process.env.DB_NAME;
+        delete process.env.DB_USER;
+        delete process.env.DB_PASSWORD;
+        delete process.env.DB_HOST;
+        delete process.env.DB_PORT;
+
+        require('<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>');
+        
+        expect(SequelizeMock).toHaveBeenCalledTimes(1);
     });
 });

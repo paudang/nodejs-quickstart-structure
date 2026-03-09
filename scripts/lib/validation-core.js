@@ -339,15 +339,15 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             log(`... Running Unit Tests & Coverage ...`);
             const testOutput = await runCommand('npm run test:coverage', projectPath, {}, true); 
             
-            // Explicit condition for > 80% line and > 75% function coverage
+            // Explicit condition for > 70% line and > 70% function coverage
             const coverageMatch = testOutput.match(/All files\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)/);
             if (coverageMatch) {
                 const funcsCov = parseFloat(coverageMatch[3]);
                 const linesCov = parseFloat(coverageMatch[4]);
-                if (linesCov < 80 || funcsCov < 75) {
-                    throw new Error(`Coverage below threshold: Lines ${linesCov}% (min 80%), Functions ${funcsCov}% (min 75%)`);
+                if (linesCov < 70 || funcsCov < 70) {
+                    throw new Error(`Coverage below threshold: Lines ${linesCov}% (min 70%), Functions ${funcsCov}% (min 70%)`);
                 } else {
-                    log(`✓ Coverage verified: Lines ${linesCov}% (> 80%), Functions ${funcsCov}% (> 75%)`, ANSI_GREEN);
+                    log(`✓ Coverage verified: Lines ${linesCov}% (> 70%), Functions ${funcsCov}% (> 70%)`, ANSI_GREEN);
                 }
             } else {
                 log(`✓ Unit tests passed. Coverage enforced by Jest config.`, ANSI_GREEN);

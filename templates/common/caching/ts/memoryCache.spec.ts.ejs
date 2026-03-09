@@ -1,6 +1,3 @@
-import NodeCache from 'node-cache';
-import logger from '<%- loggerPath %>';
-
 jest.mock('node-cache', () => {
     return jest.fn().mockImplementation(() => ({
         get: jest.fn(),
@@ -32,15 +29,41 @@ describe('Memory Cache Client', () => {
         expect(MemoryCacheService.cache.get).toHaveBeenCalledWith('test-key');
     });
 
-    it('should set data to memory cache', async () => {
-        const mockData = { test: 'data' };
-        await MemoryCacheService.set('test-key', mockData, 3600);
-        expect(MemoryCacheService.cache.set).toHaveBeenCalledWith('test-key', JSON.stringify(mockData), 3600);
+    it('should return null when key is not found', async () => {
+        MemoryCacheService.cache.get.mockReturnValue(undefined);
+        const data = await MemoryCacheService.get('non-existent');
+        expect(data).toBeNull();
     });
 
-    it('should delete data from memory cache', async () => {
+    it('should return data as is if not a string', async () => {
+        const mockData = { test: 'data' };
+        MemoryCacheService.cache.get.mockReturnValue(mockData);
+        const data = await MemoryCacheService.get('binary-key');
+        expect(data).toEqual(mockData);
+    });
+
+    it('should handle errors in get', async () => {
+        MemoryCacheService.cache.get.mockImplementation(() => { throw new Error('Cache Error'); });
+        const data = await MemoryCacheService.get('error-key');
+        expect(data).toBeNull();
+    });
+
+    it('should set data to memory cache without TTL', async () => {
+        const mockData = { test: 'data' };
+        await MemoryCacheService.set('test-key', mockData);
+        expect(MemoryCacheService.cache.set).toHaveBeenCalledWith('test-key', JSON.stringify(mockData));
+    });
+
+    it('should handle errors in set', async () => {
+        MemoryCacheService.cache.set.mockImplementation(() => { throw new Error('Cache Error'); });
+        await MemoryCacheService.set('test-key', 'value');
+        // Should not throw
+    });
+
+    it('should handle errors in del', async () => {
+        MemoryCacheService.cache.del.mockImplementation(() => { throw new Error('Cache Error'); });
         await MemoryCacheService.del('test-key');
-        expect(MemoryCacheService.cache.del).toHaveBeenCalledWith('test-key');
+        // Should not throw
     });
 
     it('should use getOrSet and call fetcher if not cached', async () => {
@@ -53,5 +76,27 @@ describe('Memory Cache Client', () => {
         expect(result).toEqual({ new: 'data' });
         expect(fetcher).toHaveBeenCalled();
         expect(MemoryCacheService.set).toHaveBeenCalledWith('new-key', { new: 'data' }, 3600);
+    });
+
+    it('should return cached data in getOrSet', async () => {
+        const cachedData = { cached: 'data' };
+        MemoryCacheService.get = jest.fn().mockResolvedValue(cachedData);
+        const fetcher = jest.fn();
+
+        const result = await MemoryCacheService.getOrSet('cached-key', fetcher);
+        
+        expect(result).toEqual(cachedData);
+        expect(fetcher).not.toHaveBeenCalled();
+    });
+
+    it('should handle falsy data from fetcher in getOrSet', async () => {
+        MemoryCacheService.get = jest.fn().mockResolvedValue(null);
+        MemoryCacheService.set = jest.fn();
+        const fetcher = jest.fn().mockResolvedValue(null);
+
+        const result = await MemoryCacheService.getOrSet('empty-key', fetcher);
+        
+        expect(result).toBeNull();
+        expect(MemoryCacheService.set).not.toHaveBeenCalled();
     });
 });

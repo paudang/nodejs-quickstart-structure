@@ -1,9 +1,14 @@
 const request = require('supertest');
 const express = require('express');
-const router = require('./api');
-const userController = require('../controllers/userController');
+const router = require('@/routes/api');
 
-jest.mock('../controllers/userController');
+const mockGetUsers = jest.fn().mockImplementation((req, res) => res.status(200).json([{ id: '1', name: 'John Doe' }]));
+const mockCreateUser = jest.fn().mockImplementation((req, res) => res.status(201).json({ id: '1', name: 'Test' }));
+
+jest.mock('@/controllers/userController', () => ({
+  getUsers: (...args) => mockGetUsers(...args),
+  createUser: (...args) => mockCreateUser(...args)
+}));
 
 describe('ApiRoutes', () => {
     let app;
@@ -18,7 +23,7 @@ describe('ApiRoutes', () => {
         await request(app)
             .get('/api/users');
 
-        expect(userController.getUsers).toHaveBeenCalled();
+        expect(mockGetUsers).toHaveBeenCalledTimes(1);
     });
 
     it('POST /api/users should call controller.createUser', async () => {
@@ -26,6 +31,6 @@ describe('ApiRoutes', () => {
             .post('/api/users')
             .send({ name: 'Test', email: 'test@example.com' });
 
-        expect(userController.createUser).toHaveBeenCalled();
+        expect(mockCreateUser).toHaveBeenCalledTimes(1);
     });
 });

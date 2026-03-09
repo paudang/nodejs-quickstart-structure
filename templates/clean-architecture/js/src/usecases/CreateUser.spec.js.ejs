@@ -1,13 +1,17 @@
 const CreateUser = require('@/usecases/CreateUser');
 const UserRepository = require('@/infrastructure/repositories/UserRepository');
-const cacheService = require('@/infrastructure/caching/memoryCache');
+<%_ if (caching !== 'None') { -%>
+const cacheService = require('<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>');
+<%_ } -%>
 
 jest.mock('@/infrastructure/repositories/UserRepository');
-jest.mock('@/infrastructure/caching/memoryCache', () => ({
+<%_ if (caching !== 'None') { -%>
+jest.mock('<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>', () => ({
     get: jest.fn(),
     set: jest.fn(),
     del: jest.fn()
 }));
+<%_ } -%>
 
 describe('CreateUser UseCase', () => {
     let createUser;
@@ -33,7 +37,9 @@ describe('CreateUser UseCase', () => {
         expect(savedUser.name).toBe(name);
         expect(savedUser.email).toBe(email);
         expect(result).toEqual(expectedResult);
+<%_ if (caching !== 'None') { -%>
         expect(cacheService.del).toHaveBeenCalledWith('users:all');
+<%_ } -%>
     });
 
     it('should throw an error if repository fails', async () => {
