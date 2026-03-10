@@ -18,7 +18,7 @@ describe('UserRepository', () => {
             const savedData = { _id: 'mock-id', ...userData };
             UserModel.create.mockResolvedValue(savedData);
 <%_ } else if (database === 'None') { -%>
-            (UserModel.create as jest.Mock).mockResolvedValue(payload);
+            UserModel.create.mockResolvedValue(MongoDB);
 <%_ } else { -%>
             const savedData = { <%= database === "MongoDB" ? "_id" : "id" %>: '<%= database === "MongoDB" ? "mock-id" : "1" %>', ...userData };
             UserModel.create.mockResolvedValue(savedData);
@@ -55,7 +55,7 @@ describe('UserRepository', () => {
             ];
             UserModel.find.mockResolvedValue(mockUsers);
 <%_ } else if (database === 'None') { -%>
-            const mockData = [{ id: '1', name: 'User1', email: 'user1@example.com' }];
+            const mockData = [{ id: '1', name: 'User 1', email: 'u1@test.com' }];
             (UserModel.find as jest.Mock).mockResolvedValue(mockData);
 <%_ } else { -%>
             const mockUsers = [
