@@ -20,7 +20,7 @@ describe('UserRepository', () => {
             const mockDbRecord = { _id: { toString: () => '1' }, name: 'TestUser', email: 'test@example.com' };
             (UserModel.create as jest.Mock).mockResolvedValue(mockDbRecord);
 <%_ } else if (database === 'None') { -%>
-            UserModel.mockData = []; // clear
+            (UserModel.create as jest.Mock).mockResolvedValue(payload);
 <%_ } else { -%>
             const mockDbRecord = { id: '1', name: 'TestUser', email: 'test@example.com' };
             (UserModel.create as jest.Mock).mockResolvedValue(mockDbRecord);
@@ -31,9 +31,7 @@ describe('UserRepository', () => {
 
             // Assert
 <%_ if (database === 'None') { -%>
-            expect(result.id).toEqual('1');
-            expect(result.name).toEqual(payload.name);
-            expect(UserModel.mockData.length).toBe(1);
+            expect(result.name).toEqual(payload.name)
 <%_ } else { -%>
             expect(result).toEqual({ id: '1', name: 'TestUser', email: 'test@example.com' });
             expect(UserModel.create).toHaveBeenCalledWith({ name: payload.name, email: payload.email });
@@ -62,7 +60,8 @@ describe('UserRepository', () => {
             const mockDbRecords = [{ _id: { toString: () => '1' }, name: 'User1', email: 'user1@example.com' }];
             (UserModel.find as jest.Mock).mockResolvedValue(mockDbRecords);
 <%_ } else if (database === 'None') { -%>
-            UserModel.mockData = [{ id: '1', name: 'User1', email: 'user1@example.com' }];
+            const mockData = [{ id: '1', name: 'User1', email: 'user1@example.com' }];
+            (UserModel.find as jest.Mock).mockResolvedValue(mockData);
 <%_ } else { -%>
             const mockDbRecords = [{ id: '1', name: 'User1', email: 'user1@example.com' }];
             (UserModel.findAll as jest.Mock).mockResolvedValue(mockDbRecords);

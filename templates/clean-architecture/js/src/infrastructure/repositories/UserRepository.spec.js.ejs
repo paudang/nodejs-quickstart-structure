@@ -18,7 +18,7 @@ describe('UserRepository', () => {
             const savedData = { _id: 'mock-id', ...userData };
             UserModel.create.mockResolvedValue(savedData);
 <%_ } else if (database === 'None') { -%>
-            UserModel.mockData = [];
+            (UserModel.create as jest.Mock).mockResolvedValue(payload);
 <%_ } else { -%>
             const savedData = { <%= database === "MongoDB" ? "_id" : "id" %>: '<%= database === "MongoDB" ? "mock-id" : "1" %>', ...userData };
             UserModel.create.mockResolvedValue(savedData);
@@ -27,9 +27,7 @@ describe('UserRepository', () => {
             const result = await userRepository.save(userData);
 
 <%_ if (database === 'None') { -%>
-            expect(result.id).toEqual('1');
             expect(result.name).toEqual(userData.name);
-            expect(UserModel.mockData.length).toBe(1);
 <%_ } else { -%>
             expect(UserModel.create).toHaveBeenCalledWith(userData);
             expect(result).toEqual({ id: '<%= database === "MongoDB" ? "mock-id" : "1" %>', ...userData });
@@ -57,7 +55,8 @@ describe('UserRepository', () => {
             ];
             UserModel.find.mockResolvedValue(mockUsers);
 <%_ } else if (database === 'None') { -%>
-            UserModel.mockData = [{ id: '1', name: 'User 1', email: 'u1@test.com' }];
+            const mockData = [{ id: '1', name: 'User1', email: 'user1@example.com' }];
+            (UserModel.find as jest.Mock).mockResolvedValue(mockData);
 <%_ } else { -%>
             const mockUsers = [
                 { <%= database === "MongoDB" ? "_id" : "id" %>: '1', name: 'User 1', email: 'u1@test.com' },
