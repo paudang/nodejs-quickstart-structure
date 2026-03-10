@@ -1,16 +1,19 @@
 const { kafka } = require('../config/kafka');
 const logger = require('<%= loggerPath %>');
 
-const producer = kafka.producer();
-const consumer = kafka.consumer({ groupId: 'test-group' });
+let producer = null;
+let consumer = null;
 
 const connectKafka = async () => {
+    if (!producer) producer = kafka.producer();
+    if (!consumer) consumer = kafka.consumer({ groupId: 'test-group' });
+
     await producer.connect();
     await consumer.connect();
     await consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
 
     await consumer.run({
-        eachMessage: async ({ topic, partition, message }) => {
+        eachMessage: async ({ _topic, _partition, message }) => {
             logger.info({
                 value: message.value.toString(),
             });
@@ -19,6 +22,7 @@ const connectKafka = async () => {
 };
 
 const sendMessage = async (topic, message) => {
+    if (!producer) producer = kafka.producer();
     await producer.send({
         topic,
         messages: [
@@ -28,8 +32,8 @@ const sendMessage = async (topic, message) => {
 };
 
 const disconnectKafka = async () => {
-    await producer.disconnect();
-    await consumer.disconnect();
+    if (producer) await producer.disconnect();
+    if (consumer) await consumer.disconnect();
 };
 
 module.exports = { connectKafka, sendMessage, disconnectKafka };

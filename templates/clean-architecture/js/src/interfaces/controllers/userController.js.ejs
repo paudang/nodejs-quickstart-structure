@@ -33,10 +33,14 @@ class UserController {
         }
     }
 <% } else { -%>
-    getUsers(req, res, next) {
-        this.getAllUsersUseCase.execute()
-            .then(users => res.json(users))
-            .catch(next);
+    async getUsers(req, res, next) {
+      try {
+        const users = await this.getAllUsersUseCase.execute();
+        res.json(users);
+      } catch (error) {
+        logger.error('Error getting users:', error);
+        next(error);
+      }
     }
 
     async createUser(req, res, next) {

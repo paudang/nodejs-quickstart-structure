@@ -1,0 +1,170 @@
+<% if (communication !== 'GraphQL') { -%>
+const HTTP_STATUS = require('@/utils/httpCodes');
+<% } -%>
+const { getUsers, createUser } = require('@/controllers/userController');
+const User = require('@/models/User');
+<%_ if (caching === 'Redis') { -%>
+const cacheService = require('@/config/redisClient');
+<%_ } else if (caching === 'Memory Cache') { -%>
+const cacheService = require('@/config/memoryCache');
+<%_ } -%>
+
+// Mock dependencies
+jest.mock('@/models/User');
+<%_ if (caching === 'Redis') { -%>
+jest.mock('@/config/redisClient', () => ({
+    getOrSet: jest.fn(),
+    del: jest.fn()
+}));
+<%_ } else if (caching === 'Memory Cache') { -%>
+jest.mock('@/config/memoryCache', () => ({
+    getOrSet: jest.fn(),
+    del: jest.fn()
+}));
+<%_ } -%>
+jest.mock('@/utils/logger');
+
+describe('UserController', () => {
+<% if (communication !== 'GraphQL') { -%>
+    let mockRequest;
+    let mockResponse;
+    let mockNext;
+<% } -%>
+
+    beforeEach(() => {
+<% if (communication !== 'GraphQL') { -%>
+        mockRequest = {};
+        mockResponse = {
+            json: jest.fn(),
+            status: jest.fn().mockReturnThis(),
+        };
+        mockNext = jest.fn();
+<% } -%>
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    describe('getUsers', () => {
+        it('should return successfully (Happy Path)', async () => {
+            // Arrange
+            const usersMock = [{ id: '1', name: 'Test', email: 'test@example.com' }];
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            cacheService.getOrSet.mockResolvedValue(usersMock);
+<%_ } else { -%>
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
+            User.find.mockResolvedValue(usersMock);
+<%_ } else { -%>
+            User.findAll.mockResolvedValue(usersMock);
+<%_ } -%>
+<%_ } -%>
+
+            // Act
+<% if (communication === 'GraphQL') { -%>
+            const result = await getUsers();
+
+            // Assert
+            expect(result).toEqual(usersMock);
+<% } else { -%>
+            await getUsers(mockRequest, mockResponse, mockNext);
+
+            // Assert
+            expect(mockResponse.json).toHaveBeenCalledWith(usersMock);
+<% } -%>
+        });
+
+        it('should handle errors correctly (Error Handling)', async () => {
+            // Arrange
+            const error = new Error('Database Error');
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            cacheService.getOrSet.mockRejectedValue(error);
+<%_ } else { -%>
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
+            User.find.mockRejectedValue(error);
+<%_ } else { -%>
+            User.findAll.mockRejectedValue(error);
+<%_ } -%>
+<%_ } -%>
+
+            // Act & Assert
+<% if (communication === 'GraphQL') { -%>
+            await expect(getUsers()).rejects.toThrow(error);
+<% } else { -%>
+            await getUsers(mockRequest, mockResponse, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+<% } -%>
+        });
+    });
+
+    describe('createUser', () => {
+        it('should successfully create a new user (Happy Path)', async () => {
+            // Arrange
+            const payload = { name: 'Alice', email: 'alice@example.com' };
+<% if (communication === 'GraphQL') { -%>
+            const dataArg = payload;
+<% } else { -%>
+            mockRequest.body = payload;
+<% } -%>
+            
+            const expectedUser = { id: '1', ...payload };
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
+            User.create.mockResolvedValue(expectedUser);
+            <%_ if (database === 'None') { -%>User.mockData = [expectedUser];<%_ } -%>
+<%_ } else { -%>
+            User.create.mockResolvedValue(expectedUser);
+<%_ } -%>
+
+            // Act
+<% if (communication === 'GraphQL') { -%>
+            const result = await createUser(dataArg);
+
+            // Assert
+<%_ if (database === 'None') { -%>
+            expect(result.name).toBe(payload.name);
+            expect(result.email).toBe(payload.email);
+            expect(User.mockData.length).toBe(1);
+<%_ } else { -%>
+            expect(result).toEqual(expectedUser);
+            expect(User.create).toHaveBeenCalledWith(payload);
+<%_ } -%>
+<% } else { -%>
+            await createUser(mockRequest, mockResponse, mockNext);
+
+            // Assert
+            expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.CREATED);
+<%_ if (database === 'None') { -%>
+            expect(mockResponse.json).toHaveBeenCalled();
+            expect(User.mockData.length).toBe(1);
+<%_ } else { -%>
+            expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
+            expect(User.create).toHaveBeenCalledWith(payload);
+<%_ } -%>
+<% } -%>
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            expect(cacheService.del).toHaveBeenCalledWith('users:all');
+<%_ } -%>
+        });
+
+        it('should handle errors when creation fails (Error Handling)', async () => {
+            // Arrange
+            const error = new Error('Creation Error');
+            const payload = { name: 'Bob', email: 'bob@example.com' };
+<% if (communication === 'GraphQL') { -%>
+            const dataArg = payload;
+<% } else { -%>
+            mockRequest.body = payload;
+<% } -%>
+
+            User.create.mockRejectedValue(error);
+
+            // Act & Assert
+<% if (communication === 'GraphQL') { -%>
+            await expect(createUser(dataArg)).rejects.toThrow(error);
+<% } else { -%>
+            await createUser(mockRequest, mockResponse, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+<% } -%>
+        });
+    });
+});

@@ -28,29 +28,7 @@ const VIEW_ENGINES_MVC = ['EJS', 'Pug', 'None'];
 
 export const combinations = [];
 
-// 1. Clean Architecture Combinations
-LANGUAGES.forEach(lang => {
-    DATABASES.forEach(db => {
-        COMMUNICATIONS.forEach(comm => {
-            // Only test Redis if DB is not None
-            const cachingOptions = db !== 'None' ? CACHING : ['None'];
-
-            cachingOptions.forEach(cache => {
-                combinations.push({
-                    projectName: `test_clean_${lang}_${db}_${comm}_${cache}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-                    language: lang,
-                    architecture: 'Clean Architecture',
-                    viewEngine: 'None', 
-                    database: db,
-                    dbName: db !== 'None' ? 'testdb' : undefined,
-                    communication: comm,
-                    caching: cache
-                });
-            });
-        });
-    });
-});
-// 2. MVC Combinations
+// 1. MVC Combinations
 LANGUAGES.forEach(lang => {
     VIEW_ENGINES_MVC.forEach(view => {
         DATABASES.forEach(db => {
@@ -69,6 +47,30 @@ LANGUAGES.forEach(lang => {
                         communication: comm,
                         caching: cache
                     });
+                });
+            });
+        });
+    });
+});
+
+
+// 2. Clean Architecture Combinations
+LANGUAGES.forEach(lang => {
+    DATABASES.forEach(db => {
+        COMMUNICATIONS.forEach(comm => {
+            // Only test Redis if DB is not None
+            const cachingOptions = db !== 'None' ? CACHING : ['None'];
+
+            cachingOptions.forEach(cache => {
+                combinations.push({
+                    projectName: `test_clean_${lang}_${db}_${comm}_${cache}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                    language: lang,
+                    architecture: 'Clean Architecture',
+                    viewEngine: 'None', 
+                    database: db,
+                    dbName: db !== 'None' ? 'testdb' : undefined,
+                    communication: comm,
+                    caching: cache
                 });
             });
         });
@@ -335,9 +337,23 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         // 2.2 Run Linter & Tests
         try {
             log(`... Running Linter ...`);
-            await runCommand('npm run lint', projectPath); 
-            log(`... Running Unit Tests ...`);
-            await runCommand('npm test', projectPath); 
+            await runCommand('npm run lint', projectPath, {}, true); 
+            log(`... Running Unit Tests & Coverage ...`);
+            const testOutput = await runCommand('npm run test:coverage', projectPath, {}, true); 
+            
+            // Explicit condition for > 70% line and > 70% function coverage
+            const coverageMatch = testOutput.match(/All files\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)/);
+            if (coverageMatch) {
+                const funcsCov = parseFloat(coverageMatch[3]);
+                const linesCov = parseFloat(coverageMatch[4]);
+                if (linesCov < 70 || funcsCov < 70) {
+                    throw new Error(`Coverage below threshold: Lines ${linesCov}% (min 70%), Functions ${funcsCov}% (min 70%)`);
+                } else {
+                    log(`✓ Coverage verified: Lines ${linesCov}% (> 70%), Functions ${funcsCov}% (> 70%)`, ANSI_GREEN);
+                }
+            } else {
+                log(`✓ Unit tests passed. Coverage enforced by Jest config.`, ANSI_GREEN);
+            }
         } catch (e) {
             throw new Error(`Professional Standards Check Failed: ${e.message}`);
         }

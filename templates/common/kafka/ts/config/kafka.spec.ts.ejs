@@ -1,0 +1,21 @@
+import { Kafka } from 'kafkajs';
+
+jest.mock('kafkajs', () => {
+    return {
+        Kafka: jest.fn().mockImplementation(() => ({
+            producer: jest.fn(),
+            consumer: jest.fn(),
+        })),
+    };
+});
+
+describe('Kafka Configuration', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should initialize Kafka', () => {
+        require('<% if (architecture === "MVC") { %>@/config/kafka<% } else { %>@/infrastructure/config/kafka<% } %>');
+        expect(Kafka).toHaveBeenCalled();
+    });
+});

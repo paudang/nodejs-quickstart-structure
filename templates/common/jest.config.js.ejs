@@ -2,13 +2,27 @@ module.exports = {
   testEnvironment: 'node',
   coverageDirectory: 'coverage',
   collectCoverageFrom: ['src/**/*.{js,ts}'],
-  testMatch: ['**/*.test.ts', '**/*.test.js'],
-  <% if (language === 'TypeScript') { %>preset: 'ts-jest',
+  testMatch: ['**/*.test.ts', '**/*.test.js', '**/*.spec.ts', '**/*.spec.js'],
+  <% if (language === 'TypeScript') { %>preset: 'ts-jest',<% } %>
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-  },<% } %>
+  },
   coveragePathIgnorePatterns: [
     "/node_modules/",
-    "/dist/"
-  ]
+    "/dist/",
+    "src/index",
+    "src/app",
+    "src/config/env",
+    "src/config/swagger",
+    "src/infrastructure/webserver/swagger",
+    "src/infrastructure/webserver/server"
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 65,
+      functions: 70,
+      lines: 70,
+      statements: 70
+    }
+  }
 };

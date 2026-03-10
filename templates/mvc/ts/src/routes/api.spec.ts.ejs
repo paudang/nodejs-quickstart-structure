@@ -1,0 +1,40 @@
+import request from 'supertest';
+import express, { Express } from 'express';
+import router from '@/routes/api';
+
+const mockGetUsers = jest.fn().mockImplementation((req, res) => res.status(200).json([{ id: '1', name: 'John Doe' }]));
+const mockCreateUser = jest.fn().mockImplementation((req, res) => res.status(201).json({ id: '1', name: 'Test' }));
+
+jest.mock('@/controllers/userController', () => {
+  return {
+    UserController: jest.fn().mockImplementation(() => ({
+      getUsers: (...args: unknown[]) => mockGetUsers(...args),
+      createUser: (...args: unknown[]) => mockCreateUser(...args)
+    }))
+  };
+});
+
+describe('ApiRoutes', () => {
+    let app: Express;
+
+    beforeEach(() => {
+        app = express();
+        app.use(express.json());
+        app.use('/api', router);
+    });
+
+    it('GET /users should call controller.getUsers', async () => {
+        await request(app)
+            .get('/api/users');
+
+        expect(mockGetUsers).toHaveBeenCalledTimes(1);
+    });
+
+    it('POST /api/users should call controller.createUser', async () => {
+        await request(app)
+            .post('/api/users')
+            .send({ name: 'Test', email: 'test@example.com' });
+
+        expect(mockCreateUser).toHaveBeenCalledTimes(1);
+    });
+});

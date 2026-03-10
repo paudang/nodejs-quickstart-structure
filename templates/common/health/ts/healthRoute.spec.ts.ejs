@@ -1,0 +1,76 @@
+import request from 'supertest';
+import express from 'express';
+<% if (architecture === 'MVC') { -%>
+import healthRoute from '@/routes/healthRoute';
+<% } else { -%>
+import healthRoute from '@/interfaces/routes/healthRoute';
+<% } -%>
+import { HTTP_STATUS } from '@/utils/httpCodes';
+<%_ if (database === 'MongoDB') { -%>
+import mongoose from 'mongoose';
+<%_ } else if (database !== 'None') { -%>
+import sequelize from '<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>';
+<%_ } -%>
+
+<%_ if (database === 'MongoDB') { -%>
+jest.mock('mongoose', () => {
+    return {
+        connection: {
+            readyState: 1,
+            db: {
+                admin: jest.fn().mockReturnValue({
+                    ping: jest.fn().mockResolvedValue(true)
+                })
+            }
+        }
+    };
+});
+<%_ } else if (database !== 'None') { -%>
+jest.mock('<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>', () => {
+    return {
+        __esModule: true,
+        default: {
+            authenticate: jest.fn()
+        }
+    };
+});
+<%_ } -%>
+
+describe('Health Route', () => {
+    let app: express.Express;
+
+    beforeEach(() => {
+        app = express();
+        app.use('/health', healthRoute);
+        jest.clearAllMocks();
+    });
+
+    it('should return 200 OK with UP status', async () => {
+        const res = await request(app).get('/health');
+        expect(res.status).toBe(HTTP_STATUS.OK);
+        expect(res.body.status).toBe('UP');
+        expect(res.body.database).toBe('<% if (database === "None") { %>None<% } else { %>connected<% } %>');
+    });
+
+<%_ if (database === 'MongoDB') { -%>
+    it('should handle database ping failure and return 500', async () => {
+        ((mongoose.connection.db as any).admin as jest.Mock).mockReturnValueOnce({
+            ping: jest.fn().mockRejectedValueOnce(new Error('DB Error'))
+        });
+
+        const res = await request(app).get('/health');
+        expect(res.status).toBe(HTTP_STATUS.INTERNAL_SERVER_ERROR);
+        expect(res.body.status).toBe('DOWN');
+        expect(res.body.database).toBe('error');
+    });
+<%_ } else if (database !== 'None') { -%>
+    it('should handle database authentication failure and return 500', async () => {
+        (sequelize.authenticate as jest.Mock).mockRejectedValueOnce(new Error('DB Error'));
+
+        const res = await request(app).get('/health');
+        expect(res.status).toBe(HTTP_STATUS.INTERNAL_SERVER_ERROR);
+        expect(res.body.status).toBe('DOWN');
+        expect(res.body.database).toBe('error');
+    });
+<%_ } -%>
+});

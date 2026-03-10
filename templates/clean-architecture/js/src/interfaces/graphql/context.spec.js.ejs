@@ -1,0 +1,31 @@
+const { gqlContext } = require('@/interfaces/graphql/context');
+const { resolvers } = require('@/interfaces/graphql/resolvers');
+const { typeDefs } = require('@/interfaces/graphql/typeDefs');
+
+jest.mock('@/infrastructure/repositories/UserRepository');
+
+describe('GraphQL Context', () => {
+    it('should exercise GraphQL index entry points', () => {
+        expect(resolvers).toBeDefined();
+        expect(typeDefs).toBeDefined();
+    });
+  it('should return context with token when authorization header is present', async () => {
+    const mockRequest = {
+      headers: {
+        authorization: 'Bearer token123',
+      },
+    };
+
+    const context = await gqlContext({ req: mockRequest });
+    expect(context.token).toBe('Bearer token123');
+  });
+
+  it('should return context with empty token when authorization header is missing', async () => {
+    const mockRequest = {
+      headers: {},
+    };
+
+    const context = await gqlContext({ req: mockRequest });
+    expect(context.token).toBe('');
+  });
+});

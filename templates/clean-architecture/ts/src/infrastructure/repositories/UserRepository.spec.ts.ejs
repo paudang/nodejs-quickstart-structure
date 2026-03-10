@@ -1,0 +1,86 @@
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+import UserModel from '@/infrastructure/database/models/User';
+
+// Mock DB Model Database Layer
+jest.mock('@/infrastructure/database/models/User');
+
+describe('UserRepository', () => {
+    let userRepository: UserRepository;
+
+    beforeEach(() => {
+        userRepository = new UserRepository();
+        jest.clearAllMocks();
+    });
+
+    describe('save', () => {
+        it('should save and return a newly created user (Happy Path)', async () => {
+            // Arrange
+            const payload = { id: '', name: 'TestUser', email: 'test@example.com' };
+<%_ if (database === 'MongoDB') { -%>
+            const mockDbRecord = { _id: { toString: () => '1' }, name: 'TestUser', email: 'test@example.com' };
+            (UserModel.create as jest.Mock).mockResolvedValue(mockDbRecord);
+<%_ } else if (database === 'None') { -%>
+            UserModel.mockData = []; // clear
+<%_ } else { -%>
+            const mockDbRecord = { id: '1', name: 'TestUser', email: 'test@example.com' };
+            (UserModel.create as jest.Mock).mockResolvedValue(mockDbRecord);
+<%_ } -%>
+
+            // Act
+            const result = await userRepository.save(payload);
+
+            // Assert
+<%_ if (database === 'None') { -%>
+            expect(result.id).toEqual('1');
+            expect(result.name).toEqual(payload.name);
+            expect(UserModel.mockData.length).toBe(1);
+<%_ } else { -%>
+            expect(result).toEqual({ id: '1', name: 'TestUser', email: 'test@example.com' });
+            expect(UserModel.create).toHaveBeenCalledWith({ name: payload.name, email: payload.email });
+<%_ } -%>
+        });
+
+        it('should throw an error when DB fails explicitly (Edge Case)', async () => {
+<%_ if (database === 'None') { -%>
+            // Mocks do not naturally fail 
+<%_ } else { -%>
+            // Arrange
+            const payload = { id: '', name: 'FailUser', email: 'fail@example.com' };
+            const error = new Error('DB Connection Refused');
+            (UserModel.create as jest.Mock).mockRejectedValue(error);
+
+            // Act & Assert
+            await expect(userRepository.save(payload)).rejects.toThrow(error);
+<%_ } -%>
+        });
+    });
+
+    describe('getUsers', () => {
+        it('should return a list of mapped UserEntities (Happy Path)', async () => {
+            // Arrange
+<%_ if (database === 'MongoDB') { -%>
+            const mockDbRecords = [{ _id: { toString: () => '1' }, name: 'User1', email: 'user1@example.com' }];
+            (UserModel.find as jest.Mock).mockResolvedValue(mockDbRecords);
+<%_ } else if (database === 'None') { -%>
+            UserModel.mockData = [{ id: '1', name: 'User1', email: 'user1@example.com' }];
+<%_ } else { -%>
+            const mockDbRecords = [{ id: '1', name: 'User1', email: 'user1@example.com' }];
+            (UserModel.findAll as jest.Mock).mockResolvedValue(mockDbRecords);
+<%_ } -%>
+
+            // Act
+            const result = await userRepository.getUsers();
+
+            // Assert
+            expect(result).toHaveLength(1);
+            expect(result[0]).toEqual({ id: '1', name: 'User1', email: 'user1@example.com' });
+<%_ if (database !== 'None') { -%>
+<%_ if (database === 'MongoDB') { -%>
+            expect(UserModel.find).toHaveBeenCalled();
+<%_ } else { -%>
+            expect(UserModel.findAll).toHaveBeenCalled();
+<%_ } -%>
+<%_ } -%>
+        });
+    });
+});

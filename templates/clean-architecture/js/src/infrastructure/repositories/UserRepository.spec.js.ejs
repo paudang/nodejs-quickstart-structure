@@ -1,0 +1,82 @@
+const UserRepository = require('@/infrastructure/repositories/UserRepository');
+const UserModel = require('@/infrastructure/database/models/User');
+
+jest.mock('@/infrastructure/database/models/User');
+
+describe('UserRepository', () => {
+    let userRepository;
+
+    beforeEach(() => {
+        userRepository = new UserRepository();
+        jest.clearAllMocks();
+    });
+
+    describe('save', () => {
+        it('should save and return a newly created user (Happy Path)', async () => {
+            const userData = { name: 'New User', email: 'new@example.com' };
+<%_ if (database === 'MongoDB') { -%>
+            const savedData = { _id: 'mock-id', ...userData };
+            UserModel.create.mockResolvedValue(savedData);
+<%_ } else if (database === 'None') { -%>
+            UserModel.mockData = [];
+<%_ } else { -%>
+            const savedData = { <%= database === "MongoDB" ? "_id" : "id" %>: '<%= database === "MongoDB" ? "mock-id" : "1" %>', ...userData };
+            UserModel.create.mockResolvedValue(savedData);
+<%_ } -%>
+
+            const result = await userRepository.save(userData);
+
+<%_ if (database === 'None') { -%>
+            expect(result.id).toEqual('1');
+            expect(result.name).toEqual(userData.name);
+            expect(UserModel.mockData.length).toBe(1);
+<%_ } else { -%>
+            expect(UserModel.create).toHaveBeenCalledWith(userData);
+            expect(result).toEqual({ id: '<%= database === "MongoDB" ? "mock-id" : "1" %>', ...userData });
+<%_ } -%>
+        });
+
+        it('should throw an error when DB fails explicitly (Edge Case)', async () => {
+<%_ if (database === 'None') { -%>
+            // mock data logic doesn't throw naturally
+<%_ } else { -%>
+            const error = new Error('DB Error');
+            UserModel.create.mockRejectedValue(error);
+
+            await expect(userRepository.save({})).rejects.toThrow('DB Error');
+<%_ } -%>
+        });
+    });
+
+    describe('getUsers', () => {
+        it('should return a list of mapped UserEntities (Happy Path)', async () => {
+<%_ if (database === 'MongoDB') { -%>
+            const mockUsers = [
+                { _id: '1', name: 'User 1', email: 'u1@test.com' },
+                { _id: '2', name: 'User 2', email: 'u2@test.com' }
+            ];
+            UserModel.find.mockResolvedValue(mockUsers);
+<%_ } else if (database === 'None') { -%>
+            UserModel.mockData = [{ id: '1', name: 'User 1', email: 'u1@test.com' }];
+<%_ } else { -%>
+            const mockUsers = [
+                { <%= database === "MongoDB" ? "_id" : "id" %>: '1', name: 'User 1', email: 'u1@test.com' },
+                { <%= database === "MongoDB" ? "_id" : "id" %>: '2', name: 'User 2', email: 'u2@test.com' }
+            ];
+            UserModel.<%= database === "MongoDB" ? "find" : "findAll" %>.mockResolvedValue(mockUsers);
+<%_ } -%>
+            
+            const result = await userRepository.getUsers();
+
+<%_ if (database !== 'None') { -%>
+            expect(UserModel.<%= database === 'MongoDB' ? 'find' : 'findAll' %>).toHaveBeenCalled();
+<%_ } -%>
+            expect(result).toEqual([
+                { id: '1', name: 'User 1', email: 'u1@test.com' }
+<%_ if (database !== 'None') { -%>
+                , { id: '2', name: 'User 2', email: 'u2@test.com' }
+<%_ } -%>
+            ]);
+        });
+    });
+});

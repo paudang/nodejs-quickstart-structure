@@ -1,0 +1,60 @@
+let kafka;
+let connectKafka, sendMessage, disconnectKafka;
+
+jest.mock('<%= configPath %>', () => ({
+    kafka: {
+        producer: jest.fn().mockReturnValue({
+            connect: jest.fn().mockResolvedValue(undefined),
+            send: jest.fn().mockResolvedValue(undefined),
+            disconnect: jest.fn().mockResolvedValue(undefined),
+        }),
+        consumer: jest.fn().mockReturnValue({
+            connect: jest.fn().mockResolvedValue(undefined),
+            subscribe: jest.fn().mockResolvedValue(undefined),
+            run: jest.fn().mockResolvedValue(undefined),
+            disconnect: jest.fn().mockResolvedValue(undefined),
+        }),
+    },
+}));
+
+jest.mock('<%= loggerPath %>');
+
+describe('Kafka Client', () => {
+    beforeEach(async () => {
+        jest.resetModules();
+        jest.clearAllMocks();
+        kafka = require('<%= configPath %>').kafka;
+        ({ connectKafka, sendMessage, disconnectKafka } = require('<%= servicePath %>'));
+        await connectKafka();
+    });
+
+    it('should connect producer and consumer', async () => {
+        await connectKafka();
+        const producer = kafka.producer.mock.results[0].value;
+        const consumer = kafka.consumer.mock.results[0].value;
+
+        expect(producer.connect).toHaveBeenCalled();
+        expect(consumer.connect).toHaveBeenCalled();
+    });
+
+    it('should send a message', async () => {
+        const topic = 'test-topic';
+        const message = 'test-message';
+        await sendMessage(topic, message);
+        const producer = kafka.producer.mock.results[0].value;
+
+        expect(producer.send).toHaveBeenCalledWith({
+            topic,
+            messages: [{ value: message }],
+        });
+    });
+
+    it('should disconnect Kafka', async () => {
+        await disconnectKafka();
+        const producer = kafka.producer.mock.results[0].value;
+        const consumer = kafka.consumer.mock.results[0].value;
+
+        expect(producer.disconnect).toHaveBeenCalled();
+        expect(consumer.disconnect).toHaveBeenCalled();
+    });
+});

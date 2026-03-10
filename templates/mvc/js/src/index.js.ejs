@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-<%_ if (communication === 'REST APIs') { -%>const apiRoutes = require('./routes/api');<%_ } -%>
+<%_ if (communication === 'REST APIs') { -%>const apiRoutes = require('./routes/api');<%_ } %>
 const healthRoutes = require('./routes/healthRoute');
 <%_ if (communication === 'Kafka') { -%>const { connectKafka, sendMessage } = require('./services/kafkaService');<%_ } -%>
 <%_ if (communication === 'GraphQL') { -%>

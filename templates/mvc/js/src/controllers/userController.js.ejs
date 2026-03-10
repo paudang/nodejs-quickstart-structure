@@ -14,19 +14,15 @@ const getUsers = async () => {
   try {
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
     const users = await cacheService.getOrSet('users:all', async () => {
-<%_ if (database === 'MongoDB') { -%>
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
         return await User.find();
-<%_ } else if (database === 'None') { -%>
-        return User.mockData;
 <%_ } else { -%>
         return await User.findAll();
 <%_ } -%>
     }, 60);
 <%_ } else { -%>
-<%_ if (database === 'MongoDB') { -%>
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
     const users = await User.find();
-<%_ } else if (database === 'None') { -%>
-    const users = User.mockData;
 <%_ } else { -%>
     const users = await User.findAll();
 <%_ } -%>
@@ -41,20 +37,11 @@ const getUsers = async () => {
 const createUser = async (data) => {
   try {
     const { name, email } = data;
-<%_ if (database === 'None') { -%>
-    const newUser = { id: String(User.mockData.length + 1), name, email };
-    User.mockData.push(newUser);
-<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
-    await cacheService.del('users:all');
-<%_ } -%>
-    return newUser;
-<%_ } else { -%>
     const user = await User.create({ name, email });
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
     await cacheService.del('users:all');
 <%_ } -%>
     return user;
-<%_ } -%>
   } catch (error) {
     logger.error('Error creating user:', error);
     throw error;
@@ -65,19 +52,15 @@ const getUsers = async (req, res, next) => {
   try {
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
     const users = await cacheService.getOrSet('users:all', async () => {
-<%_ if (database === 'MongoDB') { -%>
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
         return await User.find();
-<%_ } else if (database === 'None') { -%>
-        return User.mockData;
 <%_ } else { -%>
         return await User.findAll();
 <%_ } -%>
     }, 60);
 <%_ } else { -%>
-<%_ if (database === 'MongoDB') { -%>
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
     const users = await User.find();
-<%_ } else if (database === 'None') { -%>
-    const users = User.mockData;
 <%_ } else { -%>
     const users = await User.findAll();
 <%_ } -%>
@@ -92,20 +75,11 @@ const getUsers = async (req, res, next) => {
 const createUser = async (req, res, next) => {
   try {
     const { name, email } = req.body;
-<%_ if (database === 'None') { -%>
-    const newUser = { id: String(User.mockData.length + 1), name, email };
-    User.mockData.push(newUser);
-<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
-    await cacheService.del('users:all');
-<%_ } -%>
-    res.status(HTTP_STATUS.CREATED).json(newUser);
-<%_ } else { -%>
     const user = await User.create({ name, email });
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
     await cacheService.del('users:all');
 <%_ } -%>
     res.status(HTTP_STATUS.CREATED).json(user);
-<%_ } -%>
   } catch (error) {
     logger.error('Error creating user:', error);
     next(error);
@@ -114,4 +88,3 @@ const createUser = async (req, res, next) => {
 <% } -%>
 
 module.exports = { getUsers, createUser };
-
