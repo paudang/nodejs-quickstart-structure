@@ -5,9 +5,8 @@ const HTTP_STATUS = require('../utils/httpCodes');
 const logger = require('../utils/logger');
 <%_ if (caching === 'Redis') { -%>
 const cacheService = require('../config/redisClient');
-<%_ if (caching === 'Memory Cache') { -%>
+<%_ } else if (caching === 'Memory Cache') { -%>
 const cacheService = require('../config/memoryCache');
-<%_ } -%>
 <%_ } -%>
 
 <% if (communication === 'GraphQL') { -%>

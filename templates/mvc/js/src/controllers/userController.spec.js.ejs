@@ -109,11 +109,9 @@ describe('UserController', () => {
             
             const expectedUser = { id: '1', ...payload };
 <%_ if (database === 'MongoDB' || database === 'None') { -%>
-            const expectedUser = { id: '1', ...payload };
             User.create.mockResolvedValue(expectedUser);
             <%_ if (database === 'None') { -%>User.mockData = [expectedUser];<%_ } -%>
 <%_ } else { -%>
-            const expectedUser = { id: '1', ...payload };
             User.create.mockResolvedValue(expectedUser);
 <%_ } -%>
 

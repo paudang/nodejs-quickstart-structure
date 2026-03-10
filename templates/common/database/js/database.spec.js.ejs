@@ -11,12 +11,9 @@ jest.mock('dotenv', () => ({
 }));
 
 describe('Database Configuration', () => {
-    let sequelizeMock;
-
     beforeEach(() => {
         jest.clearAllMocks();
         jest.resetModules();
-        sequelizeMock = require('sequelize');
         
         // Clean environment
         const envVars = ['DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST', 'DB_PORT'];
@@ -33,7 +30,7 @@ describe('Database Configuration', () => {
         
         require('<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>');
         
-        expect(sequelizeMock.Sequelize).toHaveBeenCalledWith(
+        expect(SequelizeMock).toHaveBeenCalledWith(
             'testdb',
             'testuser',
             'testpassword',
