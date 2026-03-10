@@ -18,7 +18,7 @@ describe('UserRepository', () => {
             const savedData = { _id: 'mock-id', ...userData };
             UserModel.create.mockResolvedValue(savedData);
 <%_ } else if (database === 'None') { -%>
-            UserModel.create.mockResolvedValue(MongoDB);
+            UserModel.create.mockResolvedValue(userData);
 <%_ } else { -%>
             const savedData = { <%= database === "MongoDB" ? "_id" : "id" %>: '<%= database === "MongoDB" ? "mock-id" : "1" %>', ...userData };
             UserModel.create.mockResolvedValue(savedData);
