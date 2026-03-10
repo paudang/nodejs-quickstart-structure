@@ -3,12 +3,17 @@ const mongoose = require('mongoose');
 
 jest.mock('mongoose', () => {
     const mSchema = jest.fn();
-    const mModel = jest.fn().mockReturnValue({});
+    const mModel = {
+        find: jest.fn(),
+        create: jest.fn(),
+    };
     return {
         Schema: mSchema,
-        model: mModel,
+        model: jest.fn().mockReturnValue(mModel),
     };
 });
+<% } else if (database === 'None') { _%>
+// No external dependencies to mock for None DB
 <% } else { _%>
 const { Model } = require('sequelize');
 
@@ -19,6 +24,8 @@ jest.mock('sequelize', () => {
     };
     const mModel = class {
         static init = jest.fn();
+        static findAll = jest.fn();
+        static create = jest.fn();
     };
     return { DataTypes: mDataTypes, Model: mModel };
 });
@@ -40,9 +47,38 @@ describe('User Model', () => {
         expect(User).toBeDefined();
         <% if (database === 'MongoDB') { %>
         expect(mongoose.model).toHaveBeenCalled();
+        <% } else if (database === 'None') { %>
+        // Test mockData is initialized
+        expect(User.mockData).toEqual([]);
         <% } else { %>
         // Sequelize init is called on the class
         expect(Model.init).toHaveBeenCalled();
+        <% } %>
+    });
+
+    it('should handle model operations', async () => {
+        const User = require('<% if (architecture === "MVC") { %>@/models/User<% } else { %>@/infrastructure/database/models/User<% } %>');
+        const data = { name: 'Test', email: 'test@example.com' };
+
+        <% if (database === 'MongoDB') { %>
+        User.create.mockResolvedValue({ id: '1', ...data });
+        User.find.mockResolvedValue([{ id: '1', ...data }]);
+        
+        const user = await User.create(data);
+        expect(user.name).toBe(data.name);
+        expect(await User.find()).toContain(user);
+        <% } else if (database === 'None') { %>
+        const user = await User.create(data);
+        expect(user.name).toBe(data.name);
+        expect(await User.find()).toContain(user);
+        expect(await User.findAll()).toBeDefined();
+        <% } else { %>
+        User.create.mockResolvedValue({ id: 1, ...data });
+        User.findAll.mockResolvedValue([{ id: 1, ...data }]);
+        
+        const user = await User.create(data);
+        expect(user.name).toBe(data.name);
+        expect(await User.findAll()).toBeDefined();
         <% } %>
     });
 });

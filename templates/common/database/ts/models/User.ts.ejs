@@ -1,3 +1,28 @@
+<% if (database === 'None') { -%>
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export default class UserModel {
+  static mockData: User[] = [];
+
+  static async find() {
+    return this.mockData;
+  }
+
+  static async findAll() {
+    return this.mockData;
+  }
+
+  static async create(data: Omit<User, 'id'>) {
+    const newUser = { id: String(this.mockData.length + 1), ...data };
+    this.mockData.push(newUser);
+    return newUser as User;
+  }
+}
+<% } else { -%>
 import { DataTypes, Model } from 'sequelize';
 <% if (architecture === 'MVC') { %>import sequelize from '@/config/database';<% } else { %>import sequelize from '@/infrastructure/database/database';<% } %>
 
@@ -32,3 +57,4 @@ User.init(
 );
 
 export default User;
+<% } -%>

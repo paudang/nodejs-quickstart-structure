@@ -51,4 +51,13 @@ describe('Logger', () => {
         logger.error('test error');
         expect(logger.error).toHaveBeenCalledWith('test error');
     });
+
+    it('should use JSON format in production environment', () => {
+        const winston = require('winston');
+        jest.resetModules();
+        process.env.NODE_ENV = 'production';
+        require('@/infrastructure/log/logger');
+        expect(winston.format.json).toHaveBeenCalled();
+        process.env.NODE_ENV = 'test';
+    });
 });

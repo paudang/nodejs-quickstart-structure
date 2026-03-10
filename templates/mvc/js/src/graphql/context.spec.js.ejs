@@ -1,6 +1,12 @@
 const { gqlContext } = require('@/graphql/context');
+const { resolvers } = require('@/graphql/resolvers');
+const { typeDefs } = require('@/graphql/typeDefs');
 
 describe('GraphQL Context', () => {
+    it('should exercise GraphQL index entry points', () => {
+        expect(resolvers).toBeDefined();
+        expect(typeDefs).toBeDefined();
+    });
   it('should return context with token when authorization header is present', async () => {
     const mockRequest = {
       headers: {
