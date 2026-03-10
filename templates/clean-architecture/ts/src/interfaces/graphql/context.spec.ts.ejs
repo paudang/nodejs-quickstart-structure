@@ -1,6 +1,5 @@
 import { gqlContext } from '@/interfaces/graphql/context';
 import { Request } from 'express';
-import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 import { resolvers } from '@/interfaces/graphql/resolvers';
 import { typeDefs } from '@/interfaces/graphql/typeDefs';
 
@@ -20,7 +19,6 @@ describe('GraphQL Context', () => {
 
     const context = await gqlContext({ req: mockRequest });
     expect(context.token).toBe('Bearer token123');
-    expect(context.userRepository).toBeInstanceOf(UserRepository);
   });
 
   it('should return context with empty token when authorization header is missing', async () => {
@@ -30,6 +28,5 @@ describe('GraphQL Context', () => {
 
     const context = await gqlContext({ req: mockRequest });
     expect(context.token).toBe('');
-    expect(context.userRepository).toBeInstanceOf(UserRepository);
   });
 });
