@@ -1,4 +1,4 @@
-import { ApiError } from './ApiError';
+import { ApiError } from '@/errors/ApiError';
 import { HTTP_STATUS } from '@/utils/httpCodes';
 
 export class BadRequestError extends ApiError {
