@@ -3,8 +3,7 @@ const UserModel = require('../database/models/User');
 class UserRepository {
   async save(user) {
 <%_ if (database === 'None') { -%>
-    const newUser = { ...user, id: String(UserModel.mockData.length + 1) };
-    UserModel.mockData.push(newUser);
+    const newUser = await UserModel.create(user);
     return newUser;
 <%_ } else { -%>
     const newUser = await UserModel.create({ name: user.name, email: user.email });
@@ -18,7 +17,7 @@ class UserRepository {
 
   async getUsers() {
 <%_ if (database === 'None') { -%>
-    return UserModel.mockData;
+    return await UserModel.find();
 <%_ } else if (database === 'MongoDB') { -%>
     const users = await UserModel.find();
     return users.map(user => ({

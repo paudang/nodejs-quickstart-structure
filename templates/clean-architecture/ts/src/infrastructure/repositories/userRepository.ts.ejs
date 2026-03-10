@@ -7,8 +7,7 @@ export class UserRepository {
         const newUser = await UserModel.create({ name: user.name, email: user.email });
         return { id: newUser._id.toString(), name: newUser.name, email: newUser.email };
 <%_ } else if (database === 'None') { -%>
-        const newUser = { id: String(UserModel.mockData.length + 1), name: user.name, email: user.email };
-        UserModel.mockData.push(newUser);
+        const newUser = await UserModel.create(user);
         return newUser;
 <%_ } else { -%>
         const newUser = await UserModel.create({ name: user.name, email: user.email });
@@ -25,7 +24,7 @@ export class UserRepository {
             email: user.email
         }));
 <%_ } else if (database === 'None') { -%>
-        return UserModel.mockData;
+        return await UserModel.find();
 <%_ } else { -%>
         const users = await UserModel.findAll();
         return users.map(user => ({
