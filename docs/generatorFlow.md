@@ -195,7 +195,7 @@ project-name/
 ├── src/
 │   ├── domain/                 # Entities (Enterprise rules)
 │   ├── errors/                 # ApiError, NotFoundError, BadRequestError
-│   ├── use_cases/              # Application business rules
+│   ├── usecases/               # Application business rules
 │   ├── interfaces/             # Adapters
 │   │   ├── controllers/        # Use next(error) for error propagation
 │   │   └── routes/             # Pass NextFunction through handlers
@@ -221,7 +221,7 @@ Optimized for event-driven microservices. HTTP routes are removed.
 project-name/
 ├── src/
 │   ├── domain/
-│   ├── use_cases/
+│   ├── usecases/
 │   ├── infrastructure/
 │   │   ├── config/             # Includes Kafka config
 │   │   ├── database/

@@ -8,3 +8,5 @@ README.md
 docker-compose.yml
 test_results.log
 flyway/sql
+.cursorrules
+prompts

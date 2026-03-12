@@ -17,10 +17,7 @@ program
     .name('nodejs-quickstart')
     .description('🚀 CLI to scaffold production-ready Node.js microservices.\n\nGenerates projects with:\n- MVC or Clean Architecture\n- REST or Kafka\n- MySQL, PostgreSQL, or MongoDB\n- Docker, Flyway & Mongoose support')
     .version(pkg.version, '-v, --version', 'Output the current version')
-    .addHelpText('after', `
-\n${chalk.yellow('Example:')}
-  $ nodejs-quickstart init   ${chalk.gray('# Start the interactive setup')}
-`);
+    .addHelpText('after', `\n${chalk.yellow('Example:')}\n  $ nodejs-quickstart init   ${chalk.gray('# Start the interactive setup')}\n`);
 
 program
     .command('init')
@@ -34,6 +31,7 @@ program
     .option('-c, --communication <communication>', 'Communication (REST APIs, GraphQL, Kafka)')
     .option('--ci-provider <provider>', 'CI/CD Provider (None, GitHub Actions, Jenkins)')
     .option('--caching <type>', 'Caching Layer (None/Redis)')
+    .option('--business-domain <domain>', 'Business Domain')
     .action(async (options) => {
         // Fix for Commander camelCase conversion
         if (options.ciProvider) {
@@ -52,6 +50,13 @@ program
 
             console.log(chalk.green('\n✔ Project generated successfully!'));
             
+            console.log(chalk.magenta('\n🚀 Project is AI-Ready!'));
+            console.log(chalk.magenta('-----------------------------------------'));
+            console.log(chalk.magenta('🤖 We detected you are using AI tools.'));
+            console.log(chalk.magenta(`📍 Use Cursor? We've configured '.cursorrules' for you.`));
+            console.log(chalk.magenta(`📍 Use ChatGPT/Gemini? Check the 'prompts/' folder for Agent Skills.`));
+            console.log(chalk.magenta('-----------------------------------------'));
+
             let manualStartInstructions = `\n${chalk.yellow('Development:')}\n  cd ${answers.projectName}\n  npm install`;
             
             const needsInfrastructure = answers.database !== 'None' || answers.caching === 'Redis' || answers.communication === 'Kafka';

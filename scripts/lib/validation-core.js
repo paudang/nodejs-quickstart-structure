@@ -301,7 +301,8 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             '--database', config.database,
             ...(config.dbName ? ['--db-name', config.dbName] : []),
             '--communication', `"${config.communication}"`,
-            '--ci-provider', '"GitHub Actions"' 
+            '--ci-provider', '"GitHub Actions"',
+            '--business-domain', '"Generic Web Application"'
         ];
 
         if (config.caching) {

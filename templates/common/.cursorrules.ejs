@@ -1,0 +1,59 @@
+# Cursor AI Coding Rules for <%= projectName %>
+
+## Project Context
+- **Business Domain**: <%= businessDomain %>
+- **Language**: <%= language %>
+- **Architecture**: <%= architecture %>
+- **Database**: <%= database %>
+- **Communication**: <%= communication %>
+
+## Excluded Files/Folders
+When indexing or searching the workspace, ignore the following paths to prevent context pollution:
+- `node_modules/`
+- `dist/`
+- `build/`
+- `coverage/`
+- `.git/`
+
+## Strict Rules
+
+### 1. Testing First
+- Every new service or controller method MUST have a test file in `tests/`.
+- **Coverage Gate**: Aim for > 70% coverage (Statement/Line/Function/Branch).
+- **Format**: Use Jest with the AAA (Arrange, Act, Assert) pattern.
+- **Isolation**: Mock external dependencies (DB, Redis, etc.) using `jest.mock()`.
+
+### 2. Error Handling
+- Do NOT use generic `Error`.
+- Use custom classes from `src/errors/` (e.g., `ApiError`, `NotFoundError`, `BadRequestError`).
+<% if (language === 'TypeScript') { -%>
+- Use `HTTP_STATUS` constants from `@/utils/httpCodes` for status codes.
+<% } else { -%>
+- Use `HTTP_STATUS` constants from `../utils/httpCodes.js` for status codes.
+<% } -%>
+
+### 3. File Naming & Style
+- **Controllers**: camelCase (e.g., `userController.<% if (language === 'TypeScript') { %>ts<% } else { %>js<% } %>`).
+- **Services**: camelCase (e.g., `userService.<% if (language === 'TypeScript') { %>ts<% } else { %>js<% } %>`).
+- **Routes**: camelCase (e.g., `userRoutes.<% if (language === 'TypeScript') { %>ts<% } else { %>js<% } %>`).
+<% if (language === 'TypeScript') { -%>
+- **Imports**: Use path aliases (e.g., `@/services/...`) instead of relative paths.
+- **Typing**: Ensure strong typing for interfaces and DTOs. Do not use `any` unless absolutely necessary.
+<% } else { -%>
+- **Imports**: Use relative paths as dictated by the directory structure.
+<% } -%>
+
+### 4. Architecture Standards
+<% if (architecture === 'Clean Architecture') { -%>
+- Enforce strict separation of concerns:
+  - `domain`: Entities and enterprise business rules.
+  - `usecases`: Application business rules.
+  - `interfaces`: Controllers and Routes.
+  - `infrastructure`: Frameworks, Database, Caching, and Web Server.
+- Dependencies point inward toward the `domain`.
+<% } else { -%>
+- Enforce MVC standards:
+  - `models`: Data layer.
+  - `controllers`: Request handlers and business logic.
+  - `routes`: Define endpoints routing to controllers.
+<% } -%>

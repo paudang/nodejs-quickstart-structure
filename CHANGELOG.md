@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.0] - 2026-03-12
+### Added
+- **AI-Native Scaffolding & Agent Skill Templates:**
+  - Added a new CLI prompt for `businessDomain` to inject custom domain knowledge into generated templates.
+  - Generates a `.cursorrules` file at the root to enforce >70% Test coverage and Architecture patterns automatically for AI Code Editors.
+  - Scaffolds a `prompts/` directory with specialized Agent Skill templates (`project-context.md`, `add-feature.md`, `troubleshoot.md`) designed to provide deep structural understanding to LLMs like ChatGPT or Claude.
+  - Added an "AI-Native Development" section to the generated `README.md` and prominent print messages in the CLI upon successful completion.
+
 ## [1.14.0] - 2026-03-09
 ### Added
 - **Unit test:**
