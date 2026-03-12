@@ -31,7 +31,6 @@ program
     .option('-c, --communication <communication>', 'Communication (REST APIs, GraphQL, Kafka)')
     .option('--ci-provider <provider>', 'CI/CD Provider (None, GitHub Actions, Jenkins)')
     .option('--caching <type>', 'Caching Layer (None/Redis)')
-    .option('--business-domain <domain>', 'Business Domain')
     .action(async (options) => {
         // Fix for Commander camelCase conversion
         if (options.ciProvider) {

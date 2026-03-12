@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.1] - 2026-03-12
+
+### Added
+- **Magic AI Scaffolding**: Automated AI context generation ( `.cursorrules`, `prompts/`) by intelligently inferring project goals from the project name, removing the need for manual business domain prompts.
+- **Enhanced README**: Added specialized guidance for AI-native development with Cursor and LLMs.
+
+### Fixed
+- **GitHub Actions Compliance**: Fully resolved Node.js 20 deprecation warnings by moving `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` to global workflow scope.
+- **CI Modernization**: Upgraded daily audit and GitLab CI runners to Node.js 22.
+- **CI Enforcement**: Updated all CI/CD templates (GitHub, GitLab, Jenkins) to strictly enforce the >70% test coverage gate.
+
 ## [1.15.0] - 2026-03-12
 ### Added
 - **AI-Native Scaffolding & Agent Skill Templates:**
