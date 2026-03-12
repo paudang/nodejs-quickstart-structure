@@ -1,5 +1,8 @@
 name: Daily Template Audit
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   schedule:
     # Run at midnight UTC every day automatically
@@ -11,8 +14,6 @@ jobs:
   audit-templates:
     name: Audit EJS Templates
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     
     steps:
       - name: Checkout Code
@@ -21,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           
       - name: Extract Dependencies from Templates
         run: |
