@@ -1,58 +1,74 @@
 const { kafka } = require('../config/kafka');
-const logger = require('<%= loggerPath %>');
+const logger = require('<% if (architecture === "Clean Architecture") { %>../log/logger<% } else { %>../utils/logger<% } %>');
 
 let producer = null;
 let consumer = null;
 
-const connectKafka = async () => {
+const connectKafka = async (retries = 5) => {
     if (!producer) producer = kafka.producer();
     if (!consumer) consumer = kafka.consumer({ groupId: 'test-group' });
 
-    try {
-        await producer.connect();
-        logger.info('[Kafka] Producer connected successfully');
-
-        await consumer.connect();
-        logger.info('[Kafka] Consumer connected successfully');
-
-        // Auto-register WelcomeEmailConsumer if it exists
+    let attempt = 0;
+    while (attempt < retries) {
         try {
-            const WelcomeEmailConsumer = require('<% if (architecture === "Clean Architecture") { %>../../interfaces/messaging/consumers/instances/welcomeEmailConsumer<% } else { %>../messaging/consumers/instances/welcomeEmailConsumer<% } %>');
-            const welcomeConsumer = new WelcomeEmailConsumer();
-            await consumer.subscribe({ topic: welcomeConsumer.topic, fromBeginning: true });
-            logger.info(`[Kafka] Registered consumer for topic: ${welcomeConsumer.topic}`);
+            await producer.connect();
+            logger.info('[Kafka] Producer connected successfully');
 
-            await consumer.run({
-                eachMessage: async (payload) => welcomeConsumer.onMessage(payload),
-            });
-        } catch (e) {
-            // Fallback or no consumers found
-            await consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
-            await consumer.run({
-                eachMessage: async ({ message }) => {
-                    logger.info({ value: message.value.toString() });
-                },
-            });
+            await consumer.connect();
+            logger.info('[Kafka] Consumer connected successfully');
+
+            // Auto-register WelcomeEmailConsumer if it exists
+            try {
+                const WelcomeEmailConsumer = require('<% if (architecture === "Clean Architecture") { %>../../interfaces/messaging/consumers/instances/welcomeEmailConsumer<% } else { %>../messaging/consumers/instances/welcomeEmailConsumer<% } %>');
+                const welcomeConsumer = new WelcomeEmailConsumer();
+                await consumer.subscribe({ topic: welcomeConsumer.topic, fromBeginning: true });
+                logger.info(`[Kafka] Registered consumer for topic: ${welcomeConsumer.topic}`);
+
+                await consumer.run({
+                    eachMessage: async (payload) => welcomeConsumer.onMessage(payload),
+                });
+            } catch (e) {
+                // Fallback or no consumers found
+                await consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
+                await consumer.run({
+                    eachMessage: async ({ message }) => {
+                        logger.info({ value: message.value.toString() });
+                    },
+                });
+            }
+            return; // Success
+        } catch (error) {
+            attempt++;
+            logger.error(`[Kafka] Connection attempt ${attempt} failed:`, error.message);
+            if (attempt >= retries) {
+                throw error; // Rethrow after final attempt
+            }
+            await new Promise(res => setTimeout(res, 5000)); // Wait 5s between retries
         }
-    } catch (error) {
-        logger.error('[Kafka] Connection error:', error);
     }
 };
 
 const sendMessage = async (topic, message) => {
-    if (!producer) producer = kafka.producer();
-    await producer.send({
-        topic,
-        messages: [
-            { value: message },
-        ],
-    });
+    if (!producer) {
+        throw new Error('[Kafka] Producer not initialized. Call connectKafka() first.');
+    }
+    
+    try {
+        await producer.send({
+            topic,
+            messages: [{ value: message }],
+        });
+        
         try {
             const parsed = JSON.parse(message);
             logger.info(`[Kafka] Producer: Sent ${parsed.action} event for '${parsed.payload?.email || 'unknown'}'`);
         } catch (e) {
             logger.info(`[Kafka] Producer: Sent message to ${topic}`);
         }
+    } catch (error) {
+        logger.error(`[Kafka] Failed to send message to ${topic}:`, error.message);
+        throw error;
+    }
 };
 
 const disconnectKafka = async () => {

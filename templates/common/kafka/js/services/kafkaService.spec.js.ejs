@@ -23,6 +23,8 @@ describe('Kafka Client', () => {
     beforeEach(async () => {
         jest.resetModules();
         jest.clearAllMocks();
+        jest.useFakeTimers();
+        jest.spyOn(global, 'setTimeout');
         kafka = require('<% if (architecture === "Clean Architecture") { %>@/infrastructure/config/kafka<% } else { %>@/config/kafka<% } %>').kafka;
         ({ connectKafka, sendMessage, disconnectKafka } = require('<% if (architecture === "Clean Architecture") { %>@/infrastructure/messaging/kafkaClient<% } else { %>@/services/kafkaService<% } %>'));
         await connectKafka();
@@ -50,6 +52,36 @@ describe('Kafka Client', () => {
             topic,
             messages: [{ value: message }],
         });
+    });
+
+    it('should retry connection on failure', async () => {
+        const producer = kafka.producer.mock.results[0].value;
+        producer.connect
+            .mockRejectedValueOnce(new Error('Connection failed'))
+            .mockResolvedValueOnce(undefined);
+        
+        // Manual call to connectKafka with fewer retries for speed
+        const connectPromise = connectKafka(2);
+        
+        // Fast-forward time for the retries
+        await jest.advanceTimersByTimeAsync(10000); 
+        
+        await connectPromise;
+        expect(producer.connect).toHaveBeenCalledTimes(3); // 1 from beforeEach, 2 from manual call
+    });
+
+    it('should throw error if producer not initialized', async () => {
+        // Reset local variables to simulate uninitialized state
+        jest.resetModules();
+        const { sendMessage: uninitializedSendMessage } = require('<% if (architecture === "Clean Architecture") { %>@/infrastructure/messaging/kafkaClient<% } else { %>@/services/kafkaService<% } %>');
+        await expect(uninitializedSendMessage('topic', 'msg')).rejects.toThrow('[Kafka] Producer not initialized');
+    });
+
+    it('should log error when sendMessage fails', async () => {
+        const producer = kafka.producer.mock.results[0].value;
+        producer.send.mockRejectedValue(new Error('Send failed'));
+        
+        await expect(sendMessage('test-topic', 'msg')).rejects.toThrow('Send failed');
     });
 
     it('should disconnect Kafka', async () => {

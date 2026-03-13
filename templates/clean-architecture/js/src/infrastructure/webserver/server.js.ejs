@@ -72,12 +72,18 @@ const startServer = async () => {
         logger.info(`Server running on port ${port}`);
 <%_ if (communication === 'Kafka') { -%>
         const { connectKafka, sendMessage } = require('../../infrastructure/messaging/kafkaClient');
-        connectKafka().then(() => {
-          logger.info('Kafka connected');
-          sendMessage('test-topic', 'Hello Kafka from Clean Arch JS!');
-        }).catch(err => {
-          logger.error('Failed to connect to Kafka:', err);
-        });
+        connectKafka()
+            .then(async () => {
+                logger.info('Kafka connected');
+                try {
+                    await sendMessage('test-topic', 'Hello Kafka from Clean Arch JS!');
+                } catch (sendErr) {
+                    logger.error('Failed to send initial Kafka message:', sendErr.message);
+                }
+            })
+            .catch(err => {
+                logger.error('Failed to connect to Kafka after retries:', err.message);
+            });
 <%_ } -%>
     });
 

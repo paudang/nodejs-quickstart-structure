@@ -11,7 +11,7 @@ const { unwrapResolverError } = require('@apollo/server/errors');
 const { ApiError } = require('./errors/ApiError');
 const { typeDefs, resolvers } = require('./graphql');
 const { gqlContext } = require('./graphql/context');
-<% } -%>
+<% } %>
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./config/swagger');
@@ -86,12 +86,18 @@ const startServer = async () => {
     const server = app.listen(PORT, () => {
         logger.info(`Server running on port ${PORT}`);
 <%_ if (communication === 'Kafka') { -%>
-        connectKafka().then(() => {
-          logger.info('Kafka connected');
-          sendMessage('test-topic', 'Hello Kafka from MVC JS!');
-        }).catch(err => {
-          logger.error('Failed to connect to Kafka:', err);
-        });
+        connectKafka()
+            .then(async () => {
+                logger.info('Kafka connected');
+                try {
+                  await sendMessage('test-topic', 'Hello Kafka from MVC JS!');
+                } catch (sendErr) {
+                  logger.error('Failed to send initial Kafka message:', sendErr.message);
+                }
+            })
+            .catch(err => {
+                logger.error('Failed to connect to Kafka after retries:', err.message);
+            });
 <%_ } -%>
     });
 

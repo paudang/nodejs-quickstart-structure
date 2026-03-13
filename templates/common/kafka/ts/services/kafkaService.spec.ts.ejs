@@ -50,6 +50,27 @@ describe('KafkaService', () => {
         });
     });
 
+    it('should retry connection on failure', async () => {
+        const producer = (kafka.producer as jest.Mock).mock.results[0].value;
+        producer.connect
+            .mockRejectedValueOnce(new Error('Connection failed'))
+            .mockResolvedValueOnce(undefined);
+        
+        jest.useFakeTimers();
+        const connectPromise = kafkaService.connect(2);
+        
+        await jest.advanceTimersByTimeAsync(10000);
+        await connectPromise;
+        
+        expect(producer.connect).toHaveBeenCalledTimes(3); // 1 from beforeEach, 2 from manual call
+    });
+
+    it('should throw error if producer not initialized', async () => {
+        // @ts-expect-error: Setting null to private producer for testing
+        kafkaService.producer = null;
+        await expect(kafkaService.sendMessage('topic', 'msg')).rejects.toThrow('[Kafka] Producer not initialized');
+    });
+
     it('should disconnect producer and consumer', async () => {
         await kafkaService.disconnect();
         const producer = (kafka.producer as jest.Mock).mock.results[0].value;

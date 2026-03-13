@@ -48,7 +48,7 @@ export class UserController {
             const kafkaService = new KafkaService();
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: 'USER_CREATED',
-                payload: { id: user.id, email: user.email }
+                payload: { id: user.id || (user as { _id?: string })._id, email: user.email }
             }));
 <%_ } -%>
             return user;
@@ -94,7 +94,7 @@ export class UserController {
             const kafkaService = new KafkaService();
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: 'USER_CREATED',
-                payload: { id: user.id, email: user.email }
+                payload: { id: user.id || (user as { _id?: string })._id, email: user.email }
             }));
 <%_ } -%>
             res.status(HTTP_STATUS.CREATED).json(user);

@@ -11,44 +11,53 @@ export class KafkaService {
         this.consumer = kafka.consumer({ groupId: 'test-group' });
     }
 
-    async connect() {
-        try {
-            await this.producer.connect();
-            logger.info('[Kafka] Producer connected successfully');
-            
-            await this.consumer.connect();
-            logger.info('[Kafka] Consumer connected successfully');
-
-            <%_ if (language === 'TypeScript') { -%>
-            // Auto-register WelcomeEmailConsumer if it exists
+    async connect(retries = 5) {
+        let attempt = 0;
+        while (attempt < retries) {
             try {
-                const { WelcomeEmailConsumer } = await import('<% if (architecture === "Clean Architecture") { %>@/interfaces/messaging/consumers/instances/welcomeEmailConsumer<% } else { %>@/messaging/consumers/instances/welcomeEmailConsumer<% } %>');
-                const welcomeConsumer = new WelcomeEmailConsumer();
-                await this.consumer.subscribe({ topic: welcomeConsumer.topic, fromBeginning: true });
-                logger.info(`[Kafka] Registered consumer for topic: ${welcomeConsumer.topic}`);
+                await this.producer.connect();
+                logger.info('[Kafka] Producer connected successfully');
                 
-                await this.consumer.run({
-                    eachMessage: async (payload) => welcomeConsumer.onMessage(payload),
-                });
-            } catch (_e) {
-                // Fallback or no consumers found
+                await this.consumer.connect();
+                logger.info('[Kafka] Consumer connected successfully');
+
+                <%_ if (language === 'TypeScript') { -%>
+                // Auto-register WelcomeEmailConsumer if it exists
+                try {
+                    const { WelcomeEmailConsumer } = await import('<% if (architecture === "Clean Architecture") { %>@/interfaces/messaging/consumers/instances/welcomeEmailConsumer<% } else { %>@/messaging/consumers/instances/welcomeEmailConsumer<% } %>');
+                    const welcomeConsumer = new WelcomeEmailConsumer();
+                    await this.consumer.subscribe({ topic: welcomeConsumer.topic, fromBeginning: true });
+                    logger.info(`[Kafka] Registered consumer for topic: ${welcomeConsumer.topic}`);
+                    
+                    await this.consumer.run({
+                        eachMessage: async (payload) => welcomeConsumer.onMessage(payload),
+                    });
+                } catch {
+                    // Fallback or no consumers found
+                    await this.consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
+                    await this.consumer.run({
+                        eachMessage: async ({ message }: EachMessagePayload) => {
+                            logger.info({ value: message.value?.toString() });
+                        },
+                    });
+                }
+                <%_ } else { _%>
                 await this.consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
                 await this.consumer.run({
                     eachMessage: async ({ message }: EachMessagePayload) => {
                         logger.info({ value: message.value?.toString() });
                     },
                 });
+                <%_ } _%>
+                return; // Success
+            } catch (error) {
+                attempt++;
+                logger.error(`[Kafka] Connection attempt ${attempt} failed:`, (error as Error).message);
+                if (attempt >= retries) {
+                    throw error;
+                }
+                await new Promise(res => setTimeout(res, 5000));
             }
-            <%_ } else { _%>
-            await this.consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
-            await this.consumer.run({
-                eachMessage: async ({ message }: EachMessagePayload) => {
-                    logger.info({ value: message.value?.toString() });
-                },
-            });
-            <%_ } _%>
-        } catch (error) {
-            logger.error('[Kafka] Connection error:', error);
         }
     }
 

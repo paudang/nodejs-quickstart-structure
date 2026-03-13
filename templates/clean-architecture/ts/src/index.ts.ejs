@@ -98,12 +98,18 @@ const startServer = async () => {
     const server = app.listen(port, () => {
         logger.info(`Server running on port ${port}`);
 <%_ if (communication === 'Kafka') { -%>
-        kafkaService.connect().then(() => {
-          logger.info('Kafka connected');
-          kafkaService.sendMessage('test-topic', 'Hello Kafka from Clean Arch TS!');
-        }).catch(err => {
-          logger.error('Failed to connect to Kafka:', err);
-        });
+        kafkaService.connect()
+            .then(async () => {
+                logger.info('Kafka connected');
+                try {
+                    await kafkaService.sendMessage('test-topic', 'Hello Kafka from Clean Arch TS!');
+                } catch (sendErr) {
+                    logger.error('Failed to send initial Kafka message:', (sendErr as Error).message);
+                }
+            })
+            .catch(err => {
+                logger.error('Failed to connect to Kafka after retries:', (err as Error).message);
+            });
 <%_ } -%>
     });
 
