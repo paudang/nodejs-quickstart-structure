@@ -1,0 +1,30 @@
+const logger = require('<%= loggerPath %>');
+
+class BaseConsumer {
+  constructor() {
+    if (this.constructor === BaseConsumer) {
+      throw new Error("Abstract class 'BaseConsumer' cannot be instantiated.");
+    }
+  }
+
+  get topic() { throw new Error("Property 'topic' must be implemented"); }
+  get groupId() { throw new Error("Property 'groupId' must be implemented"); }
+
+  async onMessage({ message }) {
+    try {
+      const rawValue = message.value?.toString();
+      if (!rawValue) return;
+      
+      const data = JSON.parse(rawValue);
+      await this.handle(data);
+    } catch (error) {
+      logger.error(`[Kafka] Error processing message on topic ${this.topic}:`, error);
+    }
+  }
+
+  async handle(data) {
+    throw new Error("Method 'handle()' must be implemented");
+  }
+}
+
+module.exports = BaseConsumer;

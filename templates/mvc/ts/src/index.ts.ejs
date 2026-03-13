@@ -9,11 +9,10 @@ import morgan from 'morgan';
 import { errorMiddleware } from '@/utils/errorMiddleware';
 import { setupGracefulShutdown } from '@/utils/gracefulShutdown';
 import healthRoutes from '@/routes/healthRoute';
-<%_ if (communication === 'REST APIs') { -%>
-import apiRoutes from '@/routes/api';<%_ } -%>
-<% if (communication === 'REST APIs') { %>
+<%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
+import apiRoutes from '@/routes/api';
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpecs from '@/config/swagger';<% } -%>
+import swaggerSpecs from '@/config/swagger';<%_ } -%>
 <%_ if (communication === 'Kafka') { -%>import { KafkaService } from '@/services/kafkaService';<%_ } -%>
 <%_ if (communication === 'GraphQL') { -%>
 import { ApolloServer } from '@apollo/server';
@@ -51,7 +50,7 @@ app.use(limiter);
 
 app.use(express.json());
 app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
-<%_ if (communication === 'REST APIs') { -%>
+<%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 <%_ } -%>
 <%_ if (viewEngine === 'EJS' || viewEngine === 'Pug') { -%>
@@ -60,7 +59,7 @@ import path from 'path';
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', '<%= viewEngine.toLowerCase() %>');
 app.use(express.static(path.join(__dirname, '../public')));<%_ } %>
-<%_ if (communication === 'REST APIs') { -%>
+<%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 app.use('/api', apiRoutes);
 <%_ } -%><% if (viewEngine && viewEngine !== 'None') { -%>
 app.get('/', (req: Request, res: Response) => {

@@ -2,6 +2,8 @@
 
 ## General Standards
 
+## Code style like senior developer
+
 ### File Naming
 - **Controllers**: Use camelCase (e.g., `kafkaController.ts`, `userController.ts`).
 - **Services**: Use camelCase (e.g., `kafkaService.ts`, `userService.ts`) or PascalCase depending on export type. Class-based services should generally match class name.

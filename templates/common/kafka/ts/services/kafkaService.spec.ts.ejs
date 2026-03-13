@@ -34,13 +34,13 @@ describe('KafkaService', () => {
 
         expect(producer.connect).toHaveBeenCalled();
         expect(consumer.connect).toHaveBeenCalled();
-        expect(consumer.subscribe).toHaveBeenCalledWith({ topic: 'test-topic', fromBeginning: true });
+        expect(consumer.subscribe).toHaveBeenCalledWith({ topic: 'user-topic', fromBeginning: true });
         expect(consumer.run).toHaveBeenCalled();
     });
 
     it('should send a message', async () => {
         const topic = 'test-topic';
-        const message = 'test-message';
+        const message = JSON.stringify({ action: 'TEST', payload: { email: 'test@example.com' } });
         await kafkaService.sendMessage(topic, message);
         const producer = (kafka.producer as jest.Mock).mock.results[0].value;
 

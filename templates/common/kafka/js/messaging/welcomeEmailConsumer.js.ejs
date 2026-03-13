@@ -1,0 +1,31 @@
+const BaseConsumer = require('../../baseConsumer');
+const logger = require('<%= loggerPath %>');
+const { UserEventSchema } = require('../../schemas/userEventSchema');
+
+class WelcomeEmailConsumer extends BaseConsumer {
+  constructor() {
+    super();
+  }
+
+  get topic() { return 'user-topic'; }
+  get groupId() { return 'welcome-email-group'; }
+
+  async handle(data) {
+    const result = UserEventSchema.safeParse(data);
+    
+    if (!result.success) {
+      logger.error('[Kafka] Invalid user event data:', result.error.format());
+      return;
+    }
+
+    const { action, payload } = result.data;
+
+    if (action === 'USER_CREATED') {
+      logger.info(`[Kafka] Consumer: Received USER_CREATED.`);
+      logger.info(`[Kafka] Consumer: 📧 Sending welcome email to '${payload.email}'... Done!`);
+      // In a real app, you would call an EmailService here
+    }
+  }
+}
+
+module.exports = WelcomeEmailConsumer;

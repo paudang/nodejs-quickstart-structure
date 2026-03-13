@@ -8,7 +8,7 @@ import morgan from 'morgan';
 import { errorMiddleware } from '@/utils/errorMiddleware';
 import { setupGracefulShutdown } from '@/utils/gracefulShutdown';
 import healthRoutes from '@/interfaces/routes/healthRoute';
-<% if (communication === 'REST APIs') { -%>
+<% if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 import userRoutes from '@/interfaces/routes/userRoutes';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpecs from '@/config/swagger';<% } -%>
@@ -52,10 +52,10 @@ app.use(limiter);
 app.use(express.json());
 app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
 
-<%_ if (communication === 'REST APIs') { -%>
+<%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 app.use('/api/users', userRoutes);
 <%_ } -%>
-<%_ if (communication === 'REST APIs') { -%>
+<%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 <%_ } -%>
 app.use('/health', healthRoutes);

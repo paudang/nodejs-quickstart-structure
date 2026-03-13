@@ -8,17 +8,35 @@ const connectKafka = async () => {
     if (!producer) producer = kafka.producer();
     if (!consumer) consumer = kafka.consumer({ groupId: 'test-group' });
 
-    await producer.connect();
-    await consumer.connect();
-    await consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
+    try {
+        await producer.connect();
+        logger.info('[Kafka] Producer connected successfully');
 
-    await consumer.run({
-        eachMessage: async ({ _topic, _partition, message }) => {
-            logger.info({
-                value: message.value.toString(),
+        await consumer.connect();
+        logger.info('[Kafka] Consumer connected successfully');
+
+        // Auto-register WelcomeEmailConsumer if it exists
+        try {
+            const WelcomeEmailConsumer = require('<% if (architecture === "Clean Architecture") { %>../../interfaces/messaging/consumers/instances/welcomeEmailConsumer<% } else { %>../messaging/consumers/instances/welcomeEmailConsumer<% } %>');
+            const welcomeConsumer = new WelcomeEmailConsumer();
+            await consumer.subscribe({ topic: welcomeConsumer.topic, fromBeginning: true });
+            logger.info(`[Kafka] Registered consumer for topic: ${welcomeConsumer.topic}`);
+
+            await consumer.run({
+                eachMessage: async (payload) => welcomeConsumer.onMessage(payload),
             });
-        },
-    });
+        } catch (e) {
+            // Fallback or no consumers found
+            await consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
+            await consumer.run({
+                eachMessage: async ({ message }) => {
+                    logger.info({ value: message.value.toString() });
+                },
+            });
+        }
+    } catch (error) {
+        logger.error('[Kafka] Connection error:', error);
+    }
 };
 
 const sendMessage = async (topic, message) => {
@@ -29,6 +47,12 @@ const sendMessage = async (topic, message) => {
             { value: message },
         ],
     });
+        try {
+            const parsed = JSON.parse(message);
+            logger.info(`[Kafka] Producer: Sent ${parsed.action} event for '${parsed.payload?.email || 'unknown'}'`);
+        } catch (e) {
+            logger.info(`[Kafka] Producer: Sent message to ${topic}`);
+        }
 };
 
 const disconnectKafka = async () => {

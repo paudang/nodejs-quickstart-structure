@@ -1,7 +1,7 @@
 let kafka;
 let connectKafka, sendMessage, disconnectKafka;
 
-jest.mock('<%= configPath %>', () => ({
+jest.mock('<% if (architecture === "Clean Architecture") { %>@/infrastructure/config/kafka<% } else { %>@/config/kafka<% } %>', () => ({
     kafka: {
         producer: jest.fn().mockReturnValue({
             connect: jest.fn().mockResolvedValue(undefined),
@@ -17,14 +17,14 @@ jest.mock('<%= configPath %>', () => ({
     },
 }));
 
-jest.mock('<%= loggerPath %>');
+jest.mock('<% if (architecture === "Clean Architecture") { %>@/infrastructure/log/logger<% } else { %>@/utils/logger<% } %>');
 
 describe('Kafka Client', () => {
     beforeEach(async () => {
         jest.resetModules();
         jest.clearAllMocks();
-        kafka = require('<%= configPath %>').kafka;
-        ({ connectKafka, sendMessage, disconnectKafka } = require('<%= servicePath %>'));
+        kafka = require('<% if (architecture === "Clean Architecture") { %>@/infrastructure/config/kafka<% } else { %>@/config/kafka<% } %>').kafka;
+        ({ connectKafka, sendMessage, disconnectKafka } = require('<% if (architecture === "Clean Architecture") { %>@/infrastructure/messaging/kafkaClient<% } else { %>@/services/kafkaService<% } %>'));
         await connectKafka();
     });
 
@@ -35,11 +35,14 @@ describe('Kafka Client', () => {
 
         expect(producer.connect).toHaveBeenCalled();
         expect(consumer.connect).toHaveBeenCalled();
+        expect(consumer.subscribe).toHaveBeenCalledWith(expect.objectContaining({ fromBeginning: true }));
+        const subscribeCall = consumer.subscribe.mock.calls.find(call => call[0].topic === 'user-topic' || call[0].topic === 'test-topic');
+        expect(subscribeCall).toBeDefined();
     });
 
     it('should send a message', async () => {
         const topic = 'test-topic';
-        const message = 'test-message';
+        const message = JSON.stringify({ action: 'TEST', payload: { email: 'test@example.com' } });
         await sendMessage(topic, message);
         const producer = kafka.producer.mock.results[0].value;
 

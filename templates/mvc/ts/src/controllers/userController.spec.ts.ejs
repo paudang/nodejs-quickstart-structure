@@ -24,6 +24,11 @@ jest.mock('@/config/memoryCache', () => ({
 }));
 <%_ } -%>
 jest.mock('@/utils/logger');
+<%_ if (communication === 'Kafka') { -%>
+import { KafkaService } from '@/services/kafkaService';
+jest.mock('@/services/kafkaService');
+<%_ } -%>
+
 
 describe('UserController', () => {
     let userController: UserController;
@@ -158,6 +163,9 @@ describe('UserController', () => {
 <% } -%>
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
             expect(cacheService.del).toHaveBeenCalledWith('users:all');
+<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+            expect(KafkaService.prototype.sendMessage).toHaveBeenCalled();
 <%_ } -%>
         });
 

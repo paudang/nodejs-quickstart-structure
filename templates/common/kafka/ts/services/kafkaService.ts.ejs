@@ -12,17 +12,44 @@ export class KafkaService {
     }
 
     async connect() {
-        await this.producer.connect();
-        await this.consumer.connect();
-        await this.consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
+        try {
+            await this.producer.connect();
+            logger.info('[Kafka] Producer connected successfully');
+            
+            await this.consumer.connect();
+            logger.info('[Kafka] Consumer connected successfully');
 
-        await this.consumer.run({
-            eachMessage: async ({ message }: EachMessagePayload) => {
-                logger.info({
-                    value: message.value?.toString(),
+            <%_ if (language === 'TypeScript') { -%>
+            // Auto-register WelcomeEmailConsumer if it exists
+            try {
+                const { WelcomeEmailConsumer } = await import('<% if (architecture === "Clean Architecture") { %>@/interfaces/messaging/consumers/instances/welcomeEmailConsumer<% } else { %>@/messaging/consumers/instances/welcomeEmailConsumer<% } %>');
+                const welcomeConsumer = new WelcomeEmailConsumer();
+                await this.consumer.subscribe({ topic: welcomeConsumer.topic, fromBeginning: true });
+                logger.info(`[Kafka] Registered consumer for topic: ${welcomeConsumer.topic}`);
+                
+                await this.consumer.run({
+                    eachMessage: async (payload) => welcomeConsumer.onMessage(payload),
                 });
-            },
-        });
+            } catch (_e) {
+                // Fallback or no consumers found
+                await this.consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
+                await this.consumer.run({
+                    eachMessage: async ({ message }: EachMessagePayload) => {
+                        logger.info({ value: message.value?.toString() });
+                    },
+                });
+            }
+            <%_ } else { _%>
+            await this.consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
+            await this.consumer.run({
+                eachMessage: async ({ message }: EachMessagePayload) => {
+                    logger.info({ value: message.value?.toString() });
+                },
+            });
+            <%_ } _%>
+        } catch (error) {
+            logger.error('[Kafka] Connection error:', error);
+        }
     }
 
     async sendMessage(topic: string, message: string) {
@@ -32,6 +59,12 @@ export class KafkaService {
                 { value: message },
             ],
         });
+        try {
+            const parsed = JSON.parse(message);
+            logger.info(`[Kafka] Producer: Sent ${parsed.action} event for '${parsed.payload?.email || 'unknown'}'`);
+        } catch {
+            logger.info(`[Kafka] Producer: Sent message to ${topic}`);
+        }
     }
 
     async disconnect() {

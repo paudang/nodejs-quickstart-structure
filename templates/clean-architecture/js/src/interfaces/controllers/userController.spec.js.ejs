@@ -4,6 +4,12 @@ const GetAllUsers = require('@/usecases/GetAllUsers');
 
 jest.mock('@/usecases/CreateUser');
 jest.mock('@/usecases/GetAllUsers');
+<%_ if (communication === 'Kafka') { -%>
+jest.mock('@/infrastructure/messaging/kafkaClient', () => ({
+    sendMessage: jest.fn().mockResolvedValue(undefined)
+}));
+<%_ } -%>
+
 
 describe('UserController (Clean Architecture)', () => {
     let userController;
@@ -81,7 +87,12 @@ describe('UserController (Clean Architecture)', () => {
             expect(result).toEqual(expectedUser);
 <%_ } else { -%>
             await userController.createUser(mockRequest, mockResponse, mockNext);
+<%_ if (communication === 'Kafka') { -%>
+            const { sendMessage } = require('@/infrastructure/messaging/kafkaClient');
+            expect(sendMessage).toHaveBeenCalled();
+<%_ } -%>
             expect(mockResponse.status).toHaveBeenCalledWith(201);
+
             expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
 <%_ } -%>
             expect(mockCreateUserUseCase.execute).toHaveBeenCalledWith(payload.name, payload.email);
@@ -98,5 +109,30 @@ describe('UserController (Clean Architecture)', () => {
             expect(mockNext).toHaveBeenCalledWith(error);
 <%_ } -%>
         });
+
+<%_ if (communication === 'Kafka') { -%>
+        it('should successfully create a new user with _id for Kafka (Happy Path)', async () => {
+            const payload = { name: 'Bob', email: 'bob@example.com' };
+<% if (communication === 'GraphQL') { -%>
+            const dataArg = payload;
+<% } else { -%>
+            mockRequest.body = payload;
+<% } -%>
+            const expectedUser = { _id: '2', ...payload };
+            
+            mockCreateUserUseCase.execute.mockResolvedValue(expectedUser);
+
+<% if (communication === 'GraphQL') { -%>
+            await userController.createUser(dataArg);
+<% } else { -%>
+            await userController.createUser(mockRequest, mockResponse, mockNext);
+<% } -%>
+            const { sendMessage } = require('@/infrastructure/messaging/kafkaClient');
+            expect(sendMessage).toHaveBeenCalledWith(
+                'user-topic',
+                expect.stringContaining('"id":"2"')
+            );
+        });
+<%_ } -%>
     });
 });

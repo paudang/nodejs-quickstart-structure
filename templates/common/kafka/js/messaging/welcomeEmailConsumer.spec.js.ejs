@@ -1,0 +1,49 @@
+const WelcomeEmailConsumer = require('<% if (architecture === "Clean Architecture") { %>@/interfaces/messaging/consumers/instances/welcomeEmailConsumer<% } else { %>@/messaging/consumers/instances/welcomeEmailConsumer<% } %>');
+const logger = require('<% if (architecture === "Clean Architecture") { %>@/infrastructure/log/logger<% } else { %>@/utils/logger<% } %>');
+
+jest.mock('<% if (architecture === "Clean Architecture") { %>@/infrastructure/log/logger<% } else { %>@/utils/logger<% } %>');
+
+describe('WelcomeEmailConsumer', () => {
+    let consumer;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        consumer = new WelcomeEmailConsumer();
+    });
+
+    it('should log welcome email simulation for USER_CREATED action', async () => {
+        const data = {
+            action: 'USER_CREATED',
+            payload: {
+                id: 1,
+                email: 'test@example.com'
+            }
+        };
+
+        await consumer.handle(data);
+
+        expect(logger.info).toHaveBeenCalledWith(
+            expect.stringContaining('[Kafka] Consumer: Received USER_CREATED.')
+        );
+        expect(logger.info).toHaveBeenCalledWith(
+            expect.stringContaining('📧 Sending welcome email to \'test@example.com\'... Done!')
+        );
+    });
+
+    it('should log error for invalid data', async () => {
+        const data = {
+            action: 'USER_CREATED',
+            payload: {
+                id: 1,
+                email: 'invalid-email'
+            }
+        };
+
+        await consumer.handle(data);
+
+        expect(logger.error).toHaveBeenCalledWith(
+            expect.stringContaining('[Kafka] Invalid user event data:'),
+            expect.anything()
+        );
+    });
+});

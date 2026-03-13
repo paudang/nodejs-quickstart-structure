@@ -26,7 +26,15 @@ class UserController {
     async createUser(data) {
         const { name, email } = data;
         try {
-            return await this.createUserUseCase.execute(name, email);
+            const user = await this.createUserUseCase.execute(name, email);
+<%_ if (communication === 'Kafka') { -%>
+            const { sendMessage } = require('../../infrastructure/messaging/kafkaClient');
+            await sendMessage('user-topic', JSON.stringify({
+                action: 'USER_CREATED',
+                payload: { id: user.id || user._id, email: user.email }
+            }));
+<%_ } -%>
+            return user;
         } catch (error) {
             logger.error('Error creating user:', error);
             throw error;
@@ -47,6 +55,13 @@ class UserController {
         const { name, email } = req.body;
         try {
             const user = await this.createUserUseCase.execute(name, email);
+<%_ if (communication === 'Kafka') { -%>
+            const { sendMessage } = require('../../infrastructure/messaging/kafkaClient');
+            await sendMessage('user-topic', JSON.stringify({
+                action: 'USER_CREATED',
+                payload: { id: user.id || user._id, email: user.email }
+            }));
+<%_ } -%>
             res.status(HTTP_STATUS.CREATED).json(user);
         } catch (error) {
             logger.error('Error creating user:', error);
