@@ -4,12 +4,10 @@
 FROM node:22-alpine AS builder
 
 WORKDIR /app
+ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 
 COPY package*.json ./
 COPY tsconfig*.json ./
-
-# Update npm to latest
-RUN npm install -g npm@latest
 
 # Install ALL dependencies (including devDeps for build)
 RUN npm ci --no-audit --no-fund || npm ci --no-audit --no-fund || npm ci --no-audit --no-fund
@@ -27,11 +25,9 @@ FROM node:22-alpine AS production
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 
 COPY package*.json ./
-
-# Update npm to latest
-RUN npm install -g npm@latest
 
 # Install ONLY production dependencies
 RUN npm ci --only=production --ignore-scripts --no-audit --no-fund || npm ci --only=production --ignore-scripts --no-audit --no-fund || npm ci --only=production --ignore-scripts --no-audit --no-fund
