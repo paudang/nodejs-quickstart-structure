@@ -22,9 +22,9 @@ function log(msg, color = ANSI_RESET) {
 
 const LANGUAGES = ['TypeScript', 'JavaScript'];
 const DATABASES = ['None','MySQL', 'PostgreSQL', 'MongoDB'];
-const COMMUNICATIONS = ['Kafka']; 
+const COMMUNICATIONS = ['REST APIs', 'GraphQL', 'Kafka']; 
 const CACHING = ['None', 'Redis', 'Memory Cache'];
-const VIEW_ENGINES_MVC = ['None'];
+const VIEW_ENGINES_MVC = ['EJS', 'Pug', 'None'];
 
 export const combinations = [];
 
