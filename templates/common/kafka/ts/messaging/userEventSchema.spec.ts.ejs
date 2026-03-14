@@ -1,0 +1,51 @@
+import { UserEventSchema } from '<% if (architecture === "Clean Architecture") { %>@/interfaces/messaging/schemas/userEventSchema<% } else { %>@/messaging/schemas/userEventSchema<% } %>';
+
+describe('UserEventSchema', () => {
+    it('should validate a correct USER_CREATED event', () => {
+        const validEvent = {
+            action: 'USER_CREATED',
+            payload: {
+                id: 1,
+                email: 'test@example.com'
+            }
+        };
+        const result = UserEventSchema.safeParse(validEvent);
+        expect(result.success).toBe(true);
+    });
+
+    it('should validate a correct UPDATE_USER event', () => {
+        const validEvent = {
+            action: 'UPDATE_USER',
+            payload: {
+                id: 'abc-123',
+                email: 'test@example.com'
+            }
+        };
+        const result = UserEventSchema.safeParse(validEvent);
+        expect(result.success).toBe(true);
+    });
+
+    it('should fail validation for invalid email', () => {
+        const invalidEvent = {
+            action: 'USER_CREATED',
+            payload: {
+                id: 1,
+                email: 'invalid-email'
+            }
+        };
+        const result = UserEventSchema.safeParse(invalidEvent);
+        expect(result.success).toBe(false);
+    });
+
+    it('should fail validation for invalid action', () => {
+        const invalidEvent = {
+            action: 'INVALID_ACTION',
+            payload: {
+                id: 1,
+                email: 'test@example.com'
+            }
+        };
+        const result = UserEventSchema.safeParse(invalidEvent);
+        expect(result.success).toBe(false);
+    });
+});

@@ -1,4 +1,4 @@
-<% if (communication === 'REST APIs') { %>import path from 'path';
+<% if (communication === 'REST APIs' || communication === 'Kafka') { %>import path from 'path';
 import YAML from 'yamljs';
 
 const swaggerDocument = YAML.load(path.join(__dirname, 'swagger.yml'));

@@ -11,6 +11,20 @@ jest.mock('@/infrastructure/repositories/UserRepository');
 jest.mock('@/usecases/createUser');
 jest.mock('@/usecases/getAllUsers');
 jest.mock('@/infrastructure/log/logger');
+<%_ if (communication === 'Kafka') { -%>
+jest.mock('@/infrastructure/messaging/kafkaClient', () => {
+    const mockSendMessage = jest.fn().mockResolvedValue(undefined);
+    return {
+        kafkaService: {
+            sendMessage: mockSendMessage
+        },
+        KafkaService: jest.fn().mockImplementation(() => ({
+            sendMessage: mockSendMessage
+        }))
+    };
+});
+<%_ } -%>
+
 
 describe('UserController (Clean Architecture)', () => {
     let userController: UserController;
@@ -115,7 +129,12 @@ describe('UserController (Clean Architecture)', () => {
             await userController.createUser(mockRequest as Request, mockResponse as Response, mockNext);
 
             // Assert
+<%_ if (communication === 'Kafka') { -%>
+            const { kafkaService } = require('@/infrastructure/messaging/kafkaClient');
+            expect(kafkaService.sendMessage).toHaveBeenCalled();
+<%_ } -%>
             expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.CREATED);
+
             expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
 <% } -%>
             expect(mockCreateUserUseCase.execute).toHaveBeenCalledWith(payload.name, payload.email);

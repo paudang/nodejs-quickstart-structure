@@ -1,0 +1,27 @@
+import { EachMessagePayload } from 'kafkajs';
+import logger from '<%= loggerPath %>';
+
+export abstract class BaseConsumer {
+  abstract topic: string;
+  abstract groupId: string;
+
+  public constructor() {
+    if (new.target === BaseConsumer) {
+      throw new Error("Abstract class 'BaseConsumer' cannot be instantiated.");
+    }
+  }
+
+  async onMessage({ message }: EachMessagePayload) {
+    try {
+      const rawValue = message.value?.toString();
+      if (!rawValue) return;
+      
+      const data = JSON.parse(rawValue);
+      await this.handle(data);
+    } catch (error) {
+      logger.error(`[Kafka] Error processing message on topic ${this.topic}:`, error);
+    }
+  }
+
+  abstract handle(data: unknown): Promise<void>;
+}

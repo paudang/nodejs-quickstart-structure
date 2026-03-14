@@ -6,7 +6,7 @@
   "scripts": {
     "start": "<% if (language === 'TypeScript') { %>node dist/index.js<% } else { %>node src/index.js<% } %>",
     "dev": "<% if (language === 'TypeScript') { %>nodemon --exec ts-node -r tsconfig-paths/register src/index.ts<% } else { %>nodemon src/index.js<% } %>"<% if (language === 'TypeScript') { %>,
-    "build": "rimraf dist && tsc && tsc-alias<% if (viewEngine && viewEngine !== 'None') { %> && cpx \"src/views/**/*\" dist/views<% } %><% if (communication === 'REST APIs') { %> && cpx \"src/**/*.yml\" dist/<% } %>"<% } %>,
+    "build": "rimraf dist && tsc && tsc-alias<% if (viewEngine && viewEngine !== 'None') { %> && cpx \"src/views/**/*\" dist/views<% } %><% if (communication === 'REST APIs' || communication === 'Kafka') { %> && cpx \"src/**/*.yml\" dist/<% } %>"<% } %>,
     "deploy": "npx pm2 start ecosystem.config.js --env production",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -47,7 +47,7 @@
     "express-rate-limit": "^7.1.5",
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^5.0.0",
-    "morgan": "^1.10.0"<% if (communication === 'REST APIs') { %>,
+    "morgan": "^1.10.0"<% if (communication === 'REST APIs' || communication === 'Kafka') { %>,
     "swagger-ui-express": "^5.0.0",
     "yamljs": "^0.3.0"<% } %><% if (communication === 'GraphQL') { %>,
     "@apollo/server": "^4.10.0",
@@ -72,7 +72,7 @@
     "@types/sequelize": "^4.28.19",
 <%_ } -%>
     "@types/morgan": "^1.9.9",
-    "rimraf": "^6.0.1"<% if ((viewEngine && viewEngine !== 'None') || communication === 'REST APIs') { %>,
+    "rimraf": "^6.0.1"<% if ((viewEngine && viewEngine !== 'None') || communication === 'REST APIs' || communication === 'Kafka') { %>,
     "cpx2": "^8.0.0"<% } %><% } %>,
     "eslint": "^9.20.1",
     "@eslint/js": "^9.20.0",
@@ -81,7 +81,7 @@
     "eslint-config-prettier": "^10.0.1",
     "husky": "^8.0.3",
     "lint-staged": "^15.4.3"<% if (language === 'TypeScript') { %>,
-    "typescript-eslint": "^8.24.1",<%_ if (communication === 'REST APIs') { %>
+    "typescript-eslint": "^8.24.1",<%_ if (communication === 'REST APIs' || communication === 'Kafka') { %>
     "@types/swagger-ui-express": "^4.1.6",
     "@types/yamljs": "^0.2.34",<%_ } %>
     "jest": "^29.7.0",

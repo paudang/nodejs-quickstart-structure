@@ -115,6 +115,29 @@ mutation CreateUser {
 API is exposed via **REST**.
 A Swagger UI for API documentation is available at:
 - **URL**: `http://localhost:3000/api-docs` (Dynamic based on PORT)
+<%_ } -%>
+
+<% if (communication === 'Kafka') { -%>
+## 📡 Testing Kafka Asynchronous Flow
+This project demonstrates a production-ready Kafka flow:
+1. **Producer**: When a user is created via the API, a `USER_CREATED` event is sent to `user-topic`.
+2. **Consumer**: `WelcomeEmailConsumer` listens to `user-topic` and simulates sending an email.
+
+### How to verify:
+1. Ensure infrastructure is running: `docker-compose up -d zookeeper kafka`
+2. Start the app: `npm run dev`
+3. Trigger an event by creating a user (via Postman or curl):
+   ```bash
+   curl -X POST http://localhost:3000/api/users \
+     -H "Content-Type: application/json" \
+     -d '{"name": "Kafka Tester", "email": "kafka@example.com"}'
+   ```
+4. Observe the logs:
+   ```text
+   [Kafka] Producer: Sent USER_CREATED event for 'kafka@example.com'
+   [Kafka] Consumer: Received USER_CREATED. 
+   [Kafka] Consumer: 📧 Sending welcome email to 'kafka@example.com'... Done!
+   ```
 <% } -%>
 
 <% if (caching === 'Redis') { -%>

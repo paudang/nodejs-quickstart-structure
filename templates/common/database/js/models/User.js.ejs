@@ -11,7 +11,8 @@ class UserModel {
   }
 
   static async create(data) {
-    const newUser = { id: String(this.mockData.length + 1), ...data };
+    const { id, ...rest } = data;
+    const newUser = { id: String(this.mockData.length + 1), ...rest };
     this.mockData.push(newUser);
     return newUser;
   }

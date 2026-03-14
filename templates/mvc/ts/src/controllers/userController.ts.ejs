@@ -43,6 +43,14 @@ export class UserController {
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
             await cacheService.del('users:all');
 <%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+            const { kafkaService } = await import('@/services/kafkaService');
+            await kafkaService.sendMessage('user-topic', JSON.stringify({
+                action: 'USER_CREATED',
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                payload: { id: (user as any).id || (user as any)._id, email: user.email }
+            }));
+<%_ } -%>
             return user;
         } catch (error) {
             logger.error('Error creating user:', error);
@@ -80,6 +88,14 @@ export class UserController {
             const user = await User.create({ name, email });
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
             await cacheService.del('users:all');
+<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+            const { kafkaService } = await import('@/services/kafkaService');
+            await kafkaService.sendMessage('user-topic', JSON.stringify({
+                action: 'USER_CREATED',
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                payload: { id: (user as any).id || (user as any)._id, email: user.email }
+            }));
 <%_ } -%>
             res.status(HTTP_STATUS.CREATED).json(user);
         } catch (error) {

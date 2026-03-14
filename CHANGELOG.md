@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.0] - 2026-03-14
+
+### Added
+- **Robust Kafka Singleton Implementation**: Refactored `KafkaService` to a strict singleton pattern across all architectures with `connectionPromise` and automated retry logic for resilient messaging.
+- **BaseConsumer Standards**: Implemented constructor guards in `BaseConsumer` to prevent direct instantiation of abstract messaging classes.
+- **Professional Docker Log Hygiene**: Added `NPM_CONFIG_UPDATE_NOTIFIER=false` to both builder and production stages to suppress non-essential npm upgrade notifications.
+
+### Fixed
+- **Docker Build & Type Safety**: Resolved a critical build failure in MVC TypeScript projects using EJS/Pug by addressing missing Express `Request` and `Response` type imports.
+- **Network Resilience**: Removed redundant `npm install -g npm@latest` from the `Dockerfile` template to fix `ECONNRESET` failures during project verification on unstable networks.
+- **Controller Testing Modernization**: Refactored `userController` spec templates (TS and JS) to correctly mock and verify the shared Kafka singleton, fixing persistent unit test failures.
+- **Database Mocking Refinement**: Resolved a data flow bug in the "None" database mock where generated IDs were being overwritten, and enhanced TypeScript types to eliminate `any` in repository patterns.
+
 ## [1.15.1] - 2026-03-12
 
 ### Added
