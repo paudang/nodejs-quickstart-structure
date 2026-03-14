@@ -47,4 +47,12 @@ describe('BaseConsumer', () => {
         await consumer.onMessage({ message });
         expect(logger.info).not.toHaveBeenCalled();
     });
+
+    it('should throw if topic, groupId or handle are not implemented', async () => {
+        class IncompleteConsumer extends BaseConsumer {}
+        const incomplete = new IncompleteConsumer();
+        expect(() => incomplete.topic).toThrow("Property 'topic' must be implemented");
+        expect(() => incomplete.groupId).toThrow("Property 'groupId' must be implemented");
+        await expect(incomplete.handle({})).rejects.toThrow("Method 'handle()' must be implemented");
+    });
 });

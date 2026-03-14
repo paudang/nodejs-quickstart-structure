@@ -55,17 +55,15 @@ describe('Kafka Client', () => {
     });
 
     it('should retry connection on failure', async () => {
-        // Initialize producer once to avoid index errors
-        await connectKafka();
-        const producer = kafka.producer.mock.results[0].value;
-        
-        // Reset mocks after initial connect
-        jest.clearAllMocks();
+        // We need to re-require to get a fresh state
         jest.resetModules();
-
         const { connectKafka: retryConnectKafka } = require('<% if (architecture === "Clean Architecture") { %>@/infrastructure/messaging/kafkaClient<% } else { %>@/services/kafkaService<% } %>');
+        const kafkaConfig = require('<% if (architecture === "Clean Architecture") { %>@/infrastructure/config/kafka<% } else { %>@/config/kafka<% } %>');
         
-        const newProducer = kafka.producer.mock.results[1].value;
+        const newProducer = kafkaConfig.kafka.producer();
+        // Mock the next producer creation to return our controlled producer
+        kafkaConfig.kafka.producer.mockReturnValueOnce(newProducer);
+
         newProducer.connect
             .mockRejectedValueOnce(new Error('Connection failed'))
             .mockResolvedValueOnce(undefined);
@@ -90,11 +88,19 @@ describe('Kafka Client', () => {
     });
 
     it('should disconnect Kafka', async () => {
-        await disconnectKafka();
+        await connectKafka();
         const producer = kafka.producer.mock.results[0].value;
         const consumer = kafka.consumer.mock.results[0].value;
 
+        await disconnectKafka();
+
         expect(producer.disconnect).toHaveBeenCalled();
         expect(consumer.disconnect).toHaveBeenCalled();
+    });
+
+    it('should allow connecting with custom retries', async () => {
+        await connectKafka(5);
+        // This is mainly for coverage of the retries parameter
+        expect(kafka.producer).toHaveBeenCalled();
     });
 });

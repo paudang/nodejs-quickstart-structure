@@ -32,7 +32,7 @@ const connectKafka = async (retries = 10) => {
                     await consumer.run({
                         eachMessage: async (payload) => welcomeConsumer.onMessage(payload),
                     });
-                } catch (e) {
+                } catch (error) {
                     // Fallback or no consumers found
                     await consumer.subscribe({ topic: 'user-topic', fromBeginning: true });
                     await consumer.run({
@@ -74,8 +74,8 @@ const sendMessage = async (topic, message) => {
         try {
             const parsed = JSON.parse(message);
             logger.info(`[Kafka] Producer: Sent ${parsed.action} event for '${parsed.payload?.email || 'unknown'}'`);
-        } catch (e) {
-            logger.info(`[Kafka] Producer: Sent message to ${topic}`);
+        } catch (error) {
+            logger.info(`[Kafka] Producer: Sent message to ${topic}`, error);
         }
     } catch (error) {
         logger.error(`[Kafka] Failed to send message to ${topic}:`, error.message);
