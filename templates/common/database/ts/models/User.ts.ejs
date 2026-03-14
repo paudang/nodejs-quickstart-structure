@@ -16,10 +16,11 @@ export default class UserModel {
     return this.mockData;
   }
 
-  static async create(data: Omit<User, 'id'>) {
-    const newUser = { id: String(this.mockData.length + 1), ...data };
+  static async create(data: Omit<User, 'id'> & { id?: string | number | null }) {
+    const { id, ...rest } = data;
+    const newUser: User = { id: String(this.mockData.length + 1), ...rest };
     this.mockData.push(newUser);
-    return newUser as User;
+    return newUser;
   }
 }
 <% } else { -%>

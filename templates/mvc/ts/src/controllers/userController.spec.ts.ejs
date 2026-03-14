@@ -25,8 +25,17 @@ jest.mock('@/config/memoryCache', () => ({
 <%_ } -%>
 jest.mock('@/utils/logger');
 <%_ if (communication === 'Kafka') { -%>
-import { KafkaService } from '@/services/kafkaService';
-jest.mock('@/services/kafkaService');
+jest.mock('@/services/kafkaService', () => {
+    const mockSendMessage = jest.fn().mockResolvedValue(undefined);
+    return {
+        kafkaService: {
+            sendMessage: mockSendMessage
+        },
+        KafkaService: jest.fn().mockImplementation(() => ({
+            sendMessage: mockSendMessage
+        }))
+    };
+});
 <%_ } -%>
 
 
@@ -165,7 +174,8 @@ describe('UserController', () => {
             expect(cacheService.del).toHaveBeenCalledWith('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
-            expect(KafkaService.prototype.sendMessage).toHaveBeenCalled();
+            const { kafkaService } = require('@/services/kafkaService');
+            expect(kafkaService.sendMessage).toHaveBeenCalled();
 <%_ } -%>
         });
 

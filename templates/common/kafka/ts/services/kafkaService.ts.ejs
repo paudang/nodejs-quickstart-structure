@@ -37,12 +37,13 @@ export class KafkaService {
                         await this.consumer.run({
                             eachMessage: async (payload) => welcomeConsumer.onMessage(payload),
                         });
-                    } catch {
+                    } catch (e) {
                         // Fallback or no consumers found
+                        logger.warn(`[Kafka] Could not load WelcomeEmailConsumer, using fallback: ${(e as Error).message}`);
                         await this.consumer.subscribe({ topic: 'user-topic', fromBeginning: true });
                         await this.consumer.run({
                             eachMessage: async ({ message }: EachMessagePayload) => {
-                                logger.info({ value: message.value?.toString() });
+                                logger.info(`[Kafka] Consumer: Received message on user-topic: ${message.value?.toString()}`);
                             },
                         });
                     }
