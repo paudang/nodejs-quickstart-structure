@@ -34,11 +34,12 @@ describe('KafkaService', () => {
 
         expect(producer.connect).toHaveBeenCalled();
         expect(consumer.connect).toHaveBeenCalled();
-        expect(consumer.subscribe).toHaveBeenCalledWith({ topic: 'user-topic', fromBeginning: true });
+        expect(consumer.subscribe).toHaveBeenCalledWith(expect.objectContaining({ topic: 'user-topic', fromBeginning: true }));
         expect(consumer.run).toHaveBeenCalled();
     });
 
     it('should send a message', async () => {
+        await kafkaService.connect();
         const topic = 'test-topic';
         const message = JSON.stringify({ action: 'TEST', payload: { email: 'test@example.com' } });
         await kafkaService.sendMessage(topic, message);
@@ -62,13 +63,11 @@ describe('KafkaService', () => {
         await jest.advanceTimersByTimeAsync(10000);
         await connectPromise;
         
-        expect(producer.connect).toHaveBeenCalledTimes(3); // 1 from beforeEach, 2 from manual call
+        expect(producer.connect).toHaveBeenCalledTimes(2);
     });
 
-    it('should throw error if producer not initialized', async () => {
-        // @ts-expect-error: Setting null to private producer for testing
-        kafkaService.producer = null;
-        await expect(kafkaService.sendMessage('topic', 'msg')).rejects.toThrow('[Kafka] Producer not initialized');
+    it('should throw error if producer not connected', async () => {
+        await expect(kafkaService.sendMessage('topic', 'msg')).rejects.toThrow('[Kafka] Producer not connected');
     });
 
     it('should disconnect producer and consumer', async () => {

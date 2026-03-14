@@ -23,11 +23,11 @@ export class UserController {
             const { name, email } = data;
             const user = await this.createUserUseCase.execute(name, email);
 <%_ if (communication === 'Kafka') { -%>
-            const { KafkaService } = await import('@/infrastructure/messaging/kafkaClient');
-            const kafkaService = new KafkaService();
+            const { kafkaService } = await import('@/infrastructure/messaging/kafkaClient');
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: 'USER_CREATED',
-                payload: { id: user.id || (user as { _id?: string })._id, email: user.email }
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                payload: { id: (user as any).id || (user as any)._id, email: user.email }
             }));
 <%_ } -%>
             return user;
@@ -54,11 +54,11 @@ export class UserController {
             const { name, email } = req.body;
             const user = await this.createUserUseCase.execute(name, email);
 <%_ if (communication === 'Kafka') { -%>
-            const { KafkaService } = await import('@/infrastructure/messaging/kafkaClient');
-            const kafkaService = new KafkaService();
+            const { kafkaService } = await import('@/infrastructure/messaging/kafkaClient');
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: 'USER_CREATED',
-                payload: { id: user.id || (user as { _id?: string })._id, email: user.email }
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                payload: { id: (user as any).id || (user as any)._id, email: user.email }
             }));
 <%_ } -%>
             res.status(HTTP_STATUS.CREATED).json(user);

@@ -5,63 +5,79 @@ import logger from '<%= loggerPath %>';
 export class KafkaService {
     private producer: Producer;
     private consumer: Consumer;
+    private isConnected = false;
+    private connectionPromise: Promise<void> | null = null;
 
     constructor() {
         this.producer = kafka.producer();
         this.consumer = kafka.consumer({ groupId: 'test-group' });
     }
 
-    async connect(retries = 5) {
-        let attempt = 0;
-        while (attempt < retries) {
-            try {
-                await this.producer.connect();
-                logger.info('[Kafka] Producer connected successfully');
-                
-                await this.consumer.connect();
-                logger.info('[Kafka] Consumer connected successfully');
+    async connect(retries = 10) {
+        if (this.connectionPromise) return this.connectionPromise;
 
-                <%_ if (language === 'TypeScript') { -%>
-                // Auto-register WelcomeEmailConsumer if it exists
+        this.connectionPromise = (async () => {
+            let attempt = 0;
+            while (attempt < retries) {
                 try {
-                    const { WelcomeEmailConsumer } = await import('<% if (architecture === "Clean Architecture") { %>@/interfaces/messaging/consumers/instances/welcomeEmailConsumer<% } else { %>@/messaging/consumers/instances/welcomeEmailConsumer<% } %>');
-                    const welcomeConsumer = new WelcomeEmailConsumer();
-                    await this.consumer.subscribe({ topic: welcomeConsumer.topic, fromBeginning: true });
-                    logger.info(`[Kafka] Registered consumer for topic: ${welcomeConsumer.topic}`);
-                    
-                    await this.consumer.run({
-                        eachMessage: async (payload) => welcomeConsumer.onMessage(payload),
-                    });
-                } catch {
-                    // Fallback or no consumers found
+                    await this.producer.connect();
+                    await this.consumer.connect();
+                    logger.info('[Kafka] Producer connected successfully');
+                    logger.info('[Kafka] Consumer connected successfully');
+                    this.isConnected = true;
+
+                    <%_ if (language === 'TypeScript') { -%>
+                    // Auto-register WelcomeEmailConsumer if it exists
+                    try {
+                        const { WelcomeEmailConsumer } = await import('<% if (architecture === "Clean Architecture") { %>@/interfaces/messaging/consumers/instances/welcomeEmailConsumer<% } else { %>@/messaging/consumers/instances/welcomeEmailConsumer<% } %>');
+                        const welcomeConsumer = new WelcomeEmailConsumer();
+                        await this.consumer.subscribe({ topic: welcomeConsumer.topic, fromBeginning: true });
+                        logger.info(`[Kafka] Registered consumer for topic: ${welcomeConsumer.topic}`);
+                        
+                        await this.consumer.run({
+                            eachMessage: async (payload) => welcomeConsumer.onMessage(payload),
+                        });
+                    } catch {
+                        // Fallback or no consumers found
+                        await this.consumer.subscribe({ topic: 'user-topic', fromBeginning: true });
+                        await this.consumer.run({
+                            eachMessage: async ({ message }: EachMessagePayload) => {
+                                logger.info({ value: message.value?.toString() });
+                            },
+                        });
+                    }
+                    <%_ } else { _%>
                     await this.consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
                     await this.consumer.run({
                         eachMessage: async ({ message }: EachMessagePayload) => {
                             logger.info({ value: message.value?.toString() });
                         },
                     });
+                    <%_ } _%>
+                    return;
+                } catch (error) {
+                    attempt++;
+                    logger.error(`[Kafka] Connection attempt ${attempt} failed:`, (error as Error).message);
+                    if (attempt >= retries) {
+                        throw error;
+                    }
+                    await new Promise(res => setTimeout(res, 3000));
                 }
-                <%_ } else { _%>
-                await this.consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
-                await this.consumer.run({
-                    eachMessage: async ({ message }: EachMessagePayload) => {
-                        logger.info({ value: message.value?.toString() });
-                    },
-                });
-                <%_ } _%>
-                return; // Success
-            } catch (error) {
-                attempt++;
-                logger.error(`[Kafka] Connection attempt ${attempt} failed:`, (error as Error).message);
-                if (attempt >= retries) {
-                    throw error;
-                }
-                await new Promise(res => setTimeout(res, 5000));
             }
-        }
+        })();
+
+        return this.connectionPromise;
     }
 
     async sendMessage(topic: string, message: string) {
+        if (this.connectionPromise) {
+            await this.connectionPromise;
+        }
+
+        if (!this.isConnected) {
+            throw new Error('[Kafka] Producer not connected. Check logs for connection errors.');
+        }
+
         await this.producer.send({
             topic,
             messages: [
@@ -82,3 +98,4 @@ export class KafkaService {
     }
 }
 
+export const kafkaService = new KafkaService();

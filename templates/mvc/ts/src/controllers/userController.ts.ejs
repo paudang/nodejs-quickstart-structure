@@ -44,11 +44,11 @@ export class UserController {
             await cacheService.del('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
-            const { KafkaService } = await import('@/services/kafkaService');
-            const kafkaService = new KafkaService();
+            const { kafkaService } = await import('@/services/kafkaService');
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: 'USER_CREATED',
-                payload: { id: user.id || (user as { _id?: string })._id, email: user.email }
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                payload: { id: (user as any).id || (user as any)._id, email: user.email }
             }));
 <%_ } -%>
             return user;
@@ -90,11 +90,11 @@ export class UserController {
             await cacheService.del('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
-            const { KafkaService } = await import('@/services/kafkaService');
-            const kafkaService = new KafkaService();
+            const { kafkaService } = await import('@/services/kafkaService');
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: 'USER_CREATED',
-                payload: { id: user.id || (user as { _id?: string })._id, email: user.email }
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                payload: { id: (user as any).id || (user as any)._id, email: user.email }
             }));
 <%_ } -%>
             res.status(HTTP_STATUS.CREATED).json(user);

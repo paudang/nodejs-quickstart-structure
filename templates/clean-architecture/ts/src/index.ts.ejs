@@ -12,7 +12,7 @@ import healthRoutes from '@/interfaces/routes/healthRoute';
 import userRoutes from '@/interfaces/routes/userRoutes';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpecs from '@/config/swagger';<% } -%>
-<%_ if (communication === 'Kafka') { -%>import { KafkaService } from '@/infrastructure/messaging/kafkaClient';<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>import { kafkaService } from '@/infrastructure/messaging/kafkaClient';<%_ } -%>
 <%_ if (communication === 'GraphQL') { -%>
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -92,20 +92,12 @@ const startServer = async () => {
     app.use('/graphql', expressMiddleware(apolloServer, { context: gqlContext }));
 <%_ } -%>
     app.use(errorMiddleware);
-<%_ if (communication === 'Kafka') { -%>
-    const kafkaService = new KafkaService();
-<%_ } -%>
     const server = app.listen(port, () => {
         logger.info(`Server running on port ${port}`);
 <%_ if (communication === 'Kafka') { -%>
         kafkaService.connect()
             .then(async () => {
                 logger.info('Kafka connected');
-                try {
-                    await kafkaService.sendMessage('test-topic', 'Hello Kafka from Clean Arch TS!');
-                } catch (sendErr) {
-                    logger.error('Failed to send initial Kafka message:', (sendErr as Error).message);
-                }
             })
             .catch(err => {
                 logger.error('Failed to connect to Kafka after retries:', (err as Error).message);

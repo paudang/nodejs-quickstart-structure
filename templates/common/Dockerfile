@@ -8,6 +8,9 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig*.json ./
 
+# Update npm to latest
+RUN npm install -g npm@latest
+
 # Install ALL dependencies (including devDeps for build)
 RUN npm ci --no-audit --no-fund || npm ci --no-audit --no-fund || npm ci --no-audit --no-fund
 
@@ -26,6 +29,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY package*.json ./
+
+# Update npm to latest
+RUN npm install -g npm@latest
 
 # Install ONLY production dependencies
 RUN npm ci --only=production --ignore-scripts --no-audit --no-fund || npm ci --only=production --ignore-scripts --no-audit --no-fund || npm ci --only=production --ignore-scripts --no-audit --no-fund

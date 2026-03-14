@@ -5,6 +5,12 @@ export abstract class BaseConsumer {
   abstract topic: string;
   abstract groupId: string;
 
+  public constructor() {
+    if (new.target === BaseConsumer) {
+      throw new Error("Abstract class 'BaseConsumer' cannot be instantiated.");
+    }
+  }
+
   async onMessage({ message }: EachMessagePayload) {
     try {
       const rawValue = message.value?.toString();
