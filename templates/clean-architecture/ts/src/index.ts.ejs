@@ -11,7 +11,7 @@ import healthRoutes from '@/interfaces/routes/healthRoute';
 <% if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 import userRoutes from '@/interfaces/routes/userRoutes';
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpecs from '@/config/swagger';<% } -%>
+import swaggerSpecs from '@/config/swagger';<% } %>
 <%_ if (communication === 'Kafka') { -%>import { kafkaService } from '@/infrastructure/messaging/kafkaClient';<%_ } -%>
 <%_ if (communication === 'GraphQL') { -%>
 import { ApolloServer } from '@apollo/server';

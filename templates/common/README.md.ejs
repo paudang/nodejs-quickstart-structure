@@ -124,7 +124,7 @@ This project demonstrates a production-ready Kafka flow:
 2. **Consumer**: `WelcomeEmailConsumer` listens to `user-topic` and simulates sending an email.
 
 ### How to verify:
-1. Ensure infrastructure is running: `docker-compose up -d zookeeper kafka`
+1. Ensure infrastructure is running: `docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> zookeeper kafka<% } %>`
 2. Start the app: `npm run dev`
 3. Trigger an event by creating a user (via Postman or curl):
    ```bash
@@ -250,4 +250,4 @@ This project is "AI-Ready" out of the box. We have pre-configured industry-leadi
 - **Magic Defaults**: We've automatically tailored your AI context to focus on **<%= projectName %>** and its specific architectural stack (<%= architecture %>, <%= database %>, etc.).
 - **Use Cursor?** We've configured **`.cursorrules`** at the root. It enforces project standards (70% coverage, MVC/Clean) directly within the editor. 
   - *Pro-tip*: You can customize the `Project Goal` placeholder in `.cursorrules` to help the AI understand your specific business logic!
-- **Use ChatGPT/Gemini/Claude?** Check the **`prompts/`** directory. It contains highly-specialized Agent Skill templates. You can copy-paste these into any LLM to give it a "Senior Developer" understanding of your codebase immediately.
+- **Use ChatGPT/Gemini/Claude?** Check the **`prompts/`** directory. It contains highly-specialized Agent Skill templates. You can copy-paste these into any LLM to give it a "Senior Developer" understanding of your codebase immediately.
