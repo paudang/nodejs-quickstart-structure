@@ -41,6 +41,13 @@ const createUser = async (data) => {
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
     await cacheService.del('users:all');
 <%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+    const { sendMessage } = require('../services/kafkaService');
+    await sendMessage('user-topic', JSON.stringify({
+      action: 'USER_CREATED',
+      payload: { id: user.id || user._id, email: user.email }
+    }));
+<%_ } -%>
     return user;
   } catch (error) {
     logger.error('Error creating user:', error);
@@ -78,6 +85,13 @@ const createUser = async (req, res, next) => {
     const user = await User.create({ name, email });
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
     await cacheService.del('users:all');
+<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+    const { sendMessage } = require('../services/kafkaService');
+    await sendMessage('user-topic', JSON.stringify({
+      action: 'USER_CREATED',
+      payload: { id: user.id || user._id, email: user.email }
+    }));
 <%_ } -%>
     res.status(HTTP_STATUS.CREATED).json(user);
   } catch (error) {

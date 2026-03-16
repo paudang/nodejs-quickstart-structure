@@ -34,13 +34,14 @@ describe('KafkaService', () => {
 
         expect(producer.connect).toHaveBeenCalled();
         expect(consumer.connect).toHaveBeenCalled();
-        expect(consumer.subscribe).toHaveBeenCalledWith({ topic: 'test-topic', fromBeginning: true });
+        expect(consumer.subscribe).toHaveBeenCalledWith(expect.objectContaining({ topic: 'user-topic', fromBeginning: true }));
         expect(consumer.run).toHaveBeenCalled();
     });
 
     it('should send a message', async () => {
+        await kafkaService.connect();
         const topic = 'test-topic';
-        const message = 'test-message';
+        const message = JSON.stringify({ action: 'TEST', payload: { email: 'test@example.com' } });
         await kafkaService.sendMessage(topic, message);
         const producer = (kafka.producer as jest.Mock).mock.results[0].value;
 
@@ -48,6 +49,25 @@ describe('KafkaService', () => {
             topic,
             messages: [{ value: message }],
         });
+    });
+
+    it('should retry connection on failure', async () => {
+        const producer = (kafka.producer as jest.Mock).mock.results[0].value;
+        producer.connect
+            .mockRejectedValueOnce(new Error('Connection failed'))
+            .mockResolvedValueOnce(undefined);
+        
+        jest.useFakeTimers();
+        const connectPromise = kafkaService.connect(2);
+        
+        await jest.advanceTimersByTimeAsync(10000);
+        await connectPromise;
+        
+        expect(producer.connect).toHaveBeenCalledTimes(2);
+    });
+
+    it('should throw error if producer not connected', async () => {
+        await expect(kafkaService.sendMessage('topic', 'msg')).rejects.toThrow('[Kafka] Producer not connected');
     });
 
     it('should disconnect producer and consumer', async () => {

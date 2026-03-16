@@ -1,7 +1,7 @@
 let kafka;
 let connectKafka, sendMessage, disconnectKafka;
 
-jest.mock('<%= configPath %>', () => ({
+jest.mock('<% if (architecture === "Clean Architecture") { %>@/infrastructure/config/kafka<% } else { %>@/config/kafka<% } %>', () => ({
     kafka: {
         producer: jest.fn().mockReturnValue({
             connect: jest.fn().mockResolvedValue(undefined),
@@ -17,15 +17,16 @@ jest.mock('<%= configPath %>', () => ({
     },
 }));
 
-jest.mock('<%= loggerPath %>');
+jest.mock('<% if (architecture === "Clean Architecture") { %>@/infrastructure/log/logger<% } else { %>@/utils/logger<% } %>');
 
 describe('Kafka Client', () => {
     beforeEach(async () => {
         jest.resetModules();
         jest.clearAllMocks();
-        kafka = require('<%= configPath %>').kafka;
-        ({ connectKafka, sendMessage, disconnectKafka } = require('<%= servicePath %>'));
-        await connectKafka();
+        jest.useFakeTimers();
+        jest.spyOn(global, 'setTimeout');
+        kafka = require('<% if (architecture === "Clean Architecture") { %>@/infrastructure/config/kafka<% } else { %>@/config/kafka<% } %>').kafka;
+        ({ connectKafka, sendMessage, disconnectKafka } = require('<% if (architecture === "Clean Architecture") { %>@/infrastructure/messaging/kafkaClient<% } else { %>@/services/kafkaService<% } %>'));
     });
 
     it('should connect producer and consumer', async () => {
@@ -35,11 +36,15 @@ describe('Kafka Client', () => {
 
         expect(producer.connect).toHaveBeenCalled();
         expect(consumer.connect).toHaveBeenCalled();
+        expect(consumer.subscribe).toHaveBeenCalledWith(expect.objectContaining({ fromBeginning: true }));
+        const subscribeCall = consumer.subscribe.mock.calls.find(call => call[0].topic === 'user-topic' || call[0].topic === 'test-topic');
+        expect(subscribeCall).toBeDefined();
     });
 
     it('should send a message', async () => {
+        await connectKafka();
         const topic = 'test-topic';
-        const message = 'test-message';
+        const message = JSON.stringify({ action: 'TEST', payload: { email: 'test@example.com' } });
         await sendMessage(topic, message);
         const producer = kafka.producer.mock.results[0].value;
 
@@ -49,12 +54,53 @@ describe('Kafka Client', () => {
         });
     });
 
+    it('should retry connection on failure', async () => {
+        // We need to re-require to get a fresh state
+        jest.resetModules();
+        const { connectKafka: retryConnectKafka } = require('<% if (architecture === "Clean Architecture") { %>@/infrastructure/messaging/kafkaClient<% } else { %>@/services/kafkaService<% } %>');
+        const kafkaConfig = require('<% if (architecture === "Clean Architecture") { %>@/infrastructure/config/kafka<% } else { %>@/config/kafka<% } %>');
+        
+        const newProducer = kafkaConfig.kafka.producer();
+        // Mock the next producer creation to return our controlled producer
+        kafkaConfig.kafka.producer.mockReturnValueOnce(newProducer);
+
+        newProducer.connect
+            .mockRejectedValueOnce(new Error('Connection failed'))
+            .mockResolvedValueOnce(undefined);
+        
+        const connectPromise = retryConnectKafka(2);
+        
+        await jest.advanceTimersByTimeAsync(10000); 
+        await connectPromise;
+        expect(newProducer.connect).toHaveBeenCalledTimes(2);
+    });
+
+    it('should throw error if producer not connected', async () => {
+        await expect(sendMessage('topic', 'msg')).rejects.toThrow('[Kafka] Producer not connected');
+    });
+
+    it('should log error when sendMessage fails', async () => {
+        await connectKafka();
+        const producer = kafka.producer.mock.results[0].value;
+        producer.send.mockRejectedValue(new Error('Send failed'));
+        
+        await expect(sendMessage('test-topic', 'msg')).rejects.toThrow('Send failed');
+    });
+
     it('should disconnect Kafka', async () => {
-        await disconnectKafka();
+        await connectKafka();
         const producer = kafka.producer.mock.results[0].value;
         const consumer = kafka.consumer.mock.results[0].value;
 
+        await disconnectKafka();
+
         expect(producer.disconnect).toHaveBeenCalled();
         expect(consumer.disconnect).toHaveBeenCalled();
+    });
+
+    it('should allow connecting with custom retries', async () => {
+        await connectKafka(5);
+        // This is mainly for coverage of the retries parameter
+        expect(kafka.producer).toHaveBeenCalled();
     });
 });

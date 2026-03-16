@@ -4,6 +4,7 @@
 FROM node:22-alpine AS builder
 
 WORKDIR /app
+ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 
 COPY package*.json ./
 COPY tsconfig*.json ./
@@ -24,6 +25,7 @@ FROM node:22-alpine AS production
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 
 COPY package*.json ./
 

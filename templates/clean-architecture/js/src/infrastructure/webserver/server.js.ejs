@@ -4,7 +4,7 @@ const logger = require('../log/logger');
 const morgan = require('morgan');
 const { errorMiddleware } = require('./middleware/errorMiddleware');
 const healthRoutes = require('../../interfaces/routes/healthRoute');
-<%_ if (communication === 'REST APIs') { -%>
+<%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 const apiRoutes = require('../../interfaces/routes/api');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./swagger');
@@ -29,10 +29,10 @@ const startServer = async () => {
     app.use(cors());
     app.use(express.json());
     app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
-    <%_ if (communication === 'REST APIs') { -%>
+    <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
     app.use('/api', apiRoutes);
     <%_ } -%>
-    <%_ if (communication === 'REST APIs') { -%>
+    <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
     <%_ } -%>
     <%_ if (communication === 'GraphQL') { -%>
@@ -71,13 +71,14 @@ const startServer = async () => {
     const server = app.listen(port, () => {
         logger.info(`Server running on port ${port}`);
 <%_ if (communication === 'Kafka') { -%>
-        const { connectKafka, sendMessage } = require('../../infrastructure/messaging/kafkaClient');
-        connectKafka().then(() => {
-          logger.info('Kafka connected');
-          sendMessage('test-topic', 'Hello Kafka from Clean Arch JS!');
-        }).catch(err => {
-          logger.error('Failed to connect to Kafka:', err);
-        });
+        const { connectKafka } = require('../../infrastructure/messaging/kafkaClient');
+        connectKafka()
+            .then(async () => {
+                logger.info('Kafka connected');
+            })
+            .catch(err => {
+                logger.error('Failed to connect to Kafka after retries:', err.message);
+            });
 <%_ } -%>
     });
 

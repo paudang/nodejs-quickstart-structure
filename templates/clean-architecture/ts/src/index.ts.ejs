@@ -8,11 +8,11 @@ import morgan from 'morgan';
 import { errorMiddleware } from '@/utils/errorMiddleware';
 import { setupGracefulShutdown } from '@/utils/gracefulShutdown';
 import healthRoutes from '@/interfaces/routes/healthRoute';
-<% if (communication === 'REST APIs') { -%>
+<% if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 import userRoutes from '@/interfaces/routes/userRoutes';
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpecs from '@/config/swagger';<% } -%>
-<%_ if (communication === 'Kafka') { -%>import { KafkaService } from '@/infrastructure/messaging/kafkaClient';<%_ } -%>
+import swaggerSpecs from '@/config/swagger';<% } %>
+<%_ if (communication === 'Kafka') { -%>import { kafkaService } from '@/infrastructure/messaging/kafkaClient';<%_ } -%>
 <%_ if (communication === 'GraphQL') { -%>
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -52,10 +52,10 @@ app.use(limiter);
 app.use(express.json());
 app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
 
-<%_ if (communication === 'REST APIs') { -%>
+<%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 app.use('/api/users', userRoutes);
 <%_ } -%>
-<%_ if (communication === 'REST APIs') { -%>
+<%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 <%_ } -%>
 app.use('/health', healthRoutes);
@@ -92,18 +92,16 @@ const startServer = async () => {
     app.use('/graphql', expressMiddleware(apolloServer, { context: gqlContext }));
 <%_ } -%>
     app.use(errorMiddleware);
-<%_ if (communication === 'Kafka') { -%>
-    const kafkaService = new KafkaService();
-<%_ } -%>
     const server = app.listen(port, () => {
         logger.info(`Server running on port ${port}`);
 <%_ if (communication === 'Kafka') { -%>
-        kafkaService.connect().then(() => {
-          logger.info('Kafka connected');
-          kafkaService.sendMessage('test-topic', 'Hello Kafka from Clean Arch TS!');
-        }).catch(err => {
-          logger.error('Failed to connect to Kafka:', err);
-        });
+        kafkaService.connect()
+            .then(async () => {
+                logger.info('Kafka connected');
+            })
+            .catch(err => {
+                logger.error('Failed to connect to Kafka after retries:', (err as Error).message);
+            });
 <%_ } -%>
     });
 
