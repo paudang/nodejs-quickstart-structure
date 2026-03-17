@@ -18,6 +18,10 @@ export class KafkaService {
 
         this.connectionPromise = (async () => {
             let attempt = 0;
+            // Auto-register WelcomeEmailConsumer if it exists
+            // Note: Dynamic import used here for simplicity and to avoid startup crashes.
+            // In enterprise production, consider using Dependency Injection.
+            const { WelcomeEmailConsumer } = await import('<% if (architecture === "Clean Architecture") { %>@/interfaces/messaging/consumers/instances/welcomeEmailConsumer<% } else { %>@/messaging/consumers/instances/welcomeEmailConsumer<% } %>');
             while (attempt < retries) {
                 try {
                     await this.producer.connect();
@@ -26,10 +30,7 @@ export class KafkaService {
                     logger.info('[Kafka] Consumer connected successfully');
                     this.isConnected = true;
 
-                    <%_ if (language === 'TypeScript') { -%>
-                    // Auto-register WelcomeEmailConsumer if it exists
                     try {
-                        const { WelcomeEmailConsumer } = await import('<% if (architecture === "Clean Architecture") { %>@/interfaces/messaging/consumers/instances/welcomeEmailConsumer<% } else { %>@/messaging/consumers/instances/welcomeEmailConsumer<% } %>');
                         const welcomeConsumer = new WelcomeEmailConsumer();
                         await this.consumer.subscribe({ topic: welcomeConsumer.topic, fromBeginning: true });
                         logger.info(`[Kafka] Registered consumer for topic: ${welcomeConsumer.topic}`);
@@ -47,15 +48,7 @@ export class KafkaService {
                             },
                         });
                     }
-                    <%_ } else { _%>
-                    await this.consumer.subscribe({ topic: 'test-topic', fromBeginning: true });
-                    await this.consumer.run({
-                        eachMessage: async ({ message }: EachMessagePayload) => {
-                            logger.info({ value: message.value?.toString() });
-                        },
-                    });
-                    <%_ } _%>
-                    return;
+                    return; // Success
                 } catch (error) {
                     attempt++;
                     logger.error(`[Kafka] Connection attempt ${attempt} failed:`, (error as Error).message);

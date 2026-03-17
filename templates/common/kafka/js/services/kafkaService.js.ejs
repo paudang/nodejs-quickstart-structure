@@ -14,6 +14,10 @@ const connectKafka = async (retries = 10) => {
         if (!consumer) consumer = kafka.consumer({ groupId: 'test-group' });
 
         let attempt = 0;
+        // Auto-register WelcomeEmailConsumer if it exists
+        // Note: Dynamic import used here for simplicity and to avoid startup crashes.
+        // In enterprise production, consider using Dependency Injection.
+        const WelcomeEmailConsumer = require('<% if (architecture === "Clean Architecture") { %>../../interfaces/messaging/consumers/instances/welcomeEmailConsumer<% } else { %>../messaging/consumers/instances/welcomeEmailConsumer<% } %>');
         while (attempt < retries) {
             try {
                 await producer.connect();
@@ -22,9 +26,7 @@ const connectKafka = async (retries = 10) => {
                 logger.info('[Kafka] Consumer connected successfully');
                 isConnected = true;
 
-                // Auto-register WelcomeEmailConsumer if it exists
                 try {
-                    const WelcomeEmailConsumer = require('<% if (architecture === "Clean Architecture") { %>../../interfaces/messaging/consumers/instances/welcomeEmailConsumer<% } else { %>../messaging/consumers/instances/welcomeEmailConsumer<% } %>');
                     const welcomeConsumer = new WelcomeEmailConsumer();
                     await consumer.subscribe({ topic: welcomeConsumer.topic, fromBeginning: true });
                     logger.info(`[Kafka] Registered consumer for topic: ${welcomeConsumer.topic}`);

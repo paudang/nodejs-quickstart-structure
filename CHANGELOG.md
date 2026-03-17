@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.1] - 2026-03-17
+
+### Refactored
+- **Top-Level Dynamic Imports**: Moved dynamic `await import()` and `require()` calls to the top-level across all TypeScript and JavaScript templates (MVC & Clean Architecture).
+- **Module Loading Standardization**: Standardized database connections (Mongoose/Sequelize), Kafka services, and graceful shutdown logic for better static analysis and ESM/CJS consistency.
+
+### Fixed
+- **Kafka Service Scope**: Resolved a potential `ReferenceError` in `kafkaService.ts.ejs` by correcting the instantiation order of dynamic consumers.
+- **Health Check Imports**: Optimized `healthRoute.ts.ejs` to use top-level database driver imports.
+
 ## [1.16.0] - 2026-03-14
 
 ### Added

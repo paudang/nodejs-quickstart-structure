@@ -8,6 +8,8 @@ import logger from '@/utils/logger';
 import cacheService from '@/config/redisClient';
 <%_ } else if (caching === 'Memory Cache') { -%>
 import cacheService from '@/config/memoryCache';
+<%_ } -%><%_ if (communication === 'Kafka') { -%>
+import { kafkaService } from '@/services/kafkaService';
 <%_ } -%>
 
 export class UserController {
@@ -44,7 +46,6 @@ export class UserController {
             await cacheService.del('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
-            const { kafkaService } = await import('@/services/kafkaService');
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: 'USER_CREATED',
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,7 +91,6 @@ export class UserController {
             await cacheService.del('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
-            const { kafkaService } = await import('@/services/kafkaService');
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: 'USER_CREATED',
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,6 +1,11 @@
 import { Router, Request, Response } from 'express';
 import logger from '<% if (architecture === "MVC") { %>@/utils/logger<% } else { %>@/infrastructure/log/logger<% } %>';
 import { HTTP_STATUS } from '@/utils/httpCodes';
+<%_ if (database === 'MongoDB') { -%>
+import mongoose from 'mongoose';
+<%_ } else if (database !== 'None') { -%>
+import sequelize from '<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>';
+<%_ } -%>
 
 const router = Router();
 
@@ -17,13 +22,11 @@ router.get('/', async (req: Request, res: Response) => {
 <%_ if (database !== 'None') { -%>
   try {
 <%_ if (database === 'MongoDB') { -%>
-    const mongoose = (await import('mongoose')).default;
     if (mongoose.connection.readyState === 1) {
       await mongoose.connection.db?.admin().ping();
       healthData.database = 'connected';
     }
 <%_ } else { -%>
-    const sequelize = (await import('<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>')).default;
     await sequelize.authenticate();
     healthData.database = 'connected';
 <%_ } -%>

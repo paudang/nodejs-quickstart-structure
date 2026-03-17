@@ -4,6 +4,14 @@ import logger from '@/utils/logger';
 <%_ } else { -%>
 import logger from '@/infrastructure/log/logger';
 <%_ } -%>
+<%_ if (database === 'MongoDB') { -%>
+import mongoose from 'mongoose';
+<%_ } else if (database !== 'None') { -%>
+import sequelize from '<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>';
+<%_ } -%>
+<%_ if (caching === 'Redis') { -%>
+import redisService from '<% if (architecture === "MVC") { %>@/config/redisClient<% } else { %>@/infrastructure/caching/redisClient<% } %>';
+<%_ } -%>
 
 export const setupGracefulShutdown = (server: Server<% if (communication === 'Kafka') { %>, kafkaService: { disconnect: () => Promise<void> }<% } %>) => {
     const gracefulShutdown = async (signal: string) => {
@@ -13,25 +21,14 @@ export const setupGracefulShutdown = (server: Server<% if (communication === 'Ka
             try {
 <%_ if (database !== 'None') { -%>
 <%_ if (database === 'MongoDB') { -%>
-                const mongoose = (await import('mongoose')).default;
                 await mongoose.connection.close(false);
                 logger.info('MongoDB connection closed.');
 <%_ } else { -%>
-                <%_ if (architecture === 'MVC') { -%>
-                const sequelize = (await import('@/config/database')).default;
-                <%_ } else { -%>
-                const sequelize = (await import('@/infrastructure/database/database')).default;
-                <%_ } -%>
                 await sequelize.close();
                 logger.info('Database connection closed.');
 <%_ } -%>
 <%_ } -%>
 <%_ if (caching === 'Redis') { -%>
-                <%_ if (architecture === 'MVC') { -%>
-                const redisService = (await import('@/config/redisClient')).default;
-                <%_ } else { -%>
-                const redisService = (await import('@/infrastructure/caching/redisClient')).default;
-                <%_ } -%>
                 await redisService.quit();
                 logger.info('Redis connection closed.');
 <%_ } -%>

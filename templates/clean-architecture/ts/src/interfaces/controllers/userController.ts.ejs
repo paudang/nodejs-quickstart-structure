@@ -6,6 +6,9 @@ import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 import CreateUser from '@/usecases/createUser';
 import GetAllUsers from '@/usecases/getAllUsers';
 import logger from '@/infrastructure/log/logger';
+<%_ if (communication === 'Kafka') { -%>
+import { kafkaService } from '@/infrastructure/messaging/kafkaClient';
+<%_ } -%>
 
 export class UserController {
     private createUserUseCase: CreateUser;
@@ -23,7 +26,6 @@ export class UserController {
             const { name, email } = data;
             const user = await this.createUserUseCase.execute(name, email);
 <%_ if (communication === 'Kafka') { -%>
-            const { kafkaService } = await import('@/infrastructure/messaging/kafkaClient');
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: 'USER_CREATED',
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,7 +56,6 @@ export class UserController {
             const { name, email } = req.body;
             const user = await this.createUserUseCase.execute(name, email);
 <%_ if (communication === 'Kafka') { -%>
-            const { kafkaService } = await import('@/infrastructure/messaging/kafkaClient');
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: 'USER_CREATED',
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any

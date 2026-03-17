@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const logger = require('<% if (architecture === "MVC") { %>../utils/logger<% } else { %>../../infrastructure/log/logger<% } %>');
 const HTTP_STATUS = require('<% if (architecture === "MVC") { %>../utils/httpCodes<% } else { %>../../utils/httpCodes<% } %>');
+<%_ if (database === 'MongoDB') { -%>
+const mongoose = require('mongoose');
+<%_ } else if (database !== 'None') { -%>
+const sequelize = require('<% if (architecture === "MVC") { %>../config/database<% } else { %>../../infrastructure/database/database<% } %>');
+<%_ } -%>
 
 router.get('/', async (req, res) => {
   const healthData = {
@@ -16,7 +21,6 @@ router.get('/', async (req, res) => {
 <%_ if (database !== 'None') { -%>
   try {
 <%_ if (database === 'MongoDB') { -%>
-    const mongoose = require('mongoose');
     if (mongoose.connection.readyState === 1) {
       if (mongoose.connection.db && mongoose.connection.db.admin) {
          await mongoose.connection.db.admin().ping();
@@ -24,7 +28,6 @@ router.get('/', async (req, res) => {
       healthData.database = 'connected';
     }
 <%_ } else { -%>
-    const sequelize = require('<% if (architecture === "MVC") { %>../config/database<% } else { %>../../infrastructure/database/database<% } %>');
     await sequelize.authenticate();
     healthData.database = 'connected';
 <%_ } -%>

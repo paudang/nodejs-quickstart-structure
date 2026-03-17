@@ -8,6 +8,9 @@ const cacheService = require('../config/redisClient');
 <%_ } else if (caching === 'Memory Cache') { -%>
 const cacheService = require('../config/memoryCache');
 <%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+const { sendMessage } = require('../services/kafkaService');
+<%_ } -%>
 
 <% if (communication === 'GraphQL') { -%>
 const getUsers = async () => {
@@ -42,7 +45,6 @@ const createUser = async (data) => {
     await cacheService.del('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
-    const { sendMessage } = require('../services/kafkaService');
     await sendMessage('user-topic', JSON.stringify({
       action: 'USER_CREATED',
       payload: { id: user.id || user._id, email: user.email }
@@ -87,7 +89,6 @@ const createUser = async (req, res, next) => {
     await cacheService.del('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
-    const { sendMessage } = require('../services/kafkaService');
     await sendMessage('user-topic', JSON.stringify({
       action: 'USER_CREATED',
       payload: { id: user.id || user._id, email: user.email }

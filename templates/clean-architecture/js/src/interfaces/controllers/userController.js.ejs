@@ -5,6 +5,9 @@ const UserRepository = require('../../infrastructure/repositories/UserRepository
 const HTTP_STATUS = require('../../utils/httpCodes');
 <% } -%>
 const logger = require('../../infrastructure/log/logger');
+<%_ if (communication === 'Kafka') { -%>
+const { sendMessage } = require('../../infrastructure/messaging/kafkaClient');
+<%_ } -%>
 
 class UserController {
     constructor() {
@@ -28,7 +31,6 @@ class UserController {
         try {
             const user = await this.createUserUseCase.execute(name, email);
 <%_ if (communication === 'Kafka') { -%>
-            const { sendMessage } = require('../../infrastructure/messaging/kafkaClient');
             await sendMessage('user-topic', JSON.stringify({
                 action: 'USER_CREATED',
                 payload: { id: user.id || user._id, email: user.email }
@@ -56,7 +58,6 @@ class UserController {
         try {
             const user = await this.createUserUseCase.execute(name, email);
 <%_ if (communication === 'Kafka') { -%>
-            const { sendMessage } = require('../../infrastructure/messaging/kafkaClient');
             await sendMessage('user-topic', JSON.stringify({
                 action: 'USER_CREATED',
                 payload: { id: user.id || user._id, email: user.email }

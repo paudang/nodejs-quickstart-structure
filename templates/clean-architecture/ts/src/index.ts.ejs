@@ -110,15 +110,17 @@ const startServer = async () => {
 
 <%_ if (database !== 'None') { -%>
 // Database Sync
+<%_ if (database !== 'None') { -%>
+import <% if (database === 'MongoDB') { %>connectDB<% } else { %>sequelize<% } %> from '@/infrastructure/database/database';
+<%_ } -%>
+
 const syncDatabase = async () => {
     let retries = 30;
     while (retries) {
         try {
             <%_ if (database === 'MongoDB') { -%>
-            const connectDB = (await import('@/infrastructure/database/database')).default;
             await connectDB();
             <%_ } else { -%>
-            const sequelize = (await import('@/infrastructure/database/database')).default;
             await sequelize.sync();
             <%_ } -%>
             logger.info('Database synced');
