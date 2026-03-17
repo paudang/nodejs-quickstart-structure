@@ -4,6 +4,7 @@ const logger = require('../log/logger');
 const morgan = require('morgan');
 const { errorMiddleware } = require('./middleware/errorMiddleware');
 const healthRoutes = require('../../interfaces/routes/healthRoute');
+const setupGracefulShutdown = require('../../utils/gracefulShutdown');
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 const apiRoutes = require('../../interfaces/routes/api');
 const swaggerUi = require('swagger-ui-express');
@@ -82,7 +83,6 @@ const startServer = async () => {
 <%_ } -%>
     });
 
-    const setupGracefulShutdown = require('../../utils/gracefulShutdown');
     setupGracefulShutdown(server);
 };
 
