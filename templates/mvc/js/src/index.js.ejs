@@ -17,6 +17,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./config/swagger');
 <%_ } -%>
 const { env } = require('./config/env');
+const setupGracefulShutdown = require('./utils/gracefulShutdown');
 
 const app = express();
 const PORT = env.PORT;
@@ -96,7 +97,6 @@ const startServer = async () => {
 <%_ } -%>
     });
 
-    const setupGracefulShutdown = require('./utils/gracefulShutdown');
     setupGracefulShutdown(server);
 };
 
