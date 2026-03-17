@@ -7,8 +7,6 @@
 
 A powerful CLI tool to scaffold production-ready Node.js microservices with built-in best practices, allowing you to choose between **MVC** or **Clean Architecture**, **JavaScript** or **TypeScript**, and your preferred database.
 
-[![Medium Article](https://img.shields.io/badge/Medium-Read%20Article-black?logo=medium)](https://medium.com/@paudang/nodejs-quickstart-generator-93c276d60e0b)
-
 ![Demo](docs/demo.gif)
 
 ## Features
@@ -24,6 +22,12 @@ A powerful CLI tool to scaffold production-ready Node.js microservices with buil
 - **Database Migrations/Schemas**: Integrated **Flyway** for SQL migrations or **Mongoose** schemas for MongoDB.
 - **Professional Standards**: Generated projects come with highly professional, industry-standard tooling.
 
+## 🌟 Why developers love this?
+
+- **Community Trusted**: Over **3,000+** projects bootstrapped within the first month.
+- **Actively Maintained**: Constant updates and optimizations (30+ versions released) based on real-world developer feedback.
+- **Resilience First**: Unlike basic boilerplates, our generated code focuses on infrastructure stability (Retry logic, Health checks, and Graceful shutdowns).
+
 ## 🏆 Professional Standards (New)
 
 We don't just generate boilerplate; we generate **production-ready** foundations. Every project includes:
@@ -34,7 +38,7 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 -   **🧪 Testing Excellence**: Integrated `Jest` and `Supertest`. Every generated project maintains **>70% Unit Test coverage** for controllers, services, and resolvers out of the box.
 -   **🔄 CI/CD Integration**: Pre-configured workflows for **GitHub Actions**, **Jenkins**, and **GitLab CI**.
 -   **⚓ Git Hooks**: `Husky` and `Lint-Staged` to ensure no bad code is ever committed.
--   **🤝 Reliability**: Advanced Health Checks (`/health`) with deep database pings and Graceful Shutdown workflows for zero-downtime rollouts.
+-   **🤝 Reliability**: Health Checks (`/health`) with deep database pings, Infrastructure Retry Logic (handling Docker startup delays), and Graceful Shutdown workflows.
 -   **🐳 DevOps**: Highly optimized **Multi-Stage Dockerfile** for small, secure production images.
 -   **🚀 Deployment**: Ship confidently with an integrated **PM2 Ecosystem Configuration** for zero-downtime reloads and robust process management.
 
@@ -66,14 +70,13 @@ Once installed, simply run the following command in any directory where you want
 ```bash
 nodejs-quickstart init
 ```
-or
 
 ## Quick Start (Recommended)
 
 You can run the generator directly without installing it globally:
 
 ```bash
-npx nodejs-quickstart-structure init
+npx nodejs-quickstart-structure@latest init
 ```
 
 ### Configuration Options
@@ -110,6 +113,12 @@ npm install
 
 docker-compose up
 ```
+
+## ❤️ Support the Project
+
+We just hit **3,000 downloads**! If this tool helped you save hours of setup time, please consider:
+- Giving us a ⭐ on [GitHub](https://github.com/paudang/nodejs-quickstart-structure) to help others find it.
+- Following the [Medium Article](https://medium.com/@paudang/nodejs-quickstart-generator-93c276d60e0b) for deep-dive tutorials.
 
 ## License
 
