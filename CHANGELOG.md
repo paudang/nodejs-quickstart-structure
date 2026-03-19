@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `ejs`: Upgraded from `^3.1.10` to `^5.0.1`.
   - `inquirer`: Upgraded from `^12.4.1` to `^13.3.2`.
 - **Verified Compatibility**: Validated the generator across multiple complex project configurations including TypeScript/MVC, JavaScript/Clean Architecture, Kafka messaging, and Redis/PostgreSQL integration.
+- **Update jest.config.js**: Update jest.config.js (or your test runner config) with new global thresholds:
+```
+  globalThreshold: {
+    branches: 70,
+    functions: 80,
+    lines: 80,
+    statements: 80,
+  },
+```
 
 ## [1.16.1] - 2026-03-17
 
