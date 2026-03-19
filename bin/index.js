@@ -74,6 +74,10 @@ program
             console.log(chalk.cyan(`\nNext steps:\n  cd ${answers.projectName}\n  npm install\n  docker-compose up\n-----------------------${manualStartInstructions}\n\n${chalk.yellow('Production (PM2):')}\n  npm run build\n  npm run deploy\n  npx pm2 logs`));
 
         } catch (error) {
+            if (error.name === 'ExitPromptError') {
+                console.log(chalk.yellow('\n\n👋 Goodbye! Setup cancelled.'));
+                process.exit(0);
+            }
             console.error(chalk.red('Error generating project:'), error);
             process.exit(1);
         }
