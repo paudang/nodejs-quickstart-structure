@@ -17,7 +17,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:e2e:run": "jest tests/e2e --passWithNoTests --testPathIgnorePatterns=\"[]\"",
+    "test:e2e:run": "jest --config ./jest.e2e.config.js --passWithNoTests",
     "test:e2e": "node scripts/run-e2e.js"
   },
   "dependencies": {
