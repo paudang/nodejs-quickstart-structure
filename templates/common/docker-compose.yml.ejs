@@ -134,7 +134,7 @@ services:
   kafka:
     image: bitnamilegacy/kafka:3.4.1-debian-12-r39
     ports:
-      - "${KAFKA_PORT:-9092}:9092"
+      - "${KAFKA_EXTERNAL_PORT:-9093}:9093"
     environment:
       - KAFKA_ENABLE_KRAFT=yes
       - KAFKA_CFG_PROCESS_ROLES=broker,controller

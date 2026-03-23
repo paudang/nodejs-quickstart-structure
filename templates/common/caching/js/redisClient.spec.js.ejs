@@ -1,5 +1,3 @@
-const Redis = require('ioredis');
-
 jest.mock('ioredis', () => {
   const mRedis = jest.fn(() => ({
     on: jest.fn(),
