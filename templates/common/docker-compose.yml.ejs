@@ -132,7 +132,7 @@ services:
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
   kafka:
-    image: bitnami/kafka:3.4.1
+    image: bitnamilegacy/kafka:3.4.1-debian-12-r39
     ports:
       - "${KAFKA_PORT:-9092}:9092"
     environment:
