@@ -1,43 +1,10 @@
-<%_ if (language === 'JavaScript') { _%>
 const request = require('supertest');
-<%_ if (database === 'MySQL' || database === 'PostgreSQL') { _%>
-<%_ if (architecture === 'MVC') { _%>
-const { sequelize } = require('@/config/database');
-<%_ } else { _%>
-// Clean Architecture
-const sequelize = require('@/infrastructure/database/database');
-<%_ } _%>
-<%_ } _%>
-<%_ if (database === 'MongoDB') { _%>
-const mongoose = require('mongoose');
-<%_ } _%>
 
 const SERVER_URL = process.env.TEST_URL || `http://127.0.0.1:${process.env.PORT || 3000}`;
 
 describe('E2E User Tests', () => {
-  beforeAll(async () => {
-    // Basic setup depending on the app entrypoint.
-    <%_ if (database === 'MySQL' || database === 'PostgreSQL') { _%>
-    if (sequelize && sequelize.sync) {
-        // Assume syncing happens via docker flyway or app start, but we can sync here just in case.
-        await sequelize.sync({ force: false });
-    }
-    <%_ } _%>
-  });
-
-  afterAll(async () => {
-    // Wait slightly to let Kafka events finish before killing connection
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    <%_ if (database === 'MySQL' || database === 'PostgreSQL') { _%>
-    if (sequelize && sequelize.close) await sequelize.close();
-    <%_ } _%>
-    <%_ if (database === 'MongoDB') { _%>
-    if (mongoose.connection && mongoose.connection.readyState !== 0) {
-        await mongoose.disconnect();
-    }
-    <%_ } _%>
-  });
+  // Global setup and teardown hooks can be added here
+  // typically for database seeding or external authentication checks prior to E2E.
 
   it('should create a user and verify flow', async () => {
     <%_ if (communication === 'GraphQL') { _%>
@@ -75,50 +42,3 @@ describe('E2E User Tests', () => {
     <%_ } _%>
   });
 });
-<%_ } else { _%>
-import request from 'supertest';
-import app from '../../../src/index';
-
-describe('E2E User Tests', () => {
-  let server: any;
-
-  beforeAll(async () => {
-    server = (app as any).listen ? (app as any).listen(0) : app;
-  });
-
-  afterAll(async () => {
-    if (server && server.close) {
-        await server.close();
-    }
-  });
-
-  it('should create a user and verify flow', async () => {
-    <%_ if (communication === 'GraphQL') { _%>
-    const query = `
-      mutation {
-        createUser(name: "Test User", email: "test_${Date.now()}@example.com") {
-          id
-          name
-          email
-        }
-      }
-    `;
-    const response = await request(server)
-      .post('/graphql')
-      .send({ query });
-
-    expect(response.statusCode).toBe(200);
-    <%_ } else { _%>
-    const response = await request(server)
-      .post('/api/users')
-      .send({ name: 'Test User', email: `test_${Date.now()}@example.com` });
-
-    if (response.statusCode === 404) {
-      expect(response.statusCode).toBe(404);
-    } else {
-      expect(response.statusCode).toBe(201);
-    }
-    <%_ } _%>
-  });
-});
-<%_ } _%>

@@ -36,11 +36,7 @@ run_e2e_tests:
   script:
     - apk add --no-cache nodejs npm docker-compose
     - npm ci
-    - docker-compose up -d --build
-    - sleep 15
     - npm run test:e2e
-  after_script:
-    - docker-compose down
 
 build_app:
   stage: build

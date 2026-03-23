@@ -27,14 +27,7 @@ pipeline {
 
         stage('E2E Test') {
             steps {
-                sh 'docker-compose up -d --build'
-                sh 'sleep 15'
                 sh 'npm run test:e2e'
-            }
-            post {
-                always {
-                    sh 'docker-compose down'
-                }
             }
         }
 
