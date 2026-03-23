@@ -427,7 +427,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             
             log(`... Running E2E Tests ...`);
             try {
-                const e2eOutput = await runCommand('npm run test:e2e', projectPath, TEST_ENV, true);
+                await runCommand('npm run test:e2e:run', projectPath, TEST_ENV, true);
                 log(`✓ E2E Tests Passed`, ANSI_GREEN);
             } catch (e) {
                 log(`!!! E2E Tests FAILED: ${e.message}`, ANSI_RED);
