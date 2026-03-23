@@ -62,9 +62,10 @@ program
             
             if (needsInfrastructure) {
                 let servicesToStart = '';
-                if (answers.database !== 'None') servicesToStart += ' db';
+                if (answers.database === 'MongoDB') servicesToStart += ' db';
+                else if (answers.database !== 'None') servicesToStart += ' db flyway';
                 if (answers.caching === 'Redis') servicesToStart += ' redis';
-                if (answers.communication === 'Kafka') servicesToStart += ' zookeeper kafka';
+                if (answers.communication === 'Kafka') servicesToStart += ' kafka';
                 
                 manualStartInstructions += `\n  docker-compose up -d${servicesToStart}  # Start infrastructure first\n  npm run dev`;
             } else {

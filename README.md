@@ -18,7 +18,7 @@ A powerful CLI tool to scaffold production-ready Node.js microservices with buil
 - **Communication Flow**: Scaffold APIs using **REST**, **GraphQL** (with Apollo Server), or **Kafka** (event-driven).
 - **Caching Layer**: Choose between **Redis** or built-in **Memory Cache** for data caching.
 - **Centralized Error Handling**: Every project ships with a global error handler, custom error classes and structured JSON error responses — consistent across REST & GraphQL.
-- **Dockerized**: Automatically generates `docker-compose.yml` for DB, Kafka, Redis, and Zookeeper.
+- **Dockerized**: Automatically generates `docker-compose.yml` for DB, Kafka, and Redis.
 - **Database Migrations/Schemas**: Integrated **Flyway** for SQL migrations or **Mongoose** schemas for MongoDB.
 - **Professional Standards**: Generated projects come with highly professional, industry-standard tooling.
 

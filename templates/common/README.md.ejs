@@ -124,7 +124,7 @@ This project demonstrates a production-ready Kafka flow:
 2. **Consumer**: `WelcomeEmailConsumer` listens to `user-topic` and simulates sending an email.
 
 ### How to verify:
-1. Ensure infrastructure is running: `docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> zookeeper kafka<% } %>`
+1. Ensure infrastructure is running: `docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> kafka<% } %>`
 2. Start the app: `npm run dev`
 3. Trigger an event by creating a user (via Postman or curl):
    ```bash
@@ -167,7 +167,7 @@ To run the Node.js application locally while using Docker for the infrastructure
 
 ```bash
 # Start infrastructure
-docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> zookeeper kafka<% } %>
+docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> kafka<% } %>
 
 # Start the application
 npm run dev
@@ -215,7 +215,7 @@ npm install
 2. **Start Infrastructure (DB, Redis, Kafka, etc.) in the background**
 *(This specifically starts the background services without running the application inside Docker, allowing PM2 to handle it).*
 ```bash
-docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> zookeeper kafka<% } %>
+docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> kafka<% } %>
 ```
 3. **Wait 5-10s** for the database to fully initialize.
 4. **Deploy the App using PM2 in Cluster Mode**
