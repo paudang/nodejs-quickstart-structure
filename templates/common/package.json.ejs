@@ -64,15 +64,13 @@
     "@types/express": "^4.17.21",
     "@types/cors": "^2.8.17",
     "@types/hpp": "^0.2.3",
-<% if (caching === 'Redis') { %>    "@types/ioredis": "^5.0.0",
-<% } -%>
 <% if (caching === 'Memory Cache') { %>    "@types/node-cache": "^4.2.5",
 <% } -%>
 <% if (database === 'PostgreSQL') { %>    "@types/pg": "^8.10.9",
 <% } -%>
-<%_ if (database === 'MySQL' || database === 'PostgreSQL') { -%>
+<% if (database === 'MySQL' || database === 'PostgreSQL') { -%>
     "@types/sequelize": "^4.28.19",
-<%_ } -%>
+<% } -%>
     "@types/morgan": "^1.9.9",
     "rimraf": "^6.0.1"<% if ((viewEngine && viewEngine !== 'None') || communication === 'REST APIs' || communication === 'Kafka') { %>,
     "cpx2": "^8.0.0"<% } %><% } %>,
@@ -92,13 +90,13 @@
     "ts-jest": "^29.2.5",
     "@types/jest": "^29.5.14",
     "wait-on": "^7.2.0",
-    "supertest": "6.3.3",
+    "supertest": "^7.1.3",
     "tsconfig-paths": "^4.2.0",
     "tsc-alias": "^1.8.10",
     "@types/supertest": "^6.0.2"<% } else { %>,
     "jest": "^29.7.0",
     "wait-on": "^7.2.0",
-    "supertest": "6.3.3"<% } %>
+    "supertest": "^7.1.3"<% } %>
   },
   "lint-staged": {
     "*.{js,ts}": [
