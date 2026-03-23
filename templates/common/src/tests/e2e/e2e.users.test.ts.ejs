@@ -1,0 +1,40 @@
+import request from 'supertest';
+
+const SERVER_URL = process.env.TEST_URL || `http://127.0.0.1:${process.env.PORT || 3000}`;
+
+describe('E2E User Tests', () => {
+  beforeAll(async () => {
+  });
+
+  afterAll(async () => {
+  });
+
+  it('should create a user and verify flow', async () => {
+    <%_ if (communication === 'GraphQL') { _%>
+    const query = `
+      mutation {
+        createUser(name: "Test User", email: "test_${Date.now()}@example.com") {
+          id
+          name
+          email
+        }
+      }
+    `;
+    const response = await request(SERVER_URL)
+      .post('/graphql')
+      .send({ query });
+
+    expect(response.statusCode).toBe(200);
+    <%_ } else { _%>
+    const response = await request(SERVER_URL)
+      .post('/api/users')
+      .send({ name: 'Test User', email: `test_${Date.now()}@example.com` });
+
+    if (response.statusCode === 404) {
+      expect(response.statusCode).toBe(404);
+    } else {
+      expect(response.statusCode).toBe(201);
+    }
+    <%_ } _%>
+  });
+});

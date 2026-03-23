@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.0] - 2026-03-23
+
+### Added
+- **Kafka KRaft Mode Integration**: Modernized Kafka setups across all templates (MVC & Clean Architecture) by completely removing the Zookeeper dependency and enabling KRaft mode in `docker-compose.yml`, reducing project orchestration overhead.
+- **End-to-End (E2E) Verification Framework**: Implemented dedicated Docker container targeted end-to-end tests (`tests/e2e/`) utilizing Supertest via dynamic `SERVER_URL` mapping to eliminate port collisions and test the fully assembled container cluster directly.
+- **Enhanced Validation Pipelines**: Automatically executes the `npm run test:e2e` suite at the conclusion of internal validations across the entire platform matrix for improved CI accountability.
+
+### Refactored
+- **Test Directory Strict Isolation**: Restructured internal code generation workflows (`lib/modules/`) to pipe all generated `.spec` files strictly into a dedicated `tests/unit/` subdirectory, cleanly abstracting unit specifications from end-to-end specifications.
+
 ## [1.16.2] - 2026-03-19
 
 ### Changed

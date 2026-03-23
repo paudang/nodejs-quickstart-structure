@@ -22,11 +22,25 @@ lint_code:
   script:
     - npm run lint
 
-run_tests:
+run_unit_tests:
   stage: test
   image: node:22-alpine
   script:
     - npm run test:coverage
+
+run_e2e_tests:
+  stage: test
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  script:
+    - apk add --no-cache nodejs npm docker-compose
+    - npm ci
+    - docker-compose up -d --build
+    - sleep 15
+    - npm run test:e2e
+  after_script:
+    - docker-compose down
 
 build_app:
   stage: build
