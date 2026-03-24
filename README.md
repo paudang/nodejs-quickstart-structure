@@ -9,6 +9,10 @@ A powerful CLI tool to scaffold production-ready Node.js microservices with buil
 
 ![Demo](docs/demo.gif)
 
+## 📖 Documentation
+
+For full guides, architecture deep-dives, and feature references, visit our **[Official Documentation Site](https://paudang.github.io/nodejs-quickstart-structure/)**.
+
 ## Features
 
 - **Interactive CLI**: Easy-to-use prompts to configure your project.
@@ -20,6 +24,7 @@ A powerful CLI tool to scaffold production-ready Node.js microservices with buil
 - **Centralized Error Handling**: Every project ships with a global error handler, custom error classes and structured JSON error responses — consistent across REST & GraphQL.
 - **Dockerized**: Automatically generates `docker-compose.yml` for DB, Kafka, and Redis.
 - **Database Migrations/Schemas**: Integrated **Flyway** for SQL migrations or **Mongoose** schemas for MongoDB.
+- **AI-Native Ready**: Specifically optimized for **Cursor** and other AI agents with built-in `.cursorrules` and Agent Skill prompts.
 - **Professional Standards**: Generated projects come with highly professional, industry-standard tooling.
 
 ## 🌟 Why developers love this?
@@ -53,7 +58,6 @@ The CLI supports a massive number of configurations to fit your exact needs:
     -   Every combination can be generated with or without (**GitHub Actions CI/CD** / **Jenkins** or **GitLab CI**), tripling the possibilities.
     -   Every single one of these 480 scenarios is verified to be compatible with our 80% Coverage Threshold policy.
 
-For a detailed list of all supported cases, check out [docs/generateCase.md](docs/generateCase.md).
 
 ## Installation
 
@@ -116,7 +120,7 @@ docker-compose up
 
 ## ❤️ Support the Project
 
-We just hit **3,000 downloads**! If this tool helped you save hours of setup time, please consider:
+We just hit **3,500+ downloads**! If this tool helped you save hours of setup time, please consider:
 - Giving us a ⭐ on [GitHub](https://github.com/paudang/nodejs-quickstart-structure) to help others find it.
 - Following the [Medium Article](https://medium.com/@paudang/nodejs-quickstart-generator-93c276d60e0b) for deep-dive tutorials.
 

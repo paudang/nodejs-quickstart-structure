@@ -33,7 +33,7 @@ To set up the project locally for development:
 
 1. Clone your fork:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/nodejs-quickstart-structure.git
+   git clone https://github.com/paudang/nodejs-quickstart-structure.git
    cd nodejs-quickstart-structure
    ```
 
@@ -48,9 +48,13 @@ To set up the project locally for development:
    ```
    Now you can use `nodejs-quickstart` anywhere on your machine to test your local changes.
 
-4. Run tests:
+4. **Testing Generators**: To verify your changes across the 240+ combinations:
    ```bash
-   npm run test:e2e
+   npm run test:e2e  # Runs the full validation matrix
    ```
+
+## Technical Documentation
+
+For a deep dive into the generator's internal flow and architecture, please refer to our **[Developer Guides](https://paudang.github.io/nodejs-quickstart-structure/guide/introduction)**.
 
 Thank you for contributing!

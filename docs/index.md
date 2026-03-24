@@ -1,0 +1,23 @@
+---
+layout: home
+
+hero:
+  name: "Node.js Quickstart"
+  text: "Production-ready microservices in seconds"
+  tagline: "Scaffold MVC or Clean Architecture with Kafka, GraphQL, Redis, and more."
+  actions:
+    - theme: brand
+      text: Get Started
+      link: /guide/getting-started
+    - theme: alt
+      text: View on GitHub
+      link: https://github.com/paudang/nodejs-quickstart-structure
+
+features:
+  - title: 240+ Combinations
+    details: Choose your language (TS/JS), architecture (MVC/Clean), and communication (REST/GraphQL/Kafka).
+  - title: AI-Native Ready
+    details: Pre-configured .cursorrules and Agent Skill prompts to boost your productivity with AI tools.
+  - title: Production Standards
+    details: Built-in E2E tests, graceful shutdown, health checks, and security headers.
+---

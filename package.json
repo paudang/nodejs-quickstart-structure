@@ -12,7 +12,10 @@
     "test:e2e": "npm run test:e2e:windows",
     "test:e2e:windows": "node scripts/validate-windows.js",
     "test:e2e:linux": "node scripts/validate-linux.js",
-    "test:verify:mongo": "node scripts/verify-migration.js"
+    "test:verify:mongo": "node scripts/verify-migration.js",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "keywords": [
     "nodejs",
@@ -44,6 +47,12 @@
     "ejs": "^5.0.1",
     "fs-extra": "^11.3.0",
     "inquirer": "^13.3.2"
+  },
+  "overrides": {
+    "esbuild": "^0.25.0"
+  },
+  "devDependencies": {
+    "vitepress": "^1.0.0-rc.45"
   },
   "files": [
     "bin",
