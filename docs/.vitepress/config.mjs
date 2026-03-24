@@ -12,6 +12,11 @@ export default defineConfig({
       { text: 'Changelog', link: 'https://github.com/paudang/nodejs-quickstart-structure/blob/main/CHANGELOG.md' }
     ],
 
+    editLink: {
+      pattern: 'https://github.com/paudang/nodejs-quickstart-structure/edit/main/docs/:path',
+      text: 'Edit this page on GitHub'
+    },
+
     sidebar: [
       {
         text: 'Getting Started',
@@ -46,7 +51,8 @@ export default defineConfig({
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/paudang/nodejs-quickstart-structure' }
+      { icon: 'github', link: 'https://github.com/paudang/nodejs-quickstart-structure' },
+      { icon: 'npm', link: 'https://www.npmjs.com/package/nodejs-quickstart-structure' }
     ],
 
     footer: {
