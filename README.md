@@ -13,7 +13,7 @@ A powerful CLI tool to scaffold production-ready Node.js microservices with buil
 
 For full guides, architecture deep-dives, and feature references, visit our **[Official Documentation Site](https://paudang.github.io/nodejs-quickstart-structure/)**.
 
-## Features
+## 🚀 Features
 
 - **Interactive CLI**: Easy-to-use prompts to configure your project.
 - **Multiple Architectures**: Supports both **MVC** (Model-View-Controller) and **Clean Architecture**.
