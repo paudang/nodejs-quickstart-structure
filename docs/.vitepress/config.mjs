@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
-  title: "Node.js Quickstart",
+  title: "Node.js Quickstart Structure",
   description: "Production-ready Node.js structure generator",
   base: '/nodejs-quickstart-structure/',
   themeConfig: {

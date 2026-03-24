@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: "Node.js Quickstart"
+  name: "Node.js Quickstart Structure"
   text: "Production-ready microservices in seconds"
   tagline: "Scaffold MVC or Clean Architecture with Kafka, GraphQL, Redis, and more."
   actions:
