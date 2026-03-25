@@ -7,7 +7,7 @@ This generator is built for the age of AI. We provide specialized context to hel
 When you open your generated project in **Cursor**, it automatically reads the `.cursorrules` file at the root.
 
 -   **Automatic Enforcement**: Guides the AI to follow the selected architecture (MVC or Clean).
--   **Quality Gates**: Instructs the AI to maintain at least 70% test coverage for new code.
+-   **Quality Gates**: Instructs the AI to maintain at least 80% test coverage for new code.
 -   **Contextual Awareness**: Pre-configured with your specific stack choices (e.g., "This is a TypeScript MVC project using PostgreSQL").
 
 ## Agent Skill Templates (prompts/)
