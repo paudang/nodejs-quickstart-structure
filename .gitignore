@@ -24,3 +24,10 @@ coverage/
 # Editor directories
 .vscode/
 .idea/
+
+# VitePress
+.vitepress/cache/
+.vitepress/dist/
+
+# Prompts
+prompts/

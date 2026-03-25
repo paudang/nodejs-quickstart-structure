@@ -31,29 +31,25 @@ pipeline {
             }
         }
 
-        // stage('Build') {
-        //     steps {
-        //         sh 'npm run build'
-        //     }
-        // }
+<% if (includeSecurity) { %>
+        stage('SonarQube Analysis') {
+            environment {
+                scannerHome = tool 'SonarScanner'
+            }
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+            }
+        }
 
-        // stage('SonarQube Analysis') {
-        //     environment {
-        //         scannerHome = tool 'SonarScanner'
-        //     }
-        //     steps {
-        //         withSonarQubeEnv('SonarQube') {
-        //             sh "${scannerHome}/bin/sonar-scanner"
-        //         }
-        //     }
-        // }
-
-        // stage('Security Scan') {
-        //     steps {
-        //         sh 'npm audit --audit-level=high'
-        //     }
-        // }
-
+        stage('Security Scan') {
+            steps {
+                sh 'npm audit --audit-level=high'
+                sh 'npm run snyk:test'
+            }
+        }
+<% } %>
         // stage('Docker Build & Push') {
         //     steps {
         //         script {

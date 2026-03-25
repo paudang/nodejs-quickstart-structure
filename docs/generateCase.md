@@ -1,15 +1,16 @@
 # NodeJS Quickstart Generator - Test Cases
 
-This document lists the **240 possible project combinations** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases, communication patterns, and caching options.
+This document lists the **1,680+ possible project combinations** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases, communication patterns, caching options, and enterprise security layers.
 
 ## Summary
 - **CI Providers**: `None`, `GitHub Actions`, `Jenkins`, `GitLab CI`
-- **MVC Architecture**: 180 Combinations
-- **Clean Architecture**: 60 Combinations
+- **Security Hardening**: `Yes`, `No` (Conditional on CI selection)
+- **MVC Architecture**: 1,260 Combinations
+- **Clean Architecture**: 420 Combinations
 
-**Total Core Combinations: 240**
+**Total Core Combinations: 1,680+**
 
-> **Note on CI/CD**: Each combination can be generated with or without CI/CD (`--ci-provider`), effectively doubling the state space.
+> **Note on CI/CD & Security**: Every combination can be generated with various CI/CD providers. If a CI provider is selected, an additional "Enterprise Security Hardening" layer (Snyk, SonarQube, etc.) can be toggled, significantly expanding the project state space.
 
 ---
 

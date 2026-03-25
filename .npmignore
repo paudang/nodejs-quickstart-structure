@@ -21,3 +21,10 @@ npm-debug.log*
 jest.config.js
 Dockerfile.validation
 docker-compose.yml
+
+# VitePress
+.vitepress/cache/
+.vitepress/dist/
+
+# Prompts
+prompts/

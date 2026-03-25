@@ -18,7 +18,9 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:e2e:run": "jest --config ./jest.e2e.config.js --passWithNoTests",
-    "test:e2e": "node scripts/run-e2e.js"
+    "test:e2e": "node scripts/run-e2e.js"<% if (includeSecurity) { %>,
+    "security:check": "npm audit && npm run snyk:test",
+    "snyk:test": "snyk test"<% } %>
   },
   "dependencies": {
     "express": "^4.18.2",

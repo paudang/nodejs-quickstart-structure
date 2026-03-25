@@ -4,7 +4,8 @@ variables:
 stages:
   - lint
   - test
-  - build
+<% if (includeSecurity) { %>  - security
+<% } %>  - build
 
 cache:
   paths:
@@ -37,7 +38,16 @@ run_e2e_tests:
     - apk add --no-cache nodejs npm docker-compose
     - npm ci
     - npm run test:e2e
-
+<% if (includeSecurity) { %>
+snyk_scan:
+  stage: security
+  image: node:22-alpine
+  script:
+    - npm ci
+    - npm run snyk:test
+  only:
+    - main
+<% } %>
 build_app:
   stage: build
   image: node:22-alpine
