@@ -5,7 +5,7 @@ export default defineConfig({
   description: "Production-ready Node.js structure generator",
   base: '/nodejs-quickstart-structure/',
   head: [
-    ['meta', { property: 'og:image', content: '/og-image.png' }],
+    ['meta', { property: 'og:image', content: 'https://paudang.github.io/nodejs-quickstart-structure/og-image.png' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { property: 'og:title', content: 'Node.js Quickstart Structure' }],
     ['meta', { property: 'og:description', content: 'Scaffold production-ready Node.js microservices in seconds.' }]
