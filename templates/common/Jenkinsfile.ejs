@@ -49,6 +49,15 @@ pipeline {
                 sh 'npm run snyk:test'
             }
         }
+
+        stage('Snyk Container Scan') {
+            steps {
+                script {
+                    sh 'docker build -t <%= projectName %>:latest .'
+                    sh 'snyk container test <%= projectName %>:latest --file=Dockerfile --severity-threshold=high'
+                }
+            }
+        }
 <% } %>
         // stage('Docker Build & Push') {
         //     steps {

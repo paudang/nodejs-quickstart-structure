@@ -47,6 +47,21 @@ snyk_scan:
     - npm run snyk:test
   only:
     - main
+
+snyk_container_scan:
+  stage: security
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  script:
+    - apk add --no-cache nodejs npm
+    - npm install -g snyk
+    - docker build -t <%= projectName %>:latest .
+    - snyk container test <%= projectName %>:latest --file=Dockerfile --severity-threshold=high
+  only:
+    - main
+  variables:
+    SNYK_TOKEN: $SNYK_TOKEN
 <% } %>
 build_app:
   stage: build

@@ -29,7 +29,8 @@ program
     .option('-d, --database <database>', 'Database (MySQL, PostgreSQL)')
     .option('--db-name <name>', 'Database name')
     .option('-c, --communication <communication>', 'Communication (REST APIs, GraphQL, Kafka)')
-    .option('--ci-provider <provider>', 'CI/CD Provider (None, GitHub Actions, Jenkins)')
+    .option('--ci-provider <provider>', 'CI/CD Provider (None, GitHub Actions, Jenkins, GitLab CI)')
+    .option('--include-security', 'Include Enterprise Security Hardening')
     .option('--caching <type>', 'Caching Layer (None/Redis)')
     .action(async (options) => {
         // Fix for Commander camelCase conversion
@@ -83,6 +84,7 @@ program
             process.exit(1);
         }
     });
+
 program.parse(process.argv);
 
 if (!process.argv.slice(2).length) {
