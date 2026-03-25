@@ -120,7 +120,7 @@ docker-compose up
 
 ## ❤️ Support the Project
 
-We just hit **3,500+ downloads**! If this tool helped you save hours of setup time, please consider:
+We just hit **3,000+ downloads**! If this tool helped you save hours of setup time, please consider:
 - Giving us a ⭐ on [GitHub](https://github.com/paudang/nodejs-quickstart-structure) to help others find it.
 - Following the [Medium Article](https://medium.com/@paudang/nodejs-quickstart-generator-93c276d60e0b) for deep-dive tutorials.
 
