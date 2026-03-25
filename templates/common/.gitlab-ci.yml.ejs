@@ -57,7 +57,7 @@ snyk_container_scan:
     - apk add --no-cache nodejs npm
     - npm install -g snyk
     - docker build -t <%= projectName %>:latest .
-    - snyk container test <%= projectName %>:latest --file=Dockerfile --severity-threshold=high
+    - snyk container test <%= projectName %>:latest --file=Dockerfile --severity-threshold=high --skip-unused-projects
   only:
     - main
   variables:

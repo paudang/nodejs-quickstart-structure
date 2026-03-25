@@ -3,6 +3,9 @@
 # ==========================================
 FROM node:22-alpine AS builder
 
+# Upgrade npm to fix high-severity vulnerabilities (SNYK-JS-GLOB, SNYK-JS-MINIMATCH)
+RUN npm install -g npm@11.6.4
+
 WORKDIR /app
 ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 
@@ -21,6 +24,9 @@ COPY . .
 # Stage 2: Production
 # ==========================================
 FROM node:22-alpine AS production
+
+# Upgrade npm to fix high-severity vulnerabilities
+RUN npm install -g npm@11.6.4
 
 WORKDIR /app
 

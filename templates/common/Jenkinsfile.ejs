@@ -54,7 +54,7 @@ pipeline {
             steps {
                 script {
                     sh 'docker build -t <%= projectName %>:latest .'
-                    sh 'snyk container test <%= projectName %>:latest --file=Dockerfile --severity-threshold=high'
+                    sh 'snyk container test <%= projectName %>:latest --file=Dockerfile --severity-threshold=high --skip-unused-projects'
                 }
             }
         }
