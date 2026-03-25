@@ -54,14 +54,14 @@ CI/CD is not currently configured, but the project is ready for integration.
 
 ### 2. Quick Start
 ```bash
-# Initialize Git (Required for Husky)
+# Initialize Git (Mandatory for Husky hooks)
 git init
 
 # Install dependencies
 npm install
 
-# Setup Git Hooks (Husky)
-npm run prepare
+# Troubleshooting Husky (if skip git init)
+# npx husky install
 
 # Start Infrastructure (DB, etc.)
 docker-compose up -d
