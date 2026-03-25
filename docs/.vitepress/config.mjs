@@ -6,9 +6,18 @@ export default defineConfig({
   base: '/nodejs-quickstart-structure/',
   head: [
     ['meta', { property: 'og:image', content: 'https://paudang.github.io/nodejs-quickstart-structure/og-image.png' }],
-    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { property: 'og:image:width', content: '1200' }],
+    ['meta', { property: 'og:image:height', content: '630' }],
     ['meta', { property: 'og:title', content: 'Node.js Quickstart Structure' }],
-    ['meta', { property: 'og:description', content: 'Scaffold production-ready Node.js microservices in seconds.' }]
+    ['meta', { property: 'og:description', content: 'Scaffold production-ready Node.js microservices in seconds.' }],
+    ['meta', { property: 'og:site_name', content: 'Node.js Quickstart Structure' }],
+    ['meta', { property: 'og:locale', content: 'en_US' }],
+    ['meta', { property: 'og:url', content: 'https://paudang.github.io/nodejs-quickstart-structure/' }],
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:title', content: 'Node.js Quickstart Structure' }],
+    ['meta', { name: 'twitter:description', content: 'Scaffold production-ready Node.js microservices in seconds.' }],
+    ['meta', { name: 'twitter:image', content: 'https://paudang.github.io/nodejs-quickstart-structure/og-image.png' }]
   ],
   themeConfig: {
     nav: [
