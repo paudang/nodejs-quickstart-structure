@@ -26,8 +26,8 @@ coverage/
 .idea/
 
 # VitePress
-.vitepress/cache/
-.vitepress/dist/
+docs/.vitepress/cache/
+docs/.vitepress/dist/
 
 # Prompts
 prompts/
