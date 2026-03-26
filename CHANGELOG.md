@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Matrix Expansion**: Updated the CLI to support over **1,680+ project combinations** by adding a conditional security hardening layer across all CI/CD providers.
 
+### Fixed
+- **Docker Node Version**: Updated Docker node version to 22.22.2-trixie-slim
+
 ## [1.17.0] - 2026-03-23
 
 ### Added

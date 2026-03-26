@@ -2,6 +2,30 @@
 
 This guide summarizes common issues you might encounter while using the **Node.js Quickstart Structure** generator and its enterprise security features.
 
+---
+
+## 💻 Environment & Setup
+
+### 1. `Command not found: nodejs-quickstart`
+**Reason**: The CLI is not installed globally or your PATH is not configured.
+**Solution**:
+- **Use npx (Recommended)**: Run without installation: `npx nodejs-quickstart-structure init`.
+- **Global Install**: `npm install -g nodejs-quickstart-structure`.
+
+### 2. `Invalid Node.js version`
+**Reason**: Your current Node.js version is below the requirement.
+**Solution**:
+- Ensure you are using **Node.js >= 18.x** (LTS versions are highly recommended).
+- Use `node -v` to check your version.
+
+### 3. `Missing .env file`
+**Reason**: The generator creates a `.env.example`, but you need a local `.env`.
+**Solution**:
+- Copy the example file: `cp .env.example .env` (Linux/Mac) or `copy .env.example .env` (Windows).
+- Fill in your specific environment variables (DB credentials, API keys, etc.).
+
+---
+
 ## 🛡️ Security & Quality (Snyk/Sonar)
 
 ### 1. SonarCloud: `sonar.organization` is missing
@@ -21,11 +45,17 @@ This guide summarizes common issues you might encounter while using the **Node.j
 - Ensure the **Project Key** in SonarCloud (e.g., `org_repo-name`) matches the one in your `sonar-project.properties`.
 
 ### 3. Snyk: `403 Forbidden` or `Unauthorized`
-**Error**: `Snyk test failed: 403`
-**Reason**: Usually a missing or invalid `SNYK_TOKEN` in your environment or GitHub Secrets.
+**Error**: `Snyk test failed: 403` or `Authentication error (SNYK-0005)`
+**Reason**: Usually a missing or invalid `SNYK_TOKEN` in your environment, or you haven't authenticated the CLI locally.
 **Solution**: 
-- Verify your token at [Snyk Account Settings](https://app.snyk.io/account).
-- Ensure the secret in GitHub is named exactly `SNYK_TOKEN`.
+- **CI/CD**: Ensure the secret in GitHub/GitLab is named exactly `SNYK_TOKEN`.
+- **Local Development**: If you see `SNYK-0005`, you need to authenticate your machine:
+  ```bash
+  npx snyk auth
+  # OR if snyk is installed globally:
+  snyk auth
+  ```
+- **Login**: This will open a browser window to log you in and sync your local CLI with your Snyk account.
 
 ### 3. Snyk: CLI Flag Conflicts
 **Error**: `Incompatible flags: --file and --all-projects cannot be used together`
@@ -88,6 +118,18 @@ npx husky install
 **Solution**:
 - Our templates include `wait-on` or `depends_on` logic. 
 - Try restarting only the app: `docker-compose restart app`.
+
+---
+
+## 🚀 Deployment (PM2)
+
+### 1. `Error: spawn wmic ENOENT` (Windows)
+**Error**: `PM2 | Error caught while calling pidusage | Error: spawn wmic ENOENT`
+**Reason**: PM2 uses the `wmic` tool for process monitoring. Microsoft has deprecated `wmic`, and it is often missing from the PATH or disabled in recent Windows 10/11 updates.
+**Solution**:
+- **Check Path**: Ensure `C:\Windows\System32\wbem` is added to your **System Environment Variables (PATH)**.
+- **Enable Feature**: If it's missing, go to **Settings > Apps > Optional Features**, click "View features", search for **"WMI Commandline Utility"**, and install it.
+- **Restart**: Restart your terminal (and PM2) after making these changes.
 
 ---
 
