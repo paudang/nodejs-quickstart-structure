@@ -37,3 +37,10 @@ jobs:
       
     - name: Build
       run: npm run build --if-present
+<% if (includeSecurity) { %>
+    - name: SonarQube Scan
+      uses: SonarSource/sonarqube-scan-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+<% } %>

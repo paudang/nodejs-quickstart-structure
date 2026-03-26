@@ -99,7 +99,7 @@ services:
       - mongodb_data:/data/db
 
   mongo-migrate:
-    image: node:22-alpine
+    image: node:22-slim
     working_dir: /app
     volumes:
       - .:/app

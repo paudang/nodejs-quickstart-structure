@@ -4,8 +4,11 @@ variables:
 stages:
   - lint
   - test
-<% if (includeSecurity) { %>  - security
-<% } %>  - build
+<% if (includeSecurity) { %>
+  - security
+  - quality
+<% } %>
+  - build
 
 cache:
   paths:
@@ -13,19 +16,19 @@ cache:
 
 install_dependencies:
   stage: .pre
-  image: node:22-alpine
+  image: node:22-slim
   script:
     - npm ci
 
 lint_code:
   stage: lint
-  image: node:22-alpine
+  image: node:22-slim
   script:
     - npm run lint
 
 run_unit_tests:
   stage: test
-  image: node:22-alpine
+  image: node:22-slim
   script:
     - npm run test:coverage
 
@@ -58,10 +61,23 @@ snyk_container_scan:
     - npm install -g snyk
     - docker build -t <%= projectName %>:latest .
     - snyk container test <%= projectName %>:latest --file=Dockerfile --severity-threshold=high --skip-unused-projects
+
+sonarqube_check:
+  stage: quality
+  image: 
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+    GIT_DEPTH: "0"
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script:
+    - sonar-scanner
   only:
     - main
-  variables:
-    SNYK_TOKEN: $SNYK_TOKEN
 <% } %>
 build_app:
   stage: build
