@@ -15,7 +15,9 @@
     "test:verify:mongo": "node scripts/verify-migration.js",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "security:check": "npm audit && npm run snyk:test",
+    "snyk:test": "snyk test"
   },
   "keywords": [
     "nodejs",
@@ -52,6 +54,7 @@
     "esbuild": "^0.25.0"
   },
   "devDependencies": {
+    "snyk": "^1.1303.2",
     "vitepress": "^1.0.0-rc.45"
   },
   "files": [
