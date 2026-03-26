@@ -67,6 +67,7 @@ npm install
 docker-compose up -d
 
 # Run Development Server
+docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> kafka<% } %>
 npm run dev
 ```
 
