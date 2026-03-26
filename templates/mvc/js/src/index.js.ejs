@@ -1,3 +1,4 @@
+const { env } = require('./config/env');
 const express = require('express');
 const cors = require('cors');
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>const apiRoutes = require('./routes/api');<%_ } %>
@@ -16,7 +17,6 @@ const { gqlContext } = require('./graphql/context');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./config/swagger');
 <%_ } -%>
-const { env } = require('./config/env');
 const setupGracefulShutdown = require('./utils/gracefulShutdown');
 
 const app = express();

@@ -1,8 +1,9 @@
 const { Kafka } = require('kafkajs');
+const { env } = require('./env');
 
 const kafka = new Kafka({
     clientId: 'nodejs-service',
-    brokers: [process.env.KAFKA_BROKER || 'localhost:9092']
+    brokers: [env.KAFKA_BROKER]
 });
 
 module.exports = { kafka };

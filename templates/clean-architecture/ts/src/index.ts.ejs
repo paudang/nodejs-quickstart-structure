@@ -1,3 +1,4 @@
+import { env } from '@/config/env';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -22,8 +23,6 @@ import { ApiError } from '@/errors/ApiError';
 import { typeDefs, resolvers } from '@/interfaces/graphql';
 import { gqlContext, MyContext } from '@/interfaces/graphql/context';
 <%_ } -%>
-
-import { env } from '@/config/env';
 
 const app = express();
 const port = env.PORT;
