@@ -97,7 +97,7 @@ The CLI will guide you through the following steps:
 6.  **Communication**: `REST APIs` (default), `GraphQL`, or `Kafka`.
 7.  **Caching**: `None`, `Redis`, or `Memory Cache`.
 8.  **CI/CD**: `GitHub Actions`, `Jenkins`, `GitLab CI` or `None`.
-9.  **Security Hardening**: (Optional if CI is selected) Enterprise-grade security tools (Snyk, SonarQube, Secretlint).
+9.  **Security Hardening**: (Optional if CI is selected) Enterprise-grade security tools (Snyk, SonarQube).
 
 ## Generated Project Structure
 
