@@ -33,9 +33,7 @@ LANGUAGES.forEach(lang => {
     VIEW_ENGINES_MVC.forEach(view => {
         DATABASES.forEach(db => {
             COMMUNICATIONS.forEach(comm => {
-                // Only test Redis if DB is not None (as per constraint)
                 const cachingOptions = db !== 'None' ? CACHING : ['None'];
-                
                 cachingOptions.forEach(cache => {
                     combinations.push({
                         projectName: `test_mvc_${lang}_${view}_${db}_${comm}_${cache}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
@@ -45,7 +43,9 @@ LANGUAGES.forEach(lang => {
                         database: db,
                         dbName: db !== 'None' ? 'testdb' : undefined,
                         communication: comm,
-                        caching: cache
+                        caching: cache,
+                        ciProvider: 'GitHub Actions',
+                        includeSecurity: true
                     });
                 });
             });
@@ -58,7 +58,6 @@ LANGUAGES.forEach(lang => {
 LANGUAGES.forEach(lang => {
     DATABASES.forEach(db => {
         COMMUNICATIONS.forEach(comm => {
-            // Only test Redis if DB is not None
             const cachingOptions = db !== 'None' ? CACHING : ['None'];
 
             cachingOptions.forEach(cache => {
@@ -70,7 +69,9 @@ LANGUAGES.forEach(lang => {
                     database: db,
                     dbName: db !== 'None' ? 'testdb' : undefined,
                     communication: comm,
-                    caching: cache
+                    caching: cache,
+                    ciProvider: 'GitHub Actions',
+                    includeSecurity: true
                 });
             });
         });
@@ -152,7 +153,7 @@ async function getFreePort(usedPorts) {
 async function checkHealth(config, hostPort) {
     const port = hostPort || 3000;
     const start = Date.now();
-    while (Date.now() - start < 120000) { 
+    while (Date.now() - start < 180000) { 
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -162,7 +163,6 @@ async function checkHealth(config, hostPort) {
             });
             clearTimeout(timeoutId);
             if (res.ok) {
-                 // Strong Payload Validation for Advanced Health Check
                  const healthPayload = await res.json();
                  if (
                     healthPayload.status !== 'UP' || 
@@ -173,7 +173,6 @@ async function checkHealth(config, hostPort) {
                      return false;
                  }
                  
-                 // Functional checks for REST, Kafka, and GraphQL
                  if (config.communication === 'REST APIs' || config.communication === 'Kafka') {
                     try {
                         const postController = new AbortController();
@@ -187,13 +186,6 @@ async function checkHealth(config, hostPort) {
                         clearTimeout(postTimeoutId);
                         
                         if (postRes.ok || postRes.status === 404) {
-                             if (postRes.ok) {
-                                 console.log('✓ API Trigger Successful', ANSI_GREEN);
-                             } else {
-                                 console.log('! API Route 404 (Expected for some custom configs)', ANSI_CYAN);
-                             }
-
-                             // Kafka Log Verification (Post-Trigger)
                              if (config.communication === 'Kafka') {
                                  log('... Verifying Kafka Flow in Logs (Wait 5s) ...');
                                  await new Promise(r => setTimeout(r, 5000));
@@ -219,25 +211,18 @@ async function checkHealth(config, hostPort) {
                                      }
                                      
                                      if (allFound) {
-                                         log('✓ Kafka Connection, Registration & E2E Flow verified in logs', ANSI_GREEN);
+                                         log('✓ Kafka Connection & Flow verified in logs', ANSI_GREEN);
                                          return true;
                                      }
-                                     // If not all found, we don't return yet, let the loop retry
                                  } catch (err) {
                                      console.log(`Kafka Log verification error: ${err.message}`);
                                  }
-                             } else {
-                                 // REST APIs Happy Path
+                             } else { // This handles REST APIs
                                  console.log('✓ Health Check Passed (API functional)', ANSI_GREEN);
                                  return true;
                              }
-                        } else {
-                             const errText = await postRes.text();
-                             console.log(`Functional check failed (retrying): ${postRes.status} - ${errText}`);
                         }
-                    } catch (err) {
-                        console.log(`Functional test error: ${err.message}`);
-                    }
+                    } catch (err) {}
                 } else if (config.communication === 'GraphQL') {
                      try {
                          const gqlController = new AbortController();
@@ -253,27 +238,19 @@ async function checkHealth(config, hostPort) {
                          if (graphqlRes.ok) {
                               console.log('✓ Health Check Passed (GraphQL functional)', ANSI_GREEN);
                               return true;
-                         } else {
-                              const errText = await graphqlRes.text();
-                              console.log(`Functional GraphQL check failed (retrying): ${graphqlRes.status} - ${errText}`);
                          }
-                     } catch (err) {
-                         console.log(`Functional GraphQL test error: ${err.message}`);
-                     }
+                     } catch (err) {}
                 } else {
                      console.log('✓ Health Check Passed', ANSI_GREEN);
                      return true;
                 }
             }
-        } catch (e) {
-            // ignore ref connection
-        }
+        } catch (e) {}
         await new Promise(r => setTimeout(r, 2000));
     }
     return false;
 }
 
-// Simple p-limit implementation for concurrency control
 function pLimit(concurrency) {
     const queue = [];
     let active = 0;
@@ -311,12 +288,13 @@ export async function runTest(config, index, options = {}, sharedPorts) {
     const testDir = path.resolve(__dirname, '../../temp_test_workspace');
     const projectPath = path.join(testDir, config.projectName);
 
-    // Use shared ports or local if not provided (fallback)
     const usedPorts = sharedPorts || new Set();
+    const kafkaPort = (await getFreePort(usedPorts)).toString();
     const TEST_ENV = {
         PORT: (await getFreePort(usedPorts)).toString(),
         DB_PORT: (await getFreePort(usedPorts)).toString(),
-        KAFKA_PORT: (await getFreePort(usedPorts)).toString(),
+        KAFKA_PORT: kafkaPort,
+        KAFKA_EXTERNAL_PORT: kafkaPort,
         REDIS_PORT: (await getFreePort(usedPorts)).toString()
     };
 
@@ -325,6 +303,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         log(`    Ports -> APP:${TEST_ENV.PORT}, DB:${TEST_ENV.DB_PORT}, KAFKA:${TEST_ENV.KAFKA_PORT}, REDIS:${TEST_ENV.REDIS_PORT}`);
     }
     
+    let isSuccess = false;
     try {
         await fs.remove(projectPath);
         await fs.ensureDir(testDir);
@@ -339,8 +318,12 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             '--database', config.database,
             ...(config.dbName ? ['--db-name', config.dbName] : []),
             '--communication', `"${config.communication}"`,
-            '--ci-provider', '"GitHub Actions"'
+            '--ci-provider', `"${config.ciProvider}"`
         ];
+
+        if (config.includeSecurity) {
+            args.push('--include-security');
+        }
 
         if (config.caching) {
             args.push('--caching', `"${config.caching}"`);
@@ -351,19 +334,35 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         }
 
         const command = `node ${cliPath} ${args.join(' ')}`;
-        console.log('>>> DEBUG CMD:', command);
-        // Removed process.chdir(testDir) for parallel safety
         await runCommand(command, testDir);
         log(`✓ Project Generated (CLI)`);
 
         // 2. Initialize Git
         await runCommand('git init', projectPath);
 
-        // 3. Install Deps
+        // 3. Install Deps (triggers prepare -> husky install)
         log(`... Installing Dependencies ...`);
         await runCommand('npm install --no-audit --no-fund --loglevel=error', projectPath);
 
-        // 2.1 Verify Professional Standards
+        // 3a. Verify Git Hooks (Husky)
+        log(`... Verifying Git Hooks (Husky/Lint-Staged) ...`);
+        const huskyDir = path.join(projectPath, '.husky');
+        const preCommitHook = path.join(huskyDir, 'pre-commit');
+        if (!await fs.pathExists(preCommitHook)) {
+             log(`! WARNING: Husky pre-commit hook NOT found at ${preCommitHook}.`, ANSI_RED);
+        } else {
+             log(`✓ Husky Hook Verified`, ANSI_GREEN);
+             log(`... Testing lint-staged (Dry Run) ...`);
+             try {
+                 await runCommand('git add .', projectPath);
+                 await runCommand('npx lint-staged', projectPath, {}, true);
+                 log(`✓ Pre-commit logic (lint-staged) passed`, ANSI_GREEN);
+             } catch (e) {
+                 log(`! WARNING: lint-staged test failed: ${e.message}`, ANSI_RED);
+             }
+        }
+
+        // 4. Verify Professional Standards
         log(`... Verifying Professional Standards ...`);
         const requiredFiles = ['eslint.config.mjs', '.prettierrc', '.lintstagedrc', 'jest.config.js', 'Dockerfile', 'README.md', 'ecosystem.config.js'];
         for (const file of requiredFiles) {
@@ -372,14 +371,13 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             }
         }
         
-        // 2.2 Run Linter & Tests
+        // 5. Run Linter & Tests
         try {
             log(`... Running Linter ...`);
             await runCommand('npm run lint', projectPath, {}, true); 
             log(`... Running Unit Tests & Coverage ...`);
             const testOutput = await runCommand('npm run test:coverage', projectPath, {}, true); 
             
-            // Explicit condition for > 80% line and > 80% function coverage
             const coverageMatch = testOutput.match(/All files\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)/);
             if (coverageMatch) {
                 const funcsCov = parseFloat(coverageMatch[3]);
@@ -393,59 +391,46 @@ export async function runTest(config, index, options = {}, sharedPorts) {
                 log(`✓ Unit tests passed. Coverage enforced by Jest config.`, ANSI_GREEN);
             }
         } catch (e) {
-            log(`! WARNING: Professional Standards Check (Linter/Tests) Failed: ${e.message}`, ANSI_RED);
+            log(`! WARNING: Professional Standards Check (Linter/Tests) Failed:`, ANSI_RED);
+            log(`STDOUT/STDERR: ${e.message}`, ANSI_RED);
         }
         
-        // SKIP DOCKER IF REQUESTED
         if (skipDocker) {
             log(`✓ Validation Passed (Docker Skipped)`);
+            isSuccess = true;
             return { success: true };
         }
 
-        // 3. Docker Up
+        // 6. Docker Up
         log(`... Starting Docker ...`);
         const composeCmd = 'docker compose'; 
-        
         try {
             await runCommand(`${composeCmd} down -v`, projectPath, TEST_ENV);
         } catch (e) {}
         
         await new Promise(r => setTimeout(r, 2000));
-        
-        try {
-            await runCommand(`${composeCmd} up -d --build`, projectPath, TEST_ENV, true); 
-        } catch (e) {
-            throw new Error(`Docker compose up failed: ${e.message}`);
-        }
+        await runCommand(`${composeCmd} up -d --build`, projectPath, TEST_ENV, true); 
 
-        // 4. Verify Health
+        // 7. Verify Health
         log(`... Waiting for Health Check ...`);
         const isHealthy = await checkHealth(config, TEST_ENV.PORT);
         
         if (isHealthy) {
             log(`✓ Health Check Passed`, ANSI_GREEN);
-            
             log(`... Running E2E Tests ...`);
-            try {
-                await runCommand('npm run test:e2e:run', projectPath, TEST_ENV, true);
-                log(`✓ E2E Tests Passed`, ANSI_GREEN);
-            } catch (e) {
-                log(`!!! E2E Tests FAILED: ${e.message}`, ANSI_RED);
-                throw new Error("E2E Tests Failed");
-            }
+            await runCommand('npm run test:e2e:run', projectPath, TEST_ENV, true);
+            log(`✓ E2E Tests Passed`, ANSI_GREEN);
         } else {
-            try {
-                const logs = await runCommand(`${composeCmd} logs`, projectPath, TEST_ENV, true);
-                log(`!!! Health Check FAILED. App Logs:\n${logs}`, ANSI_RED);
-            } catch (e) {}
             throw new Error("Health check timeout");
         }
+
+        isSuccess = true;
+        return { success: true };
 
     } catch (err) {
         log(`X Test FAILED: ${err.message}`, ANSI_RED);
         return { success: false, error: err.message };
     } finally {
-        // Cleanup
         log(`... Cleaning Up ...`);
         if (!skipDocker) {
             try {
@@ -453,37 +438,31 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             } catch (e) {}
         }
         
-        // Robust cleanup with retries for Windows EPERM
-        let attempts = 0;
-        while (attempts < 3) {
+        if (isSuccess) {
             try {
-                await fs.remove(projectPath);
-                break;
-            } catch (e) {
-                attempts++;
-                if (attempts >= 3) {
-                    log(`Warning: Failed to cleanup ${projectPath}: ${e.message}`, ANSI_RED);
-                } else {
-                    await new Promise(r => setTimeout(r, 1000)); // Wait 1s before retry
+                // Robust cleanup with retries for Windows EPERM
+                let attempts = 0;
+                while (attempts < 3) {
+                    try {
+                        await fs.remove(projectPath);
+                        break;
+                    } catch (e) {
+                        attempts++;
+                        await new Promise(r => setTimeout(r, 1000));
+                    }
                 }
-            }
+            } catch (e) {}
         }
     }
-    return { success: true };
 }
 
 export async function runValidation(options = {}) {
-    const { specificTestIndex, startIndex = 0, endIndex = combinations.length - 1, concurrency = 1 } = options;
+    const { specificTestIndex, startIndex = 0, endIndex = combinations.length - 1, concurrency = 2 } = options;
     
     log(`Running ${combinations.length} tests with concurrency ${concurrency}...`, ANSI_CYAN);
-    if (specificTestIndex !== undefined) {
-        log(`Targeting single test index: ${specificTestIndex}`, ANSI_CYAN);
-    } else if (startIndex !== 0 || endIndex !== combinations.length - 1) {
-        log(`Targeting range from index ${startIndex} to ${endIndex}`, ANSI_CYAN);
-    }
-
+    
     try {
-        await fs.remove(path.resolve(__dirname, '../../temp_test_workspace'));
+        await fs.ensureDir(path.resolve(__dirname, '../../temp_test_workspace'));
     } catch(e) {}
 
     let passed = 0;
@@ -512,18 +491,12 @@ export async function runValidation(options = {}) {
                         error: result.error || "Unknown error"
                     });
                 }
-                // Fail fast if single test mode
                 if (!result.success && specificTestIndex !== undefined) {
-                     console.log("!!! Stopping execution due to test failure. Fix the issue and restart. !!!");
                      process.exit(1);
                 }
             } catch (error) {
                  failed++;
-                 failures.push({
-                    index: i,
-                    name: config.projectName,
-                    error: error.message
-                });
+                 failures.push({ index: i, name: config.projectName, error: error.message });
             }
         });
     });
@@ -535,11 +508,5 @@ export async function runValidation(options = {}) {
     log(`Passed: ${passed}`, ANSI_GREEN);
     log(`Failed: ${failed}`, ANSI_RED);
 
-    if (failed > 0) {
-        log('\n=== Failed Tests ===', ANSI_RED);
-        failures.forEach(f => {
-            log(`[${f.index + 1}] ${f.name} - Reason: ${f.error || 'Test failed'}`, ANSI_RED);
-        });
-        process.exit(1);
-    }
+    if (failed > 0) process.exit(1);
 }

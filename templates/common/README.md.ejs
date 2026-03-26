@@ -3,6 +3,10 @@
 ![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)
 ![License](https://img.shields.io/badge/License-ISC-blue.svg)
 <% if (language === 'TypeScript') { %>![TypeScript](https://img.shields.io/badge/Language-TypeScript-blue.svg)<% } else { %>![JavaScript](https://img.shields.io/badge/Language-JavaScript-yellow.svg)<% } %>
+<% if (includeSecurity) { %>
+[![Snyk Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/yourusername/<%= projectName %>?style=flat-square)](https://snyk.io/)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=<%= projectName %>&metric=alert_status)](https://sonarcloud.io/)
+<% } %>
 
 A production-ready Node.js microservice generated with **<%= architecture %>** and **<%= database %>**.
 This project comes pre-configured with industry-standard tooling for **Code Quality**, **Testing**, and **Security**.
@@ -15,9 +19,7 @@ This project comes pre-configured with industry-standard tooling for **Code Qual
 -   **Quality**: Eslint, Prettier, Husky, Lint-Staged.
 -   **Testing**: Jest (Unit & Integration).
 -   **DevOps**: Multi-stage Docker build, CI/CD ready.
-
-> [!NOTE]
-> For more detailed documentation on features, architecture, and advanced configuration, visit our **[Official Documentation Site](https://paudang.github.io/nodejs-quickstart-structure/)**.
+<% if (includeSecurity) { %>-   **Enterprise Security**: Snyk SCA, SonarCloud SAST.<% } %>
 
 ## 🔄 CI/CD Pipeline
 <%_ if (ciProvider === 'GitHub Actions') { -%>
@@ -52,14 +54,14 @@ CI/CD is not currently configured, but the project is ready for integration.
 
 ### 2. Quick Start
 ```bash
-# Initialize Git (Required for Husky)
+# Initialize Git (Mandatory for Husky hooks)
 git init
 
 # Install dependencies
 npm install
 
-# Setup Git Hooks (Husky)
-npm run prepare
+# Troubleshooting Husky (if skip git init)
+# npx husky install
 
 # Start Infrastructure (DB, etc.)
 docker-compose up -d
@@ -244,6 +246,12 @@ docker-compose down
 -   **CORS**: Configured for cross-origin requests.
 -   **Rate Limiting**: Protects against DDoS / Brute-force.
 -   **HPP**: Prevents HTTP Parameter Pollution attacks.
+<% if (includeSecurity) { %>
+### 🛡️ Enterprise Hardening (Big Tech Standard)
+-   **Snyk SCA**: Automated dependency vulnerability scanning.
+-   **SonarCloud**: Deep static analysis for code quality and security hotspots.
+-   **Security Policy**: Standard `SECURITY.md` for vulnerability reporting.
+<% } %>
 
 
 ## 🤖 AI-Native Development

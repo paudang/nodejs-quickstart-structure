@@ -11,14 +11,16 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "prepare": "node -e \"try { require('child_process').execSync('husky install'); } catch (e) { console.log('Not a git repository, skipping husky install'); }\"",
+    "prepare": "node -e \"if (require('fs').existsSync('.git')) { try { require('child_process').execSync('husky install', { stdio: 'inherit' }); } catch (e) { console.error('Husky installation failed:', e.message); } }\"",
 <% if (database === 'MongoDB') { %>    "migrate": "migrate-mongo up",
 <% } -%>
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:e2e:run": "jest --config ./jest.e2e.config.js --passWithNoTests",
-    "test:e2e": "node scripts/run-e2e.js"
+    "test:e2e": "node scripts/run-e2e.js"<% if (includeSecurity) { %>,
+    "security:check": "npm audit && npm run snyk:test",
+    "snyk:test": "snyk test"<% } %>
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -82,7 +84,8 @@
     "eslint-plugin-import-x": "^4.6.1",
     "eslint-import-resolver-typescript": "^3.7.0",
     "husky": "^8.0.3",
-    "lint-staged": "^15.4.3"<% if (language === 'TypeScript') { %>,
+    "lint-staged": "^15.4.3",
+    "snyk": "^1.1295.0"<% if (language === 'TypeScript') { %>,
     "typescript-eslint": "^8.24.1",<%_ if (communication === 'REST APIs' || communication === 'Kafka') { %>
     "@types/swagger-ui-express": "^4.1.6",
     "@types/yamljs": "^0.2.34",<%_ } %>

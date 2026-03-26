@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.0] - 2026-03-25
+
+### Added
+- **Enterprise-Grade Security Hardening**: Integrated **Snyk (SCA)** and **SonarQube (SAST)** into the project scaffolding, providing "Big Tech" industry-standard security analysis out of the box.
+- **Automated Security Workflows**: Pre-configured CI/CD stages for security scanning across GitHub Actions, GitLab CI, and Jenkins.
+- **Pre-commit Security Gates**: Integrated **Husky** and **lint-staged** to automatically enforce code quality and security standards locally before every commit.
+- **Security Standard Enforcement**: Added a standardized `SECURITY.md` policy and automated quality gates to ensure code resilience.
+- **Comprehensive Security Guide**: Created a new documentation guide detailing the setup and operational workflows for the enterprise security features.
+
+### Changed
+- **Matrix Expansion**: Updated the CLI to support over **1,680+ project combinations** by adding a conditional security hardening layer across all CI/CD providers.
+
 ## [1.17.0] - 2026-03-23
 
 ### Added

@@ -1,0 +1,27 @@
+# SonarCloud/SonarQube Project Configuration
+# See https://docs.sonarqube.org/latest/analysis/analysis-parameters/
+
+sonar.projectKey=your-org-key_<%= projectName %>
+sonar.projectName=<%= projectName %>
+sonar.organization=your-org-key
+sonar.projectVersion=1.0.0
+
+# Path to the source directories
+sonar.sources=src
+# Path to the test directories
+sonar.tests=tests
+
+# Language specific settings
+sonar.javascript.environments=node
+sonar.typescript.tsconfigPath=tsconfig.json
+sonar.javascript.lcov.reportPaths=coverage/lcov.info
+
+# Exclusions
+sonar.exclusions=node_modules/**, dist/**, coverage/**, tests/**
+
+# Quality Gates
+sonar.qualitygate.wait=true
+sonar.qualitygate.timeout=300
+
+# Security Hotspots
+sonar.security.reportPaths=snyk-report.json

@@ -60,7 +60,9 @@ export default defineConfig({
         text: 'Testing & DevOps',
         items: [
           { text: 'Testing (Unit & E2E)', link: '/guide/testing' },
+          { text: 'Enterprise Security Setup', link: '/guide/security-hardening' },
           { text: 'Deployment (Docker/PM2)', link: '/guide/deployment' },
+          { text: 'Troubleshooting FAQ', link: '/guide/troubleshooting' },
         ]
       }
     ],

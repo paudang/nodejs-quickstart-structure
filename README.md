@@ -22,8 +22,8 @@ For full guides, architecture deep-dives, and feature references, visit our **[O
 - **Communication Flow**: Scaffold APIs using **REST**, **GraphQL** (with Apollo Server), or **Kafka** (event-driven).
 - **Caching Layer**: Choose between **Redis** or built-in **Memory Cache** for data caching.
 - **Centralized Error Handling**: Every project ships with a global error handler, custom error classes and structured JSON error responses — consistent across REST & GraphQL.
-- **Dockerized**: Automatically generates `docker-compose.yml` for DB, Kafka, and Redis.
-- **Database Migrations/Schemas**: Integrated **Flyway** for SQL migrations or **Mongoose** schemas for MongoDB.
+- **DevOps Ready**: Optimized multi-stage Docker builds.
+- **Enterprise Security Hardening**: Integrated **Snyk (SCA)** and **SonarCloud (SAST)** for "Big Tech" grade security.
 - **AI-Native Ready**: Specifically optimized for **Cursor** and other AI agents with built-in `.cursorrules` and Agent Skill prompts.
 - **Professional Standards**: Generated projects come with highly professional, industry-standard tooling.
 
@@ -41,22 +41,24 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 -   **🛡️ Security**: Built-in `Helmet`, `HPP`, `CORS`, and Rate-Limiting middleware.
 -   **🚨 Error Handling**: Centralized global error middleware with custom error classes and structured JSON responses. GraphQL uses Apollo's `formatError` hook; REST uses Express error middleware.
 -   **🧪 Testing Excellence**: Integrated `Jest` and `Supertest`. Every generated project maintains **>80% Unit Test coverage** for controllers, services, and resolvers out of the box.
+-   **🛡️ Enterprise Security (New)**: Automated **Snyk** dependency scanning and **SonarCloud** SAST integration.
 -   **🔄 CI/CD Integration**: Pre-configured workflows for **GitHub Actions**, **Jenkins**, and **GitLab CI**.
--   **⚓ Git Hooks**: `Husky` and `Lint-Staged` to ensure no bad code is ever committed.
+-   **⚓ Git Hooks**: `Husky` and `Lint-Staged` to ensure code quality standards are met before committing.
 -   **🤝 Reliability**: Health Checks (`/health`) with deep database pings, Infrastructure Retry Logic (handling Docker startup delays), and Graceful Shutdown workflows.
--   **🐳 DevOps**: Highly optimized **Multi-Stage Dockerfile** for small, secure production images.
+-   **🐳 DevOps**: Highly optimized **Multi-Stage Dockerfile** for robust production deployments.
 -   **🚀 Deployment**: Ship confidently with an integrated **PM2 Ecosystem Configuration** for zero-downtime reloads and robust process management.
 
-## 🧩 480+ Project Combinations
+## 🧩 1,680+ Project Combinations
 
 The CLI supports a massive number of configurations to fit your exact needs:
 
 -   **240 Core Combinations**:
     -   **MVC Architecture**: 180 variants (Languages × View Engines × Databases × Communication Patterns × Caching)
     -   **Clean Architecture**: 60 variants (Languages × Databases × Communication Patterns × Caching)
--   **480 Total Scenarios**:
-    -   Every combination can be generated with or without (**GitHub Actions CI/CD** / **Jenkins** or **GitLab CI**), tripling the possibilities.
-    -   Every single one of these 480 scenarios is verified to be compatible with our 80% Coverage Threshold policy.
+-   **1,680+ Total Scenarios**:
+    -   Every combination can be generated across 3 CI/CD providers (**GitHub Actions**, **Jenkins**, **GitLab CI**).
+    -   When a CI provider is selected, you can optionally include **Enterprise-Grade Security Hardening**, doubling the scenarios.
+    -   Every single one of these 1,680+ scenarios is verified to be compatible with our 80% Coverage Threshold policy.
 
 
 ## Installation
@@ -95,6 +97,7 @@ The CLI will guide you through the following steps:
 6.  **Communication**: `REST APIs` (default), `GraphQL`, or `Kafka`.
 7.  **Caching**: `None`, `Redis`, or `Memory Cache`.
 8.  **CI/CD**: `GitHub Actions`, `Jenkins`, `GitLab CI` or `None`.
+9.  **Security Hardening**: (Optional if CI is selected) Enterprise-grade security tools (Snyk, SonarQube).
 
 ## Generated Project Structure
 

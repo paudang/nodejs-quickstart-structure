@@ -31,29 +31,34 @@ pipeline {
             }
         }
 
-        // stage('Build') {
-        //     steps {
-        //         sh 'npm run build'
-        //     }
-        // }
+<% if (includeSecurity) { %>
+        stage('SonarQube Analysis') {
+            environment {
+                scannerHome = tool 'SonarScanner'
+            }
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+            }
+        }
 
-        // stage('SonarQube Analysis') {
-        //     environment {
-        //         scannerHome = tool 'SonarScanner'
-        //     }
-        //     steps {
-        //         withSonarQubeEnv('SonarQube') {
-        //             sh "${scannerHome}/bin/sonar-scanner"
-        //         }
-        //     }
-        // }
+        stage('Security Scan') {
+            steps {
+                sh 'npm audit --audit-level=high'
+                sh 'npm run snyk:test'
+            }
+        }
 
-        // stage('Security Scan') {
-        //     steps {
-        //         sh 'npm audit --audit-level=high'
-        //     }
-        // }
-
+        stage('Snyk Container Scan') {
+            steps {
+                script {
+                    sh 'docker build -t <%= projectName %>:latest .'
+                    sh 'snyk container test <%= projectName %>:latest --file=Dockerfile --severity-threshold=high --skip-unused-projects'
+                }
+            }
+        }
+<% } %>
         // stage('Docker Build & Push') {
         //     steps {
         //         script {
