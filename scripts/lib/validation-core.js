@@ -44,8 +44,8 @@ LANGUAGES.forEach(lang => {
                         dbName: db !== 'None' ? 'testdb' : undefined,
                         communication: comm,
                         caching: cache,
-                        ciProvider: 'None',
-                        includeSecurity: false
+                        ciProvider: 'GitHub Actions',
+                        includeSecurity: true
                     });
                 });
             });
@@ -70,8 +70,8 @@ LANGUAGES.forEach(lang => {
                     dbName: db !== 'None' ? 'testdb' : undefined,
                     communication: comm,
                     caching: cache,
-                    ciProvider: 'None',
-                    includeSecurity: false
+                    ciProvider: 'GitHub Actions',
+                    includeSecurity: true
                 });
             });
         });
@@ -153,7 +153,7 @@ async function getFreePort(usedPorts) {
 async function checkHealth(config, hostPort) {
     const port = hostPort || 3000;
     const start = Date.now();
-    while (Date.now() - start < 120000) { 
+    while (Date.now() - start < 180000) { 
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000);

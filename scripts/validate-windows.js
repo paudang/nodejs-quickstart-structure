@@ -19,5 +19,5 @@ runValidation({
     specificTestIndex: specificIndex,
     startIndex,
     endIndex,
-    concurrency: 2
+    concurrency: 4
 });

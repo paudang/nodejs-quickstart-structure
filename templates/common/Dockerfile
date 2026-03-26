@@ -1,10 +1,12 @@
 # ==========================================
 # Stage 1: Builder
 # ==========================================
-FROM node:22-alpine AS builder
+FROM node:22.22.2-trixie-slim AS builder
 
-# Upgrade npm to fix high-severity vulnerabilities (SNYK-JS-GLOB, SNYK-JS-MINIMATCH)
-RUN npm install -g npm@11.6.4
+# Upgrade OS packages to fix upstream vulnerabilities (Snyk-detected)
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 ENV NPM_CONFIG_UPDATE_NOTIFIER=false
@@ -23,10 +25,12 @@ COPY . .
 # ==========================================
 # Stage 2: Production
 # ==========================================
-FROM node:22-alpine AS production
+FROM node:22.22.2-trixie-slim AS production
 
-# Upgrade npm to fix high-severity vulnerabilities
-RUN npm install -g npm@11.6.4
+# Upgrade OS packages to fix upstream vulnerabilities (Snyk-detected)
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
