@@ -29,10 +29,13 @@ When you run the `init` command, you'll be prompted for:
 1.  **Project Name**: The name of your service directory.
 2.  **Language**: Choose between **TypeScript** (Recommended) or **JavaScript**.
 3.  **Architecture**: Select **MVC** or **Clean Architecture**.
-4.  **Database**: Pick **MySQL**, **PostgreSQL**, **MongoDB**, or **None**.
-5.  **Communication**: Select **REST APIs**, **GraphQL**, or **Kafka**.
-6.  **Caching**: Add **Redis** or **Memory Cache**.
-7.  **CI/CD**: Generate config for **GitHub Actions**, **GitLab**, or **Jenkins**.
+4.  **View Engine**: If MVC is selected, pick **None**, **EJS**, or **Pug**.
+5.  **Database**: Pick **MySQL**, **PostgreSQL**, **MongoDB**, or **None**.
+6.  **Database Name**: Specify your database name (if a database is selected).
+7.  **Communication**: Select **REST APIs**, **GraphQL**, or **Kafka**.
+8.  **Caching**: Add **Redis** or **Memory Cache**.
+9.  **CI/CD**: Generate config for **GitHub Actions**, **GitLab**, or **Jenkins**.
+10. **Security Hardening**: Opt-in for enterprise-grade security tools like **Snyk** and **SonarQube** (if CI/CD is selected).
 
 ## First Project Setup
 

@@ -92,12 +92,13 @@ The CLI will guide you through the following steps:
 1.  **Project Name**: The name of the folder to create.
 2.  **Language**: `JavaScript` or `TypeScript`.
 3.  **Architecture**: `MVC` or `Clean Architecture`.
-4.  **Database**: `MySQL`, `PostgreSQL`, or `MongoDB`.
-5.  **Database Name**: The name of the initial database.
-6.  **Communication**: `REST APIs` (default), `GraphQL`, or `Kafka`.
-7.  **Caching**: `None`, `Redis`, or `Memory Cache`.
-8.  **CI/CD**: `GitHub Actions`, `Jenkins`, `GitLab CI` or `None`.
-9.  **Security Hardening**: (Optional if CI is selected) Enterprise-grade security tools (Snyk, SonarQube).
+4.  **View Engine**: (If MVC is selected) `None`, `EJS`, or `Pug`.
+5.  **Database**: `MySQL`, `PostgreSQL`, or `MongoDB`.
+6.  **Database Name**: The name of the initial database.
+7.  **Communication**: `REST APIs` (default), `GraphQL`, or `Kafka`.
+8.  **Caching**: `None`, `Redis`, or `Memory Cache`.
+9.  **CI/CD**: `GitHub Actions`, `Jenkins`, `GitLab CI` or `None`.
+10. **Security Hardening**: (Optional if CI is selected) Enterprise-grade security tools (Snyk, SonarQube).
 
 ## Generated Project Structure
 
