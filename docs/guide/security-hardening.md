@@ -1,4 +1,4 @@
-# Enterprise Security Hardening (Big Tech Standard)
+# Enterprise Security Setup
 
 This project allows you to scaffold Node.js microservices with enterprise-grade security hardening out of the box. This feature is designed to meet the rigorous security standards of top-tier tech companies.
 
@@ -27,25 +27,70 @@ When you select "Yes" for Enterprise Security Hardening during project initializ
   - Automatically initialized during `npm install`.
   - Prevents "bad code" from being committed to the repository.
 
+---
+To fully activate these features in your generated project, follow these detailed steps to obtain your authentication tokens and configure your CI/CD environment.
 
-## 🚀 Setup Guide
+### 🛡️ 1. Snyk Integration (SCA)
 
-To fully activate these features in your generated project, follow these steps:
+Snyk monitors your dependencies for known vulnerabilities. To set it up:
 
-### 1. Snyk Setup
-1. Create a free account at [Snyk.io](https://snyk.io/).
-2. Generate a **Snyk API Token**.
-3. Add the token to your repository secrets:
-   - **GitHub**: Settings -> Secrets and variables -> Actions -> New repository secret (`SNYK_TOKEN`).
-   - **GitLab**: Settings -> CI/CD -> Variables (`SNYK_TOKEN`).
+1.  **Create an Account**: Sign up for a free account at [Snyk.io](https://snyk.io/).
+2.  **Get your Auth Token**:
+    - Click on your **profile avatar** (bottom left) -> **Account Settings**.
+    - Find the **Auth Token** section.
+    - Click **Click to show** and copy your token.
+    - *Alternatively, for Organizational use, go to **Settings -> Service Accounts** to create a non-personal token.*
+3.  **Configure GitHub Secrets**:
+    - Go to your GitHub Repository -> **Settings** -> **Secrets and variables** -> **Actions**.
+    - Click **New repository secret**.
+    - Name: `SNYK_TOKEN`
+    - Value: (Paste your token here).
 
-### 2. SonarCloud Setup
-1. Create a free account at [SonarCloud.io](https://sonarcloud.io/).
-2. Create a new project and get your **Project Key** and **Organization**.
-3. Update `sonar-project.properties` if necessary.
-4. Add `SONAR_TOKEN` to your repository secrets.
+### 🔍 2. SonarCloud Integration (SAST)
 
-### 3. Husky Pre-commit Setup
+SonarCloud performs deep static analysis and tracks code quality.
+
+1.  **Sign Up**: Log in to [SonarCloud.io](https://sonarcloud.io/) using your GitHub account.
+2.  **Create/Import Project**:
+    > [!IMPORTANT]
+    > You **must** manually import your project in the SonarCloud UI before the CI/CD pipeline can scan it. 
+    - Click the **"+" icon** in the top right -> **Analyze new project**.
+    - Select your GitHub organization and import the specific repository.
+3.  **Configure Analysis Method**:
+    - Once imported, go to **Administration -> Analysis Method**.
+    - **Turn OFF** "SonarCloud Automatic Analysis".
+    - Select **GitHub Actions** as your primary analysis method. This provides you with the correct `sonar-project.properties` values.
+4.  **Generate a Token**:
+    - Click your **profile icon** -> **My Account** -> **Security**.
+    - Generate a new token and copy it.
+5.  **Get your Project & Organization Details**:
+    - On your SonarCloud project dashboard, look for the **Project Key** and **Organization Key** in the bottom right corner of the "Information" section.
+    - **Note**: The Project Key often looks like `your-org_your-repo`.
+    - Update your local `sonar-project.properties`:
+        - `sonar.projectKey=exact-key-from-sonarcloud`
+        - `sonar.organization=exact-org-from-sonarcloud`
+6.  **Configure GitHub Secrets**:
+    - Add `SONAR_TOKEN`: (Paste the token you just generated).
+    - Add `SONAR_HOST_URL`: 
+        - **If using SonarCloud**: Set this to `https://sonarcloud.io`.
+        - **If using Self-hosted SonarQube**: Set this to your instance URL (e.g., `http://your-server-ip:9000`).
+
+> [!TIP]
+> Most users should use `https://sonarcloud.io` as it is the official free cloud service for open-source and small projects!
+
+### 🐳 3. Snyk Container Scanning
+
+In addition to dependency scanning, the generator includes **Container Security** audits to check your `Dockerfile` and base image.
+
+1.  **Requirement**: Ensure your `Dockerfile` is present at the root.
+2.  **CI/CD**: The `security.yml` (GitHub) or `security` stage (GitLab/Jenkins) automatically builds your image and runs `snyk container test`.
+3.  **Local Check**:
+    ```bash
+    docker build -t my-app .
+    snyk container test my-app --file=Dockerfile --severity-threshold=high
+    ```
+
+### ⚡ 4. Husky & Lint-Staged
 > [!IMPORTANT]
 > You **must** run `git init` **before** running `npm install` for Husky to set up the hooks correctly.
 
