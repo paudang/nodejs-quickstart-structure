@@ -70,8 +70,9 @@ npx husky install
 **Solution**:
 - **Windows**: Use `netstat` to find the process ID (PID):
   ```powershell
+  # Find the process
   netstat -ano | findstr :9093
-  # Then kill the process:
+  # Kill the process:
   taskkill /F /PID <PID>
   ```
 - **Linux/Mac**:

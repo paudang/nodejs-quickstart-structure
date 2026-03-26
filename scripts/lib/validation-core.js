@@ -186,9 +186,7 @@ async function checkHealth(config, hostPort) {
                         clearTimeout(postTimeoutId);
                         
                         if (postRes.ok || postRes.status === 404) {
-                             if (postRes.ok) {
-                                 console.log('✓ API Trigger Successful', ANSI_GREEN);
-                             } else if (config.communication === 'Kafka') {
+                             if (config.communication === 'Kafka') {
                                  log('... Verifying Kafka Flow in Logs (Wait 5s) ...');
                                  await new Promise(r => setTimeout(r, 5000));
                                  try {
@@ -213,13 +211,13 @@ async function checkHealth(config, hostPort) {
                                      }
                                      
                                      if (allFound) {
-                                         log('✓ Kafka Connection, Registration & E2E Flow verified in logs', ANSI_GREEN);
+                                         log('✓ Kafka Connection & Flow verified in logs', ANSI_GREEN);
                                          return true;
                                      }
                                  } catch (err) {
                                      console.log(`Kafka Log verification error: ${err.message}`);
                                  }
-                             } else {
+                             } else { // This handles REST APIs
                                  console.log('✓ Health Check Passed (API functional)', ANSI_GREEN);
                                  return true;
                              }
@@ -291,10 +289,12 @@ export async function runTest(config, index, options = {}, sharedPorts) {
     const projectPath = path.join(testDir, config.projectName);
 
     const usedPorts = sharedPorts || new Set();
+    const kafkaPort = (await getFreePort(usedPorts)).toString();
     const TEST_ENV = {
         PORT: (await getFreePort(usedPorts)).toString(),
         DB_PORT: (await getFreePort(usedPorts)).toString(),
-        KAFKA_PORT: (await getFreePort(usedPorts)).toString(),
+        KAFKA_PORT: kafkaPort,
+        KAFKA_EXTERNAL_PORT: kafkaPort,
         REDIS_PORT: (await getFreePort(usedPorts)).toString()
     };
 
