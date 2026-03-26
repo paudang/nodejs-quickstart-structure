@@ -9,6 +9,12 @@ jest.mock('kafkajs', () => {
     };
 });
 
+jest.mock('<% if (architecture === "MVC") { %>@/config/env<% } else { %>@/infrastructure/config/env<% } %>', () => ({
+    env: {
+        KAFKA_BROKER: 'localhost:9092'
+    }
+}));
+
 describe('Kafka Configuration', () => {
     beforeEach(() => {
         jest.clearAllMocks();
