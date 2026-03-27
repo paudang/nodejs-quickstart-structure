@@ -12,7 +12,7 @@ const swaggerSpecs = require('./swagger');
 <%_ } -%>
 <%_ if (communication === 'GraphQL') { -%>
 const { ApolloServer } = require('@apollo/server');
-const { expressMiddleware } = require('@apollo/server/express4');
+const { expressMiddleware } = require('@as-integrations/express4');
 const { ApolloServerPluginLandingPageLocalDefault } = require('@apollo/server/plugin/landingPage/default');
 const { unwrapResolverError } = require('@apollo/server/errors');
 const { ApiError } = require('../../errors/ApiError');

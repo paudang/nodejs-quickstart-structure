@@ -22,6 +22,12 @@
     "security:check": "npm audit && npm run snyk:test",
     "snyk:test": "snyk test"<% } %>
   },
+  "overrides": {
+    "brace-expansion": "^5.0.5",
+    "jake": "^10.9.4",
+    "micromatch": "^4.0.8",
+    "braces": "^3.0.3"
+  },
   "dependencies": {
     "express": "^4.18.2",
     "dotenv": "^16.3.1",
@@ -54,7 +60,8 @@
     "morgan": "^1.10.0"<% if (communication === 'REST APIs' || communication === 'Kafka') { %>,
     "swagger-ui-express": "^5.0.0",
     "yamljs": "^0.3.0"<% } %><% if (communication === 'GraphQL') { %>,
-    "@apollo/server": "^4.10.0",
+    "@apollo/server": "^5.5.0",
+    "@as-integrations/express4": "^1.1.2",
     "graphql": "^16.8.1",
     "@graphql-tools/merge": "^9.0.3"<% } %>
   },
@@ -76,7 +83,7 @@
     "@types/morgan": "^1.9.9",
     "rimraf": "^6.0.1"<% if ((viewEngine && viewEngine !== 'None') || communication === 'REST APIs' || communication === 'Kafka') { %>,
     "cpx2": "^8.0.0"<% } %><% } %>,
-    "eslint": "^9.20.1",
+    "eslint": "^10.1.0",
     "@eslint/js": "^9.20.0",
     "globals": "^15.14.0",
     "prettier": "^3.5.1",

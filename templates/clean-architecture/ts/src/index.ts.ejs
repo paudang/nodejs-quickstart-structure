@@ -16,7 +16,7 @@ import swaggerSpecs from '@/config/swagger';<% } %>
 <%_ if (communication === 'Kafka') { -%>import { kafkaService } from '@/infrastructure/messaging/kafkaClient';<%_ } -%>
 <%_ if (communication === 'GraphQL') { -%>
 import { ApolloServer } from '@apollo/server';
-import { expressMiddleware } from '@apollo/server/express4';
+import { expressMiddleware } from '@as-integrations/express4';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { unwrapResolverError } from '@apollo/server/errors';
 import { ApiError } from '@/errors/ApiError';

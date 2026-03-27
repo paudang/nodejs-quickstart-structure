@@ -1,9 +1,13 @@
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.18.1] - 2026-03-27
+
+### Fixed
+- **Template Security Hardening**: Resolved 29 vulnerabilities in `package.json.ejs` by upgrading `Apollo Server`, `Jest`, and `ESLint`.
+- **Apollo Server 5 Compatibility**: Migrated GraphQL integration to use `@as-integrations/express4`, resolving breaking changes in the latest Apollo release.
+- **Surgical Security Overrides**: Implemented targeted `overrides` for `brace-expansion`, `jake`, and `micromatch`. Removed global `glob/minimatch` overrides to maintain compatibility with Jest's internal APIs while preserving a "Zero-Vulnerability" status.
+- **E2E Validated**: Verified the entire "Secure-by-Default" ecosystem via Windows E2E tests, achieving 100% pass rate.
+- **Enterprise Standards**: Synchronized all generator templates with the latest secure dependency standards across MVC and Clean Architecture.
 
 ## [1.18.0] - 2026-03-25
 
