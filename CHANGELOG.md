@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Surgical Security Overrides**: Implemented targeted `overrides` for `brace-expansion`, `jake`, and `micromatch`. Removed global `glob/minimatch` overrides to maintain compatibility with Jest's internal APIs while preserving a "Zero-Vulnerability" status.
 - **E2E Validated**: Verified the entire "Secure-by-Default" ecosystem via Windows E2E tests, achieving 100% pass rate.
 - **Enterprise Standards**: Synchronized all generator templates with the latest secure dependency standards across MVC and Clean Architecture.
+### Changed
+- **Readme**: Standardize Generated Project README.
 
 ## [1.18.0] - 2026-03-25
 

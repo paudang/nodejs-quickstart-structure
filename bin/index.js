@@ -75,6 +75,8 @@ program
             
             console.log(chalk.cyan(`\nNext steps:\n  cd ${answers.projectName}\n  npm install\n  docker-compose up\n-----------------------${manualStartInstructions}\n\n${chalk.yellow('Production (PM2):')}\n  npm run build\n  npm run deploy\n  npx pm2 logs`));
 
+            console.log(chalk.yellow(`\n⭐ If this tool saved you 5 minutes, please give us a star on GitHub: ${chalk.underline('https://github.com/paudang/nodejs-quickstart-structure')}`));
+
         } catch (error) {
             if (error.name === 'ExitPromptError') {
                 console.log(chalk.yellow('\n\n👋 Goodbye! Setup cancelled.'));
