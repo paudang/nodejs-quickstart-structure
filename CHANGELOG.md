@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+  
+## [1.18.1] - 2026-03-27
+
+### Added
+- **Standardized Project README**: Major refactor of the generated `README.md` template to include a professional **7-Step Production-Ready Process**, providing clear guidance from initialization to deployment.
+- **Kafka Troubleshooting Guide**: Added a dedicated troubleshooting section in the generated documentation to resolve common connectivity and orchestration issues.
+- **Enhanced Social Branding**: Updated the VitePress documentation site with high-fidelity Open Graph (OG) images and Twitter Card metadata for professional social media previews.
+
+### Fixed
+- **Markdown Formatting**: Improved README and documentation layout for better scanability and AI-agent readability.
 
 ## [1.18.0] - 2026-03-25
 
