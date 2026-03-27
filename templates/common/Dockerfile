@@ -46,6 +46,9 @@ COPY package*.json ./
 # Install ONLY production dependencies
 RUN npm ci --only=production --ignore-scripts --no-audit --no-fund || npm ci --only=production --ignore-scripts --no-audit --no-fund || npm ci --only=production --ignore-scripts --no-audit --no-fund
 
+# Remove npm and caches to achieve Zero-Vulnerability status in the final image
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx /root/.npm /root/.cache
+
 # Copy built artifacts from builder
 <% if (language === 'TypeScript') { %>
 COPY --from=builder /app/dist ./dist
@@ -66,4 +69,5 @@ RUN mkdir -p logs && chown -R node:node logs
 
 USER node
 
-CMD ["npm", "start"]
+# Start application directly with node (safe even without npm)
+CMD ["node", "<% if (language === 'TypeScript') { %>dist/index.js<% } else { %>src/index.js<% } %>"]
