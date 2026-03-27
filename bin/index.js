@@ -42,10 +42,9 @@ program
 
         try {
             const answers = await getProjectDetails(options);
-            console.log(chalk.green('\nConfiguration received:'));
-            console.log(JSON.stringify(answers, null, 2));
-
-            console.log(chalk.yellow('\nGenerating project...'));
+            console.log(chalk.blue(`\n🚀 Preparing to generate ${chalk.bold(answers.projectName)} (${answers.architecture})...`));
+            
+            console.log(chalk.yellow('\nGenerating project files...'));
             await generateProject(answers);
 
             console.log(chalk.green('\n✔ Project generated successfully!'));
