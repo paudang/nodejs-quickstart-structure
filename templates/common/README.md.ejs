@@ -8,86 +8,87 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=<%= projectName %>&metric=alert_status)](https://sonarcloud.io/)
 <% } %>
 
-A production-ready Node.js microservice generated with **<%= architecture %>** and **<%= database %>**.
-This project comes pre-configured with industry-standard tooling for **Code Quality**, **Testing**, and **Security**.
+A production-ready Node.js microservice generated with **<%= architecture %>** and **<%= database %>**. 
+This project follows a strict **7-Step Production-Ready Process** to ensure quality and scalability from day one.
+
+---
+
+## 🚀 7-Step Production-Ready Process
+
+1.  **Initialize Git**: `git init` (Required for Husky hooks and security gates).
+2.  **Install Dependencies**: `npm install`.
+3.  **Configure Environment**: Copy `.env.example` to `.env`.
+4.  **Start Infrastructure**: `docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> kafka<% } %>`.
+5.  **Run Development**: `npm run dev`.
+6.  **Verify Standards**: `npm run lint` and `npm test` (Enforce 80% coverage).
+7.  **Build & Deploy**: `npm run build` followed by `npm run deploy` (via PM2).
+
+---
 
 ## 🚀 Key Features
 
 -   **Architecture**: <%= architecture %> (<% if (architecture === 'Clean Architecture') { %>Domain, UseCases, Infrastructure<% } else { %>MVC Pattern<% } %>).
--   **Database**: <%= database %> <% if (database !== 'MongoDB') { %>with **Flyway** migrations<% } else { %>with **Mongoose** schemas<% } %>.
--   **Security**: Helmet, CORS, Rate Limiting, HPP.
--   **Quality**: Eslint, Prettier, Husky, Lint-Staged.
--   **Testing**: Jest (Unit & Integration).
--   **DevOps**: Multi-stage Docker build, CI/CD ready.
-<% if (includeSecurity) { %>-   **Enterprise Security**: Snyk SCA, SonarCloud SAST.<% } %>
+-   **Database**: <%= database %> <% if (database !== 'None') { %>(via <%= database === 'MongoDB' ? 'Mongoose' : 'Sequelize' %>)<% } %>.
+-   **Security**: Helmet, CORS, Rate Limiting, HPP, Snyk SCA.
+-   **Quality**: 80%+ Test Coverage, Eslint, Prettier, Husky.
+-   **DevOps**: Multi-stage Docker, CI/CD ready (GitHub/GitLab/Jenkins).
+<% if (includeSecurity) { %>-   **Enterprise Hardening**: SonarCloud SAST, Security Policies.<% } %>
 
-## 🔄 CI/CD Pipeline
-<%_ if (ciProvider === 'GitHub Actions') { -%>
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/yourusername/<%= projectName %>/ci.yml?branch=main)
-This project includes a **GitHub Actions** workflow located in `.github/workflows/ci.yml`.
-It automatically runs:
--   Linting
--   Tests
--   Builds
-<%_ } else if (ciProvider === 'GitLab CI') { -%>
-![GitLab CI Status](https://img.shields.io/gitlab/pipeline/yourusername/<%= projectName %>?branch=main)
-This project includes a **GitLab CI** configuration in `.gitlab-ci.yml`.
-It automatically runs:
--   Linting
--   Tests
--   Builds
-<% } else if (ciProvider === 'Jenkins') { -%>
-This project includes a **Jenkinsfile** for comprehensive CI/CD.
-Pipeline stages:
--   Install Dependencies
--   Lint
--   Test
+## 📂 Project Structure
+
+The project follows **<%= architecture %>** principles.
+<% if (architecture === 'Clean Architecture') { -%>
+- **Domain**: Pure business logic (Entities/Interfaces).
+- **Use Case**: Application-specific business rules.
+- **Infrastructure**: External concerns (DB, Messaging, Caching).
 <% } else { -%>
-CI/CD is not currently configured, but the project is ready for integration.
+- **Model**: Database schemas and data logic.
+- **View**: Template engines or API responders.
+- **Controller**: Orchestrates flow between Model and View.
 <% } -%>
 
-## 🛠️ Getting Started
+---
+
+## 🛠️ Detailed Getting Started
+
+Follow the **🚀 7-Step Production-Ready Process** summary at the top, or follow these detailed instructions:
 
 ### 1. Prerequisites
 -   Node.js (v18+)
 -   Docker & Docker Compose
 
-### 2. Quick Start
+### 2. Environment Setup
+Copy the example environment file and adjust the values as needed:
 ```bash
-# Initialize Git (Mandatory for Husky hooks)
+cp .env.example .env
+```
+
+### 3. Infrastructure & App Launch
+```bash
+# Initialize Git for security hooks
 git init
 
 # Install dependencies
 npm install
 
-# Troubleshooting Husky (if skip git init)
-# npx husky install
-
-# Start Infrastructure (DB, etc.)
-docker-compose up -d
-
-# Run Development Server
+# Start required services
 docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> kafka<% } %>
+
+# Run the app in development mode
 npm run dev
 ```
 
-### 3. Development Standards
-Ensure your code meets quality standards before committing:
-
+### 4. Quality & Standards
 ```bash
-# Run Linter
+# Lint & Format
 npm run lint
-
-# Run Tests
-npm test
-
-# Format Code
 npm run format
+
+# Run Unit/Integration Tests
+npm test
+npm run test:coverage
 ```
 
-## 📂 Project Structure
-
-The project follows **<%= architecture %>** principles.
 <% if (communication === 'Kafka') { -%>
 Microservices communication handled via **Kafka**.
 <% } else if (communication === 'GraphQL') { -%>
@@ -144,6 +145,13 @@ This project demonstrates a production-ready Kafka flow:
    [Kafka] Consumer: Received USER_CREATED. 
    [Kafka] Consumer: 📧 Sending welcome email to 'kafka@example.com'... Done!
    ```
+
+### 🛠️ Kafka Troubleshooting
+If the connection or events are failing:
+1. **Check Docker**: Ensure Kafka container is running (`docker ps`).
+2. **Verify Broker**: `KAFKA_BROKER` in `.env` must match your host/port (standard: 9093).
+3. **Advertised Listeners**: If using Windows/WSL, check `docker-compose.yml` advertisers are correct.
+4. **Logs**: Check `docker compose logs -f kafka` for start-up errors.
 <% } -%>
 
 <% if (caching === 'Redis') { -%>
@@ -211,7 +219,6 @@ docker build -t <%= projectName %> .
 docker run -p 3000:3000 <%= projectName %>
 ```
 <% } -%>
-
 ## 🚀 PM2 Deployment (VPS/EC2)
 This project is pre-configured for direct deployment to a VPS/EC2 instance using **PM2** (via `ecosystem.config.js`).
 1. Install dependencies
@@ -249,8 +256,9 @@ docker-compose down
 -   **HPP**: Prevents HTTP Parameter Pollution attacks.
 <% if (includeSecurity) { %>
 ### 🛡️ Enterprise Hardening (Big Tech Standard)
--   **Snyk SCA**: Automated dependency vulnerability scanning.
--   **SonarCloud**: Deep static analysis for code quality and security hotspots.
+-   **Snyk SCA**: Run `npm run snyk:test` for dependency scanning.
+-   **SonarCloud**: Automated SAST on every Push/PR.
+-   **Digital Guardians**: Recommended Gitleaks integration for secret protection.
 -   **Security Policy**: Standard `SECURITY.md` for vulnerability reporting.
 <% } %>
 ## 🤖 AI-Native Development
