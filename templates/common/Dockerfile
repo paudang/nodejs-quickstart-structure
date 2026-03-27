@@ -5,7 +5,7 @@ FROM node:22-alpine AS builder
 
 # Upgrade OS packages to fix upstream vulnerabilities (Snyk-detected)
 RUN apk update && apk upgrade && \
-    apk add --no-cache ca-certificates
+    apk add --no-cache ca-certificates zlib>=1.3.2-r0 --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main
 
 WORKDIR /app
 ENV NPM_CONFIG_UPDATE_NOTIFIER=false
@@ -31,7 +31,7 @@ FROM node:22-alpine AS production
 
 # Upgrade OS packages to fix upstream vulnerabilities (Snyk-detected)
 RUN apk update && apk upgrade && \
-    apk add --no-cache ca-certificates
+    apk add --no-cache ca-certificates zlib>=1.3.2-r0 --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main
 
 WORKDIR /app
 
