@@ -10,8 +10,9 @@ RUN apk update && apk upgrade && \
 WORKDIR /app
 ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 
-# Upgrade npm using corepack (safer in Alpine)
-RUN corepack enable && corepack prepare npm@11.6.4 --activate
+# Upgrade npm using corepack and remove legacy npm to satisfy Snyk scans
+RUN corepack enable && corepack prepare npm@11.6.4 --activate && \
+    rm -rf /usr/local/lib/node_modules/npm
 
 COPY package*.json ./
 COPY tsconfig*.json ./
@@ -38,8 +39,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 
-# Upgrade npm using corepack (safer in Alpine)
-RUN corepack enable && corepack prepare npm@11.6.4 --activate
+# Upgrade npm using corepack and remove legacy npm to satisfy Snyk scans
+RUN corepack enable && corepack prepare npm@11.6.4 --activate && \
+    rm -rf /usr/local/lib/node_modules/npm
 
 COPY package*.json ./
 

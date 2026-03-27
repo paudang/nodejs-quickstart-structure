@@ -1,0 +1,45 @@
+# Snyk (https://snyk.io) policy file, default is to interrupt on any vulnerability found.
+# This file ignores vulnerabilities internal to the package manager (npm) itself,
+# as they do not affect your application's production security posture.
+version: v1.18.2
+ignore:
+  # Minimatch ReDoS/Complexity in npm internal dependencies
+  SNYK-JS-MINIMATCH-15353387:
+    - '*':
+        reason: Internal npm dependency, does not affect application runtime.
+        expires: '2027-03-27T10:00:00.000Z'
+  SNYK-JS-MINIMATCH-15353389:
+    - '*':
+        reason: Internal npm dependency, does not affect application runtime.
+        expires: '2027-03-27T10:00:00.000Z'
+  SNYK-JS-MINIMATCH-15309438:
+    - '*':
+        reason: Internal npm dependency, does not affect application runtime.
+        expires: '2027-03-27T10:00:00.000Z'
+  # Tar Symlink Attack in npm internal dependencies
+  SNYK-JS-TAR-15456201:
+    - '*':
+        reason: Internal npm dependency, does not affect application runtime.
+        expires: '2027-03-27T10:00:00.000Z'
+  SNYK-JS-TAR-15416075:
+    - '*':
+        reason: Internal npm dependency, does not affect application runtime.
+        expires: '2027-03-27T10:00:00.000Z'
+  SNYK-JS-TAR-15307072:
+    - '*':
+        reason: Internal npm dependency, does not affect application runtime.
+        expires: '2027-03-27T10:00:00.000Z'
+  # Brace-expansion Infinite Loop in npm internal dependencies
+  SNYK-JS-BRACEEXPANSION-15789759:
+    - '*':
+        reason: Internal npm dependency, does not affect application runtime.
+        expires: '2027-03-27T10:00:00.000Z'
+  SNYK-JS-ISAACSBRACEEXPANSION-15208653:
+    - '*':
+        reason: Internal npm dependency, does not affect application runtime.
+        expires: '2027-03-27T10:00:00.000Z'
+  # Picomatch ReDoS in npm internal dependencies
+  SNYK-JS-PICOMATCH-15765511:
+    - '*':
+        reason: Internal npm dependency, does not affect application runtime.
+        expires: '2027-03-27T10:00:00.000Z'
