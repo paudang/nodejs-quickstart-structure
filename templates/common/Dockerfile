@@ -38,8 +38,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 
-# Upgrade npm to latest in production stage as well
-RUN npm install -g npm@latest
+# Upgrade npm using corepack (safer in Alpine)
+RUN corepack enable && corepack prepare npm@11.6.4 --activate
 
 COPY package*.json ./
 
