@@ -1,5 +1,12 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.19.0] - 2026-03-28
+
+### Added
+- **Security Hardening**: Added `SECURITY.md` file to the project.
+- **Git Attributes**: Added `.gitattributes` file to the project.
+- **Contributing Guide**: Added `CONTRIBUTING.md` file to the project.
+
 ## [1.18.1] - 2026-03-27
 
 ### Fixed

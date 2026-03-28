@@ -2,6 +2,8 @@
 
 First off, thank you for considering contributing to `nodejs-quickstart-structure`! It's people like you that make this tool such a great boilerplate generator.
 
+This project embraces **AI-assisted development**. We use Gemini AI for architectural reviews and security hardening. Contributions from both humans and AI agents are welcome, provided they meet our quality standards.
+
 ## Code of Conduct
 
 By participating in this project, you are expected to be welcoming, inclusive, and respectful to all contributors and users.

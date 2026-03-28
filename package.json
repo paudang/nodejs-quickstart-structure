@@ -1,6 +1,6 @@
 {
   "name": "nodejs-quickstart-structure",
-  "version": "1.18.1",
+  "version": "1.19.0",
   "type": "module",
   "description": "The ultimate nodejs quickstart structure CLI to scaffold Node.js microservices with MVC or Clean Architecture",
   "main": "bin/index.js",
@@ -33,7 +33,18 @@
     "generator",
     "boilerplate"
   ],
-  "author": "Pau Dang <[EMAIL_ADDRESS]>",
+  "author": "Pau Dang <[phucdangb1400718@gmail.com]>",
+  "contributors": [
+    {
+      "name": "Pau Dang",
+      "url": "https://github.com/paudang"
+    },
+    {
+      "name": "Gemini AI",
+      "url": "https://deepmind.google/technologies/gemini/",
+      "role": "AI Architectural Assistant"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/paudang/nodejs-quickstart-structure.git"
