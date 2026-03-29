@@ -70,8 +70,24 @@ describe('User Model', () => {
         <% } else if (database === 'None') { %>
         const user = await User.create(data);
         expect(user.name).toBe(data.name);
-        expect(await User.find()).toBeDefined();
-        expect(await User.findAll()).toBeDefined();
+        expect(await User.find()).toContain(user);
+        expect(await User.findAll()).toContain(user);
+        
+        // findByPk
+        const found = await User.findByPk(user.id);
+        expect(found).toEqual(user);
+        expect(await User.findByPk('invalid')).toBeUndefined();
+        
+        // update
+        const updated = await User.update(user.id, { name: 'Updated' });
+        expect(updated.name).toBe('Updated');
+        expect(await User.update('invalid', {})).toBeUndefined();
+        
+        // destroy
+        const deleted = await User.destroy(user.id);
+        expect(deleted).toBe(true);
+        expect(await User.destroy('invalid')).toBe(false);
+        expect(await User.find()).not.toContain(user);
         <% } else { %>
         (User.create as jest.Mock).mockResolvedValue({ id: 1, ...data });
         (User.findAll as jest.Mock).mockResolvedValue([{ id: 1, ...data }]);

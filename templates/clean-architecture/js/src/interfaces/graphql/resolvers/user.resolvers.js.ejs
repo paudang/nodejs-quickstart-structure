@@ -11,6 +11,12 @@ const userResolvers = {
   Mutation: {
     createUser: async (_, { name, email }) => {
       return await userController.createUser({ name, email });
+    },
+    updateUser: async (_, { id, name, email }) => {
+      return await userController.updateUser(id, { name, email });
+    },
+    deleteUser: async (_, { id }) => {
+      return await userController.deleteUser(id);
     }
   }<%_ if (database === 'MongoDB') { -%>,
   User: {

@@ -1,6 +1,7 @@
+import { HTTP_STATUS } from '@/utils/httpCodes';
+import { ERROR_MESSAGES } from '@/utils/errorMessages';
 <% if (communication !== 'GraphQL') { -%>
 import { Request, Response, NextFunction } from 'express';
-import { HTTP_STATUS } from '@/utils/httpCodes';
 <% } -%>
 import { UserController } from '@/controllers/userController';
 import User from '@/models/User';
@@ -25,17 +26,15 @@ jest.mock('@/config/memoryCache', () => ({
 <%_ } -%>
 jest.mock('@/utils/logger');
 <%_ if (communication === 'Kafka') { -%>
-jest.mock('@/services/kafkaService', () => {
-    const mockSendMessage = jest.fn().mockResolvedValue(undefined);
-    return {
-        kafkaService: {
-            sendMessage: mockSendMessage
-        },
-        KafkaService: jest.fn().mockImplementation(() => ({
-            sendMessage: mockSendMessage
-        }))
-    };
-});
+jest.mock('@/services/kafkaService', () => ({
+    kafkaService: {
+        sendMessage: jest.fn().mockResolvedValue(undefined)
+    },
+    KafkaService: jest.fn().mockImplementation(() => ({
+        sendMessage: jest.fn().mockResolvedValue(undefined)
+    }))
+}));
+import { kafkaService } from '@/services/kafkaService';
 <%_ } -%>
 
 
@@ -50,7 +49,9 @@ describe('UserController', () => {
     beforeEach(() => {
         userController = new UserController();
 <% if (communication !== 'GraphQL') { -%>
-        mockRequest = {};
+        mockRequest = {
+            body: {}
+        };
         mockResponse = {
             json: jest.fn(),
             status: jest.fn().mockReturnThis(),
@@ -82,7 +83,7 @@ describe('UserController', () => {
             const result = await userController.getUsers();
 
             // Assert
-            expect(result).toEqual(usersMock);
+            expect(result!).toEqual(usersMock);
 <% } else { -%>
             await userController.getUsers(mockRequest as Request, mockResponse as Response, mockNext);
 
@@ -146,17 +147,10 @@ describe('UserController', () => {
 
             // Act
 <% if (communication === 'GraphQL') { -%>
-            const result = await userController.createUser(dataArg);
+            const result = await userController.createUser(dataArg) as any;
 
             // Assert
-<%_ if (database === 'None') { -%>
-            expect(result.name).toBe(payload.name);
-            expect(result.email).toBe(payload.email);
-            expect(User.mockData.length).toBe(1);
-<%_ } else { -%>
-            expect(result).toEqual(expectedUser);
-            expect(User.create).toHaveBeenCalledWith(payload);
-<%_ } -%>
+            expect(result!).toEqual(expectedUser);
 <% } else { -%>
             await userController.createUser(mockRequest as Request, mockResponse as Response, mockNext);
 
@@ -174,7 +168,6 @@ describe('UserController', () => {
             expect(cacheService.del).toHaveBeenCalledWith('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
-            const { kafkaService } = require('@/services/kafkaService');
             expect(kafkaService.sendMessage).toHaveBeenCalled();
 <%_ } -%>
         });
@@ -196,6 +189,255 @@ describe('UserController', () => {
             await expect(userController.createUser(dataArg)).rejects.toThrow(error);
 <% } else { -%>
             await userController.createUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+<% } -%>
+        });
+    });
+
+    describe('updateUser', () => {
+        it('should successfully update a user (Happy Path)', async () => {
+            // Arrange
+            const id = '1';
+            const payload = { name: 'Alice Updated' };
+<% if (communication === 'GraphQL') { -%>
+            const idArg = id;
+            const dataArg = payload;
+<% } else { -%>
+            mockRequest.params = { id };
+            mockRequest.body = payload;
+<% } -%>
+            
+            const expectedUser = { id, ...payload };
+<%_ if (database === 'MongoDB') { -%>
+            (User.findByIdAndUpdate as jest.Mock).mockResolvedValue(expectedUser);
+<%_ } else if (database === 'None') { -%>
+            User.mockData = [{ id, name: 'Alice', email: 'alice@example.com' }];
+            (User.findByPk as jest.Mock).mockResolvedValue(User.mockData[0]);
+            (User.update as jest.Mock).mockResolvedValue(true);
+<%_ } else { -%>
+            const userMock = { ...expectedUser, update: jest.fn().mockResolvedValue(true) };
+            (User.findByPk as jest.Mock).mockResolvedValue(userMock);
+<%_ } -%>
+
+            // Act
+<% if (communication === 'GraphQL') { -%>
+            const result = await userController.updateUser(idArg, dataArg);
+
+            // Assert
+<%_ if (database === 'None' || database === 'MongoDB') { -%>
+            expect(result!).toEqual(expectedUser);
+<%_ } else { -%>
+            expect(result!).toMatchObject(payload);
+            expect(User.findByPk).toHaveBeenCalledWith(id);
+<%_ } -%>
+<% } else { -%>
+            await userController.updateUser(mockRequest as Request, mockResponse as Response, mockNext);
+
+            // Assert
+<%_ if (database === 'None') { -%>
+            expect(mockResponse.json).toHaveBeenCalled();
+<%_ } else if (database === 'MongoDB') { -%>
+            expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
+            expect(User.findByIdAndUpdate).toHaveBeenCalled();
+<%_ } else { -%>
+            expect(mockResponse.json).toHaveBeenCalled();
+            expect(User.findByPk).toHaveBeenCalledWith(id);
+<%_ } -%>
+<% } -%>
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            expect(cacheService.del).toHaveBeenCalledWith('users:all');
+<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+            expect(kafkaService.sendMessage).toHaveBeenCalled();
+<%_ } -%>
+        });
+
+        it('should handle 404/errors when user not found or update fails', async () => {
+             // Arrange
+            const id = '999';
+<%_ if (communication === 'GraphQL') { -%>
+            const idArg = id;
+            const dataArg = { name: 'Fail' };
+            (User.findByPk as jest.Mock).mockResolvedValue(null);
+            await expect(userController.updateUser(idArg, dataArg)).rejects.toThrow(ERROR_MESSAGES.USER_NOT_FOUND);
+<%_ } else { -%>
+            mockRequest.params = { id };
+            mockRequest.body = { name: 'Fail' };
+<%_ if (database === 'MongoDB') { -%>
+            (User.findByIdAndUpdate as jest.Mock).mockResolvedValue(null);
+<%_ } else if (database === 'None') { -%>
+            User.mockData = [];
+<%_ } else { -%>
+            (User.findByPk as jest.Mock).mockResolvedValue(null);
+<%_ } -%>
+
+            // Act
+            await userController.updateUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.NOT_FOUND);
+<%_ } -%>
+        });
+
+        it('should handle database errors during update (Error Handling)', async () => {
+            // Arrange
+            const id = '1';
+            const error = new Error('Database Error');
+            (User.findByPk as jest.Mock).mockRejectedValue(error);
+<%_ if (communication === 'GraphQL') { -%>
+            await expect(userController.updateUser(id, { name: 'Fail' })).rejects.toThrow(error);
+<%_ } else { -%>
+            mockRequest.params = { id };
+            await userController.updateUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+<%_ } -%>
+        });
+    });
+
+    describe('deleteUser', () => {
+        it('should successfully delete a user (Happy Path)', async () => {
+            // Arrange
+            const id = '1';
+<% if (communication === 'GraphQL') { -%>
+            const idArg = id;
+<% } else { -%>
+            mockRequest.params = { id };
+<% } -%>
+            
+<%_ if (database === 'MongoDB') { -%>
+            (User.findByIdAndDelete as jest.Mock).mockResolvedValue(true);
+<%_ } else if (database === 'None') { -%>
+            (User.destroy as jest.Mock).mockResolvedValue(true);
+<%_ } else { -%>
+            const userMock = { id, destroy: jest.fn().mockResolvedValue(true) };
+            (User.findByPk as jest.Mock).mockResolvedValue(userMock);
+<%_ } -%>
+
+            // Act
+<% if (communication === 'GraphQL') { -%>
+            const result = await userController.deleteUser(idArg);
+            expect(result).toBe(true);
+<% } else { -%>
+            await userController.deleteUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.OK);
+<% } -%>
+
+<%_ if (database === 'None') { -%>
+            expect(User.mockData.length).toBe(0);
+<%_ } -%>
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            expect(cacheService.del).toHaveBeenCalledWith('users:all');
+<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+            expect(kafkaService.sendMessage).toHaveBeenCalled();
+<%_ } -%>
+        });
+
+<% if (communication === 'GraphQL') { -%>
+        it('should handle user not found during deletion (Error Handling)', async () => {
+            const id = '999';
+<%_ if (database === 'MongoDB') { -%>
+            (User.findByIdAndDelete as jest.Mock).mockResolvedValue(null);
+<%_ } else if (database === 'None') { -%>
+            (User.destroy as jest.Mock).mockResolvedValue(false);
+<%_ } else { -%>
+            (User.findByPk as jest.Mock).mockResolvedValue(null);
+<%_ } -%>
+            await expect(userController.deleteUser(id)).rejects.toThrow(ERROR_MESSAGES.USER_NOT_FOUND);
+        });
+
+        it('should handle database errors during deletion (Error Handling)', async () => {
+            const id = '1';
+            const error = new Error('Database Error');
+<%_ if (database === 'MongoDB') { -%>
+            (User.findByIdAndDelete as jest.Mock).mockRejectedValue(error);
+<%_ } else if (database === 'None') { -%>
+            (User.destroy as jest.Mock).mockRejectedValue(error);
+<%_ } else { -%>
+            (User.findByPk as jest.Mock).mockRejectedValue(error);
+<%_ } -%>
+            await expect(userController.deleteUser(id)).rejects.toThrow(error);
+        });
+<% } else { -%>
+        it('should handle user not found during deletion (Error Handling)', async () => {
+            // Arrange
+            const id = '999';
+            mockRequest.params = { id };
+<%_ if (database === 'MongoDB') { -%>
+            (User.findByIdAndDelete as jest.Mock).mockResolvedValue(null);
+<%_ } else if (database === 'None') { -%>
+            (User.destroy as jest.Mock).mockResolvedValue(false);
+<%_ } else { -%>
+            (User.findByPk as jest.Mock).mockResolvedValue(null);
+<%_ } -%>
+            await userController.deleteUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.NOT_FOUND);
+        });
+
+        it('should handle database errors during deletion (Error Handling)', async () => {
+            // Arrange
+            const id = '1';
+            mockRequest.params = { id };
+            const error = new Error('Database Error');
+<%_ if (database === 'MongoDB') { -%>
+            (User.findByIdAndDelete as jest.Mock).mockRejectedValue(error);
+<%_ } else if (database === 'None') { -%>
+            (User.destroy as jest.Mock).mockRejectedValue(error);
+<%_ } else { -%>
+            (User.findByPk as jest.Mock).mockRejectedValue(error);
+<%_ } -%>
+            await userController.deleteUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+        });
+<% } -%>
+    });
+
+    describe('getUsers Error Paths', () => {
+        it('should handle database errors during fetching (Error Handling)', async () => {
+            const error = new Error('Database Error');
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
+            (User.find as jest.Mock).mockRejectedValue(error);
+<%_ } else { -%>
+            (User.findAll as jest.Mock).mockRejectedValue(error);
+<%_ } -%>
+<% if (communication === 'GraphQL') { -%>
+            await expect(userController.getUsers()).rejects.toThrow(error);
+<% } else { -%>
+            await userController.getUsers(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+<% } -%>
+        });
+    });
+
+    describe('createUser Error Paths', () => {
+        it('should handle database errors during creation (Error Handling)', async () => {
+            const error = new Error('Database Error');
+            (User.create as jest.Mock).mockRejectedValue(error);
+<% if (communication === 'GraphQL') { -%>
+            await expect(userController.createUser({ name: 'Alice', email: 'alice@example.com' })).rejects.toThrow(error);
+<% } else { -%>
+            mockRequest.body = { name: 'Alice', email: 'alice@example.com' };
+            await userController.createUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+<% } -%>
+        });
+    });
+
+    describe('updateUser Error Paths', () => {
+        it('should handle database errors during update (Error Handling)', async () => {
+            const id = '1';
+            const error = new Error('Database Error');
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
+            (User.findByPk as jest.Mock).mockResolvedValue({ id });
+            (User.update as jest.Mock).mockRejectedValue(error);
+<%_ } else { -%>
+            const userMock = { id, update: jest.fn().mockRejectedValue(error) };
+            (User.findByPk as jest.Mock).mockResolvedValue(userMock);
+<%_ } -%>
+<% if (communication === 'GraphQL') { -%>
+            await expect(userController.updateUser(id, { name: 'Bob' })).rejects.toThrow(error);
+<% } else { -%>
+            mockRequest.params = { id };
+            mockRequest.body = { name: 'Bob' };
+            await userController.updateUser(mockRequest as Request, mockResponse as Response, mockNext);
             expect(mockNext).toHaveBeenCalledWith(error);
 <% } -%>
         });

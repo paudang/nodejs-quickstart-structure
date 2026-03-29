@@ -13,6 +13,14 @@ export const userResolvers = {
     createUser: async (_: unknown, { name, email }: { name: string, email: string }) => {
       const user = await userController.createUser({ name, email });
       return user;
+    },
+    updateUser: async (_: unknown, { id, name, email }: { id: string, name?: string, email?: string }) => {
+      const user = await userController.updateUser(id, { name, email });
+      return user;
+    },
+    deleteUser: async (_: unknown, { id }: { id: string }) => {
+      const result = await userController.deleteUser(id);
+      return result;
     }
   }<%_ if (database === 'MongoDB') { -%>,
   User: {

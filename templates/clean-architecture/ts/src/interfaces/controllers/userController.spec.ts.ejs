@@ -1,15 +1,20 @@
 <% if (communication !== 'GraphQL') { -%>
 import { Request, Response, NextFunction } from 'express';
 import { HTTP_STATUS } from '@/utils/httpCodes';
+import { ERROR_MESSAGES } from '@/utils/errorMessages';
 <% } -%>
 import { UserController } from '@/interfaces/controllers/userController';
 import CreateUser from '@/usecases/createUser';
 import GetAllUsers from '@/usecases/getAllUsers';
+import UpdateUser from '@/usecases/updateUser';
+import DeleteUser from '@/usecases/deleteUser';
 
 // Mock dependencies
 jest.mock('@/infrastructure/repositories/UserRepository');
 jest.mock('@/usecases/createUser');
 jest.mock('@/usecases/getAllUsers');
+jest.mock('@/usecases/updateUser');
+jest.mock('@/usecases/deleteUser');
 jest.mock('@/infrastructure/log/logger');
 <%_ if (communication === 'Kafka') { -%>
 jest.mock('@/infrastructure/messaging/kafkaClient', () => {
@@ -30,6 +35,8 @@ describe('UserController (Clean Architecture)', () => {
     let userController: UserController;
     let mockCreateUserUseCase: jest.Mocked<CreateUser>;
     let mockGetAllUsersUseCase: jest.Mocked<GetAllUsers>;
+    let mockUpdateUserUseCase: jest.Mocked<UpdateUser>;
+    let mockDeleteUserUseCase: jest.Mocked<DeleteUser>;
 <% if (communication !== 'GraphQL') { -%>
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
@@ -45,9 +52,13 @@ describe('UserController (Clean Architecture)', () => {
         // Retrieve the mocked instances created inside UserController constructor
         mockCreateUserUseCase = (CreateUser as jest.Mock).mock.instances[0] as jest.Mocked<CreateUser>;
         mockGetAllUsersUseCase = (GetAllUsers as jest.Mock).mock.instances[0] as jest.Mocked<GetAllUsers>;
+        mockUpdateUserUseCase = (UpdateUser as jest.Mock).mock.instances[0] as jest.Mocked<UpdateUser>;
+        mockDeleteUserUseCase = (DeleteUser as jest.Mock).mock.instances[0] as jest.Mocked<DeleteUser>;
 
 <% if (communication !== 'GraphQL') { -%>
-        mockRequest = {};
+        mockRequest = {
+            body: {}
+        };
         mockResponse = {
             json: jest.fn(),
             status: jest.fn().mockReturnThis(),
@@ -180,6 +191,155 @@ describe('UserController (Clean Architecture)', () => {
             await userController.createUser(mockRequest as Request, mockResponse as Response, mockNext);
             expect(mockNext).toHaveBeenCalledWith(error);
 <% } -%>
+        });
+    });
+
+    describe('updateUser', () => {
+        it('should successfully update a user (Happy Path)', async () => {
+            // Arrange
+            const id = '1';
+            const payload = { name: 'Alice Updated' };
+<% if (communication === 'GraphQL') { -%>
+            const idArg = id;
+            const dataArg = payload;
+<% } else { -%>
+            mockRequest.params = { id };
+            mockRequest.body = payload;
+<% } -%>
+            const expectedUser = { id, name: 'Alice Updated', email: 'alice@example.com' };
+
+            mockUpdateUserUseCase.execute.mockResolvedValue(expectedUser as any);
+
+            // Act
+<% if (communication === 'GraphQL') { -%>
+            const result = await userController.updateUser(idArg, dataArg);
+            expect(result).toEqual(expectedUser);
+<% } else { -%>
+            await userController.updateUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
+<% } -%>
+
+<%_ if (communication === 'Kafka') { -%>
+            const { kafkaService } = require('@/infrastructure/messaging/kafkaClient');
+            expect(kafkaService.sendMessage).toHaveBeenCalled();
+<%_ } -%>
+            expect(mockUpdateUserUseCase.execute).toHaveBeenCalledWith(id, payload);
+        });
+
+        it('should handle 404/errors when user not found or update fails', async () => {
+            // Arrange
+            const id = '999';
+<%_ if (communication === 'GraphQL') { -%>
+            const idArg = id;
+            const dataArg = { name: 'Fail' };
+            mockUpdateUserUseCase.execute.mockResolvedValue(null);
+            await expect(userController.updateUser(idArg, dataArg)).rejects.toThrow(ERROR_MESSAGES.USER_NOT_FOUND);
+<%_ } else { -%>
+            mockRequest.params = { id };
+            mockRequest.body = { name: 'Fail' };
+            mockUpdateUserUseCase.execute.mockResolvedValue(null);
+
+            // Act
+            await userController.updateUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.NOT_FOUND);
+<%_ } -%>
+        });
+
+        it('should handle database errors during update (Error Handling)', async () => {
+            // Arrange
+            const id = '1';
+            const error = new Error('Database Error');
+            mockUpdateUserUseCase.execute.mockRejectedValue(error);
+<%_ if (communication === 'GraphQL') { -%>
+            await expect(userController.updateUser(id, { name: 'Fail' })).rejects.toThrow(error);
+<%_ } else { -%>
+            mockRequest.params = { id };
+            await userController.updateUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+<%_ } -%>
+        });
+    });
+
+    describe('deleteUser', () => {
+        it('should successfully delete a user (Happy Path)', async () => {
+            // Arrange
+            const id = '1';
+<% if (communication === 'GraphQL') { -%>
+            const idArg = id;
+<% } else { -%>
+            mockRequest.params = { id };
+<% } -%>
+            mockDeleteUserUseCase.execute.mockResolvedValue(true);
+
+            // Act
+<% if (communication === 'GraphQL') { -%>
+            const result = await userController.deleteUser(idArg);
+            expect(result).toBe(true);
+<% } else { -%>
+            await userController.deleteUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.OK);
+<% } -%>
+
+<%_ if (communication === 'Kafka') { -%>
+            const { kafkaService } = require('@/infrastructure/messaging/kafkaClient');
+            expect(kafkaService.sendMessage).toHaveBeenCalled();
+<%_ } -%>
+            expect(mockDeleteUserUseCase.execute).toHaveBeenCalledWith(id);
+        });
+
+        it('should throw error if user not found during deletion (Error Handling)', async () => {
+            // Arrange
+            const id = '999';
+<%_ if (communication === 'GraphQL') { -%>
+            mockDeleteUserUseCase.execute.mockResolvedValue(false);
+            await expect(userController.deleteUser(id)).rejects.toThrow(ERROR_MESSAGES.USER_NOT_FOUND);
+<%_ } else { -%>
+            mockRequest.params = { id };
+            mockDeleteUserUseCase.execute.mockResolvedValue(false);
+            await userController.deleteUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.NOT_FOUND);
+<%_ } -%>
+        });
+
+        it('should handle database errors during deletion (Error Handling)', async () => {
+            // Arrange
+            const id = '1';
+            const error = new Error('Database Error');
+            mockDeleteUserUseCase.execute.mockRejectedValue(error);
+<%_ if (communication === 'GraphQL') { -%>
+            await expect(userController.deleteUser(id)).rejects.toThrow(error);
+<%_ } else { -%>
+            mockRequest.params = { id };
+            await userController.deleteUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+<%_ } -%>
+        });
+    });
+
+    describe('getUsers Error Paths', () => {
+        it('should handle database errors during fetching (Error Handling)', async () => {
+            const error = new Error('Database Error');
+            mockGetAllUsersUseCase.execute.mockRejectedValue(error);
+<%_ if (communication === 'GraphQL') { -%>
+            await expect(userController.getUsers()).rejects.toThrow(error);
+<%_ } else { -%>
+            await userController.getUsers(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+<%_ } -%>
+        });
+    });
+
+    describe('createUser Error Paths', () => {
+        it('should handle database errors during creation (Error Handling)', async () => {
+            const error = new Error('Database Error');
+            mockCreateUserUseCase.execute.mockRejectedValue(error);
+<%_ if (communication === 'GraphQL') { -%>
+            await expect(userController.createUser({ name: 'Alice', email: 'alice@example.com' })).rejects.toThrow(error);
+<%_ } else { -%>
+            mockRequest.body = { name: 'Alice', email: 'alice@example.com' };
+            await userController.createUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockNext).toHaveBeenCalledWith(error);
+<%_ } -%>
         });
     });
 });

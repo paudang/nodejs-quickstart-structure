@@ -34,4 +34,34 @@ export class UserRepository {
         }));
 <%_ } -%>
     }
+
+    async update(id: number | string, data: Partial<UserEntity>): Promise<UserEntity | null> {
+<%_ if (database === 'MongoDB') { -%>
+        const user = await UserModel.findByIdAndUpdate(id, data, { new: true });
+        if (!user) return null;
+        return { id: user._id.toString(), name: user.name, email: user.email };
+<%_ } else if (database === 'None') { -%>
+        const user = await UserModel.update(id, data);
+        return user;
+<%_ } else { -%>
+        const user = await UserModel.findByPk(id);
+        if (!user) return null;
+        await user.update(data);
+        return { id: user.id || 0, name: user.name, email: user.email };
+<%_ } -%>
+    }
+
+    async delete(id: number | string): Promise<boolean> {
+<%_ if (database === 'MongoDB') { -%>
+        const result = await UserModel.findByIdAndDelete(id);
+        return !!result;
+<%_ } else if (database === 'None') { -%>
+        return await UserModel.destroy(id);
+<%_ } else { -%>
+        const user = await UserModel.findByPk(id);
+        if (!user) return false;
+        await user.destroy();
+        return true;
+<%_ } -%>
+    }
 }

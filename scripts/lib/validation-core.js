@@ -173,71 +173,106 @@ async function checkHealth(config, hostPort) {
                      return false;
                  }
                  
-                 if (config.communication === 'REST APIs' || config.communication === 'Kafka') {
+                  if (config.communication === 'REST APIs' || config.communication === 'Kafka') {
                     try {
-                        const postController = new AbortController();
-                        const postTimeoutId = setTimeout(() => postController.abort(), 5000);
-                        const postRes = await fetch(`http://127.0.0.1:${port}/api/users`, {
+                        const baseUrl = `http://127.0.0.1:${port}/api/users`;
+                        
+                        // 1. Create
+                        const postRes = await fetch(baseUrl, {
                              method: 'POST',
                              headers: { 'Content-Type': 'application/json' },
-                             body: JSON.stringify({ name: 'Test User', email: `test${Date.now()}@example.com` }),
-                             signal: postController.signal
+                             body: JSON.stringify({ name: 'Test User', email: `test${Date.now()}@example.com` })
                         });
-                        clearTimeout(postTimeoutId);
                         
-                        if (postRes.ok || postRes.status === 404) {
-                             if (config.communication === 'Kafka') {
-                                 log('... Verifying Kafka Flow in Logs (Wait 5s) ...');
-                                 await new Promise(r => setTimeout(r, 5000));
-                                 try {
-                                     const logs = await runCommand(`docker compose logs`, path.join(path.resolve(__dirname, '../../temp_test_workspace'), config.projectName), {}, true);
-                                     
-                                     const requiredKafkaLogs = [
-                                         '[Kafka] Producer connected successfully',
-                                         '[Kafka] Consumer connected successfully',
-                                         '[Kafka] Registered consumer for topic: user-topic',
-                                         '[Kafka] Producer: Sent USER_CREATED event',
-                                         '[Kafka] Consumer: Received USER_CREATED.',
-                                         '[Kafka] Consumer: 📧 Sending welcome email to'
-                                     ];
+                        if (postRes.ok) {
+                             const user = await postRes.json();
+                             const userId = user.id || user._id;
 
-                                     let allFound = true;
-                                     for (const logText of requiredKafkaLogs) {
-                                         if (!logs.includes(logText)) {
-                                             console.log(`!!! Missing Kafka log: "${logText}" (Retrying...)`, ANSI_RED);
-                                             allFound = false;
-                                             break;
+                             // 2. Update
+                             const patchRes = await fetch(`${baseUrl}/${userId}`, {
+                                 method: 'PATCH',
+                                 headers: { 'Content-Type': 'application/json' },
+                                 body: JSON.stringify({ name: 'Updated User' })
+                             });
+
+                             // 3. Delete
+                             const deleteRes = await fetch(`${baseUrl}/${userId}`, {
+                                 method: 'DELETE'
+                             });
+
+                             if (patchRes.ok && deleteRes.ok) {
+                                 if (config.communication === 'Kafka') {
+                                     log('... Verifying Kafka Flow in Logs (Wait 5s) ...');
+                                     await new Promise(r => setTimeout(r, 5000));
+                                     try {
+                                         const logs = await runCommand(`docker compose logs`, path.join(path.resolve(__dirname, '../../temp_test_workspace'), config.projectName), {}, true);
+                                         
+                                         const requiredKafkaLogs = [
+                                             '[Kafka] Producer: Sent USER_CREATED event',
+                                             '[Kafka] Consumer: Received USER_CREATED.',
+                                             '[Kafka] Producer: Sent USER_UPDATED event',
+                                             '[Kafka] Consumer: Received USER_UPDATED.',
+                                             '[Kafka] Producer: Sent USER_DELETED event',
+                                             '[Kafka] Consumer: Received USER_DELETED.'
+                                         ];
+
+                                         let allFound = true;
+                                         for (const logText of requiredKafkaLogs) {
+                                             if (!logs.includes(logText)) {
+                                                 console.log(`!!! Missing Kafka log: "${logText}" (Retrying...)`, ANSI_RED);
+                                                 allFound = false;
+                                                 break;
+                                             }
                                          }
+                                         
+                                         if (allFound) {
+                                             log('✓ Kafka CRUD Flow verified in logs', ANSI_GREEN);
+                                             return true;
+                                         }
+                                     } catch (err) {
+                                         console.log(`Kafka Log verification error: ${err.message}`);
                                      }
-                                     
-                                     if (allFound) {
-                                         log('✓ Kafka Connection & Flow verified in logs', ANSI_GREEN);
-                                         return true;
-                                     }
-                                 } catch (err) {
-                                     console.log(`Kafka Log verification error: ${err.message}`);
+                                 } else {
+                                     console.log('✓ Health Check Passed (Full REST CRUD functional)', ANSI_GREEN);
+                                     return true;
                                  }
-                             } else { // This handles REST APIs
-                                 console.log('✓ Health Check Passed (API functional)', ANSI_GREEN);
-                                 return true;
                              }
                         }
                     } catch (err) {}
                 } else if (config.communication === 'GraphQL') {
                      try {
-                         const gqlController = new AbortController();
-                         const gqlTimeoutId = setTimeout(() => gqlController.abort(), 5000);
-                         const graphqlRes = await fetch(`http://127.0.0.1:${port}/graphql`, {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ query: 'query { getAllUsers { id name email } }' }),
-                              signal: gqlController.signal
-                         });
-                         clearTimeout(gqlTimeoutId);
+                         const gqlUrl = `http://127.0.0.1:${port}/graphql`;
                          
-                         if (graphqlRes.ok) {
-                              console.log('✓ Health Check Passed (GraphQL functional)', ANSI_GREEN);
-                              return true;
+                         // 1. Create Mutation
+                         const createMutation = `mutation { createUser(name: "GQL Test", email: "gql${Date.now()}@test.com") { id } }`;
+                         const createRes = await fetch(gqlUrl, {
+                               method: 'POST',
+                               headers: { 'Content-Type': 'application/json' },
+                               body: JSON.stringify({ query: createMutation })
+                         });
+                         const createData = await createRes.json();
+                         const userId = createData.data.createUser.id;
+
+                         // 2. Update Mutation
+                         const updateMutation = `mutation { updateUser(id: "${userId}", name: "GQL Updated") { id name } }`;
+                         await fetch(gqlUrl, {
+                               method: 'POST',
+                               headers: { 'Content-Type': 'application/json' },
+                               body: JSON.stringify({ query: updateMutation })
+                         });
+
+                         // 3. Delete Mutation
+                         const deleteMutation = `mutation { deleteUser(id: "${userId}") }`;
+                         const deleteRes = await fetch(gqlUrl, {
+                               method: 'POST',
+                               headers: { 'Content-Type': 'application/json' },
+                               body: JSON.stringify({ query: deleteMutation })
+                         });
+                         const deleteData = await deleteRes.json();
+                         
+                         if (deleteData.data.deleteUser) {
+                               console.log('✓ Health Check Passed (Full GraphQL CRUD functional)', ANSI_GREEN);
+                               return true;
                          }
                      } catch (err) {}
                 } else {

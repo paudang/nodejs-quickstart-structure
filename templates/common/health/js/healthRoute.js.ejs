@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const logger = require('<% if (architecture === "MVC") { %>../utils/logger<% } else { %>../../infrastructure/log/logger<% } %>');
 const HTTP_STATUS = require('<% if (architecture === "MVC") { %>../utils/httpCodes<% } else { %>../../utils/httpCodes<% } %>');
+<%_ if (database !== 'None') { -%>
+const ERROR_MESSAGES = require('<% if (architecture === "MVC") { %>../utils/errorMessages<% } else { %>../../utils/errorMessages<% } %>');
+<%_ }
 <%_ if (database === 'MongoDB') { -%>
 const mongoose = require('mongoose');
 <%_ } else if (database !== 'None') { -%>
@@ -34,7 +37,7 @@ router.get('/', async (req, res) => {
   } catch (err) {
     healthData.database = 'error';
     healthData.status = 'DOWN';
-    logger.error('Health Check Database Ping Failed:', err);
+    logger.error(`${ERROR_MESSAGES.DATABASE_PING_FAILED}:`, err);
     return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(healthData);
   }
 <%_ } else { -%>

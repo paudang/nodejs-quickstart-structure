@@ -118,10 +118,34 @@ mutation CreateUser {
   }
 }
 ```
+
+**Mutation to update a user:**
+```graphql
+mutation UpdateUser {
+  updateUser(id: "1", name: "John Updated") {
+    id
+    name
+    email
+  }
+}
+```
+
+**Mutation to delete a user:**
+```graphql
+mutation DeleteUser {
+  deleteUser(id: "1")
+}
+```
 <% } else { -%>
 API is exposed via **REST**.
 A Swagger UI for API documentation is available at:
 - **URL**: `http://localhost:3000/api-docs` (Dynamic based on PORT)
+
+### 🛣️ User Endpoints:
+- `GET /api/users`: List all users.
+- `POST /api/users`: Create a new user.
+- `PATCH /api/users/:id`: Partially update a user.
+- `DELETE /api/users/:id`: Delete a user (Soft Delete).
 <%_ } -%>
 
 <% if (communication === 'Kafka') { -%>

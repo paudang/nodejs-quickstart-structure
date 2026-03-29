@@ -1,10 +1,10 @@
 const { z } = require('zod');
 
 const UserEventSchema = z.object({
-  action: z.enum(['USER_CREATED', 'UPDATE_USER', 'DELETE_USER']),
+  action: z.enum(['USER_CREATED', 'USER_UPDATED', 'USER_DELETED']),
   payload: z.object({
     id: z.union([z.string(), z.number()]),
-    email: z.string().email(),
+    email: z.string().email().optional(),
   }),
 });
 
