@@ -119,6 +119,8 @@ const deleteUser = async (id) => {
     throw error;
   }
 };
+
+module.exports = { getUsers, createUser, updateUser, deleteUser };
 <% } else { -%>
 const getUsers = async (req, res, next) => {
   try {
@@ -238,6 +240,6 @@ const deleteUser = async (req, res, next) => {
     next(error);
   }
 };
-<% } -%>
 
 module.exports = { getUsers, createUser, updateUser, deleteUser };
+<% } -%>

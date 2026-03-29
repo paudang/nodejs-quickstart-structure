@@ -10,7 +10,7 @@ if (architecture === 'Clean Architecture') {
     redisPath = '../infrastructure/caching/redisClient';
     kafkaPath = '../infrastructure/messaging/kafkaClient';
 }
-_%>
+-%>
 const logger = require('<%- loggerPath %>');
 
 const setupGracefulShutdown = (server) => {

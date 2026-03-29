@@ -4,7 +4,7 @@ const logger = require('<% if (architecture === "MVC") { %>../utils/logger<% } e
 const HTTP_STATUS = require('<% if (architecture === "MVC") { %>../utils/httpCodes<% } else { %>../../utils/httpCodes<% } %>');
 <%_ if (database !== 'None') { -%>
 const ERROR_MESSAGES = require('<% if (architecture === "MVC") { %>../utils/errorMessages<% } else { %>../../utils/errorMessages<% } %>');
-<%_ }
+<%_ } -%>
 <%_ if (database === 'MongoDB') { -%>
 const mongoose = require('mongoose');
 <%_ } else if (database !== 'None') { -%>

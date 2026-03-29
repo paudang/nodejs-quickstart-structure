@@ -1,7 +1,7 @@
 const BaseConsumer = require('../../baseConsumer');
-const logger = require('<% if (architecture === "Clean Architecture") { %>../../../../infrastructure/log/logger<% } else { %>../../../utils/logger<% } %>');
-const { UserEventSchema } = require('../../schemas/userEventSchema');
-const ERROR_MESSAGES = require('../../utils/errorMessages');
+const logger = require('<%- loggerPath %>');
+const { UserEventSchema } = require('<%- userEventSchemaPath %>');
+const ERROR_MESSAGES = require('<%- errorMessagesPath %>');
 
 class WelcomeEmailConsumer extends BaseConsumer {
   constructor() {

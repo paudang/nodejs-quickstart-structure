@@ -123,22 +123,22 @@ describe('Graceful Shutdown', () => {
         expect(mockExit).toHaveBeenCalledWith(0);
     });
 
-<%_ if (communication === 'Kafka' || database !== 'None' || caching === 'Redis') { _%>
+<%_ if (communication === 'Kafka' || database !== 'None' || caching === 'Redis') { -%>
     it('should handle errors during shutdown and exit 1', async () => {
-        <%_ if (communication === 'Kafka') { _%>
+        <%_ if (communication === 'Kafka') { -%>
         mockKafkaService.disconnect.mockRejectedValueOnce(new Error('Shutdown Error'));
-        <%_ if (database === 'MongoDB') { _%>
+        <%_ if (database === 'MongoDB') { -%>
         (mongoose.connection.close as jest.Mock).mockResolvedValueOnce(true);
-        <%_ } else if (database !== 'None') { _%>
+        <%_ } else if (database !== 'None') { -%>
         (sequelize.close as jest.Mock).mockResolvedValueOnce(true);
-        <%_ } _%>
-        <%_ } else if (database === 'MongoDB') { _%>
+        <%_ } -%>
+        <%_ } else if (database === 'MongoDB') { -%>
         (mongoose.connection.close as jest.Mock).mockRejectedValueOnce(new Error('Shutdown Error'));
-        <%_ } else if (database !== 'None') { _%>
+        <%_ } else if (database !== 'None') { -%>
         (sequelize.close as jest.Mock).mockRejectedValueOnce(new Error('Shutdown Error'));
-        <%_ } else if (caching === 'Redis') { _%>
+        <%_ } else if (caching === 'Redis') { -%>
         (redisService.quit as jest.Mock).mockRejectedValueOnce(new Error('Shutdown Error'));
-        <%_ } _%>
+        <%_ } -%>
 
         setupGracefulShutdown(mockServer as Server<% if (communication === 'Kafka') { %>, mockKafkaService<% } %>);
         processListeners['SIGTERM']();
@@ -175,5 +175,5 @@ describe('Graceful Shutdown', () => {
         
         expect(mockExit).toHaveBeenCalledWith(1);
     });
-<%_ } _%>
+<%_ } -%>
 });

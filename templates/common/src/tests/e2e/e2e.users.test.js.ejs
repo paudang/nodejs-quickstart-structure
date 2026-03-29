@@ -8,7 +8,7 @@ describe('E2E User Tests', () => {
   let userId;
   const uniqueEmail = `test_${Date.now()}@example.com`;
 
-<%_ if (communication === 'GraphQL') { _%>
+<%_ if (communication === 'GraphQL') { -%>
   it('should create a user via GraphQL', async () => {
     const query = `
       mutation {
@@ -58,7 +58,7 @@ describe('E2E User Tests', () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.data.deleteUser).toBe(true);
   });
-<%_ } else if (communication === 'Kafka') { _%>
+<%_ } else if (communication === 'Kafka') { -%>
   it('should trigger Kafka event for user creation', async () => {
     const response = await request(SERVER_URL)
       .post('/api/users')
@@ -70,7 +70,7 @@ describe('E2E User Tests', () => {
     // Wait for Kafka to process...
     await new Promise(resolve => setTimeout(resolve, 1000));
   });
-<%_ } else { _%>
+<%_ } else { -%>
   it('should create a user successfully via REST', async () => {
     const response = await request(SERVER_URL)
       .post('/api/users')
@@ -94,5 +94,5 @@ describe('E2E User Tests', () => {
 
     expect(response.statusCode).toBe(200);
   });
-<%_ } _%>
+<%_ } -%>
 });

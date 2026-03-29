@@ -1,4 +1,4 @@
-<% if (database === 'MongoDB') { _%>
+<% if (database === 'MongoDB') { -%>
 const mongoose = require('mongoose');
 
 jest.mock('mongoose', () => {
@@ -12,9 +12,9 @@ jest.mock('mongoose', () => {
         model: jest.fn().mockReturnValue(mModel),
     };
 });
-<% } else if (database === 'None') { _%>
+<% } else if (database === 'None') { -%>
 // No external dependencies to mock for None DB
-<% } else { _%>
+<% } else { -%>
 const { Model } = require('sequelize');
 
 jest.mock('sequelize', () => {
@@ -30,12 +30,12 @@ jest.mock('sequelize', () => {
     return { DataTypes: mDataTypes, Model: mModel };
 });
 
-<% if (architecture === 'MVC') { _%>
+<% if (architecture === 'MVC') { -%>
 jest.mock('@/config/database', () => ({}));
-<% } else { _%>
+<% } else { -%>
 jest.mock('@/infrastructure/database/database', () => ({}));
-<% } _%>
-<% } _%>
+<% } -%>
+<% } -%>
 
 describe('User Model', () => {
     beforeEach(() => {

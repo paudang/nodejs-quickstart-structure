@@ -181,7 +181,6 @@ describe('UserController', () => {
             expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
             expect(User.create).toHaveBeenCalledWith(payload);
 <%_ } -%>
-<% } -%>
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
             expect(cacheService.del).toHaveBeenCalledWith('users:all');
 <%_ } -%>
