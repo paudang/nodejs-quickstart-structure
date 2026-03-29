@@ -7,8 +7,8 @@ export class UserRepository {
         const newUser = await UserModel.create({ name: user.name, email: user.email });
         return { id: newUser._id.toString(), name: newUser.name, email: newUser.email };
 <%_ } else if (database === 'None') { -%>
-        const newUser = await UserModel.create(user);
-        return newUser;
+        const newUser = await UserModel.create({ name: user.name, email: user.email });
+        return { id: newUser.id, name: newUser.name, email: newUser.email };
 <%_ } else { -%>
         const newUser = await UserModel.create({ name: user.name, email: user.email });
         return { id: newUser.id, name: newUser.name, email: newUser.email };
@@ -24,7 +24,12 @@ export class UserRepository {
             email: user.email
         }));
 <%_ } else if (database === 'None') { -%>
-        return await UserModel.find();
+        const users = await UserModel.find();
+        return users.map(user => ({
+            id: user.id,
+            name: user.name,
+            email: user.email
+        }));
 <%_ } else { -%>
         const users = await UserModel.findAll();
         return users.map(user => ({
@@ -41,8 +46,10 @@ export class UserRepository {
         if (!user) return null;
         return { id: user._id.toString(), name: user.name, email: user.email };
 <%_ } else if (database === 'None') { -%>
-        const user = await UserModel.update(id, data);
-        return user;
+        const { id: _, ...updateData } = data;
+        const user = await UserModel.update(id, updateData as Parameters<typeof UserModel.update>[1]);
+        if (!user) return null;
+        return { id: user.id, name: user.name, email: user.email };
 <%_ } else { -%>
         const user = await UserModel.findByPk(id);
         if (!user) return null;

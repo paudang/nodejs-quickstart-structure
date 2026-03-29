@@ -82,4 +82,94 @@ describe('UserRepository', () => {
 <%_ } -%>
         });
     });
+
+    describe('update', () => {
+        it('should update and return the user (Happy Path)', async () => {
+            // Arrange
+            const id = '1';
+            const data = { name: 'Updated' };
+            const expectedUser = { id: '1', name: 'Updated', email: 'test@example.com' };
+
+<%_ if (database === 'MongoDB') { -%>
+            const mockDbRecord = { _id: { toString: () => '1' }, name: 'Updated', email: 'test@example.com' };
+            (UserModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockDbRecord);
+<%_ } else if (database === 'None') { -%>
+            (UserModel.update as jest.Mock).mockResolvedValue(expectedUser);
+<%_ } else { -%>
+            const mockDbRecord = { id: '1', name: 'Updated', email: 'test@example.com', update: jest.fn().mockResolvedValue(true) };
+            (UserModel.findByPk as jest.Mock).mockResolvedValue(mockDbRecord);
+<%_ } -%>
+
+            // Act
+            const result = await userRepository.update(id, data);
+
+            // Assert
+            expect(result?.name).toEqual(data.name);
+<%_ if (database !== 'None') { -%>
+<%_ if (database === 'MongoDB') { -%>
+            expect(UserModel.findByIdAndUpdate).toHaveBeenCalled();
+<%_ } else { -%>
+            expect(UserModel.findByPk).toHaveBeenCalled();
+<%_ } -%>
+<%_ } -%>
+        });
+
+        it('should return null when user not found (Error Handling)', async () => {
+            // Arrange
+            const id = '999';
+<%_ if (database === 'MongoDB') { -%>
+            (UserModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(null);
+<%_ } else if (database === 'None') { -%>
+            (UserModel.update as jest.Mock).mockResolvedValue(null);
+<%_ } else { -%>
+            (UserModel.findByPk as jest.Mock).mockResolvedValue(null);
+<%_ } -%>
+
+            // Act
+            const result = await userRepository.update(id, { name: 'Fail' });
+
+            // Assert
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('delete', () => {
+        it('should successfully delete a user (Happy Path)', async () => {
+            // Arrange
+            const id = '1';
+
+<%_ if (database === 'MongoDB') { -%>
+            (UserModel.findByIdAndDelete as jest.Mock).mockResolvedValue(true);
+<%_ } else if (database === 'None') { -%>
+            (UserModel.destroy as jest.Mock).mockResolvedValue(true);
+<%_ } else { -%>
+            const mockDbRecord = { id: '1', destroy: jest.fn().mockResolvedValue(true) };
+            (UserModel.findByPk as jest.Mock).mockResolvedValue(mockDbRecord);
+<%_ } -%>
+
+            // Act
+            const result = await userRepository.delete(id);
+
+            // Assert
+            expect(result).toBe(true);
+        });
+
+        it('should return false when user not found during deletion (Error Handling)', async () => {
+            // Arrange
+            const id = '999';
+<%_ if (database === 'MongoDB') { -%>
+            (UserModel.findByIdAndDelete as jest.Mock).mockResolvedValue(null);
+<%_ } else if (database === 'None') { -%>
+            (UserModel.destroy as jest.Mock).mockResolvedValue(false);
+<%_ } else { -%>
+            (UserModel.findByPk as jest.Mock).mockResolvedValue(null);
+<%_ } -%>
+
+            // Act
+            const result = await userRepository.delete(id);
+
+            // Assert
+            expect(result).toBe(false);
+        });
+    });
 });

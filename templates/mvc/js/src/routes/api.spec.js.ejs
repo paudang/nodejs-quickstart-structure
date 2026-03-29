@@ -5,9 +5,14 @@ const router = require('@/routes/api');
 const mockGetUsers = jest.fn().mockImplementation((req, res) => res.status(200).json([{ id: '1', name: 'John Doe' }]));
 const mockCreateUser = jest.fn().mockImplementation((req, res) => res.status(201).json({ id: '1', name: 'Test' }));
 
+const mockUpdateUser = jest.fn().mockImplementation((req, res) => res.status(200).json({ id: '1', name: 'Updated' }));
+const mockDeleteUser = jest.fn().mockImplementation((req, res) => res.status(200).json({ message: 'User deleted successfully' }));
+
 jest.mock('@/controllers/userController', () => ({
   getUsers: (...args) => mockGetUsers(...args),
-  createUser: (...args) => mockCreateUser(...args)
+  createUser: (...args) => mockCreateUser(...args),
+  updateUser: (...args) => mockUpdateUser(...args),
+  deleteUser: (...args) => mockDeleteUser(...args)
 }));
 
 describe('ApiRoutes', () => {

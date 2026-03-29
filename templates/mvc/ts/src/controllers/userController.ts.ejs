@@ -63,9 +63,8 @@ export class UserController {
     async updateUser(id: string, data: { name?: string, email?: string }) {
         try {
 <%_ if (database === 'MongoDB') { -%>
-            const user = await User.findById(id);
-            if (!user) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
             const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
+            if (!updatedUser) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
 <%_ } else if (database === 'None') { -%>
             const user = await User.findByPk(id);
             if (!user) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
@@ -172,11 +171,10 @@ export class UserController {
             const { id } = req.params;
             const { name, email } = req.body || {};
 <%_ if (database === 'MongoDB') { -%>
-            const user = await User.findById(id);
-            if (!user) {
+            const updatedUser = await User.findByIdAndUpdate(id, { name, email }, { new: true });
+            if (!updatedUser) {
                 return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
             }
-            const updatedUser = await User.findByIdAndUpdate(id, { name, email }, { new: true });
 <%_ } else if (database === 'None') { -%>
             const user = await User.findByPk(id);
             if (!user) {
@@ -201,7 +199,7 @@ export class UserController {
                 payload: { id, email: updatedUser?.email }
             }));
 <%_ } -%>
-            res.json(updatedUser);
+            res.status(HTTP_STATUS.OK).json(updatedUser);
         } catch (error) {
             logger.error(`${ERROR_MESSAGES.UPDATE_USER_ERROR}:`, error);
             next(error);

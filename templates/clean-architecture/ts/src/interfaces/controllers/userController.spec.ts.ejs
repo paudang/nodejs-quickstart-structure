@@ -1,8 +1,8 @@
 <% if (communication !== 'GraphQL') { -%>
 import { Request, Response, NextFunction } from 'express';
 import { HTTP_STATUS } from '@/utils/httpCodes';
-import { ERROR_MESSAGES } from '@/utils/errorMessages';
 <% } -%>
+import { ERROR_MESSAGES } from '@/utils/errorMessages';
 import { UserController } from '@/interfaces/controllers/userController';
 import CreateUser from '@/usecases/createUser';
 import GetAllUsers from '@/usecases/getAllUsers';
