@@ -15,22 +15,28 @@ const cacheService = require('@/config/memoryCache');
 jest.mock('@/models/User');
 <%_ if (caching === 'Redis') { -%>
 jest.mock('@/config/redisClient', () => ({
-    getOrSet: jest.fn(),
-    del: jest.fn()
+    getOrSet: jest.fn((_key, fetcher) => fetcher()),
+    del: jest.fn(),
+    flush: jest.fn()
 }));
 <%_ } else if (caching === 'Memory Cache') { -%>
 jest.mock('@/config/memoryCache', () => ({
-    getOrSet: jest.fn(),
-    del: jest.fn()
+    getOrSet: jest.fn((_key, fetcher) => fetcher()),
+    del: jest.fn(),
+    flush: jest.fn()
 }));
 <%_ } -%>
 jest.mock('@/utils/logger');
 <%_ if (communication === 'Kafka') { -%>
-var mockSendMessage = jest.fn().mockResolvedValue(undefined);
 jest.mock('@/services/kafkaService', () => ({
-    sendMessage: mockSendMessage,
-    connectKafka: jest.fn().mockResolvedValue(undefined)
+    kafkaService: {
+        sendMessage: jest.fn().mockResolvedValue(undefined)
+    },
+    KafkaService: jest.fn().mockImplementation(() => ({
+        sendMessage: jest.fn().mockResolvedValue(undefined)
+    }))
 }));
+const { kafkaService } = require('@/services/kafkaService');
 <%_ } -%>
 
 
@@ -52,6 +58,10 @@ describe('UserController', () => {
         };
         mockNext = jest.fn();
 <% } -%>
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+        cacheService.getOrSet.mockImplementation((_key, fetcher) => fetcher());
+        cacheService.flush.mockClear();
+<%_ } -%>
     });
 
     afterEach(() => {
@@ -62,14 +72,33 @@ describe('UserController', () => {
         it('should return successfully (Happy Path)', async () => {
             // Arrange
             const usersMock = [{ id: '1', name: 'Test', email: 'test@example.com' }];
-<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
-            cacheService.getOrSet.mockResolvedValue(usersMock);
-<%_ } else { -%>
 <%_ if (database === 'MongoDB' || database === 'None') { -%>
             User.find.mockResolvedValue(usersMock);
 <%_ } else { -%>
             User.findAll.mockResolvedValue(usersMock);
 <%_ } -%>
+
+            // Act
+<% if (communication === 'GraphQL') { -%>
+            const result = await getUsers();
+
+            // Assert
+            expect(result).toEqual(usersMock);
+<% } else { -%>
+            await getUsers(mockRequest, mockResponse, mockNext);
+
+            // Assert
+            expect(mockResponse.json).toHaveBeenCalledWith(usersMock);
+<% } -%>
+        });
+
+        it('should return an empty array when no users found', async () => {
+            // Arrange
+            const usersMock = [];
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
+            User.find.mockResolvedValue(usersMock);
+<%_ } else { -%>
+            User.findAll.mockResolvedValue(usersMock);
 <%_ } -%>
 
             // Act
@@ -90,7 +119,12 @@ describe('UserController', () => {
             // Arrange
             const error = new Error('Database Error');
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
-            cacheService.getOrSet.mockRejectedValue(error);
+            // Simulating error inside the fetcher by making User.findAll fail
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
+            User.find.mockRejectedValue(error);
+<%_ } else { -%>
+            User.findAll.mockRejectedValue(error);
+<%_ } -%>
 <%_ } else { -%>
 <%_ if (database === 'MongoDB' || database === 'None') { -%>
             User.find.mockRejectedValue(error);
@@ -122,7 +156,6 @@ describe('UserController', () => {
             const expectedUser = { id: '1', ...payload };
 <%_ if (database === 'MongoDB' || database === 'None') { -%>
             User.create.mockResolvedValue(expectedUser);
-            <%_ if (database === 'None') { -%>User.mockData = [expectedUser];<%_ } -%>
 <%_ } else { -%>
             User.create.mockResolvedValue(expectedUser);
 <%_ } -%>
@@ -145,10 +178,6 @@ describe('UserController', () => {
 
             // Assert
             expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.CREATED);
-<%_ if (database === 'None') { -%>
-            expect(mockResponse.json).toHaveBeenCalled();
-            expect(User.mockData.length).toBe(1);
-<%_ } else { -%>
             expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
             expect(User.create).toHaveBeenCalledWith(payload);
 <%_ } -%>
@@ -157,7 +186,7 @@ describe('UserController', () => {
             expect(cacheService.del).toHaveBeenCalledWith('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
-            expect(mockSendMessage).toHaveBeenCalled();
+            expect(kafkaService.sendMessage).toHaveBeenCalled();
 <%_ } -%>
         });
 
@@ -203,7 +232,7 @@ describe('UserController', () => {
 <% } -%>
 
             // Assert
-            expect(mockSendMessage).toHaveBeenCalledWith(
+            expect(kafkaService.sendMessage).toHaveBeenCalledWith(
                 'user-topic',
                 expect.stringContaining('"id":"2"')
             );
@@ -224,13 +253,13 @@ describe('UserController', () => {
             mockRequest.body = payload;
 <% } -%>
             
-            const expectedUser = { id, ...payload };
+            const expectedUser = { id, ...payload, email: 'alice@example.com' };
 <%_ if (database === 'MongoDB') { -%>
             User.findByIdAndUpdate.mockResolvedValue(expectedUser);
+            User.findById.mockResolvedValue(expectedUser);
 <%_ } else if (database === 'None') { -%>
-            User.mockData = [{ id, name: 'Alice', email: 'alice@example.com' }];
-            User.findByPk.mockResolvedValue(User.mockData[0]);
-            User.update.mockResolvedValue(true);
+            User.update.mockResolvedValue(expectedUser);
+            User.findByPk.mockResolvedValue(expectedUser);
 <%_ } else { -%>
             const userMock = { ...expectedUser, update: jest.fn().mockResolvedValue(true) };
             User.findByPk.mockResolvedValue(userMock);
@@ -249,7 +278,7 @@ describe('UserController', () => {
             expect(cacheService.del).toHaveBeenCalledWith('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
-            expect(mockSendMessage).toHaveBeenCalled();
+            expect(kafkaService.sendMessage).toHaveBeenCalled();
 <%_ } -%>
         });
 
@@ -259,15 +288,17 @@ describe('UserController', () => {
 <%_ if (communication === 'GraphQL') { -%>
             const idArg = id;
             const dataArg = { name: 'Fail' };
+<%_ if (database === 'MongoDB') { -%>
+            User.findById.mockResolvedValue(null);
+<%_ } else { -%>
             User.findByPk.mockResolvedValue(null);
+<%_ } -%>
             await expect(updateUser(idArg, dataArg)).rejects.toThrow(ERROR_MESSAGES.USER_NOT_FOUND);
 <%_ } else { -%>
             mockRequest.params = { id };
             mockRequest.body = { name: 'Fail' };
 <%_ if (database === 'MongoDB') { -%>
-            User.findByIdAndUpdate.mockResolvedValue(null);
-<%_ } else if (database === 'None') { -%>
-            User.mockData = [];
+            User.findById.mockResolvedValue(null);
 <%_ } else { -%>
             User.findByPk.mockResolvedValue(null);
 <%_ } -%>
@@ -282,7 +313,11 @@ describe('UserController', () => {
             // Arrange
             const id = '1';
             const error = new Error('Database Error');
+<%_ if (database === 'MongoDB') { -%>
+            User.findById.mockRejectedValue(error);
+<%_ } else { -%>
             User.findByPk.mockRejectedValue(error);
+<%_ } -%>
 <%_ if (communication === 'GraphQL') { -%>
             await expect(updateUser(id, { name: 'Fail' })).rejects.toThrow(error);
 <%_ } else { -%>
@@ -325,7 +360,7 @@ describe('UserController', () => {
             expect(cacheService.del).toHaveBeenCalledWith('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
-            expect(mockSendMessage).toHaveBeenCalled();
+            expect(kafkaService.sendMessage).toHaveBeenCalled();
 <%_ } -%>
         });
 
@@ -388,23 +423,6 @@ describe('UserController', () => {
 <% } -%>
     });
 
-    describe('getUsers Error Paths', () => {
-        it('should handle database errors during fetching (Error Handling)', async () => {
-            const error = new Error('Database Error');
-<%_ if (database === 'MongoDB' || database === 'None') { -%>
-            User.find.mockRejectedValue(error);
-<%_ } else { -%>
-            User.findAll.mockRejectedValue(error);
-<%_ } -%>
-<% if (communication === 'GraphQL') { -%>
-            await expect(getUsers()).rejects.toThrow(error);
-<% } else { -%>
-            await getUsers(mockRequest, mockResponse, mockNext);
-            expect(mockNext).toHaveBeenCalledWith(error);
-<% } -%>
-        });
-    });
-
     describe('createUser Error Paths', () => {
         it('should handle database errors during creation (Error Handling)', async () => {
             const error = new Error('Database Error');
@@ -423,7 +441,10 @@ describe('UserController', () => {
         it('should handle database errors during update (Error Handling)', async () => {
             const id = '1';
             const error = new Error('Database Error');
-<%_ if (database === 'MongoDB' || database === 'None') { -%>
+<%_ if (database === 'MongoDB') { -%>
+            User.findById.mockResolvedValue({ id });
+            User.findByIdAndUpdate.mockRejectedValue(error);
+<%_ } else if (database === 'None') { -%>
             User.findByPk.mockResolvedValue({ id });
             User.update.mockRejectedValue(error);
 <%_ } else { -%>

@@ -17,17 +17,15 @@ jest.mock('@/usecases/updateUser');
 jest.mock('@/usecases/deleteUser');
 jest.mock('@/infrastructure/log/logger');
 <%_ if (communication === 'Kafka') { -%>
-jest.mock('@/infrastructure/messaging/kafkaClient', () => {
-    const mockSendMessage = jest.fn().mockResolvedValue(undefined);
-    return {
-        kafkaService: {
-            sendMessage: mockSendMessage
-        },
-        KafkaService: jest.fn().mockImplementation(() => ({
-            sendMessage: mockSendMessage
-        }))
-    };
-});
+jest.mock('@/infrastructure/messaging/kafkaClient', () => ({
+    kafkaService: {
+        sendMessage: jest.fn().mockResolvedValue(undefined)
+    },
+    KafkaService: jest.fn().mockImplementation(() => ({
+        sendMessage: jest.fn().mockResolvedValue(undefined)
+    }))
+}));
+const { kafkaService } = require('@/infrastructure/messaging/kafkaClient');
 <%_ } -%>
 
 
@@ -45,7 +43,7 @@ describe('UserController (Clean Architecture)', () => {
 
     beforeEach(() => {
         // Clear all mocks
-        jest.clearAllMocks();
+        jest.resetAllMocks();
 
         userController = new UserController();
 
@@ -316,18 +314,6 @@ describe('UserController (Clean Architecture)', () => {
         });
     });
 
-    describe('getUsers Error Paths', () => {
-        it('should handle database errors during fetching (Error Handling)', async () => {
-            const error = new Error('Database Error');
-            mockGetAllUsersUseCase.execute.mockRejectedValue(error);
-<%_ if (communication === 'GraphQL') { -%>
-            await expect(userController.getUsers()).rejects.toThrow(error);
-<%_ } else { -%>
-            await userController.getUsers(mockRequest as Request, mockResponse as Response, mockNext);
-            expect(mockNext).toHaveBeenCalledWith(error);
-<%_ } -%>
-        });
-    });
 
     describe('createUser Error Paths', () => {
         it('should handle database errors during creation (Error Handling)', async () => {

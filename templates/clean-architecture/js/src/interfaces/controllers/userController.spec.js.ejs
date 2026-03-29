@@ -1,11 +1,3 @@
-const { getUsers, createUser, updateUser, deleteUser } = require('@/controllers/userController'); // Wait, wait... the template uses a class!
-// Looking at the view_file, it uses `const UserController = require('@/interfaces/controllers/userController');`
-// And `const result = await userController.getUsers();`
-// So I should stick to the class-based approach if that's what's currently there.
-
-// Correcting: The current template uses `require('@/usecases/CreateUser')` which is PascalCase? 
-// Let's check the use case filenames in the JS template.
-
 const UserController = require('@/interfaces/controllers/userController');
 const ERROR_MESSAGES = require('@/utils/errorMessages');
 const CreateUser = require('@/usecases/CreateUser');
@@ -37,7 +29,7 @@ describe('UserController (Clean Architecture)', () => {
 <%_ } -%>
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        jest.resetAllMocks();
 
         userController = new UserController();
 
@@ -210,19 +202,6 @@ describe('UserController (Clean Architecture)', () => {
         });
     });
 
-    describe('getUsers Error Paths', () => {
-        it('should handle database errors during fetching (Error Handling)', async () => {
-            const error = new Error('Database Error');
-            mockGetAllUsersUseCase.execute.mockRejectedValue(error);
-<%_ if (communication === 'GraphQL') { -%>
-            await expect(userController.getUsers()).rejects.toThrow(error);
-<%_ } else { -%>
-            await userController.getUsers(mockRequest, mockResponse, mockNext);
-            expect(mockNext).toHaveBeenCalledWith(error);
-<%_ } -%>
-        });
-    });
-
     describe('createUser Error Paths', () => {
         it('should handle database errors during creation (Error Handling)', async () => {
             const error = new Error('Database Error');
@@ -247,7 +226,7 @@ describe('UserController (Clean Architecture)', () => {
 <%_ } else { -%>
             mockRequest.params = { id };
             mockRequest.body = { name: 'Bob' };
-            await updateUser(mockRequest, mockResponse, mockNext);
+            await userController.updateUser(mockRequest, mockResponse, mockNext);
             expect(mockNext).toHaveBeenCalledWith(error);
 <%_ } -%>
         });

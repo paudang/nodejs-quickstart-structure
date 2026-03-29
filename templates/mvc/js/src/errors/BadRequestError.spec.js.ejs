@@ -1,6 +1,7 @@
 const { BadRequestError } = require('@/errors/BadRequestError');
 const { ApiError } = require('@/errors/ApiError');
 const HTTP_STATUS = require('@/utils/httpCodes');
+const ERROR_MESSAGES = require('@/utils/errorMessages');
 
 describe('BadRequestError', () => {
     it('should extend ApiError', () => {
@@ -8,9 +9,9 @@ describe('BadRequestError', () => {
         expect(error).toBeInstanceOf(ApiError);
     });
 
-    it('should have default message "Bad request"', () => {
+    it('should have default message "Bad Request"', () => {
         const error = new BadRequestError();
-        expect(error.message).toBe('Bad request');
+        expect(error.message).toBe(ERROR_MESSAGES.BAD_REQUEST);
         expect(error.statusCode).toBe(HTTP_STATUS.BAD_REQUEST);
     });
 

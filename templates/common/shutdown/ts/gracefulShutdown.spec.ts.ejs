@@ -127,6 +127,11 @@ describe('Graceful Shutdown', () => {
     it('should handle errors during shutdown and exit 1', async () => {
         <%_ if (communication === 'Kafka') { _%>
         mockKafkaService.disconnect.mockRejectedValueOnce(new Error('Shutdown Error'));
+        <%_ if (database === 'MongoDB') { _%>
+        (mongoose.connection.close as jest.Mock).mockResolvedValueOnce(true);
+        <%_ } else if (database !== 'None') { _%>
+        (sequelize.close as jest.Mock).mockResolvedValueOnce(true);
+        <%_ } _%>
         <%_ } else if (database === 'MongoDB') { _%>
         (mongoose.connection.close as jest.Mock).mockRejectedValueOnce(new Error('Shutdown Error'));
         <%_ } else if (database !== 'None') { _%>
@@ -145,6 +150,23 @@ describe('Graceful Shutdown', () => {
         expect(mockExit).toHaveBeenCalledWith(1);
     });
 
+    it('should handle server close errors', async () => {
+        const serverError = new Error('Server Close Error');
+        mockServer.close = jest.fn().mockImplementation((cb?: (err?: Error) => void) => {
+            if (cb) Promise.resolve().then(() => cb(serverError));
+            return mockServer;
+        });
+
+        setupGracefulShutdown(mockServer as Server<% if (communication === 'Kafka') { %>, mockKafkaService<% } %>);
+        processListeners['SIGTERM']();
+        
+        await flushPromises();
+        // Since it's inside server.close callback, we need to wait
+        await flushPromises();
+
+        expect(mockExit).toHaveBeenCalledWith(1);
+    });
+
     it('should forcefully shutdown if cleanup takes too long', async () => {
         setupGracefulShutdown(mockServer as Server<% if (communication === 'Kafka') { %>, mockKafkaService<% } %>);
         processListeners['SIGTERM']();
@@ -154,5 +176,4 @@ describe('Graceful Shutdown', () => {
         expect(mockExit).toHaveBeenCalledWith(1);
     });
 <%_ } _%>
-
 });

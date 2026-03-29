@@ -63,6 +63,15 @@ class RedisService {
         }
     }
 
+    public async flush(): Promise<void> {
+        try {
+            await this.client.flushall();
+            logger.info('Redis flushed');
+        } catch (error) {
+            logger.error('Redis flush error:', error);
+        }
+    }
+
     public async getOrSet<T>(key: string, fetcher: () => Promise<T>, ttl: number = 3600): Promise<T> {
         const cached = await this.get<T>(key);
         if (cached) return cached;

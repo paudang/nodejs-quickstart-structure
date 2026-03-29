@@ -60,16 +60,18 @@ const createUser = async (data) => {
 
 const updateUser = async (id, data) => {
   try {
-<%_ if (database === 'MongoDB' || database === 'None') { -%>
-    const user = await User.findByPk(id);
-<%_ } else { -%>
-    const user = await User.findByPk(id);
-<%_ } -%>
+<%_ if (database === 'MongoDB') { -%>
+    const user = await User.findById(id);
     if (!user) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
-<%_ if (database === 'MongoDB' || database === 'None') { -%>
+    const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
+<%_ } else if (database === 'None') { -%>
+    const user = await User.findByPk(id);
+    if (!user) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
     await User.update(id, data);
     const updatedUser = await User.findByPk(id);
 <%_ } else { -%>
+    const user = await User.findByPk(id);
+    if (!user) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
     await user.update(data);
     const updatedUser = user;
 <%_ } -%>
@@ -91,7 +93,9 @@ const updateUser = async (id, data) => {
 
 const deleteUser = async (id) => {
   try {
-<%_ if (database === 'MongoDB' || database === 'None') { -%>
+<%_ if (database === 'MongoDB') { -%>
+    const deleted = await User.findByIdAndDelete(id);
+<%_ } else if (database === 'None') { -%>
     const deleted = await User.destroy(id);
 <%_ } else { -%>
     const user = await User.findByPk(id);
@@ -164,18 +168,24 @@ const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { name, email } = req.body || {};
-<%_ if (database === 'MongoDB' || database === 'None') { -%>
-    const user = await User.findByPk(id);
-<%_ } else { -%>
-    const user = await User.findByPk(id);
-<%_ } -%>
+<%_ if (database === 'MongoDB') { -%>
+    const user = await User.findById(id);
     if (!user) {
       return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
     }
-<%_ if (database === 'MongoDB' || database === 'None') { -%>
+    const updatedUser = await User.findByIdAndUpdate(id, { name, email }, { new: true });
+<%_ } else if (database === 'None') { -%>
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+    }
     await User.update(id, { name, email });
     const updatedUser = await User.findByPk(id);
 <%_ } else { -%>
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+    }
     await user.update({ name, email });
     const updatedUser = user;
 <%_ } -%>

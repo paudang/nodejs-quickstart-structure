@@ -1,6 +1,7 @@
 import { BadRequestError } from '@/errors/BadRequestError';
 import { ApiError } from '@/errors/ApiError';
 import { HTTP_STATUS } from '@/utils/httpCodes';
+import { ERROR_MESSAGES } from '@/utils/errorMessages';
 
 describe('BadRequestError', () => {
     it('should extend ApiError', () => {
@@ -8,9 +9,9 @@ describe('BadRequestError', () => {
         expect(error).toBeInstanceOf(ApiError);
     });
 
-    it('should have default message "Bad request"', () => {
+    it('should have default message "Bad Request"', () => {
         const error = new BadRequestError();
-        expect(error.message).toBe('Bad request');
+        expect(error.message).toBe(ERROR_MESSAGES.BAD_REQUEST);
         expect(error.statusCode).toBe(HTTP_STATUS.BAD_REQUEST);
     });
 
