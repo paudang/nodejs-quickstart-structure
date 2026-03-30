@@ -1,0 +1,48 @@
+const UpdateUser = require('@/usecases/UpdateUser');
+const UserRepository = require('@/infrastructure/repositories/UserRepository');
+<%_ if (caching !== 'None') { -%>
+const cacheService = require('<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>');
+<%_ } -%>
+
+jest.mock('@/infrastructure/repositories/UserRepository');
+<%_ if (caching !== 'None') { -%>
+jest.mock('<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>', () => ({
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn()
+}));
+<%_ } -%>
+
+describe('UpdateUser UseCase', () => {
+    let updateUser;
+    let mockUserRepository;
+
+    beforeEach(() => {
+        mockUserRepository = new UserRepository();
+        updateUser = new UpdateUser(mockUserRepository);
+        jest.clearAllMocks();
+    });
+
+    it('should update and return the user', async () => {
+        const id = 1;
+        const data = { name: 'Updated Name' };
+        const expectedUser = { id, name: 'Updated Name', email: 'test@test.com' };
+
+        mockUserRepository.update.mockResolvedValue(expectedUser);
+
+        const result = await updateUser.execute(id, data);
+
+        expect(mockUserRepository.update).toHaveBeenCalledWith(id, data);
+        expect(result).toEqual(expectedUser);
+<%_ if (caching !== 'None') { -%>
+        expect(cacheService.del).toHaveBeenCalledWith('users:all');
+<%_ } %>
+    });
+
+    it('should throw an error if repository fails', async () => {
+        const error = new Error('Database error');
+        mockUserRepository.update.mockRejectedValue(error);
+
+        await expect(updateUser.execute(1, { name: 'Test' })).rejects.toThrow(error);
+    });
+});

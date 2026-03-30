@@ -11,6 +11,7 @@ import cacheService from '@/config/redisClient';
 import cacheService from '@/config/memoryCache';
 <%_ } -%><%_ if (communication === 'Kafka') { -%>
 import { kafkaService } from '@/services/kafkaService';
+import { KAFKA_ACTIONS } from '@/utils/kafkaEvents';
 <%_ } -%>
 
 export class UserController {
@@ -47,11 +48,12 @@ export class UserController {
             await cacheService.del('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const userId = (user as any).id || (user as any)._id;
             await kafkaService.sendMessage('user-topic', JSON.stringify({
-                action: 'USER_CREATED',
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                payload: { id: (user as any).id || (user as any)._id, email: user.email }
-            }));
+                action: KAFKA_ACTIONS.USER_CREATED,
+                payload: { id: userId, email: user.email }
+            }), userId?.toString() || '');
 <%_ } -%>
             return user;
         } catch (error) {
@@ -81,9 +83,9 @@ export class UserController {
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
             await kafkaService.sendMessage('user-topic', JSON.stringify({
-                action: 'USER_UPDATED',
+                action: KAFKA_ACTIONS.USER_UPDATED,
                 payload: { id, email: updatedUser?.email }
-            }));
+            }), id);
 <%_ } -%>
             return updatedUser;
         } catch (error) {
@@ -110,9 +112,9 @@ export class UserController {
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
             await kafkaService.sendMessage('user-topic', JSON.stringify({
-                action: 'USER_DELETED',
+                action: KAFKA_ACTIONS.USER_DELETED,
                 payload: { id }
-            }));
+            }), id);
 <%_ } -%>
             return true;
         } catch (error) {
@@ -153,11 +155,12 @@ export class UserController {
             await cacheService.del('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const userId = (user as any).id || (user as any)._id;
             await kafkaService.sendMessage('user-topic', JSON.stringify({
-                action: 'USER_CREATED',
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                payload: { id: (user as any).id || (user as any)._id, email: user.email }
-            }));
+                action: KAFKA_ACTIONS.USER_CREATED,
+                payload: { id: userId, email: user.email }
+            }), userId?.toString() || '');
 <%_ } -%>
             res.status(HTTP_STATUS.CREATED).json(user);
         } catch (error) {
@@ -195,9 +198,9 @@ export class UserController {
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
             await kafkaService.sendMessage('user-topic', JSON.stringify({
-                action: 'USER_UPDATED',
+                action: KAFKA_ACTIONS.USER_UPDATED,
                 payload: { id, email: updatedUser?.email }
-            }));
+            }), id);
 <%_ } -%>
             res.status(HTTP_STATUS.OK).json(updatedUser);
         } catch (error) {
@@ -229,9 +232,9 @@ export class UserController {
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
             await kafkaService.sendMessage('user-topic', JSON.stringify({
-                action: 'USER_DELETED',
+                action: KAFKA_ACTIONS.USER_DELETED,
                 payload: { id }
-            }));
+            }), id);
 <%_ } -%>
             res.status(HTTP_STATUS.OK).json({ message: 'User deleted successfully' });
         } catch (error) {

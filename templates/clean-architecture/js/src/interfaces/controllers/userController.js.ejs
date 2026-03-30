@@ -10,6 +10,7 @@ const HTTP_STATUS = require('../../utils/httpCodes');
 const logger = require('../../infrastructure/log/logger');
 <%_ if (communication === 'Kafka') { -%>
 const { sendMessage } = require('../../infrastructure/messaging/kafkaClient');
+const { KAFKA_ACTIONS } = require('../../utils/kafkaEvents');
 <%_ } -%>
 
 class UserController {
@@ -37,9 +38,9 @@ class UserController {
             const user = await this.createUserUseCase.execute(name, email);
 <%_ if (communication === 'Kafka') { -%>
             await sendMessage('user-topic', JSON.stringify({
-                action: 'USER_CREATED',
+                action: KAFKA_ACTIONS.USER_CREATED,
                 payload: { id: user.id || user._id, email: user.email }
-            }));
+            }), (user.id || user._id).toString());
 <%_ } -%>
             return user;
         } catch (error) {
@@ -54,9 +55,9 @@ class UserController {
             if (!user) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
 <%_ if (communication === 'Kafka') { -%>
             await sendMessage('user-topic', JSON.stringify({
-                action: 'USER_UPDATED',
+                action: KAFKA_ACTIONS.USER_UPDATED,
                 payload: { id, email: user.email }
-            }));
+            }), id);
 <%_ } -%>
             return user;
         } catch (error) {
@@ -71,9 +72,9 @@ class UserController {
             if (!deleted) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
 <%_ if (communication === 'Kafka') { -%>
             await sendMessage('user-topic', JSON.stringify({
-                action: 'USER_DELETED',
+                action: KAFKA_ACTIONS.USER_DELETED,
                 payload: { id }
-            }));
+            }), id);
 <%_ } -%>
             return true;
         } catch (error) {
@@ -98,9 +99,9 @@ class UserController {
             const user = await this.createUserUseCase.execute(name, email);
 <%_ if (communication === 'Kafka') { -%>
             await sendMessage('user-topic', JSON.stringify({
-                action: 'USER_CREATED',
+                action: KAFKA_ACTIONS.USER_CREATED,
                 payload: { id: user.id || user._id, email: user.email }
-            }));
+            }), (user.id || user._id).toString());
 <%_ } -%>
             res.status(HTTP_STATUS.CREATED).json(user);
         } catch (error) {
@@ -119,9 +120,9 @@ class UserController {
             }
 <%_ if (communication === 'Kafka') { -%>
             await sendMessage('user-topic', JSON.stringify({
-                action: 'USER_UPDATED',
+                action: KAFKA_ACTIONS.USER_UPDATED,
                 payload: { id, email: user.email }
-            }));
+            }), id);
 <%_ } -%>
             res.json(user);
         } catch (error) {
@@ -139,9 +140,9 @@ class UserController {
             }
 <%_ if (communication === 'Kafka') { -%>
             await sendMessage('user-topic', JSON.stringify({
-                action: 'USER_DELETED',
+                action: KAFKA_ACTIONS.USER_DELETED,
                 payload: { id }
-            }));
+            }), id);
 <%_ } -%>
             res.status(HTTP_STATUS.OK).json({ message: 'User deleted successfully' });
         } catch (error) {

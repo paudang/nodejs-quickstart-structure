@@ -1,4 +1,3 @@
-import { User } from '@/domain/user';
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 
 export default class UpdateUser {

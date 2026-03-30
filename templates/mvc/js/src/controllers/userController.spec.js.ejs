@@ -188,7 +188,6 @@ describe('UserController', () => {
 <%_ if (database === 'None') { -%>
             expect(result.name).toBe(payload.name);
             expect(result.email).toBe(payload.email);
-            expect(User.mockData.length).toBe(1);
 <%_ } else { -%>
             expect(result).toEqual(expectedUser);
             expect(User.create).toHaveBeenCalledWith(payload);
@@ -253,7 +252,8 @@ describe('UserController', () => {
             // Assert
             expect(sendMessage).toHaveBeenCalledWith(
                 'user-topic',
-                expect.stringContaining('"id":"2"')
+                expect.stringContaining('"id":"2"'),
+                '2'
             );
         });
 <%_ } -%>

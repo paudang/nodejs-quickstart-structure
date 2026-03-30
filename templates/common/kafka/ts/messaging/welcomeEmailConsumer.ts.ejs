@@ -2,6 +2,7 @@ import { BaseConsumer } from '<% if (architecture === "Clean Architecture") { %>
 import logger from '<%= loggerPath %>';
 import { UserEventSchema } from '<% if (architecture === "Clean Architecture") { %>@/interfaces/messaging/schemas/userEventSchema<% } else { %>@/messaging/schemas/userEventSchema<% } %>';
 import { ERROR_MESSAGES } from '@/utils/errorMessages';
+import { KAFKA_ACTIONS } from '@/utils/kafkaEvents';
 
 export class WelcomeEmailConsumer extends BaseConsumer {
   topic = 'user-topic';
@@ -18,16 +19,16 @@ export class WelcomeEmailConsumer extends BaseConsumer {
     const { action, payload } = result.data;
 
     switch (action) {
-      case 'USER_CREATED':
-        logger.info(`[Kafka] Consumer: Received USER_CREATED.`);
+      case KAFKA_ACTIONS.USER_CREATED:
+        logger.info(`[Kafka] Consumer: Received ${KAFKA_ACTIONS.USER_CREATED}.`);
         logger.info(`[Kafka] Consumer: 📧 Sending welcome email to '${payload.email}'... Done!`);
         break;
-      case 'USER_UPDATED':
-        logger.info(`[Kafka] Consumer: Received USER_UPDATED.`);
+      case KAFKA_ACTIONS.USER_UPDATED:
+        logger.info(`[Kafka] Consumer: Received ${KAFKA_ACTIONS.USER_UPDATED}.`);
         logger.info(`[Kafka] Consumer: 🔄 Updating user records for '${payload.id}' (Email: ${payload.email})... Done!`);
         break;
-      case 'USER_DELETED':
-        logger.info(`[Kafka] Consumer: Received USER_DELETED.`);
+      case KAFKA_ACTIONS.USER_DELETED:
+        logger.info(`[Kafka] Consumer: Received ${KAFKA_ACTIONS.USER_DELETED}.`);
         logger.info(`[Kafka] Consumer: 🗑️ Cleaning up data for user '${payload.id}'... Done!`);
         break;
       default:

@@ -186,11 +186,12 @@ describe('UserController', () => {
             mockRequest.body = payload;
 <% } -%>
             
+            const expectedUser = { id: '1', ...payload };
 <%_ if (database === 'MongoDB') { -%>
-            const expectedUser = { id: '1', ...payload };
-            (User.findByIdAndUpdate as jest.Mock).mockResolvedValue(expectedUser);
+            (User.create as jest.Mock).mockResolvedValue(expectedUser);
 <%_ } else if (database === 'None') { -%>
-            const expectedUser = { id: '1', ...payload };
+            (User.create as jest.Mock).mockResolvedValue(expectedUser);
+<%_ } else { -%>
             (User.create as jest.Mock).mockResolvedValue(expectedUser);
 <%_ } -%>
 

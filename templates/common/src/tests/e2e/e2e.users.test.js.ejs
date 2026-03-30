@@ -64,11 +64,33 @@ describe('E2E User Tests', () => {
       .post('/api/users')
       .send({ name: 'Test User', email: uniqueEmail });
 
-    // Assuming the API returns 201 or 404 (if no REST endpoint is exposed in Kafka skeleton)
-    expect([201, 202, 404]).toContain(response.statusCode);
-    
+    expect([201, 202]).toContain(response.statusCode);
+    userId = response.body.id || response.body._id;
+    expect(userId).toBeDefined();
+
     // Wait for Kafka to process...
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 500));
+  });
+
+  it('should trigger Kafka event for user update', async () => {
+    const response = await request(SERVER_URL)
+      .patch(`/api/users/${userId}`)
+      .send({ name: 'Updated User' });
+
+    expect([200, 202, 204]).toContain(response.statusCode);
+
+    // Wait for Kafka to process...
+    await new Promise(resolve => setTimeout(resolve, 500));
+  });
+
+  it('should trigger Kafka event for user deletion', async () => {
+    const response = await request(SERVER_URL)
+      .delete(`/api/users/${userId}`);
+
+    expect([200, 202, 204]).toContain(response.statusCode);
+
+    // Wait for Kafka to process...
+    await new Promise(resolve => setTimeout(resolve, 500));
   });
 <%_ } else { -%>
   it('should create a user successfully via REST', async () => {

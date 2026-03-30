@@ -11,6 +11,7 @@ const cacheService = require('../config/memoryCache');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
 const { sendMessage } = require('../services/kafkaService');
+const { KAFKA_ACTIONS } = require('../utils/kafkaEvents');
 <%_ } -%>
 
 <% if (communication === 'GraphQL') { -%>
@@ -47,9 +48,9 @@ const createUser = async (data) => {
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
     await sendMessage('user-topic', JSON.stringify({
-      action: 'USER_CREATED',
+      action: KAFKA_ACTIONS.USER_CREATED,
       payload: { id: user.id || user._id, email: user.email }
-    }));
+    }), (user.id || user._id).toString());
 <%_ } -%>
     return user;
   } catch (error) {
@@ -79,9 +80,9 @@ const updateUser = async (id, data) => {
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
     await sendMessage('user-topic', JSON.stringify({
-      action: 'USER_UPDATED',
+      action: KAFKA_ACTIONS.USER_UPDATED,
       payload: { id, email: updatedUser?.email }
-    }));
+    }), id);
 <%_ } -%>
     return updatedUser;
   } catch (error) {
@@ -108,9 +109,9 @@ const deleteUser = async (id) => {
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
     await sendMessage('user-topic', JSON.stringify({
-      action: 'USER_DELETED',
+      action: KAFKA_ACTIONS.USER_DELETED,
       payload: { id }
-    }));
+    }), id);
 <%_ } -%>
     return true;
   } catch (error) {
@@ -154,9 +155,9 @@ const createUser = async (req, res, next) => {
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
     await sendMessage('user-topic', JSON.stringify({
-      action: 'USER_CREATED',
+      action: KAFKA_ACTIONS.USER_CREATED,
       payload: { id: user.id || user._id, email: user.email }
-    }));
+    }), (user.id || user._id).toString());
 <%_ } -%>
     res.status(HTTP_STATUS.CREATED).json(user);
   } catch (error) {
@@ -194,9 +195,9 @@ const updateUser = async (req, res, next) => {
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
     await sendMessage('user-topic', JSON.stringify({
-      action: 'USER_UPDATED',
+      action: KAFKA_ACTIONS.USER_UPDATED,
       payload: { id, email: updatedUser?.email }
-    }));
+    }), id);
 <%_ } -%>
     res.status(HTTP_STATUS.OK).json(updatedUser);
   } catch (error) {
@@ -228,9 +229,9 @@ const deleteUser = async (req, res, next) => {
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
     await sendMessage('user-topic', JSON.stringify({
-      action: 'USER_DELETED',
+      action: KAFKA_ACTIONS.USER_DELETED,
       payload: { id }
-    }));
+    }), id);
 <%_ } -%>
     res.status(HTTP_STATUS.OK).json({ message: 'User deleted successfully' });
   } catch (error) {

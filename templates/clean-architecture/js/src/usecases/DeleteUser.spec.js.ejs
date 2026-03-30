@@ -1,0 +1,54 @@
+const DeleteUser = require('@/usecases/DeleteUser');
+const UserRepository = require('@/infrastructure/repositories/UserRepository');
+<%_ if (caching !== 'None') { -%>
+const cacheService = require('<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>');
+<%_ if (caching !== 'None') { -%>
+jest.mock('@/infrastructure/caching/redisClient', () => ({
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn()
+}));
+<%_ } -%>
+<%_ } -%>
+
+jest.mock('@/infrastructure/repositories/UserRepository');
+<%_ if (caching !== 'None') { -%>
+jest.mock('<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>', () => ({
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn()
+}));
+<%_ } -%>
+
+describe('DeleteUser UseCase', () => {
+    let deleteUser;
+    let mockUserRepository;
+
+    beforeEach(() => {
+        mockUserRepository = new UserRepository();
+        deleteUser = new DeleteUser(mockUserRepository);
+        jest.clearAllMocks();
+    });
+
+    it('should delete and return the user', async () => {
+        const id = 1;
+        const expectedResult = { id, name: 'Deleted User', email: 'test@test.com' };
+
+        mockUserRepository.delete.mockResolvedValue(expectedResult);
+
+        const result = await deleteUser.execute(id);
+
+        expect(mockUserRepository.delete).toHaveBeenCalledWith(id);
+        expect(result).toEqual(expectedResult);
+<%_ if (caching !== 'None') { -%>
+        expect(cacheService.del).toHaveBeenCalledWith('users:all');
+<%_ } %>
+    });
+
+    it('should throw an error if repository fails', async () => {
+        const error = new Error('Database error');
+        mockUserRepository.delete.mockRejectedValue(error);
+
+        await expect(deleteUser.execute(1)).rejects.toThrow(error);
+    });
+});

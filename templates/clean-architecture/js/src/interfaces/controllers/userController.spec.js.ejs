@@ -184,7 +184,7 @@ describe('UserController (Clean Architecture)', () => {
             mockRequest.params = { id };
             mockDeleteUserUseCase.execute.mockResolvedValue(false);
             await userController.deleteUser(mockRequest, mockResponse, mockNext);
-            expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.NOT_FOUND);
+            expect(mockResponse.status).toHaveBeenCalledWith(404);
 <%_ } -%>
         });
 
