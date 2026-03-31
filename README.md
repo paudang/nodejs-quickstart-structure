@@ -20,7 +20,7 @@ A powerful CLI tool to scaffold production-ready Node.js microservices with buil
 - [⚙️ Configuration Options](#-configuration-options)
 - [🏗️ Generated Project Structure](#-generated-project-structure)
 - [📖 Documentation](#-documentation)
-- [🗺️ Roadmap & Support](#️-roadmap--support)
+- [🗺️ Support & Roadmap](#️-roadmap--support)
 
 ---
 
