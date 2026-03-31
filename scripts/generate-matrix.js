@@ -9,7 +9,7 @@ const languages = ['JavaScript', 'TypeScript'];
 const archs = ['MVC', 'Clean Architecture'];
 const viewEngines = ['None', 'EJS', 'Pug'];
 const databases = ['MySQL', 'PostgreSQL', 'MongoDB', 'None'];
-const communications = ['REST APIs', 'Kafka'];
+const communications = ['REST APIs', 'GraphQL', 'Kafka'];
 const cachings = ['None', 'Redis', 'Memory Cache'];
 
 let mvcCases = [];
