@@ -14,8 +14,8 @@ hero:
       link: https://github.com/paudang/nodejs-quickstart-structure
 
 features:
-  - title: 240+ Combinations
-    details: Choose your language (TS/JS), architecture (MVC/Clean), and communication (REST/GraphQL/Kafka).
+  - title: 1,680+ Combinations
+    details: Choose your language (TS/JS), architecture (MVC/Clean), communication (REST/GraphQL/Kafka), and CI/CD/Security scenarios.
   - title: AI-Native Ready
     details: Pre-configured .cursorrules and Agent Skill prompts to boost your productivity with AI tools.
   - title: Production Standards
