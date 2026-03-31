@@ -12,7 +12,7 @@ Follow these steps to get your first service up and running.
 You can run the generator directly using `npx`:
 
 ```bash
-npx nodejs-quickstart init
+npx nodejs-quickstart-structure@latest init
 ```
 
 *Alternatively, install it globally:*
