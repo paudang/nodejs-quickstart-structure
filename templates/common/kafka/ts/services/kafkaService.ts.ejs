@@ -63,7 +63,7 @@ export class KafkaService {
         return this.connectionPromise;
     }
 
-    async sendMessage(topic: string, message: string) {
+    async sendMessage(topic: string, message: string, key?: string) {
         if (this.connectionPromise) {
             await this.connectionPromise;
         }
@@ -75,7 +75,7 @@ export class KafkaService {
         await this.producer.send({
             topic,
             messages: [
-                { value: message },
+                { key, value: message },
             ],
         });
         try {

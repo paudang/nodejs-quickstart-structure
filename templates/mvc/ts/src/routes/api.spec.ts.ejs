@@ -4,12 +4,16 @@ import router from '@/routes/api';
 
 const mockGetUsers = jest.fn().mockImplementation((req, res) => res.status(200).json([{ id: '1', name: 'John Doe' }]));
 const mockCreateUser = jest.fn().mockImplementation((req, res) => res.status(201).json({ id: '1', name: 'Test' }));
+const mockUpdateUser = jest.fn().mockImplementation((req, res) => res.status(200).json({ id: '1', name: 'Updated' }));
+const mockDeleteUser = jest.fn().mockImplementation((req, res) => res.status(204).send());
 
 jest.mock('@/controllers/userController', () => {
   return {
     UserController: jest.fn().mockImplementation(() => ({
       getUsers: (...args: unknown[]) => mockGetUsers(...args),
-      createUser: (...args: unknown[]) => mockCreateUser(...args)
+      createUser: (...args: unknown[]) => mockCreateUser(...args),
+      updateUser: (...args: unknown[]) => mockUpdateUser(...args),
+      deleteUser: (...args: unknown[]) => mockDeleteUser(...args)
     }))
   };
 });
@@ -23,7 +27,7 @@ describe('ApiRoutes', () => {
         app.use('/api', router);
     });
 
-    it('GET /users should call controller.getUsers', async () => {
+    it('GET /api/users should call controller.getUsers', async () => {
         await request(app)
             .get('/api/users');
 
@@ -36,5 +40,20 @@ describe('ApiRoutes', () => {
             .send({ name: 'Test', email: 'test@example.com' });
 
         expect(mockCreateUser).toHaveBeenCalledTimes(1);
+    });
+
+    it('PATCH /api/users/:id should call controller.updateUser', async () => {
+        await request(app)
+            .patch('/api/users/1')
+            .send({ name: 'Updated' });
+
+        expect(mockUpdateUser).toHaveBeenCalledTimes(1);
+    });
+
+    it('DELETE /api/users/:id should call controller.deleteUser', async () => {
+        await request(app)
+            .delete('/api/users/1');
+
+        expect(mockDeleteUser).toHaveBeenCalledTimes(1);
     });
 });

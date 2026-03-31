@@ -78,4 +78,65 @@ describe('UserRepository', () => {
             ]);
         });
     });
+
+    describe('update', () => {
+        it('should successfully update a user (Happy Path)', async () => {
+            const id = '1';
+            const updateData = { name: 'Updated name' };
+<%_ if (database === 'MongoDB') { -%>
+            const updatedUser = { _id: id, ...updateData, email: 'test@test.com' };
+            UserModel.findByIdAndUpdate.mockResolvedValue(updatedUser);
+<%_ } else if (database === 'None') { -%>
+            const updatedUser = { id, ...updateData, email: 'test@test.com' };
+            UserModel.update.mockResolvedValue(updatedUser);
+<%_ } else { -%>
+            const updatedUser = { id: '1', ...updateData, email: 'test@test.com', update: jest.fn().mockResolvedValue(true) };
+            UserModel.findByPk.mockResolvedValue(updatedUser);
+<%_ } -%>
+
+            const result = await userRepository.update(id, updateData);
+            expect(result.name).toEqual(updateData.name);
+        });
+
+        it('should handle user not found during update (Error Handling)', async () => {
+<%_ if (database === 'MongoDB') { -%>
+            UserModel.findByIdAndUpdate.mockResolvedValue(null);
+<%_ } else if (database === 'None') { -%>
+            UserModel.update.mockResolvedValue(null);
+<%_ } else { -%>
+            UserModel.findByPk.mockResolvedValue(null);
+<%_ } -%>
+            const result = await userRepository.update('999', { name: 'fail' });
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('delete', () => {
+        it('should successfully delete a user (Happy Path)', async () => {
+            const id = '1';
+<%_ if (database === 'MongoDB') { -%>
+            UserModel.findByIdAndDelete.mockResolvedValue(true);
+<%_ } else if (database === 'None') { -%>
+            UserModel.destroy.mockResolvedValue(true);
+<%_ } else { -%>
+            const userMock = { id, destroy: jest.fn().mockResolvedValue(true) };
+            UserModel.findByPk.mockResolvedValue(userMock);
+<%_ } -%>
+
+            const result = await userRepository.delete(id);
+            expect(result).toBe(true);
+        });
+
+        it('should handle user not found during deletion (Error Handling)', async () => {
+<%_ if (database === 'MongoDB') { -%>
+            UserModel.findByIdAndDelete.mockResolvedValue(null);
+<%_ } else if (database === 'None') { -%>
+            UserModel.destroy.mockResolvedValue(false);
+<%_ } else { -%>
+            UserModel.findByPk.mockResolvedValue(null);
+<%_ } -%>
+            const result = await userRepository.delete('999');
+            expect(result).toBe(false);
+        });
+    });
 });

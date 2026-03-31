@@ -1,5 +1,8 @@
 import { env } from '@/config/env';
-import express, { Request, Response } from 'express';
+import express from 'express';
+<% if (viewEngine && viewEngine !== 'None') { -%>
+import type { Request, Response } from 'express';
+<% } -%>
 import cors from 'cors';
 import helmet from 'helmet';
 import hpp from 'hpp';

@@ -10,13 +10,17 @@ if (architecture === 'Clean Architecture') {
     redisPath = '../infrastructure/caching/redisClient';
     kafkaPath = '../infrastructure/messaging/kafkaClient';
 }
-_%>
+-%>
 const logger = require('<%- loggerPath %>');
 
 const setupGracefulShutdown = (server) => {
     const gracefulShutdown = async (signal) => {
         logger.info(`Received ${signal}. Shutting down gracefully...`);
-        server.close(async () => {
+        server.close(async (err) => {
+            if (err) {
+                logger.error('Error closing HTTP server:', err);
+                process.exit(1);
+            }
             logger.info('HTTP server closed.');
             try {
 <%_ if (database !== 'None') { -%>

@@ -7,7 +7,9 @@ jest.mock('@/interfaces/controllers/userController', () => {
   return {
     UserController: jest.fn().mockImplementation(() => ({
       getUsers: (...args: unknown[]) => mockGetUsers(...args),
-      createUser: (...args: unknown[]) => mockCreateUser(...args)
+      createUser: (...args: unknown[]) => mockCreateUser(...args),
+      updateUser: jest.fn().mockImplementation((id, data) => Promise.resolve({ id, ...data })),
+      deleteUser: jest.fn().mockImplementation(() => Promise.resolve(true))
     }))
   };
 });
@@ -31,6 +33,21 @@ describe('User Resolvers', () => {
       expect(result).toEqual({ id: '1', name: 'Jane', email: 'jane@example.com' });
       expect(mockCreateUser).toHaveBeenCalledWith({ name: 'Jane', email: 'jane@example.com' });
       expect(mockCreateUser).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Mutation.updateUser', () => {
+    it('should update and return the user', async () => {
+      const payload = { name: 'Updated' };
+      const result = await userResolvers.Mutation.updateUser(null, { id: '1', ...payload });
+      expect(result).toMatchObject(payload);
+    });
+  });
+
+  describe('Mutation.deleteUser', () => {
+    it('should delete and return true', async () => {
+      const result = await userResolvers.Mutation.deleteUser(null, { id: '1' });
+      expect(result).toBe(true);
     });
   });
 <%_ if (database === 'MongoDB') { -%>

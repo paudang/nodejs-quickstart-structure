@@ -1,6 +1,8 @@
-const BaseConsumer = require('../../baseConsumer');
-const logger = require('<% if (architecture === "Clean Architecture") { %>../../../../infrastructure/log/logger<% } else { %>../../../utils/logger<% } %>');
-const { UserEventSchema } = require('../../schemas/userEventSchema');
+const BaseConsumer = require('<%- baseConsumerPath %>');
+const logger = require('<%- loggerPath %>');
+const { UserEventSchema } = require('<%- userEventSchemaPath %>');
+const ERROR_MESSAGES = require('<%- errorMessagesPath %>');
+const { KAFKA_ACTIONS } = require('<%- kafkaEventsPath %>');
 
 class WelcomeEmailConsumer extends BaseConsumer {
   constructor() {
@@ -14,16 +16,27 @@ class WelcomeEmailConsumer extends BaseConsumer {
     const result = UserEventSchema.safeParse(data);
     
     if (!result.success) {
-      logger.error('[Kafka] Invalid user event data:', result.error.format());
+      logger.error(`[Kafka] ${ERROR_MESSAGES.INVALID_USER_DATA}:`, result.error.format());
       return;
     }
 
     const { action, payload } = result.data;
 
-    if (action === 'USER_CREATED') {
-      logger.info(`[Kafka] Consumer: Received USER_CREATED.`);
-      logger.info(`[Kafka] Consumer: 📧 Sending welcome email to '${payload.email}'... Done!`);
-      // In a real app, you would call an EmailService here
+    switch (action) {
+      case KAFKA_ACTIONS.USER_CREATED:
+        logger.info(`[Kafka] Consumer: Received ${KAFKA_ACTIONS.USER_CREATED}.`);
+        logger.info(`[Kafka] Consumer: 📧 Sending welcome email to '${payload.email}'... Done!`);
+        break;
+      case KAFKA_ACTIONS.USER_UPDATED:
+        logger.info(`[Kafka] Consumer: Received ${KAFKA_ACTIONS.USER_UPDATED}.`);
+        logger.info(`[Kafka] Consumer: 🔄 Updating user records for '${payload.id}' (Email: ${payload.email})... Done!`);
+        break;
+      case KAFKA_ACTIONS.USER_DELETED:
+        logger.info(`[Kafka] Consumer: Received ${KAFKA_ACTIONS.USER_DELETED}.`);
+        logger.info(`[Kafka] Consumer: 🗑️ Cleaning up data for user '${payload.id}'... Done!`);
+        break;
+      default:
+        logger.warn(`[Kafka] Unknown action: ${action}`);
     }
   }
 }

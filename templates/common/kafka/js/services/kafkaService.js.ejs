@@ -58,7 +58,7 @@ const connectKafka = async (retries = 10) => {
     return connectionPromise;
 };
 
-const sendMessage = async (topic, message) => {
+const sendMessage = async (topic, message, key) => {
     if (connectionPromise) {
         await connectionPromise;
     }
@@ -70,7 +70,7 @@ const sendMessage = async (topic, message) => {
     try {
         await producer.send({
             topic,
-            messages: [{ value: message }],
+            messages: [{ key, value: message }],
         });
         
         try {

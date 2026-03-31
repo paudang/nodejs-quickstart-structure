@@ -4,6 +4,7 @@ export interface IUser extends Document {
     name: string;
     email: string;
     createdAt: Date;
+    deletedAt?: Date | null;
 }
 
 const UserSchema: Schema = new Schema({
@@ -19,6 +20,10 @@ const UserSchema: Schema = new Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    deletedAt: {
+        type: Date,
+        default: null
     }
 });
 

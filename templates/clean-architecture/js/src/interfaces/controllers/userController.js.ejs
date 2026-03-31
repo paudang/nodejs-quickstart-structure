@@ -1,12 +1,16 @@
 const CreateUser = require('../../usecases/CreateUser');
 const GetAllUsers = require('../../usecases/GetAllUsers');
+const UpdateUser = require('../../usecases/UpdateUser');
+const DeleteUser = require('../../usecases/DeleteUser');
 const UserRepository = require('../../infrastructure/repositories/UserRepository');
+const ERROR_MESSAGES = require('../../utils/errorMessages');
 <% if (communication !== 'GraphQL') { -%>
 const HTTP_STATUS = require('../../utils/httpCodes');
 <% } -%>
 const logger = require('../../infrastructure/log/logger');
 <%_ if (communication === 'Kafka') { -%>
 const { sendMessage } = require('../../infrastructure/messaging/kafkaClient');
+const { KAFKA_ACTIONS } = require('../../utils/kafkaEvents');
 <%_ } -%>
 
 class UserController {
@@ -14,6 +18,8 @@ class UserController {
         this.userRepository = new UserRepository();
         this.createUserUseCase = new CreateUser(this.userRepository);
         this.getAllUsersUseCase = new GetAllUsers(this.userRepository);
+        this.updateUserUseCase = new UpdateUser(this.userRepository);
+        this.deleteUserUseCase = new DeleteUser(this.userRepository);
     }
 
 <% if (communication === 'GraphQL') { -%>
@@ -21,7 +27,7 @@ class UserController {
         try {
             return await this.getAllUsersUseCase.execute();
         } catch (error) {
-            logger.error('Error getting users:', error);
+            logger.error(`${ERROR_MESSAGES.FETCH_USERS_ERROR}:`, error);
             throw error;
         }
     }
@@ -32,13 +38,47 @@ class UserController {
             const user = await this.createUserUseCase.execute(name, email);
 <%_ if (communication === 'Kafka') { -%>
             await sendMessage('user-topic', JSON.stringify({
-                action: 'USER_CREATED',
+                action: KAFKA_ACTIONS.USER_CREATED,
                 payload: { id: user.id || user._id, email: user.email }
-            }));
+            }), (user.id || user._id).toString());
 <%_ } -%>
             return user;
         } catch (error) {
-            logger.error('Error creating user:', error);
+            logger.error(`${ERROR_MESSAGES.CREATE_USER_ERROR}:`, error);
+            throw error;
+        }
+    }
+
+    async updateUser(id, data) {
+        try {
+            const user = await this.updateUserUseCase.execute(id, data);
+            if (!user) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+<%_ if (communication === 'Kafka') { -%>
+            await sendMessage('user-topic', JSON.stringify({
+                action: KAFKA_ACTIONS.USER_UPDATED,
+                payload: { id, email: user.email }
+            }), id);
+<%_ } -%>
+            return user;
+        } catch (error) {
+            logger.error(`${ERROR_MESSAGES.UPDATE_USER_ERROR}:`, error);
+            throw error;
+        }
+    }
+
+    async deleteUser(id) {
+        try {
+            const deleted = await this.deleteUserUseCase.execute(id);
+            if (!deleted) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+<%_ if (communication === 'Kafka') { -%>
+            await sendMessage('user-topic', JSON.stringify({
+                action: KAFKA_ACTIONS.USER_DELETED,
+                payload: { id }
+            }), id);
+<%_ } -%>
+            return true;
+        } catch (error) {
+            logger.error(`${ERROR_MESSAGES.DELETE_USER_ERROR}:`, error);
             throw error;
         }
     }
@@ -48,24 +88,65 @@ class UserController {
         const users = await this.getAllUsersUseCase.execute();
         res.json(users);
       } catch (error) {
-        logger.error('Error getting users:', error);
+        logger.error(`${ERROR_MESSAGES.FETCH_USERS_ERROR}:`, error);
         next(error);
       }
     }
 
     async createUser(req, res, next) {
-        const { name, email } = req.body;
+        const { name, email } = req.body || {};
         try {
             const user = await this.createUserUseCase.execute(name, email);
 <%_ if (communication === 'Kafka') { -%>
             await sendMessage('user-topic', JSON.stringify({
-                action: 'USER_CREATED',
+                action: KAFKA_ACTIONS.USER_CREATED,
                 payload: { id: user.id || user._id, email: user.email }
-            }));
+            }), (user.id || user._id).toString());
 <%_ } -%>
             res.status(HTTP_STATUS.CREATED).json(user);
         } catch (error) {
-            logger.error('Error creating user:', error);
+            logger.error(`${ERROR_MESSAGES.CREATE_USER_ERROR}:`, error);
+            next(error);
+        }
+    }
+
+    async updateUser(req, res, next) {
+        const { id } = req.params;
+        const { name, email } = req.body || {};
+        try {
+            const user = await this.updateUserUseCase.execute(id, { name, email });
+            if (!user) {
+                return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+            }
+<%_ if (communication === 'Kafka') { -%>
+            await sendMessage('user-topic', JSON.stringify({
+                action: KAFKA_ACTIONS.USER_UPDATED,
+                payload: { id, email: user.email }
+            }), id);
+<%_ } -%>
+            res.json(user);
+        } catch (error) {
+            logger.error(`${ERROR_MESSAGES.UPDATE_USER_ERROR}:`, error);
+            next(error);
+        }
+    }
+
+    async deleteUser(req, res, next) {
+        const { id } = req.params;
+        try {
+            const deleted = await this.deleteUserUseCase.execute(id);
+            if (!deleted) {
+                return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+            }
+<%_ if (communication === 'Kafka') { -%>
+            await sendMessage('user-topic', JSON.stringify({
+                action: KAFKA_ACTIONS.USER_DELETED,
+                payload: { id }
+            }), id);
+<%_ } -%>
+            res.status(HTTP_STATUS.OK).json({ message: 'User deleted successfully' });
+        } catch (error) {
+            logger.error(`${ERROR_MESSAGES.DELETE_USER_ERROR}:`, error);
             next(error);
         }
     }

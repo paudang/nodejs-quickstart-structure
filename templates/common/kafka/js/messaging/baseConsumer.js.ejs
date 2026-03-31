@@ -1,4 +1,4 @@
-const logger = require('<% if (architecture === "Clean Architecture") { %>../../infrastructure/log/logger<% } else { %>../utils/logger<% } %>');
+const logger = require('<%- loggerPath %>');
 
 class BaseConsumer {
   constructor() {

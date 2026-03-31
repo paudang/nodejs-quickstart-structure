@@ -16,7 +16,11 @@ import redisService from '<% if (architecture === "MVC") { %>@/config/redisClien
 export const setupGracefulShutdown = (server: Server<% if (communication === 'Kafka') { %>, kafkaService: { disconnect: () => Promise<void> }<% } %>) => {
     const gracefulShutdown = async (signal: string) => {
         logger.info(`Received ${signal}. Shutting down gracefully...`);
-        server.close(async () => {
+        server.close(async (err: Error | undefined) => {
+            if (err) {
+                logger.error('Error closing HTTP server:', err);
+                process.exit(1);
+            }
             logger.info('HTTP server closed.');
             try {
 <%_ if (database !== 'None') { -%>

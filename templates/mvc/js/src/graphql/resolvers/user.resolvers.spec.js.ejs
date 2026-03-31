@@ -5,7 +5,9 @@ const mockCreateUser = jest.fn().mockResolvedValue({ id: '1', name: 'Jane', emai
 
 jest.mock('@/controllers/userController', () => ({
   getUsers: (...args) => mockGetUsers(...args),
-  createUser: (...args) => mockCreateUser(...args)
+  createUser: (...args) => mockCreateUser(...args),
+  updateUser: jest.fn().mockImplementation((id, data) => Promise.resolve({ id, ...data })),
+  deleteUser: jest.fn().mockImplementation(() => Promise.resolve(true))
 }));
 
 describe('User Resolvers', () => {
@@ -27,6 +29,21 @@ describe('User Resolvers', () => {
       expect(result).toEqual({ id: '1', name: 'Jane', email: 'jane@example.com' });
       expect(mockCreateUser).toHaveBeenCalledWith({ name: 'Jane', email: 'jane@example.com' });
       expect(mockCreateUser).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Mutation.updateUser', () => {
+    it('should update and return the user', async () => {
+      const payload = { name: 'Updated' };
+      const result = await userResolvers.Mutation.updateUser(null, { id: '1', ...payload });
+      expect(result).toMatchObject(payload);
+    });
+  });
+
+  describe('Mutation.deleteUser', () => {
+    it('should delete and return true', async () => {
+      const result = await userResolvers.Mutation.deleteUser(null, { id: '1' });
+      expect(result).toBe(true);
     });
   });
 <%_ if (database === 'MongoDB') { -%>

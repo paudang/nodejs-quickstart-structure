@@ -17,10 +17,31 @@ export default class UserModel {
   }
 
   static async create(data: Omit<User, 'id'> & { id?: string | number | null }) {
-    const { id, ...rest } = data;
+    const { id: _, ...rest } = data;
     const newUser: User = { id: String(this.mockData.length + 1), ...rest };
     this.mockData.push(newUser);
     return newUser;
+  }
+
+  static async findByPk(id: string | number) {
+    return this.mockData.find((u) => u.id === String(id));
+  }
+
+  static async update(id: string | number, data: Partial<User>) {
+    const user = await this.findByPk(id);
+    if (user) {
+      Object.assign(user, data);
+    }
+    return user;
+  }
+
+  static async destroy(id: string | number) {
+    const index = this.mockData.findIndex((u) => u.id === String(id));
+    if (index !== -1) {
+      this.mockData.splice(index, 1);
+      return true;
+    }
+    return false;
   }
 }
 <% } else { -%>
@@ -49,11 +70,16 @@ User.init(
       allowNull: false,
       unique: true,
     },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     sequelize,
     tableName: 'users',
     underscored: true,
+    paranoid: true,
   }
 );
 

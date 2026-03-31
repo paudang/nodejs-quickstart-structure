@@ -30,6 +30,43 @@ describe('WelcomeEmailConsumer', () => {
         );
     });
 
+    it('should log update simulation for USER_UPDATED action', async () => {
+        const data = {
+            action: 'USER_UPDATED',
+            payload: {
+                id: 1,
+                email: 'updated@example.com'
+            }
+        };
+
+        await consumer.handle(data);
+
+        expect(logger.info).toHaveBeenCalledWith(
+            expect.stringContaining('[Kafka] Consumer: Received USER_UPDATED.')
+        );
+        expect(logger.info).toHaveBeenCalledWith(
+            expect.stringContaining('🔄 Updating user records for \'1\' (Email: updated@example.com)... Done!')
+        );
+    });
+
+    it('should log deletion simulation for USER_DELETED action', async () => {
+        const data = {
+            action: 'USER_DELETED',
+            payload: {
+                id: 1
+            }
+        };
+
+        await consumer.handle(data);
+
+        expect(logger.info).toHaveBeenCalledWith(
+            expect.stringContaining('[Kafka] Consumer: Received USER_DELETED.')
+        );
+        expect(logger.info).toHaveBeenCalledWith(
+            expect.stringContaining('🗑️ Cleaning up data for user \'1\'... Done!')
+        );
+    });
+
     it('should log error for invalid data', async () => {
         const data = {
             action: 'USER_CREATED',

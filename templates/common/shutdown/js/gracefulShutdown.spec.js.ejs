@@ -10,7 +10,7 @@ if (architecture === 'Clean Architecture') {
     redisPath = '@/infrastructure/caching/redisClient';
     kafkaPath = '@/infrastructure/messaging/kafkaClient';
 }
-_%>
+-%>
 const setupGracefulShutdown = require('@/utils/gracefulShutdown');
 
 <%_ if (database === 'MongoDB') { -%>
@@ -122,26 +122,16 @@ describe('Graceful Shutdown', () => {
         expect(mockExit).toHaveBeenCalledWith(0);
     });
 
-<%_ if (communication === 'Kafka' || database !== 'None' || caching === 'Redis') { _%>
     it('should handle errors during shutdown and exit 1', async () => {
-        <%_ if (communication === 'Kafka') { _%>
-        const { disconnectKafka } = require('<%- kafkaPath %>');
-        disconnectKafka.mockRejectedValueOnce(new Error('Shutdown Error'));
-        <%_ } else if (database === 'MongoDB') { _%>
-        const mongoose = require('mongoose');
-        mongoose.connection.close = jest.fn().mockRejectedValueOnce(new Error('Shutdown Error'));
-        <%_ } else if (database !== 'None') { _%>
-        const sequelize = require('<%- dbPath %>');
-        sequelize.close = jest.fn().mockRejectedValueOnce(new Error('Shutdown Error'));
-        <%_ } else if (caching === 'Redis') { _%>
-        const redisService = require('<%- redisPath %>');
-        redisService.quit = jest.fn().mockRejectedValueOnce(new Error('Shutdown Error'));
-        <%_ } _%>
+        // Force server.close to fail to test the error path
+        mockServer.close.mockImplementationOnce((cb) => {
+            if (cb) Promise.resolve().then(() => cb(new Error('Server Close Error')));
+            return mockServer;
+        });
 
         setupGracefulShutdown(mockServer);
         processListeners['SIGTERM']();
         
-        await flushPromises();
         await flushPromises();
         await flushPromises();
 
@@ -156,5 +146,4 @@ describe('Graceful Shutdown', () => {
         
         expect(mockExit).toHaveBeenCalledWith(1);
     });
-<%_ } _%>
 });

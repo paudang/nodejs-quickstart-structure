@@ -15,7 +15,7 @@ describe('UserEventSchema', () => {
 
     it('should validate a correct UPDATE_USER event', () => {
         const validEvent = {
-            action: 'UPDATE_USER',
+            action: 'USER_UPDATED',
             payload: {
                 id: 'abc-123',
                 email: 'test@example.com'

@@ -1,3 +1,4 @@
+import { ERROR_MESSAGES } from '@/utils/errorMessages';
 <% if (communication !== 'GraphQL') { -%>
 import { Request, Response, NextFunction } from 'express';
 import { HTTP_STATUS } from '@/utils/httpCodes';
@@ -10,6 +11,7 @@ import cacheService from '@/config/redisClient';
 import cacheService from '@/config/memoryCache';
 <%_ } -%><%_ if (communication === 'Kafka') { -%>
 import { kafkaService } from '@/services/kafkaService';
+import { KAFKA_ACTIONS } from '@/utils/kafkaEvents';
 <%_ } -%>
 
 export class UserController {
@@ -33,7 +35,7 @@ export class UserController {
 <%_ } -%>
             return users;
         } catch (error) {
-            logger.error('Error fetching users:', error);
+            logger.error(`${ERROR_MESSAGES.FETCH_USERS_ERROR}:`, error);
             throw error;
         }
     }
@@ -46,15 +48,77 @@ export class UserController {
             await cacheService.del('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const userId = (user as any).id || (user as any)._id;
             await kafkaService.sendMessage('user-topic', JSON.stringify({
-                action: 'USER_CREATED',
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                payload: { id: (user as any).id || (user as any)._id, email: user.email }
-            }));
+                action: KAFKA_ACTIONS.USER_CREATED,
+                payload: { id: userId, email: user.email }
+            }), userId?.toString() || '');
 <%_ } -%>
             return user;
         } catch (error) {
-            logger.error('Error creating user:', error);
+            logger.error(`${ERROR_MESSAGES.CREATE_USER_ERROR}:`, error);
+            throw error;
+        }
+    }
+
+    async updateUser(id: string, data: { name?: string, email?: string }) {
+        try {
+<%_ if (database === 'MongoDB') { -%>
+            const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
+            if (!updatedUser) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+<%_ } else if (database === 'None') { -%>
+            const user = await User.findByPk(id);
+            if (!user) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+            await User.update(id, data);
+            const updatedUser = await User.findByPk(id);
+<%_ } else { -%>
+            const user = await User.findByPk(id);
+            if (!user) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+            await user.update(data);
+            const updatedUser = user;
+<%_ } -%>
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            await cacheService.del('users:all');
+<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+            await kafkaService.sendMessage('user-topic', JSON.stringify({
+                action: KAFKA_ACTIONS.USER_UPDATED,
+                payload: { id, email: updatedUser?.email }
+            }), id);
+<%_ } -%>
+            return updatedUser;
+        } catch (error) {
+            logger.error(`${ERROR_MESSAGES.UPDATE_USER_ERROR}:`, error);
+            throw error;
+        }
+    }
+
+    async deleteUser(id: string) {
+        try {
+<%_ if (database === 'MongoDB') { -%>
+            const deleted = await User.findByIdAndDelete(id);
+            if (!deleted) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+<%_ } else if (database === 'None') { -%>
+            const deleted = await User.destroy(id);
+            if (!deleted) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+<%_ } else { -%>
+            const user = await User.findByPk(id);
+            if (!user) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+            await user.destroy();
+<%_ } -%>
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            await cacheService.del('users:all');
+<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+            await kafkaService.sendMessage('user-topic', JSON.stringify({
+                action: KAFKA_ACTIONS.USER_DELETED,
+                payload: { id }
+            }), id);
+<%_ } -%>
+            return true;
+        } catch (error) {
+            logger.error(`${ERROR_MESSAGES.DELETE_USER_ERROR}:`, error);
             throw error;
         }
     }
@@ -78,28 +142,105 @@ export class UserController {
 <%_ } -%>
             res.json(users);
         } catch (error) {
-            logger.error('Error fetching user:', error);
+            logger.error(`${ERROR_MESSAGES.FETCH_USERS_ERROR}:`, error);
             next(error);
         }
     }
 
     async createUser(req: Request, res: Response, next: NextFunction) {
         try {
-            const { name, email } = req.body;
+            const { name, email } = req.body || {};
             const user = await User.create({ name, email });
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
             await cacheService.del('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const userId = (user as any).id || (user as any)._id;
             await kafkaService.sendMessage('user-topic', JSON.stringify({
-                action: 'USER_CREATED',
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                payload: { id: (user as any).id || (user as any)._id, email: user.email }
-            }));
+                action: KAFKA_ACTIONS.USER_CREATED,
+                payload: { id: userId, email: user.email }
+            }), userId?.toString() || '');
 <%_ } -%>
             res.status(HTTP_STATUS.CREATED).json(user);
         } catch (error) {
             logger.error('Error creating user:', error);
+            next(error);
+        }
+    }
+
+    async updateUser(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const { name, email } = req.body || {};
+<%_ if (database === 'MongoDB') { -%>
+            const updatedUser = await User.findByIdAndUpdate(id, { name, email }, { new: true });
+            if (!updatedUser) {
+                return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+            }
+<%_ } else if (database === 'None') { -%>
+            const user = await User.findByPk(id);
+            if (!user) {
+                return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+            }
+            await User.update(id, { name, email });
+            const updatedUser = await User.findByPk(id);
+<%_ } else { -%>
+            const user = await User.findByPk(id);
+            if (!user) {
+                return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+            }
+            await user.update({ name, email });
+            const updatedUser = user;
+<%_ } -%>
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            await cacheService.del('users:all');
+<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+            await kafkaService.sendMessage('user-topic', JSON.stringify({
+                action: KAFKA_ACTIONS.USER_UPDATED,
+                payload: { id, email: updatedUser?.email }
+            }), id);
+<%_ } -%>
+            res.status(HTTP_STATUS.OK).json(updatedUser);
+        } catch (error) {
+            logger.error(`${ERROR_MESSAGES.UPDATE_USER_ERROR}:`, error);
+            next(error);
+        }
+    }
+
+    async deleteUser(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+<%_ if (database === 'MongoDB') { -%>
+            const deleted = await User.findByIdAndDelete(id);
+            if (!deleted) {
+                return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+            }
+<%_ } else if (database === 'None') { -%>
+            const deleted = await User.destroy(id);
+            if (!deleted) {
+                return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+            }
+<%_ } else { -%>
+            const user = await User.findByPk(id);
+            if (!user) {
+                return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+            }
+            await user.destroy();
+<%_ } -%>
+<%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
+            await cacheService.del('users:all');
+<%_ } -%>
+<%_ if (communication === 'Kafka') { -%>
+            await kafkaService.sendMessage('user-topic', JSON.stringify({
+                action: KAFKA_ACTIONS.USER_DELETED,
+                payload: { id }
+            }), id);
+<%_ } -%>
+            res.status(HTTP_STATUS.OK).json({ message: 'User deleted successfully' });
+        } catch (error) {
+            logger.error(`${ERROR_MESSAGES.DELETE_USER_ERROR}:`, error);
             next(error);
         }
     }

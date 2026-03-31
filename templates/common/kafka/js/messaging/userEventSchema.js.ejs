@@ -1,10 +1,11 @@
 const { z } = require('zod');
+const { KAFKA_ACTIONS } = require('<%- kafkaEventsPath %>');
 
 const UserEventSchema = z.object({
-  action: z.enum(['USER_CREATED', 'UPDATE_USER', 'DELETE_USER']),
+  action: z.enum(Object.values(KAFKA_ACTIONS)),
   payload: z.object({
     id: z.union([z.string(), z.number()]),
-    email: z.string().email(),
+    email: z.string().email().optional(),
   }),
 });
 

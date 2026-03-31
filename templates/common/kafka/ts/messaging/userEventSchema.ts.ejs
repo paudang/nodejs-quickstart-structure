@@ -1,10 +1,11 @@
 import { z } from 'zod';
+import { KAFKA_ACTIONS } from '@/utils/kafkaEvents';
 
 export const UserEventSchema = z.object({
-  action: z.enum(['USER_CREATED', 'UPDATE_USER', 'DELETE_USER']),
+  action: z.nativeEnum(KAFKA_ACTIONS),
   payload: z.object({
     id: z.union([z.string(), z.number()]),
-    email: z.string().email(),
+    email: z.string().email().optional(),
   }),
 });
 
