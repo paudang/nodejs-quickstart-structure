@@ -20,4 +20,7 @@ features:
     details: Pre-configured .cursorrules and Agent Skill prompts to boost your productivity with AI tools.
   - title: Production Standards
     details: Built-in E2E tests, graceful shutdown, health checks, and security headers.
+  - title: "Next Gen: Web UI (Coming Soon) 🚀"
+    details: Preview our upcoming browser-based generator featuring real-time visualization and unified configuration.
+    link: /guide/browser-generator
 ---

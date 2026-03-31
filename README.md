@@ -53,6 +53,7 @@ nodejs-quickstart init
 - **Communication Patterns**: Supports **REST**, **GraphQL** (Apollo), and **Kafka** (Event-driven).
 - **Multi-layer Caching**: Integrated **Redis** or built-in **Memory Cache**.
 - **AI-Native Optimized**: specifically designed for **Cursor** and AI agents, including built-in `.cursorrules` and Agent Skill prompts. 🚀
+- **Next Gen Web UI**: (Coming Soon) A modern, browser-based project selector featuring real-time virtualization — set for release in v2.0.0!
 
 ---
 
