@@ -12,7 +12,7 @@ Inspired by industry leaders like Spring Initializr, the new Web UI offers a str
 - **Visual Configuration**: No more answering CLI prompts one by one. Select all your options (Language, Architecture, Database, CI/CD) in a single, balanced interface.
 - **Real-time Virtualization**: See your project's folder structure update instantly as you change configurations.
 - **Unified Branding**: Experience the consistent "Node.js Quickstart" professional aesthetic.
-- **Instant Download**: Confirm your choices and download a ready-to-use ZIP archive in seconds.
+- **Instant Download**: Copy your custom configuration and launch your project in seconds via CLI.
 
 ## 📸 Sneak Peek
 
