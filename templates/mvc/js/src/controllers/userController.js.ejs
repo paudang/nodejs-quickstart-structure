@@ -95,15 +95,15 @@ const deleteUser = async (id) => {
   try {
 <%_ if (database === 'MongoDB') { -%>
     const deleted = await User.findByIdAndDelete(id);
+    if (!deleted) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
 <%_ } else if (database === 'None') { -%>
     const deleted = await User.destroy(id);
+    if (!deleted) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
 <%_ } else { -%>
     const user = await User.findByPk(id);
     if (!user) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
     await user.destroy();
-    const deleted = true;
 <%_ } -%>
-    if (!deleted) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
     await cacheService.del('users:all');
 <%_ } -%>
@@ -211,19 +211,21 @@ const deleteUser = async (req, res, next) => {
     const { id } = req.params;
 <%_ if (database === 'MongoDB') { -%>
     const deleted = await User.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+    }
 <%_ } else if (database === 'None') { -%>
     const deleted = await User.destroy(id);
+    if (!deleted) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+    }
 <%_ } else { -%>
     const user = await User.findByPk(id);
     if (!user) {
       return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
     }
     await user.destroy();
-    const deleted = true;
 <%_ } -%>
-    if (!deleted) {
-      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
-    }
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
     await cacheService.del('users:all');
 <%_ } -%>
