@@ -34,6 +34,7 @@ export class UserController {
             const { name, email } = data;
             const user = await this.createUserUseCase.execute(name, email);
 <%_ if (communication === 'Kafka') { -%>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const userId = (user as any).id || (user as any)._id;
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: KAFKA_ACTIONS.USER_CREATED,
@@ -100,6 +101,7 @@ export class UserController {
             const { name, email } = req.body || {};
             const user = await this.createUserUseCase.execute(name, email);
 <%_ if (communication === 'Kafka') { -%>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const userId = (user as any).id || (user as any)._id;
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: KAFKA_ACTIONS.USER_CREATED,
