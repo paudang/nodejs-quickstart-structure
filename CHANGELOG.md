@@ -1,5 +1,13 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.19.1] - 2026-04-01
+
+### Fixed
+- **Template Security Hardening**: Resolved moderate Prototype Pollution vulnerability in `lodash` (GHSA-xxjr-mmjv-4gpg) by implementing a targeted `override` to version `^4.17.23` in generated templates.
+- **Dependency Modernization**: Updated `jake` override to `^11.9.5` (latest version) across all project templates.
+- **E2E Verified**: Validated the fix across multiple scenarios (JS/TS, MVC/Clean, MySQL/MongoDB/GraphQL) via Windows E2E tests with Docker, ensuring 0 vulnerabilities and 100% functional reliability.
+
+
 ## [1.19.0] - 2026-03-28
 
 ### Added
