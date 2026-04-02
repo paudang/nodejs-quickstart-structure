@@ -211,6 +211,25 @@
           <span class="tree-comment"># GraphQL schemas and resolvers</span>
         </div>
 
+        <template v-if="form.communication === 'Kafka'">
+          <div class="tree-item clickable" style="--depth: 2" @click="toggle('messaging')">
+            <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.messaging }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+            messaging
+            <span class="tree-comment"># Event contracts & schemas</span>
+          </div>
+          <div v-show="expanded.messaging">
+            <div class="tree-item" style="--depth: 3">
+              <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+              schemas
+            </div>
+            <div class="tree-item" style="--depth: 3">
+              <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+              consumers
+            </div>
+          </div>
+        </template>
+
         <div class="tree-item" style="--depth: 2" v-if="form.viewEngine !== 'None'">
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           views
@@ -322,18 +341,21 @@
         
         <!-- Messaging Shared Area -->
         <template v-if="form.communication === 'Kafka'">
-          <div class="tree-item" style="--depth: 3">
+          <div class="tree-item clickable" style="--depth: 3" @click="toggle('messaging_clean')">
+            <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.messaging_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
             messaging
             <span class="tree-comment"># Event contracts & schemas</span>
           </div>
-          <div class="tree-item" style="--depth: 4">
-            <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
-            schemas
-          </div>
-          <div class="tree-item" style="--depth: 4">
-            <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
-            consumers
+          <div v-show="expanded.messaging_clean">
+            <div class="tree-item" style="--depth: 4">
+              <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+              schemas
+            </div>
+            <div class="tree-item" style="--depth: 4">
+              <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+              consumers
+            </div>
           </div>
         </template>
 
@@ -538,7 +560,9 @@ const expanded = reactive({
   errors: false,
   caching_clean: true,
   config_clean: true,
-  database_clean: true
+  database_clean: true,
+  messaging: true,
+  messaging_clean: true
 });
 
 const toggle = (folder) => {
