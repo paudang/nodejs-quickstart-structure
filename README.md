@@ -7,6 +7,8 @@
 
 A powerful CLI tool to scaffold production-ready Node.js microservices with built-in best practices, allowing you to choose between **MVC** or **Clean Architecture**, **JavaScript** or **TypeScript**, and your preferred database.
 
+🎯 **[Try the new Web UI Configurator!](https://paudang.github.io/nodejs-quickstart-structure/)** - Generate your exact architecture in the browser with real-time folder simulation.
+
 ![Demo](docs/demo.gif)
 
 ---
@@ -53,7 +55,7 @@ nodejs-quickstart init
 - **Communication Patterns**: Supports **REST**, **GraphQL** (Apollo), and **Kafka** (Event-driven).
 - **Multi-layer Caching**: Integrated **Redis** or built-in **Memory Cache**.
 - **AI-Native Optimized**: specifically designed for **Cursor** and AI agents, including built-in `.cursorrules` and Agent Skill prompts. 🚀
-- **Next Gen Web UI**: (Coming Soon) A modern, browser-based project selector featuring real-time virtualization — set for release in v2.0.0!
+- **Next-Gen Web UI Configurator**: A modern, browser-based visual project simulator. Click your stack and copy the generated zero-prompt CLI command instantly! [Try it here](https://paudang.github.io/nodejs-quickstart-structure/).
 
 ---
 
