@@ -4,14 +4,14 @@ import { reactive, ref, computed, watch } from 'vue';
 const form = reactive({
   projectName: 'nodejs-service',
   language: 'TypeScript',
-  architecture: 'Clean Architecture',
-  viewEngine: 'None',
-  database: 'MongoDB',
+  architecture: 'MVC',
+  viewEngine: 'Pug',
+  database: 'MySQL',
   dbName: 'demo',
-  communication: 'Kafka',
-  caching: 'Redis',
+  communication: 'REST APIs',
+  caching: 'None',
   ciProvider: 'GitHub Actions',
-  includeSecurity: true
+  includeSecurity: false
 });
 
 const errors = reactive({
@@ -75,20 +75,20 @@ const cliCommand = computed(() => {
   cmd += ` -n "${form.projectName}"`;
   cmd += ` -l "${form.language}"`;
   cmd += ` -a "${form.architecture}"`;
-  
+
   if (form.architecture === 'MVC') {
     cmd += ` --view-engine "${form.viewEngine}"`;
   }
-  
+
   cmd += ` -d "${form.database}"`;
   if (form.database !== 'None' && form.dbName) {
     cmd += ` --db-name "${form.dbName}"`;
   }
-  
+
   cmd += ` -c "${form.communication}"`;
   cmd += ` --caching "${form.caching}"`;
   cmd += ` --ci-provider "${form.ciProvider}"`;
-  
+
   if (form.ciProvider !== 'None') {
     if (form.includeSecurity) {
       cmd += ` --include-security`;
@@ -96,7 +96,7 @@ const cliCommand = computed(() => {
       cmd += ` --no-include-security`;
     }
   }
-  
+
   return cmd;
 });
 
