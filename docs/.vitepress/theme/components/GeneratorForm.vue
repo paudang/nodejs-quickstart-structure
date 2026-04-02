@@ -83,8 +83,8 @@
     </div>
     
     <div class="checkbox-group">
-      <input type="checkbox" id="security-check" v-model="form.includeSecurity" :disabled="form.ciProvider === 'None'" />
-      <label for="security-check">Enable Enterprise Security Hardening (Snyk + SonarCloud)</label>
+      <input type="checkbox" id="security-check" v-model="form.includeSecurity" :disabled="true" />
+      <label for="security-check" style="opacity: 0.8;">Enable Enterprise Security Hardening (Auto-enabled for Zero-Prompt CLI)</label>
     </div>
 
     <button class="btn-primary" @click="generateCommand" :disabled="hasErrors">

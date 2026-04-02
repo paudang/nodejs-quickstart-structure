@@ -11,7 +11,7 @@ const form = reactive({
   communication: 'REST APIs',
   caching: 'None',
   ciProvider: 'GitHub Actions',
-  includeSecurity: false
+  includeSecurity: true
 });
 
 const errors = reactive({
@@ -67,7 +67,11 @@ watch(() => form.database, (newVal) => {
 });
 
 watch(() => form.ciProvider, (newVal) => {
-  if (newVal === 'None') form.includeSecurity = false;
+  if (newVal === 'None') {
+    form.includeSecurity = false;
+  } else {
+    form.includeSecurity = true;
+  }
 });
 
 const cliCommand = computed(() => {
@@ -92,8 +96,6 @@ const cliCommand = computed(() => {
   if (form.ciProvider !== 'None') {
     if (form.includeSecurity) {
       cmd += ` --include-security`;
-    } else {
-      cmd += ` --no-include-security`;
     }
   }
 
