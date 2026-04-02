@@ -168,7 +168,7 @@
           swagger.{{ ext }}
         </div>
         <div class="tree-item" style="--depth: 3" v-if="form.communication === 'REST APIs' || form.communication === 'Kafka'">
-          <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+          <svg class="tree-item-icon icon-file-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
           swagger.yml
         </div>
         </div>
@@ -256,7 +256,7 @@
           env.{{ ext }}
         </div>
         <div class="tree-item" style="--depth: 4" v-if="form.communication === 'REST APIs' || form.communication === 'Kafka'">
-          <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+          <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
           swagger.yml
         </div>
         </div>
