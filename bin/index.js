@@ -31,6 +31,7 @@ program
     .option('-c, --communication <communication>', 'Communication (REST APIs, GraphQL, Kafka)')
     .option('--ci-provider <provider>', 'CI/CD Provider (None, GitHub Actions, Jenkins, GitLab CI)')
     .option('--include-security', 'Include Enterprise Security Hardening')
+    .option('--no-include-security', 'Exclude Enterprise Security Hardening')
     .option('--caching <type>', 'Caching Layer (None/Redis)')
     .action(async (options) => {
         // Fix for Commander camelCase conversion

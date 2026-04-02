@@ -74,8 +74,8 @@ export default defineConfig({
     ],
 
     footer: {
-      message: 'Released under the ISC License.',
-      copyright: 'Copyright © 2026-present'
+      message: 'Released under the ISC License. <br> Built with ❤️ for the Node.js Ecosystem. <span class="footer-badges"> <a href="https://www.npmjs.com/package/nodejs-quickstart-structure" target="_blank"><img src="https://img.shields.io/npm/dt/nodejs-quickstart-structure?style=social" alt="NPM Downloads"></a> <a href="https://github.com/paudang/nodejs-quickstart-structure" target="_blank"><img src="https://img.shields.io/github/stars/paudang/nodejs-quickstart-structure?style=social" alt="GitHub Stars"></a> </span>',
+      copyright: 'Copyright © 2026-present Pau Dang'
     }
   }
 })
