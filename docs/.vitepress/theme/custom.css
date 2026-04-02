@@ -20,6 +20,7 @@
   border-radius: 8px;
   padding: 24px;
   flex: 1;
+  min-width: 0; /* Ensures flex child doesn't stretch past screen, triggering internal overflow */
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
@@ -151,6 +152,7 @@ select.form-control {
   color: var(--vp-c-text-2);
   line-height: 1.7;
   overflow-x: auto;
+  padding-bottom: 8px; /* Room for scrollbar */
 }
 
 .tree-item {
@@ -159,6 +161,12 @@ select.form-control {
   gap: 6px;
   padding-left: calc(var(--depth) * 20px);
   white-space: nowrap;
+}
+
+.tree-comment {
+  color: #6b7280;
+  margin-left: 6px;
+  font-style: italic;
 }
 
 .tree-item-icon {

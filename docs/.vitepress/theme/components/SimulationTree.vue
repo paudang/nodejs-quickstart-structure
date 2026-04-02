@@ -555,8 +555,6 @@ const toggle = (folder) => {
   font-family: var(--vp-font-family-mono);
   opacity: 0.8;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .clickable {
   cursor: pointer;
