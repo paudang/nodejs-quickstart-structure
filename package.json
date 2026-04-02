@@ -1,6 +1,6 @@
 {
   "name": "nodejs-quickstart-structure",
-  "version": "1.19.1",
+  "version": "2.0.0",
   "type": "module",
   "description": "The ultimate nodejs quickstart structure CLI to scaffold Node.js microservices with MVC or Clean Architecture",
   "main": "bin/index.js",
@@ -12,6 +12,7 @@
     "test:e2e": "npm run test:e2e:windows",
     "test:e2e:windows": "node scripts/validate-windows.js",
     "test:e2e:linux": "node scripts/validate-linux.js",
+    "test:validate-command": "node scripts/validate-command.js",
     "test:verify:mongo": "node scripts/verify-migration.js",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
