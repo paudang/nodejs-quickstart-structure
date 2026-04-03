@@ -7,7 +7,7 @@
 
 A powerful CLI tool to scaffold production-ready Node.js microservices with built-in best practices. Choose between **MVC** or **Clean Architecture**, **JavaScript** or **TypeScript**, and your preferred tech stack in seconds.
 
-🎯 **[Try the Next-Gen Web UI Configurator!](https://bit.ly/nodejs-quickstart)**
+🎯 **[Try the Next-Gen Web UI Configurator!](https://paudang.github.io/nodejs-quickstart-structure/)**
 *Generate your exact architecture in the browser with real-time folder simulation.*
 
 ![Demo](docs/demo.gif)
@@ -18,7 +18,7 @@ A powerful CLI tool to scaffold production-ready Node.js microservices with buil
 
 The v2.0.0 release is a major leap forward, turning the generator into a **Community Standard** for Node.js development:
 
-- **🌐 Visual Web UI**: Real-time folder hierarchy simulation. "What you see is what you get" scaffolding. [Try it here](https://bit.ly/nodejs-quickstart).
+- **Next-Gen Web UI Configurator**: A modern, browser-based visual project simulator. Click your stack and copy the generated zero-prompt CLI command instantly! [Try it here](https://paudang.github.io/nodejs-quickstart-structure/).
 - **🦾 AI-Native Foundation**: Built-in `.cursorrules` and Agent skills optimized for **Cursor** & AI coding assistants.
 - **🏗️ Enterprise Clean Architecture**: High-fidelity structure for professional Microservices (TS/JS).
 - **🛡️ Hardened Security**: Integrated Snyk & SonarCloud logic in the core templates.
@@ -68,7 +68,7 @@ nodejs-quickstart init
 - **Communication Patterns**: Supports **REST**, **GraphQL** (Apollo), and **Kafka** (Event-driven).
 - **Multi-layer Caching**: Integrated **Redis** or built-in **Memory Cache**.
 - **AI-Native Optimized**: specifically designed for **Cursor** and AI agents, including built-in `.cursorrules` and Agent Skill prompts. 🚀
-- **Next-Gen Web UI Configurator**: A modern, browser-based visual project simulator. Click your stack and copy the generated zero-prompt CLI command instantly! [Try it here](https://bit.ly/nodejs-quickstart).
+- **Next-Gen Web UI Configurator**: A modern, browser-based visual project simulator. Click your stack and copy the generated zero-prompt CLI command instantly! [Try it here](https://paudang.github.io/nodejs-quickstart-structure/).
 
 ---
 
@@ -138,7 +138,7 @@ Depending on your choices, the structure adapts. Here is a **TypeScript + Clean 
 
 ## 📖 Documentation
 
-For full guides, architecture deep-dives, and feature references, visit our **[Official Documentation Site](https://bit.ly/nodejs-quickstart)**.
+For full guides, architecture deep-dives, and feature references, visit our **[Official Documentation Site](https://paudang.github.io/nodejs-quickstart-structure/)**.
 
 ---
 
