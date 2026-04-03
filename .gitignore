@@ -20,6 +20,7 @@ test_readme_app/
 test_results.log
 temp_test_workspace
 temp_test_workspace_old
+temp_1680_workspace
 coverage/
 
 # Editor directories
