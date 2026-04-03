@@ -340,7 +340,7 @@
         </div>
         <div v-show="expanded.log_clean">
           <div class="tree-item" style="--depth: 4">
-        <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
             logger.{{ ext }}
           </div>
         </div>
@@ -439,7 +439,13 @@
           controllers
           <span class="tree-comment"># Request handling & input validation</span>
         </div>
-        
+
+        <div class="tree-item" style="--depth: 3">
+          <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+          routes
+          <span class="tree-comment"># Express API routing endpoints</span>
+        </div>
+
         <div class="tree-item clickable" style="--depth: 3" v-if="form.communication === 'GraphQL'" @click="toggle('graphql_clean')">
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.graphql_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
@@ -485,12 +491,6 @@
             <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
             index.{{ ext }}
           </div>
-        </div>
-
-        <div class="tree-item" style="--depth: 3">
-          <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
-          routes
-          <span class="tree-comment"># Express API routing endpoints</span>
         </div>
         
         <!-- Messaging Shared Area -->
@@ -566,13 +566,13 @@
         <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         kafkaEvents.{{ ext }}
       </div>
-      <div class="tree-item" style="--depth: 3">
+      <div class="tree-item" style="--depth: 3" v-if="form.architecture === 'MVC'">
         <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         logger.{{ ext }}
       </div>
-      <div class="tree-item" style="--depth: 3">
+      <div class="tree-item" style="--depth: 3" v-if="form.language === 'TypeScript'">
         <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-        errorMiddleware.{{ ext }}
+        errorMiddleware.ts
         <span class="tree-comment"># Global error handling (Architect standard)</span>
       </div>
       <div class="tree-item" style="--depth: 3">
