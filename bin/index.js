@@ -75,7 +75,12 @@ program
             
             console.log(chalk.cyan(`\nNext steps:\n  cd ${answers.projectName}\n  npm install\n  docker-compose up\n-----------------------${manualStartInstructions}\n\n${chalk.yellow('Production (PM2):')}\n  npm run build\n  npm run deploy\n  npx pm2 logs`));
 
-            console.log(chalk.yellow(`\n⭐ If this tool saved you 5 minutes, please give us a star on GitHub: ${chalk.underline('https://github.com/paudang/nodejs-quickstart-structure')}`));
+            console.log(chalk.magenta('\n' + '★'.repeat(50)));
+            console.log(chalk.white.bold('  Enjoying the Node.js Quickstart Generator?'));
+            console.log(chalk.white(`  If this tool saved you 4+ hours of architecture setup,`));
+            console.log(chalk.white(`  please help us grow by giving us a ⭐ on GitHub!`));
+            console.log(chalk.white(`\n  👉 ${chalk.underline.bold('https://github.com/paudang/nodejs-quickstart-structure')}`));
+            console.log(chalk.magenta('★'.repeat(50) + '\n'));
 
         } catch (error) {
             if (error.name === 'ExitPromptError') {

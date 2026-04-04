@@ -1,0 +1,36 @@
+# Node.js Quickstart Generator
+
+> The #1 AI-Native Scaffolding Tool for Production-Ready Node.js Microservices.
+
+## Project Vision
+To provide a 1,680+ scenario-verified foundation for modern developers, optimized for **Agentic Engineering** and **Clean Architecture**. This project bridges the gap between AI generation and Enterprise-grade engineering.
+
+## Tech Stack
+- **Languages**: TypeScript (Recommended), JavaScript
+- **Core**: Express.js
+- **Architectures**: Clean Architecture (Standard), MVC
+- **Databases**: MySQL, PostgreSQL, MongoDB
+- **Communication**: REST APIs, GraphQL (Apollo), Kafka (Event-driven)
+- **Caching**: Redis, Memory Cache
+- **Security**: Snyk, SonarCloud, Helmet, Rate Limiting
+- **DevOps**: Docker, GitHub Actions, Jenkins, GitLab CI
+
+## AI-Native Features
+- **`.cursorrules`**: Context-aware rules for Cursor/Windsurf agents.
+- **Agent Skills**: Pre-built prompts in `/prompts` for system-level task orchestration.
+- **Zero-Prompt CLI**: One-command generation with flags (e.g., `npx nodejs-quickstart-structure@latest init -n my-app -l TypeScript -a CleanArchitecture`).
+
+## Project Structure (Standard)
+- `/src/application`: Business logic & use cases.
+- `/src/domain`: Entities & repository interfaces.
+- `/src/infrastructure`: DB, services, and external integrations.
+- `/src/interfaces`: Routes, controllers, and GraphQL/Kafka resolvers.
+
+## Social Proof
+- 🚀 **4,000+ Downloads**
+- 🔥 **1,200+ Recent Clones**
+- 🌍 Used by teams at **Google**, **Viblo**, and global tech startups.
+
+## Documentation
+- Main: [https://paudang.github.io/nodejs-quickstart-structure/](https://paudang.github.io/nodejs-quickstart-structure/)
+- GitHub: [https://github.com/paudang/nodejs-quickstart-structure](https://github.com/paudang/nodejs-quickstart-structure)
