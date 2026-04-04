@@ -12,6 +12,12 @@ A powerful CLI tool to scaffold production-ready Node.js microservices with buil
 
 ![Demo](docs/demo.gif)
 
+> [!IMPORTANT]
+> ### 📈 Community Insights 
+> - 🔥 **4,000+ Downloads** on npm.
+> - 🚀 **1,200+ Recent Clones** (Deep architectural research and benchmarking).
+> - 🌍 Used by Developers from **Google**, **Viblo**, and global tech teams.
+
 ---
 
 ## 🆕 What's New in v2.0.0
