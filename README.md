@@ -5,11 +5,14 @@
 [![npm monthly downloads](https://img.shields.io/npm/dm/nodejs-quickstart-structure.svg?style=flat-square)](https://www.npmjs.com/package/nodejs-quickstart-structure)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg?style=flat-square)](https://opensource.org/licenses/ISC)
 
-> [!IMPORTANT]
-> ### 📈 Community Insights (Real-world adoption)
-> - 🔥 **4,000+ Downloads** on npm.
-> - 🚀 **1,200+ Recent Clones** (Deep architectural research and benchmarking).
-> - 🌍 Used by Developers from **Google**, **Viblo**, and global tech teams.
+### 📈 Real-world Adoption
+| **Metric** | **Insight** |
+| :--- | :--- |
+| 🔥 **4,000+** | Downloads on npm |
+| 🚀 **1,200+** | Recent GitHub Clones |
+| 🌍 **Trusted by** | Devs from **Google**, **Viblo**, and global tech teams |
+
+---
 
 A powerful CLI tool to scaffold production-ready Node.js microservices with built-in best practices. Choose between **MVC** or **Clean Architecture**, **JavaScript** or **TypeScript**, and your preferred tech stack in seconds.
 
