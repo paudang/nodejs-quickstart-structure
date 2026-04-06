@@ -1,22 +1,22 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
-  title: "Node.js Quickstart Structure",
-  description: "Production-ready Node.js structure generator",
+  title: "Node.js Quickstart Generator",
+  description: "The AI-Native Node.js scaffolding tool for production-ready microservices.",
   base: '/nodejs-quickstart-structure/',
   head: [
     ['meta', { property: 'og:image', content: 'https://paudang.github.io/nodejs-quickstart-structure/og-image.png' }],
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
-    ['meta', { property: 'og:title', content: 'Node.js Quickstart Structure' }],
-    ['meta', { property: 'og:description', content: 'Scaffold production-ready Node.js microservices in seconds.' }],
-    ['meta', { property: 'og:site_name', content: 'Node.js Quickstart Structure' }],
+    ['meta', { property: 'og:title', content: 'Node.js Quickstart Generator | nodejs-quickstart-structure' }],
+    ['meta', { property: 'og:description', content: 'Scaffold production-ready Node.js microservices with Clean Architecture, Kafka, and GraphQL in seconds.' }],
+    ['meta', { property: 'og:site_name', content: 'Node.js Quickstart Generator' }],
     ['meta', { property: 'og:locale', content: 'en_US' }],
     ['meta', { property: 'og:url', content: 'https://paudang.github.io/nodejs-quickstart-structure/' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:title', content: 'Node.js Quickstart Structure' }],
-    ['meta', { name: 'twitter:description', content: 'Scaffold production-ready Node.js microservices in seconds.' }],
+    ['meta', { name: 'twitter:title', content: 'Node.js Quickstart Generator | AI-Native Scaffolding' }],
+    ['meta', { name: 'twitter:description', content: 'The fastest way to build production-ready Node.js apps with built-in best practices.' }],
     ['meta', { name: 'twitter:image', content: 'https://paudang.github.io/nodejs-quickstart-structure/og-image.png' }]
   ],
   themeConfig: {
@@ -74,8 +74,8 @@ export default defineConfig({
     ],
 
     footer: {
-      message: 'Released under the ISC License.',
-      copyright: 'Copyright © 2026-present'
+      message: 'Released under the ISC License. <br> Built with ❤️ for the Node.js Ecosystem. <span class="footer-badges"> <a href="https://www.npmjs.com/package/nodejs-quickstart-structure" target="_blank"><img src="https://img.shields.io/npm/dt/nodejs-quickstart-structure?style=social" alt="NPM Downloads"></a> <a href="https://github.com/paudang/nodejs-quickstart-structure" target="_blank"><img src="https://img.shields.io/github/stars/paudang/nodejs-quickstart-structure?style=social" alt="GitHub Stars"></a> </span>',
+      copyright: 'Copyright © 2026-present Pau Dang'
     }
   }
 })

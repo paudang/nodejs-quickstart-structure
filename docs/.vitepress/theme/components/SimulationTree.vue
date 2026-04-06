@@ -72,9 +72,16 @@
           <span class="tree-comment"># Database migrations management</span>
         </div>
         <div v-show="expanded.flyway">
-          <div class="tree-item" style="--depth: 2">
+          <div class="tree-item clickable" style="--depth: 2" @click="toggle('flyway_sql')">
+            <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.flyway_sql }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
             sql
+          </div>
+          <div v-show="expanded.flyway_sql">
+            <div class="tree-item" style="--depth: 3">
+              <svg class="tree-item-icon icon-file-sql" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              V1__initial_setup.sql
+            </div>
           </div>
         </div>
       </template>
@@ -111,6 +118,7 @@
         <div class="tree-item" style="--depth: 2">
           <svg class="tree-item-icon icon-file-js" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
           run-e2e.js
+          <span class="tree-comment"># E2E test orchestrator (starts server and runs tests)</span>
         </div>
       </div>
 
@@ -157,7 +165,7 @@
         </div>
         <div class="tree-item" style="--depth: 3" v-if="form.database !== 'None'">
           <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-          {{ form.database === 'MongoDB' ? 'mongoose.' + ext : 'database.' + ext }}
+          database.{{ ext }}
         </div>
         <div class="tree-item" style="--depth: 3" v-if="form.caching !== 'None'">
           <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
@@ -167,8 +175,12 @@
           <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
           swagger.{{ ext }}
         </div>
+        <div class="tree-item" style="--depth: 3" v-if="form.communication === 'Kafka'">
+          <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+          kafka.{{ ext }}
+        </div>
         <div class="tree-item" style="--depth: 3" v-if="form.communication === 'REST APIs' || form.communication === 'Kafka'">
-          <svg class="tree-item-icon icon-file-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+          <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
           swagger.yml
         </div>
         </div>
@@ -193,22 +205,76 @@
           <span class="tree-comment"># Data schemas & business entities</span>
         </div>
         <div v-show="expanded.models">
-        <div class="tree-item" style="--depth: 3">
-          <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-          User.{{ ext }}
-        </div>
+          <div class="tree-item" style="--depth: 3">
+            <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            User.{{ ext }}
+          </div>
         </div>
 
-        <div class="tree-item" style="--depth: 2" v-if="form.communication === 'REST APIs' || form.communication === 'Kafka'">
+        <div class="tree-item clickable" style="--depth: 2" v-if="form.communication === 'Kafka'" @click="toggle('services')">
+          <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.services }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+          services
+          <span class="tree-comment"># Business logic services (Kafka Producers, etc.)</span>
+        </div>
+        <div v-show="expanded.services" v-if="form.communication === 'Kafka'">
+          <div class="tree-item" style="--depth: 3">
+            <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            kafkaService.{{ ext }}
+          </div>
+        </div>
+
+        <div class="tree-item" style="--depth: 2">
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           routes
           <span class="tree-comment"># Express API routing endpoints</span>
         </div>
 
-        <div class="tree-item" style="--depth: 2" v-if="form.communication === 'GraphQL'">
+        <div class="tree-item clickable" style="--depth: 2" v-if="form.communication === 'GraphQL'" @click="toggle('graphql_mvc')">
+          <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.graphql_mvc }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           graphql
           <span class="tree-comment"># GraphQL schemas and resolvers</span>
+        </div>
+        <div v-show="expanded.graphql_mvc" v-if="form.communication === 'GraphQL'">
+          <div class="tree-item clickable" style="--depth: 3" @click="toggle('resolvers_mvc')">
+             <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.resolvers_mvc }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+             <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+             resolvers
+          </div>
+          <div v-show="expanded.resolvers_mvc">
+            <div class="tree-item" style="--depth: 4">
+              <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              user.resolvers.{{ ext }}
+            </div>
+            <div class="tree-item" style="--depth: 4">
+              <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              index.{{ ext }}
+            </div>
+          </div>
+          <div class="tree-item clickable" style="--depth: 3" @click="toggle('typeDefs_mvc')">
+             <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.typeDefs_mvc }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+             <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+             typeDefs
+          </div>
+          <div v-show="expanded.typeDefs_mvc">
+            <div class="tree-item" style="--depth: 4">
+              <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              user.types.{{ ext }}
+            </div>
+            <div class="tree-item" style="--depth: 4">
+              <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              index.{{ ext }}
+            </div>
+          </div>
+          <div class="tree-item" style="--depth: 3">
+            <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            context.{{ ext }}
+          </div>
+          <div class="tree-item" style="--depth: 3">
+            <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            index.{{ ext }}
+          </div>
         </div>
 
         <template v-if="form.communication === 'Kafka'">
@@ -226,6 +292,10 @@
             <div class="tree-item" style="--depth: 3">
               <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
               consumers
+            </div>
+            <div class="tree-item" style="--depth: 3">
+              <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              baseConsumer.{{ ext }}
             </div>
           </div>
         </template>
@@ -263,21 +333,32 @@
         </div>
         </div>
 
-        <div class="tree-item clickable" style="--depth: 3" @click="toggle('config_clean')">
+        <div class="tree-item clickable" style="--depth: 3" @click="toggle('log_clean')">
+          <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.log_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+          log
+        </div>
+        <div v-show="expanded.log_clean">
+          <div class="tree-item" style="--depth: 4">
+            <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            logger.{{ ext }}
+          </div>
+        </div>
+
+        <div class="tree-item clickable" style="--depth: 3" v-if="form.language === 'JavaScript' || form.communication === 'Kafka'" @click="toggle('config_clean')">
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.config_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           config
-          <span class="tree-comment" v-if="form.language === 'JavaScript'"># System-wide configurations</span>
         </div>
-        <div v-show="expanded.config_clean">
-        <div class="tree-item" style="--depth: 4">
-          <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-          env.{{ ext }}
-        </div>
-        <div class="tree-item" style="--depth: 4" v-if="form.communication === 'REST APIs' || form.communication === 'Kafka'">
-          <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-          swagger.yml
-        </div>
+        <div v-show="expanded.config_clean" v-if="form.language === 'JavaScript' || form.communication === 'Kafka'">
+          <div class="tree-item" style="--depth: 4" v-if="form.language === 'JavaScript'">
+            <svg class="tree-item-icon icon-file-js" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            env.js
+          </div>
+          <div class="tree-item" style="--depth: 4" v-if="form.communication === 'Kafka'">
+            <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            kafka.{{ ext }}
+          </div>
         </div>
 
         <div class="tree-item clickable" style="--depth: 3" @click="toggle('database_clean')">
@@ -286,21 +367,28 @@
           database
         </div>
         <div v-show="expanded.database_clean">
-        <div class="tree-item" style="--depth: 4" v-if="form.database !== 'None'">
-          <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-          {{ form.database === 'MongoDB' ? 'mongoose.' + ext : 'database.' + ext }}
-        </div>
-        <div class="tree-item" style="--depth: 4">
-          <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
-          models
-          <span class="tree-comment"># Data schemas & business entities</span>
-        </div>
+          <div class="tree-item" style="--depth: 4">
+            <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+            models
+            <span class="tree-comment"># Data schemas & business entities</span>
+          </div>
+          <div class="tree-item" style="--depth: 4" v-if="form.database !== 'None'">
+            <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            database.{{ ext }}
+          </div>
         </div>
 
-        <div class="tree-item" style="--depth: 3">
+        <div class="tree-item clickable" style="--depth: 3" @click="toggle('repositories_clean')">
+          <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.repositories_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           repositories
           <span class="tree-comment"># Data access</span>
+        </div>
+        <div v-show="expanded.repositories_clean">
+          <div class="tree-item" style="--depth: 4">
+            <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            UserRepository.{{ ext }}
+          </div>
         </div>
 
         <div class="tree-item" style="--depth: 3" v-if="form.communication === 'Kafka'">
@@ -309,10 +397,35 @@
           <span class="tree-comment"># Event-driven messaging implementation</span>
         </div>
 
-        <div class="tree-item" style="--depth: 3">
+        <div class="tree-item clickable" style="--depth: 3" v-if="form.language === 'JavaScript'" @click="toggle('webserver_clean')">
+          <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.webserver_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           webserver
-          <span class="tree-comment"># Application entry point and server setup</span>
+        </div>
+        <div v-show="expanded.webserver_clean" v-if="form.language === 'JavaScript'">
+          <div class="tree-item clickable" style="--depth: 4" @click="toggle('middleware_clean')">
+            <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.middleware_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+            middleware
+          </div>
+          <div v-show="expanded.middleware_clean">
+            <div class="tree-item" style="--depth: 5">
+               <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+               errorMiddleware.{{ ext }}
+            </div>
+          </div>
+          <div class="tree-item" style="--depth: 4">
+            <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            server.{{ ext }}
+          </div>
+          <div class="tree-item" style="--depth: 4" v-if="form.communication === 'REST APIs' || form.communication === 'Kafka'">
+            <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            swagger.{{ ext }}
+          </div>
+          <div class="tree-item" style="--depth: 4" v-if="form.communication === 'REST APIs' || form.communication === 'Kafka'">
+            <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            swagger.yml
+          </div>
         </div>
         </div>
         <div class="tree-item clickable" style="--depth: 2" @click="toggle('interfaces')">
@@ -326,17 +439,58 @@
           controllers
           <span class="tree-comment"># Request handling & input validation</span>
         </div>
-        
-        <div class="tree-item" style="--depth: 3" v-if="form.communication === 'GraphQL'">
+
+        <div class="tree-item" style="--depth: 3">
+          <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+          routes
+          <span class="tree-comment"># Express API routing endpoints</span>
+        </div>
+
+        <div class="tree-item clickable" style="--depth: 3" v-if="form.communication === 'GraphQL'" @click="toggle('graphql_clean')">
+          <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.graphql_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           graphql
           <span class="tree-comment"># GraphQL schemas and resolvers</span>
         </div>
-
-        <div class="tree-item" style="--depth: 3" v-if="form.communication === 'REST APIs' || form.communication === 'Kafka'">
-          <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
-          routes
-          <span class="tree-comment"># Express API routing endpoints</span>
+        <div v-show="expanded.graphql_clean" v-if="form.communication === 'GraphQL'">
+          <div class="tree-item clickable" style="--depth: 4" @click="toggle('resolvers_clean')">
+             <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.resolvers_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+             <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+             resolvers
+          </div>
+          <div v-show="expanded.resolvers_clean">
+            <div class="tree-item" style="--depth: 5">
+               <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+               user.resolvers.{{ ext }}
+            </div>
+            <div class="tree-item" style="--depth: 5">
+               <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+               index.{{ ext }}
+            </div>
+          </div>
+          <div class="tree-item clickable" style="--depth: 4" @click="toggle('typeDefs_clean')">
+             <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.typeDefs_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+             <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+             typeDefs
+          </div>
+          <div v-show="expanded.typeDefs_clean">
+            <div class="tree-item" style="--depth: 5">
+               <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+               user.types.{{ ext }}
+            </div>
+            <div class="tree-item" style="--depth: 5">
+               <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+               index.{{ ext }}
+            </div>
+          </div>
+          <div class="tree-item" style="--depth: 4">
+            <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            context.{{ ext }}
+          </div>
+          <div class="tree-item" style="--depth: 4">
+            <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            index.{{ ext }}
+          </div>
         </div>
         
         <!-- Messaging Shared Area -->
@@ -356,6 +510,10 @@
               <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
               consumers
             </div>
+            <div class="tree-item" style="--depth: 4">
+              <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              baseConsumer.{{ ext }}
+            </div>
           </div>
         </template>
 
@@ -363,13 +521,28 @@
         <div class="tree-item" style="--depth: 2">
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           usecases
-          <span class="tree-comment">Logic orchestration</span>
+          <span class="tree-comment"># Application business rules & use cases</span>
         </div>
         
-        <div class="tree-item" style="--depth: 2">
+        <div class="tree-item clickable" style="--depth: 2" v-if="form.language === 'TypeScript'" @click="toggle('config_root_clean')">
+          <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.config_root_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           config
-          <span class="tree-comment"># System-wide configurations (DB, Cache, Swagger)</span>
+          <span class="tree-comment"># System-wide configurations</span>
+        </div>
+        <div v-show="expanded.config_root_clean" v-if="form.language === 'TypeScript'">
+          <div class="tree-item" style="--depth: 3">
+            <svg class="tree-item-icon icon-file-ts" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            env.ts
+          </div>
+          <div class="tree-item" style="--depth: 3" v-if="form.communication === 'REST APIs' || form.communication === 'Kafka'">
+            <svg class="tree-item-icon icon-file-ts" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            swagger.ts
+          </div>
+          <div class="tree-item" style="--depth: 3" v-if="form.communication === 'REST APIs' || form.communication === 'Kafka'">
+            <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            swagger.yml
+          </div>
         </div>
       </template>
 
@@ -383,7 +556,23 @@
       <div v-show="expanded.utils">
       <div class="tree-item" style="--depth: 3">
         <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-        errorMiddleware.{{ ext }}
+        errorMessages.{{ ext }}
+      </div>
+      <div class="tree-item" style="--depth: 3">
+        <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+        httpCodes.{{ ext }}
+      </div>
+      <div class="tree-item" style="--depth: 3" v-if="form.communication === 'Kafka'">
+        <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+        kafkaEvents.{{ ext }}
+      </div>
+      <div class="tree-item" style="--depth: 3" v-if="form.architecture === 'MVC'">
+        <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+        logger.{{ ext }}
+      </div>
+      <div class="tree-item" style="--depth: 3" v-if="form.language === 'TypeScript'">
+        <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+        errorMiddleware.ts
         <span class="tree-comment"># Global error handling (Architect standard)</span>
       </div>
       <div class="tree-item" style="--depth: 3">
@@ -558,11 +747,26 @@ const expanded = reactive({
   workflows: false,
   utils: false,
   errors: false,
-  caching_clean: true,
   config_clean: true,
+  webserver_clean: true,
+  middleware_clean: true,
+  log_clean: true,
+  config_root_clean: true,
   database_clean: true,
   messaging: true,
-  messaging_clean: true
+  messaging_clean: true,
+  usecases: true,
+  flyway_sql: true,
+  graphql_mvc: true,
+  resolvers_mvc: true,
+  typeDefs_mvc: true,
+  graphql_clean: true,
+  resolvers_clean: true,
+  typeDefs_clean: true,
+  services: true,
+  unit_tests: true,
+  services_test: true,
+  repositories_clean: true
 });
 
 const toggle = (folder) => {

@@ -284,3 +284,97 @@ select.form-control {
 .btn-secondary:hover {
   background: var(--vp-c-bg-mute);
 }
+
+.footer-badges {
+  display: flex !important;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+  opacity: 0.7;
+  filter: grayscale(1);
+}
+
+/* GitHub Star Nudge - Professional Refinement */
+.github-star-link {
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background-color: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 20px; /* Pill shape for premium feel */
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--vp-c-text-2) !important;
+  text-decoration: none !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.github-star-link:hover {
+  background-color: var(--vp-c-bg-mute);
+  border-color: var(--vp-c-yellow-dimm-1, #facc15);
+  color: var(--vp-c-text-1) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.star-icon {
+  color: #facc15;
+  filter: drop-shadow(0 0 3px rgba(250, 204, 21, 0.4));
+}
+
+/* Modal Info Prompt - Muted & Minimal */
+.star-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 10px 14px;
+  background-color: var(--vp-c-bg-alt);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--vp-c-text-2);
+}
+
+.star-link-text {
+  font-weight: 600;
+  color: var(--vp-c-brand-1) !important;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.star-link-text:hover {
+  border-bottom-color: var(--vp-c-brand-1);
+}
+
+.star-icon-modal {
+  color: #facc15;
+  opacity: 0.8;
+  animation: star-pulse 2.5s infinite ease-in-out;
+}
+
+@keyframes star-pulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.15); filter: brightness(1.2); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* Modal Professional Fade-In */
+.modal-content {
+  animation: modal-appear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modal-appear {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Copy Button Success State - Pro Feedback */
+.btn-primary:active {
+  transform: scale(0.98);
+  transition: transform 0.1s;
+}

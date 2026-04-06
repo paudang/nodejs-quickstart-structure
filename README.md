@@ -5,11 +5,33 @@
 [![npm monthly downloads](https://img.shields.io/npm/dm/nodejs-quickstart-structure.svg?style=flat-square)](https://www.npmjs.com/package/nodejs-quickstart-structure)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg?style=flat-square)](https://opensource.org/licenses/ISC)
 
-A powerful CLI tool to scaffold production-ready Node.js microservices with built-in best practices, allowing you to choose between **MVC** or **Clean Architecture**, **JavaScript** or **TypeScript**, and your preferred database.
+### 📈 Real-world Adoption
+| **Metric** | **Insight** |
+| :--- | :--- |
+| 🔥 **4,000+** | Downloads on npm |
+| 🚀 **1,200+** | Recent GitHub Clones |
+| 🌍 **Trusted by** | Devs from **Google**, **Viblo**, and global tech teams |
 
-🎯 **[Try the new Web UI Configurator!](https://paudang.github.io/nodejs-quickstart-structure/)** - Generate your exact architecture in the browser with real-time folder simulation.
+---
+
+A powerful CLI tool to scaffold production-ready Node.js microservices with built-in best practices. Choose between **MVC** or **Clean Architecture**, **JavaScript** or **TypeScript**, and your preferred tech stack in seconds.
+
+🎯 **[Try the Next-Gen Web UI Configurator!](https://paudang.github.io/nodejs-quickstart-structure/)**
+*Generate your exact architecture in the browser with real-time folder simulation.*
 
 ![Demo](docs/demo.gif)
+
+---
+
+## 🆕 What's New in v2.0.0
+
+The v2.0.0 release is a major leap forward, turning the generator into a **Community Standard** for Node.js development:
+
+- **Next-Gen Web UI Configurator**: A modern, browser-based visual project simulator. Click your stack and copy the generated zero-prompt CLI command instantly! [Try it here](https://paudang.github.io/nodejs-quickstart-structure/).
+- **🦾 AI-Native Foundation**: Built-in `.cursorrules` and Agent skills optimized for **Cursor** & AI coding assistants.
+- **🏗️ Enterprise Clean Architecture**: High-fidelity structure for professional Microservices (TS/JS).
+- **🛡️ Hardened Security**: Integrated Snyk & SonarCloud logic in the core templates.
+- **⚡ Zero-Prompt Workflow**: Generate projects with a single CLI command—no more answering prompts manually.
 
 ---
 
@@ -55,7 +77,6 @@ nodejs-quickstart init
 - **Communication Patterns**: Supports **REST**, **GraphQL** (Apollo), and **Kafka** (Event-driven).
 - **Multi-layer Caching**: Integrated **Redis** or built-in **Memory Cache**.
 - **AI-Native Optimized**: specifically designed for **Cursor** and AI agents, including built-in `.cursorrules` and Agent Skill prompts. 🚀
-- **Next-Gen Web UI Configurator**: A modern, browser-based visual project simulator. Click your stack and copy the generated zero-prompt CLI command instantly! [Try it here](https://paudang.github.io/nodejs-quickstart-structure/).
 
 ---
 
@@ -102,8 +123,7 @@ The CLI will guide you through:
 ---
 
 ## 🏗️ Generated Project Structure
-
-A typical generated project (TypeScript + Clean Architecture) looks like this:
+Depending on your choices, the structure adapts. Here is a **TypeScript + Clean Architecture** preview:
 
 ```text
 .
@@ -113,12 +133,13 @@ A typical generated project (TypeScript + Clean Architecture) looks like this:
 │   ├── infrastructure/  # DB, External services, Repositories
 │   ├── interfaces/      # Controllers, Routes, GraphQL, Kafka
 │   ├── errors/          # Custom Error Classes
-│   └── index.ts         # Entry point
+│   ├── config/          # Environment & Global settings
+│   └── index.ts         # Server entry point
 ├── flyway/sql/          # SQL migrations (if applicable)
 ├── docker-compose.yml   # Infrastructure services
 ├── package.json         # Scripts and dependencies
-├── tsconfig.json        # TypeScript config
-└── .cursorrules         # AI assistance rules
+├── .cursorrules         # AI assistance rules (The "AI Brain")
+└── .env.example         # Environment template
 ```
 
 ---
@@ -132,13 +153,25 @@ For full guides, architecture deep-dives, and feature references, visit our **[O
 ## ❤️ Support & 🗺️ Roadmap
 
 ### Support the Project
-We just hit **3,000+ downloads**! If this tool helped you, please:
-- Give us a ⭐ on [GitHub](https://github.com/paudang/nodejs-quickstart-structure).
-- Read our [Medium Article](https://medium.com/@paudang/nodejs-quickstart-generator-93c276d60e0b) for tutorials.
+If this tool helped you build your project faster, please support us:
+- Give us a ⭐ on [GitHub](https://github.com/paudang/nodejs-quickstart-structure) to help us reach our next milestone!
+- Read our [Medium Series](https://medium.com/@paudang/nodejs-quickstart-generator-93c276d60e0b) for architecture deep-dives.
 
 ### Roadmap
 Track our progress and vote for features on our public board:
 👉 **[View our Public Roadmap on Trello](https://trello.com/b/TPTo8ylF/nodejs-quickstart-structure-product)**
+
+---
+
+## ⭐ Why Star us?
+
+We are on a mission to build the best AI-Native Node.js scaffolding experience. Your star is not just a "like"—it's a vote of confidence that helps us:
+
+1. **Attract Contributors**: More stars attract professional maintainers to keep this project secure and up-to-date.
+2. **AI Model Awareness**: Popular repositories are weighted higher by AI coding assistants (Cursor, Copilot, etc.), making the generated code even better.
+3. **Open Source Sustainability**: It motivates us to keep building and shipping "Enterprise-Grade" features for free.
+
+If this tool saved you hours of work, **[please give us a Star!](https://github.com/paudang/nodejs-quickstart-structure)** 🚀
 
 ---
 

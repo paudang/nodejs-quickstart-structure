@@ -55,10 +55,10 @@ LANGUAGES.forEach(lang => {
 
 async function runCommand(command, cwd) {
     return new Promise((resolve, reject) => {
-         // Using inherit to let users see error stack traces if one of the 1680 fails to compile
-        const child = spawn(command, { 
-            cwd, 
-            stdio: 'ignore', 
+        // Using inherit to let users see error stack traces if one of the 1680 fails to compile
+        const child = spawn(command, {
+            cwd,
+            stdio: 'inherit',
             shell: true
         });
 
@@ -93,7 +93,7 @@ async function runTest(config, index) {
 
     try {
         await fs.ensureDir(testDir);
-        
+
         const cliPath = path.resolve(__dirname, '../bin/index.js');
         const args = [
             'init',
@@ -107,39 +107,39 @@ async function runTest(config, index) {
         ];
 
         if (config.ciProvider !== 'None') {
-             if (config.includeSecurity) args.push('--include-security');
-             else args.push('--no-include-security');
+            if (config.includeSecurity) args.push('--include-security');
+            else args.push('--no-include-security');
         }
 
         args.push('--caching', `"${config.caching}"`);
 
         if (config.architecture === 'MVC') {
-             args.push('--view-engine', config.viewEngine);
+            args.push('--view-engine', config.viewEngine);
         }
 
         const command = `node ${cliPath} ${args.join(' ')}`;
         await runCommand(command, testDir);
-        
+
         return { success: true };
     } catch (err) {
         return { success: false, error: err.message, cmd: config };
     } finally {
-        try { await fs.remove(projectPath); } catch(e){}
+        try { await fs.remove(projectPath); } catch (e) { }
     }
 }
 
 async function start() {
     console.log(`${ANSI_CYAN}>>> Preparing Exhaustive Matrix Verification for ${combinations.length} combinations...${ANSI_RESET}`);
     await fs.remove(path.resolve(__dirname, '../temp_1680_workspace'));
-    
+
     // 50 concurrency for generating IO file chunks locally without dragging the system down.
-    const concurrency = parseInt(process.argv[2] || "50");
+    const concurrency = parseInt(process.argv[2] || "5");
     const limit = pLimit(concurrency);
-    
+
     let passed = 0;
     let failed = 0;
     const failures = [];
-    
+
     const startTime = Date.now();
 
     const testPromises = combinations.map((config, i) => {
@@ -148,7 +148,7 @@ async function start() {
             if (result.success) {
                 passed++;
                 if (passed % 100 === 0) {
-                     console.log(`[${passed}/${combinations.length}] Scaffold combinations generated successfully...`);
+                    console.log(`[${passed}/${combinations.length}] Scaffold combinations generated successfully...`);
                 }
             } else {
                 failed++;
@@ -161,12 +161,12 @@ async function start() {
     await Promise.all(testPromises);
 
     const timeTaken = ((Date.now() - startTime) / 1000).toFixed(1);
-    
+
     console.log(`\n${ANSI_CYAN}=== 1,680 Validation Summary ===${ANSI_RESET}`);
     console.log(`Execution Time: ${timeTaken}s`);
     console.log(`Total Variants Tested: ${passed + failed}`);
     console.log(`${ANSI_GREEN}Passed (Zero Templates Errors): ${passed}${ANSI_RESET}`);
-    
+
     if (failed > 0) {
         console.log(`${ANSI_RED}Failed Template Triggers: ${failed}${ANSI_RESET}`);
         fs.writeFileSync('1680_failures.log', JSON.stringify(failures, null, 2));
@@ -175,7 +175,7 @@ async function start() {
     } else {
         console.log(`${ANSI_GREEN}✓ SUCCESS! All 1,680 UI-mapped combinations cleanly render templates!${ANSI_RESET}`);
     }
-    
+
     await fs.remove(path.resolve(__dirname, '../temp_1680_workspace'));
 }
 
