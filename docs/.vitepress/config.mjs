@@ -42,6 +42,14 @@ export default defineConfig({
         ]
       },
       {
+        text: 'Project Blueprints',
+        items: [
+          { text: 'Local Development', link: '/blueprints/local-dev' },
+          { text: 'Docker & PM2 Deployment', link: '/blueprints/docker-pm2' },
+          { text: 'Testing & API Guide', link: '/blueprints/testing-api' },
+        ]
+      },
+      {
         text: 'Architecture',
         items: [
           { text: 'MVC Pattern', link: '/architecture/mvc' },
