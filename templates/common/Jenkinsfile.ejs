@@ -21,7 +21,7 @@ pipeline {
 
         stage('Unit Test') {
             steps {
-                sh 'npm run test:coverage'
+                sh 'npm run test:coverage -- --maxWorkers=2'
             }
         }
 

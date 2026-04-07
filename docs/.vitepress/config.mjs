@@ -47,6 +47,7 @@ export default defineConfig({
           { text: 'Local Development', link: '/blueprints/local-dev' },
           { text: 'Docker & PM2 Deployment', link: '/blueprints/docker-pm2' },
           { text: 'Testing & API Guide', link: '/blueprints/testing-api' },
+          { text: 'CI/CD Setup Guide', link: '/blueprints/ci-cd-setup' },
         ]
       },
       {

@@ -14,7 +14,7 @@ hero:
       link: /guide/getting-started
 
 features:
-  - title: 1,680+ Combinations
+  - title: 2,640+ Combinations
     details: Choose your language (TS/JS), architecture (MVC/Clean), communication (REST/GraphQL/Kafka), and CI/CD/Security scenarios.
   - title: AI-Native Ready
     details: Pre-configured .cursorrules and Agent Skill prompts to boost your productivity with AI tools.

@@ -40,7 +40,7 @@ The v2.0.0 release is a major leap forward, turning the generator into a **Commu
 - [🚀 Quick Start](#-quick-start)
 - [✨ Key Features](#-key-features)
 - [🛡️ Professional Standards](#-professional-standards)
-- [🧩 1,680+ Project Combinations](#-1680-project-combinations)
+- [🧩 2,640+ Project Combinations](#-2640-project-combinations)
 - [⚙️ Configuration Options](#-configuration-options)
 - [🏗️ Generated Project Structure](#-generated-project-structure)
 - [📖 Documentation](#-documentation)
@@ -88,19 +88,19 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 - **🛡️ Enterprise Security**: Integrated **Snyk (SCA)**, **SonarCloud (SAST)**, `Helmet`, `HPP`, and Rate-Limiting.
 - **🚨 Robust Error Handling**: Centralized global error middleware with custom error classes (`ApiError`, `NotFoundError`, etc.) — consistent across REST & GraphQL.
 - **🧪 Testing Excellence**: Integrated `Jest` and `Supertest` with **>80% Unit Test coverage** out of the box.
-- **🔄 DevOps & CI/CD**: Optimized **Multi-Stage Dockerfiles**, health checks, infrastructure retry logic, and workflows for **GitHub Actions**, **Jenkins**, and **GitLab CI**.
+- **🔄 DevOps & CI/CD**: Optimized **Multi-Stage Dockerfiles**, health checks, infrastructure retry logic, and workflows for **GitHub Actions**, **Jenkins**, **GitLab CI**, **CircleCI**, and **Bitbucket Pipelines**.
 - **🚀 Scalable Deployment**: Integrated **PM2 Ecosystem** config for zero-downtime reloads.
 
 ---
 
-## 🧩 1,680+ Project Combinations
+## 🧩 2,640+ Project Combinations
 
 The CLI supports a massive number of configurations to fit your exact needs:
 
 - **240 Core Combinations**:
   - **MVC Architecture**: 180 variants (Languages × View Engines × Databases × Communication Patterns × Caching)
   - **Clean Architecture**: 60 variants (Languages × Databases × Communication Patterns × Caching)
-- **1,680+ Total Scenarios**:
+- **2,640+ Total Scenarios**:
   - Every combination can be generated across 3 CI/CD providers.
   - Optional **Enterprise-Grade Security Hardening** doubles the scenarios.
   - Every single scenario is verified to be compatible with our **80% Coverage Threshold** policy.
@@ -117,7 +117,7 @@ The CLI will guide you through:
 5. **Database**: `MySQL` | `PostgreSQL` | `MongoDB`
 6. **Communication**: `REST` | `GraphQL` | `Kafka`
 7. **Caching**: `None` | `Redis` | `Memory Cache`
-8. **CI/CD**: `GitHub Actions` | `Jenkins` | `GitLab CI`
+8. **CI/CD**: `GitHub Actions` | `Jenkins` | `GitLab CI` | `CircleCI` | `Bitbucket Pipelines`
 9. **Security**: (Optional) Snyk & SonarCloud Hardening
 
 ---

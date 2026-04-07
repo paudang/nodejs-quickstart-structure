@@ -1,0 +1,60 @@
+image: node:22-slim
+
+pipelines:
+  default:
+    - step:
+        name: Install Dependencies
+        caches:
+          - node
+        script:
+          - npm ci
+    - parallel:
+        - step:
+            name: Lint Code
+            script:
+              - npm ci
+              - npm run lint
+        - step:
+            name: Run Unit Tests
+            script:
+              - npm ci
+              - npm run test:coverage -- --maxWorkers=2
+    - step:
+        name: Run E2E Tests
+        image: docker:20.10.16
+        services:
+          - docker
+        script:
+          - apk add --no-cache nodejs npm docker-compose
+          - npm ci
+          - export DOCKER_BUILDKIT=0
+          - npm run test:e2e
+<% if (includeSecurity) { %>
+    - parallel:
+        - step:
+            name: Snyk Security Scan
+            script:
+              - pipe: snyk/snyk-scan:1.0.0
+                variables:
+                  SNYK_TOKEN: $SNYK_TOKEN
+                  LANGUAGE: "npm"
+                  SEVERITY_THRESHOLD: "high"
+        - step:
+            name: SonarQube Analysis
+            script:
+              - pipe: sonarsource/sonarcloud-scan:2.0.0
+                variables:
+                  SONAR_TOKEN: $SONAR_TOKEN
+<% } %>
+    - step:
+        name: Build Application
+        script:
+          - npm ci
+          - npm run build --if-present
+
+definitions:
+  services:
+    docker:
+      memory: 2048
+  caches:
+    node: ~/.npm

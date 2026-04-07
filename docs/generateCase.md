@@ -3,17 +3,19 @@
 This document lists the **240 possible project combinations** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases, communication patterns, and caching options.
 
 ## Summary
-- **CI Providers**: `None`, `GitHub Actions`, `Jenkins`, `GitLab CI`
+- **CI Providers**: `None`, `GitHub Actions`, `Jenkins`, `GitLab CI`, `CircleCI`, `Bitbucket Pipelines`
 - **MVC Architecture**: 180 Combinations
-  - **With Database (108)**: 2 Lang × 3 View × 3 DB × 2 Comm = 36 * 3 (Caching: None/Redis/Memory Cache) = 108
-  - **No Database (12)**: 2 Lang × 3 View × 1 DB × 2 Comm = 12 * 1 (Caching: None) = 12
+  - **With Database (162)**: 2 Lang × 3 View × 3 DB × 3 Comm = 54 * 3 (Caching: None/Redis/Memory Cache) = 162
+  - **No Database (18)**: 2 Lang × 3 View × 1 DB × 3 Comm = 18 * 1 (Caching: None) = 18
 - **Clean Architecture**: 60 Combinations
-  - **With Database (36)**: 2 Lang × 1 View (None) × 3 DB × 2 Comm = 12 * 3 (Caching: None/Redis/Memory Cache) = 36
-  - **No Database (4)**: 2 Lang × 1 View (None) × 1 DB × 2 Comm = 4 * 1 (Caching: None) = 4
+  - **With Database (54)**: 2 Lang × 1 View (None) × 3 DB × 3 Comm = 18 * 3 (Caching: None/Redis/Memory Cache) = 54
+  - **No Database (6)**: 2 Lang × 1 View (None) × 1 DB × 3 Comm = 6 * 1 (Caching: None) = 6
 
-**Total Core Combinations: 240**
+**Total Core Combinations: 240 (240)**
 
-> **Note on CI/CD**: Each combination can be generated with or without CI/CD (`--ci-provider`), effectively doubling the state space.
+> **Note on CI/CD**: Each core combination can be generated with `None` (1 state) or any of the **5 CI Providers** in two states (with or without Enterprise Security Hardening).
+> 
+> **Total Validated Permutations**: 240 × (1 + 5 × 2) = **2,640 Cases**
 
 ---
 

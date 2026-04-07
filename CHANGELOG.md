@@ -1,5 +1,17 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2026-04-07
+
+### Added
+- **Universal CI/CD Support (Phase 8)**: Expanded the generator's CI/CD capabilities to include out-of-the-box support for **Bitbucket Pipelines** and **CircleCI**.
+- **Modernized Pipe & Orb Integration**: 
+  - Bitbucket templates now utilize official Atlassian Pipes for automated Snyk security scans and SonarCloud analysis.
+  - CircleCI configurations (v2.1) are optimized with official Orbs (`circleci/node`, `snyk/snyk`) for advanced dependency caching and security execution.
+- **Project Blueprints (CI/CD Guide)**: Launched a comprehensive "CI/CD Setup Guide" in the VitePress documentation, providing step-by-step configuration workflows for all 5 supported platforms (GitHub, GitLab, Jenkins, Bitbucket, CircleCI).
+- **CLI Ecosystem Sync**: Updated the interactive prompts and command-line flags to seamlessly integrate the new CI/CD choices while maintaining 100% backward compatibility.
+- **Enterprise Readness Documentation**: Updated the generated `README.md` templates to officially include Bitbucket and CircleCI in the supported feature set.
+
+
 ## [2.0.0] - 2026-04-02
 
 ### Added

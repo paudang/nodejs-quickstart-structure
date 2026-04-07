@@ -35,6 +35,20 @@
           </div>
         </div>
       </template>
+
+      <template v-if="form.ciProvider === 'CircleCI'">
+         <div class="tree-item clickable" style="--depth: 1" @click="toggle('circleci')">
+          <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.circleci }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+          .circleci
+        </div>
+        <div v-show="expanded.circleci">
+          <div class="tree-item" style="--depth: 2">
+            <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            config.yml
+          </div>
+        </div>
+      </template>
       
       <!-- Root Files -->
       <div class="tree-item clickable" style="--depth: 1" @click="toggle('husky')">
@@ -695,6 +709,13 @@
           .gitlab-ci.yml
         </div>
       </template>
+      
+      <template v-if="form.ciProvider === 'Bitbucket Pipelines'">
+        <div class="tree-item" style="--depth: 1">
+          <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+          bitbucket-pipelines.yml
+        </div>
+      </template>
 
       <template v-if="form.ciProvider === 'Jenkins'">
         <div class="tree-item" style="--depth: 1">
@@ -766,7 +787,8 @@ const expanded = reactive({
   services: true,
   unit_tests: true,
   services_test: true,
-  repositories_clean: true
+  repositories_clean: true,
+  circleci: true
 });
 
 const toggle = (folder) => {

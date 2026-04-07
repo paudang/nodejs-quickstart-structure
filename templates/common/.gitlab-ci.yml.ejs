@@ -30,7 +30,7 @@ run_unit_tests:
   stage: test
   image: node:22-slim
   script:
-    - npm run test:coverage
+    - npm run test:coverage -- --maxWorkers=2
 
 run_e2e_tests:
   stage: test
