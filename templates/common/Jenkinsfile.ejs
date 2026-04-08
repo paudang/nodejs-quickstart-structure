@@ -4,6 +4,7 @@ pipeline {
     environment {
         CI = 'true'
         DOCKER_BUILDKIT = '0'
+        WAIT_ON_HOST = 'host.docker.internal'
     }
 
     tools {

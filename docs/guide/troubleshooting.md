@@ -90,10 +90,14 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 - **Reason**: Your environment doesn't support BuildKit.
 - **Solution**: Set `DOCKER_BUILDKIT=0` in your environment (Jenkinsfile or bitbucket-pipelines.yml).
 
-### GitLab/Bitbucket: `Healthcheck Timeout`
+### GitLab/Jenkins: `Healthcheck Timeout`
 - **Error**: `Timed out waiting for: http://127.0.0.1:3001/health`
-- **Reason**: Shared runners are slow; Kafka/DB haven't finished booting.
-- **Solution**: Increase timeout to **300000ms (5 mins)** in `scripts/run-e2e.js`.
+- **Reason**: 
+    1. Shared runners are slow; Kafka/DB haven't finished booting.
+    2. **Networking Collision**: If Jenkins is running in a container, `127.0.0.1` refers to Jenkins itself, not your app.
+- **Solution**: 
+    1. Increase timeout to **300000ms (5 mins)** in `scripts/run-e2e.js`.
+    2. **Use Host Alias**: Set `WAIT_ON_HOST = 'host.docker.internal'` in your Pipeline environment (Jenkinsfile). This allows the container to talk back to your host ports.
 
 ### Skipping Expensive E2E Tests
 - **Problem**: E2E tests are taking too long or failing on slow CI runners.
