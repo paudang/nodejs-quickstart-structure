@@ -42,10 +42,16 @@ try {
         execute(`${composeCmd} up -d --build`);
         currentProcessStartedDocker = true;
 
-        console.log('Waiting for application healthcheck to turn green (120s timeout)...');
-        // Using wait-on to poll the universal /health endpoint injected into all architectures
-        execute(`npx wait-on http-get://127.0.0.1:${TEST_PORT}/health -t 120000`);
-        console.log('Infrastructure is healthy!');
+        console.log('Waiting for application healthcheck to turn green (300s timeout)...');
+        try {
+            // Using wait-on to poll the universal /health endpoint injected into all architectures
+            execute(`npx wait-on http-get://127.0.0.1:${TEST_PORT}/health -t 300000`);
+            console.log('Infrastructure is healthy!');
+        } catch (e) {
+            console.error('Healthcheck timed out! Printing infrastructure logs for debugging:');
+            execute(`${composeCmd} logs`);
+            throw e;
+        }
     }
 
     console.log('Running E2E tests...');

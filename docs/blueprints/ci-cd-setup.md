@@ -51,25 +51,68 @@ GitLab CI uses a single `.gitlab-ci.yml` file to manage the pipeline lifecycle.
 
 ---
 
-## 3. Jenkins 👷
+## 3. Jenkins 🏗️
 
-Jenkins is the enterprise standard for self-hosted CI/CD automation.
+Jenkins is a self-hosted automation server. For Node.js projects, we recommend running Jenkins in a Docker container for a predictable build environment.
 
 ### Step-by-Step Configuration:
-1.  **Create Pipeline**: Open Jenkins dashboard and click **New Item**.
-2.  **Enter Name**: Enter a name (e.g., `my-node-app`) and select **Pipeline**, then click **OK**.
-3.  **Pipeline Definition**:
-    -   Scroll to the **Pipeline** section.
-    -   Select **Pipeline script from SCM** in the Definition dropdown.
-    -   Set SCM to **Git** and provide your repository URL.
-    -   Ensure the branch name matches (e.g., `*/main`).
-    -   The Script Path should be set to `Jenkinsfile`.
-4.  **Credentials**:
-    -   Go to **Dashboard > Manage Jenkins > Credentials**.
-    -   Add `snyk-token` and `sonar-token` as **Secret text** credentials.
-5.  **Prerequisites**:
-    -   Install the **NodeJS Plugin**.
-    -   Go to **Global Tool Configuration** and add a NodeJS installation named `nodejs` (Version 22.x recommended).
+
+#### 1. Setup Jenkins with Docker (Recommended)
+To build Docker images inside Jenkins, use a custom image with the Docker CLI installed:
+
+```bash
+# Dockerfile.jenkins
+FROM jenkins/jenkins:lts
+USER root
+
+# Install Docker CLI and curl
+RUN apt-get update && apt-get install -y docker.io curl
+
+# Download the latest Docker Compose binary directly
+RUN curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && \
+    chmod +x /usr/local/bin/docker-compose
+
+# Ensure jenkins user can access the docker socket
+RUN usermod -aG docker jenkins
+
+USER jenkins
+```
+
+Run the container mounting the host Docker socket (Note the `--user root` to avoid socket permission issues):
+```bash
+docker run -d -p 8080:8080 -p 50000:50000 \
+  --name jenkins \
+  --user root \
+  -v jenkins_home:/var/jenkins_home \
+  -v //var/run/docker.sock:/var/run/docker.sock \
+  my-jenkins-with-docker
+```
+
+#### 2. Install Required Plugins
+Go to **Manage Jenkins > Plugins** and install:
+-   **NodeJS**: For `npm` support.
+-   **GitHub Integration**: For GitHub App connectivity.
+-   **Pipeline**: To read the `Jenkinsfile`.
+
+::: tip NEED HELP?
+If you encounter errors like `Invalid tool type "nodejs"` or `npm not found`, see our **[Jenkins Troubleshooting FAQ](../guide/troubleshooting#jenkins-invalid-tool-type-nodejs)** for the fix.
+:::
+
+#### 3. Configure Credentials (GitHub App)
+For the most secure connection, create a **GitHub App** in your GitHub settings:
+1.  **Permissions**: Repository > Contents (R/W), Metadata (R), Commit statuses (R/W).
+2.  **App ID & Key**: Copy the App ID and download the `.pem` Private Key.
+3.  **Jenkins Credential**: Add a new credential of type **"GitHub App"**. Paste the ID and Key.
+
+#### 4. Create the Pipeline
+1.  **New Item**: Select **Pipeline**, name it after your project.
+2.  **Pipeline Section**: Select **Pipeline script from SCM**.
+3.  **SCM**: Select **Git**, enter your repo URL (e.g., `https://github.com/paudang/nodejs-jenkins.git`), and select the credential created above.
+4.  **Branch**: Usually `*/main`.
+5.  **Lightweight Checkout**: **Uncheck** the "Lightweight checkout" box to prevent "not in a git directory" errors.
+
+#### 5. Monitoring
+View the **Console Output** for each build stage defined in your project's `Jenkinsfile`.
 
 ---
 
@@ -113,13 +156,17 @@ Bitbucket Pipelines is built directly into the Bitbucket cloud experience.
 | **Free Tier** | 2,000 mins/mo | 400 mins/mo | Unlimited (Self) | 2,500 mins/mo | **50 mins/mo** |
 | **Executor** | GitHub Runners | Shared/Specific | Master/Agents | Docker/Machine | Pipelines Runner |
 
-::: warning BITBUCKET LIMITS
-Bitbucket's free tier is significantly more restrictive (only **50 minutes** per month). For projects with heavy E2E tests, Kafka, or Databases, we strongly recommend using **CircleCI** or **GitHub Actions**.
-:::
+---
 
-::: info TROUBLESHOOTING
-If your pipeline fails at the **Security Scan** or **Static Analysis** step:
-1.  Verify that your tokens haven't expired.
-2.  Check that the names (`SNYK_TOKEN`, `SONAR_TOKEN`) match EXACTLY in the platform settings.
-3.  Ensure the tokens have sufficient permissions (Write/Admin if required for scanning).
-:::
+## 🛠️ Still Having Issues?
+
+CI/CD environments are complex and often vary by project. We have compiled a central **[Troubleshooting & FAQ Guide](../guide/troubleshooting)** to help you solve common errors, including:
+
+-   **Kafka & Database** connection timeouts in GitLab/Bitbucket.
+-   **Jenkins** tool configuration and plugin errors.
+-   **Security Scan** (`SNYK_TOKEN`) authorization failures.
+-   **Memory & Resource** (OOM/SIGKILL) limits on shared runners.
+
+> [!TIP]
+> Always check your **Pipeline Logs** first! If you see a timeout, the generated scripts will usually output the `docker-compose logs` to help you identify the root cause.
+
