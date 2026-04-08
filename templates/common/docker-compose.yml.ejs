@@ -122,10 +122,12 @@ services:
       FLYWAY_URL: jdbc:mysql://db:3306/<%= dbName %>
       FLYWAY_USER: root
       FLYWAY_PASSWORD: root
+      FLYWAY_BASELINE_ON_MIGRATE: "true"
 <%_ } -%><%_ if (database === 'PostgreSQL') { -%>
       FLYWAY_URL: jdbc:postgresql://db:5432/<%= dbName %>
       FLYWAY_USER: postgres
       FLYWAY_PASSWORD: root
+      FLYWAY_BASELINE_ON_MIGRATE: "true"
 <%_ } -%>
     depends_on:
       - db

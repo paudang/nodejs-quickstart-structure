@@ -102,6 +102,14 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
         - **GitLab CI**: Set `WAIT_ON_HOST = 'docker'` and `TEST_URL = 'http://docker:3001'` in your `.gitlab-ci.yml` variables.
         - This allows the CI build container to "reach out" to your application container!
 
+### Flyway & Database Migration Errors
+- **Problem**: Infrastructure is healthy, but the app fails to start its web server.
+- **Reason**: The application waits for the Database to be ready and for Flyway migrations to complete before opening its port.
+- **Common Fixes**:
+    - **Slow DB Boot**: On some environments, MySQL/Postgres takes >60s to start. Our scripts automatically wait, but you may need to check `docker compose logs` to see if the DB is still initializing.
+    - **Migration Failure**: Check logs for `Migration failed` or `Access denied`. This usually means the `.env` credentials don't match the `docker-compose.yml` environment variables.
+    - **Wait-for-it**: Ensure your `Dockerfile` or `entrypoint` correctly uses the `wait-for-it.sh` script to block the app until the DB port is open.
+
 ### Skipping Expensive E2E Tests
 - **Problem**: E2E tests are taking too long or failing on slow CI runners.
 - **Solution**: You can temporarily disable the E2E stage:
