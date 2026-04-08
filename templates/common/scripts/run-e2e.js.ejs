@@ -12,7 +12,11 @@ const execute = (command) => {
   execSync(command, { 
     stdio: 'inherit', 
     cwd: path.resolve(__dirname, '../'),
-    env: { ...process.env, PORT: TEST_PORT }
+    env: { 
+      ...process.env, 
+      PORT: TEST_PORT,
+      DB_PORT: process.env.DB_PORT || '3306'
+    }
   });
 };
 
