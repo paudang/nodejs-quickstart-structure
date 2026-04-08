@@ -5,6 +5,7 @@ pipeline {
         CI = 'true'
         DOCKER_BUILDKIT = '0'
         WAIT_ON_HOST = 'host.docker.internal'
+        TEST_URL = 'http://host.docker.internal:3001'
     }
 
     tools {
