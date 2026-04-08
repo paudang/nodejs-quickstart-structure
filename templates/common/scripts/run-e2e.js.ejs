@@ -3,13 +3,17 @@ const { execSync } = require('child_process');
 const path = require('path');
 
 // Set a specific port for E2E tests to avoid collisions with local development
-const TEST_PORT = process.env.PORT || '3001';
+const TEST_PORT = <% if (database === 'MySQL') { %>process.env.PORT || '3001'<% } else { %>process.env.PORT || '3001'<% } %>;
 const WAIT_ON_HOST = process.env.WAIT_ON_HOST || '127.0.0.1';
 
 const execute = (command) => {
-    console.log(`\n> ${command}`);
-    // Run commands from the project root instead of the scripts folder
-    execSync(command, { stdio: 'inherit', cwd: path.resolve(__dirname, '../') });
+  console.log(`\n> ${command}`);
+  // Run commands from the project root instead of the scripts folder
+  execSync(command, { 
+    stdio: 'inherit', 
+    cwd: path.resolve(__dirname, '../'),
+    env: { ...process.env, PORT: TEST_PORT }
+  });
 };
 
 let composeCmd = 'docker-compose';
