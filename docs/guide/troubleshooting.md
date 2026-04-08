@@ -97,7 +97,10 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
     2. **Networking Collision**: If Jenkins is running in a container, `127.0.0.1` refers to Jenkins itself, not your app.
 - **Solution**: 
     1. Increase timeout to **300000ms (5 mins)** in `scripts/run-e2e.js`.
-    2. **Use Host Alias**: Set `WAIT_ON_HOST = 'host.docker.internal'` in your Pipeline environment (Jenkinsfile). This allows the container to talk back to your host ports.
+    2. **Use Host Alias**:
+        - **Jenkins/Local**: Set `WAIT_ON_HOST = 'host.docker.internal'` and `TEST_URL = 'http://host.docker.internal:3001'`.
+        - **GitLab CI**: Set `WAIT_ON_HOST = 'docker'` and `TEST_URL = 'http://docker:3001'` in your `.gitlab-ci.yml` variables.
+        - This allows the CI build container to "reach out" to your application container!
 
 ### Skipping Expensive E2E Tests
 - **Problem**: E2E tests are taking too long or failing on slow CI runners.
