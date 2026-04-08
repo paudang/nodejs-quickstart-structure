@@ -95,6 +95,14 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 - **Reason**: Shared runners are slow; Kafka/DB haven't finished booting.
 - **Solution**: Increase timeout to **300000ms (5 mins)** in `scripts/run-e2e.js`.
 
+### Skipping Expensive E2E Tests
+- **Problem**: E2E tests are taking too long or failing on slow CI runners.
+- **Solution**: You can temporarily disable the E2E stage:
+    - **Jenkins**: Comment out the `stage('E2E Test')` block in your `Jenkinsfile`.
+    - **GitHub Actions**: Add `if: false` to the `e2e-tests` job in `.github/workflows/ci.yml`.
+    - **GitLab CI**: Add `when: manual` to the `run_e2e_tests` job in `.gitlab-ci.yml`.
+    - **Bitbucket**: Comment out the `- step: name: Run E2E Tests` section in your pipeline YAML.
+
 ---
 
 ## 🛠️ Generator Issues
