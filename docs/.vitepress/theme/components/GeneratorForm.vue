@@ -84,6 +84,8 @@
           <option>GitHub Actions</option>
           <option>Jenkins</option>
           <option>GitLab CI</option>
+          <option>CircleCI</option>
+          <option>Bitbucket Pipelines</option>
         </select>
       </div>
     </div>

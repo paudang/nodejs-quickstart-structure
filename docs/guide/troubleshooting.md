@@ -1,145 +1,130 @@
-# Troubleshooting Guide
+# Troubleshooting & FAQ Guide
 
-This guide summarizes common issues you might encounter while using the **Node.js Quickstart Structure** generator and its enterprise security features.
+Welcome to the central troubleshooting hub! If you're seeing an error, check the categories below. Every entry follows the **Error → Reason → Solution** format for quick resolution.
 
 ---
 
 ## 💻 Environment & Setup
 
-### 1. `Command not found: nodejs-quickstart`
-**Reason**: The CLI is not installed globally or your PATH is not configured.
-**Solution**:
-- **Use npx (Recommended)**: Run without installation: `npx nodejs-quickstart-structure init`.
-- **Global Install**: `npm install -g nodejs-quickstart-structure`.
+### `nodejs-quickstart: command not found`
+- **Reason**: The CLI is not installed globally or your PATH is missing.
+- **Solution**: Use `npx nodejs-quickstart-structure init` (recommended) or install globally via `npm install -g nodejs-quickstart-structure`.
 
-### 2. `Invalid Node.js version`
-**Reason**: Your current Node.js version is below the requirement.
-**Solution**:
-- Ensure you are using **Node.js >= 18.x** (LTS versions are highly recommended).
-- Use `node -v` to check your version.
+### `Invalid Node.js version`
+- **Reason**: You are likely running a version below Node.js 18.x.
+- **Solution**: Upgrade your local Node.js environment. We recommend **Node.js LTS (v22.x)**.
 
-### 3. `Missing .env file`
-**Reason**: The generator creates a `.env.example`, but you need a local `.env`.
-**Solution**:
-- Copy the example file: `cp .env.example .env` (Linux/Mac) or `copy .env.example .env` (Windows).
-- Fill in your specific environment variables (DB credentials, API keys, etc.).
+### `EBUSY: resource busy or locked` (Windows)
+- **Reason**: A file is locked by another process (IDE, terminal, or Antivirus).
+- **Solution**: Close your IDE, restart your terminal as Administrator, and try the command again.
 
 ---
 
 ## 🛡️ Security & Quality (Snyk/Sonar)
 
-### 1. SonarCloud: `sonar.organization` is missing
-**Error**: `ERROR You must define the following mandatory properties for 'nodejs-service': sonar.organization`
-**Reason**: SonarCloud requires an organization key for all analysis.
-**Solution**: 
-- Ensure `sonar.organization=your-org-key` is present in your `sonar-project.properties`.
-- Check our [Enterprise Security Setup](./security-hardening) guide on how to find your key.
+### `403 Forbidden` or `Unauthorized` (Snyk)
+-   **Reason**: Missing or invalid `SNYK_TOKEN` in your environment.
+-   **Solution**: 
+    -   **Local Development**: If your local scan fails, you need to authenticate your machine:
+        ```bash
+        npx snyk auth
+        # This opens a browser window to log you in.
+        ```
+    -   **CI/CD**: Ensure the Secret in GitHub/GitLab is named exactly **`SNYK_TOKEN`**. Check your provider's "Repository Secrets" section.
 
-### 2. SonarCloud: `Could not find a default branch`
-**Error**: `ERROR Could not find a default branch for project with key 'nodejs-service'. Make sure project exists.`
-**Reason**: The project has not been created or imported in the SonarCloud UI yet.
-**Solution**: 
-- Log in to SonarCloud.
-- Click **"+"** -> **Analyze new project** and import your repository.
-- **Important**: Go to **Administration -> Analysis Method** and ensure "Automatic Analysis" is **OFF**, and "GitHub Actions" is selected.
-- Ensure the **Project Key** in SonarCloud (e.g., `org_repo-name`) matches the one in your `sonar-project.properties`.
+### `sonar.organization` is missing
+- **Reason**: SonarCloud requires an organization key in `sonar-project.properties`.
+- **Solution**: Find your Org Key in the SonarCloud UI and update the properties file.
 
-### 3. Snyk: `403 Forbidden` or `Unauthorized`
-**Error**: `Snyk test failed: 403` or `Authentication error (SNYK-0005)`
-**Reason**: Usually a missing or invalid `SNYK_TOKEN` in your environment, or you haven't authenticated the CLI locally.
-**Solution**: 
-- **CI/CD**: Ensure the secret in GitHub/GitLab is named exactly `SNYK_TOKEN`.
-- **Local Development**: If you see `SNYK-0005`, you need to authenticate your machine:
-  ```bash
-  npx snyk auth
-  # OR if snyk is installed globally:
-  snyk auth
-  ```
-- **Login**: This will open a browser window to log you in and sync your local CLI with your Snyk account.
+### `Could not find a default branch` (SonarCloud)
+-   **Error**: `ERROR Could not find a default branch for project...`
+-   **Reason**: The project hasn't been imported/created in the SonarCloud UI yet.
+-   **Solution**: 
+    1.  Log in to SonarCloud.
+    2.  Click **"+" -> Analyze new project** and import your repository.
+    3.  **Critical Step**: Go to **Administration -> Analysis Method** and ensure "Automatic Analysis" is **OFF**, and "GitHub Actions" (or your provider) is selected.
+    4.  Ensure the **Project Key** (e.g., `org_repo-name`) in the SonarCloud UI matches the one in your `sonar-project.properties`.
 
-### 3. Snyk: CLI Flag Conflicts
-**Error**: `Incompatible flags: --file and --all-projects cannot be used together`
-**Reason**: Snyk CLI has strict rules about flag combinations for container vs. dependency scans.
-**Solution**: 
-- Use the standard flags provided in our templates: `--file=Dockerfile --severity-threshold=high`. 
-- Avoid adding `--all-projects` to a container scan.
 ---
+
 ## 🐶 Husky & Git Hooks
 
-### 1. Pre-commit hooks not running
-**Reason**: Husky was not initialized, usually because `npm install` was run before `git init`.
-**Solution**:
-```bash
-git init
-npx husky install
-```
-
-### 2. `EBUSY: resource busy or locked` (Windows)
-**Reason**: Windows file system may lock `.husky` files while another process (like an IDE or antivirus) is accessing them.
-**Solution**:
-- Close your IDE and try again.
-- Run your terminal as Administrator.
-- If it persists, delete the `.husky/_` directory and run `npx husky install`.
+### Hooks not running after generation
+- **Reason**: `npm install` was run before `git init`.
+- **Solution**: Run `git init`, then `npx husky install`.
 
 ---
 
 ## 🐳 Docker & Infrastructure
 
-### 1. Docker Connection Error (Windows)
-**Error**: `open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.`
-**Reason**: Docker Desktop is not running, or the Docker Engine backend has crashed.
-**Solution**:
-- **Check Status**: Ensure the Docker Desktop icon in your system tray is **green**.
-- **Restart**: Right-click the Docker icon -> **Restart Docker**.
-- **WSL2**: If you are using WSL2, ensure it is updated: `wsl --update`.
-- **Expose Daemon**: In Docker Desktop Settings -> **General**, ensure "Expose daemon on tcp://localhost:2375 without TLS" is checked if your tools require it (though usually not for the named pipe).
+### `port is already allocated` (e.g., 9093)
+- **Reason**: Another container or local service is using the port.
+- **Solution**: Stop all containers with `docker compose down` or find the process using `lsof -i :9093` (Mac/Linux) or `netstat -ano | findstr :9093` (Windows).
 
-### 2. Kafka Port Conflict (`9093`)
-**Error**: `Bind for 0.0.0.0:9093 failed: port is already allocated`
-**Reason**: A previous Docker container or another service is already using port 9093.
-**Solution**:
-- **Windows**: Use `netstat` to find the process ID (PID):
-  ```powershell
-  # Find the process
-  netstat -ano | findstr :9093
-  # Kill the process:
-  taskkill /F /PID <PID>
-  ```
-- **Linux/Mac**:
-  ```bash
-  # Stop all containers
-  docker-compose down
-  # Or find the process
-  sudo lsof -i :9093
-  ```
+### `dial unix /var/run/docker.sock: no such file or directory`
+- **Reason**: The Docker socket is not mounted or the path is incorrect for your OS.
+- **Solution (Windows Git Bash)**: Use double slashes in your mount: `-v //var/run/docker.sock:/var/run/docker.sock`.
 
-### 2. Database Connection Timeout
-**Reason**: The application started before the database was ready.
-**Solution**:
-- Our templates include `wait-on` or `depends_on` logic. 
-- Try restarting only the app: `docker-compose restart app`.
+### `permission denied` (Docker API)
+- **Reason**: The user running the tool doesn't have permissions to the socket.
+- **Solution**: Run your CI container as `root` (e.g., `--user root` in docker run) or add the user to the `docker` group.
 
 ---
 
-## 🚀 Deployment (PM2)
+## 🚀 CI/CD & Automation
 
-### 1. `Error: spawn wmic ENOENT` (Windows)
-**Error**: `PM2 | Error caught while calling pidusage | Error: spawn wmic ENOENT`
-**Reason**: PM2 uses the `wmic` tool for process monitoring. Microsoft has deprecated `wmic`, and it is often missing from the PATH or disabled in recent Windows 10/11 updates.
-**Solution**:
-- **Check Path**: Ensure `C:\Windows\System32\wbem` is added to your **System Environment Variables (PATH)**.
-- **Enable Feature**: If it's missing, go to **Settings > Apps > Optional Features**, click "View features", search for **"WMI Commandline Utility"**, and install it.
-- **Restart**: Restart your terminal (and PM2) after making these changes.
+### Jenkins: `Invalid tool type "nodejs"`
+- **Reason**: The **NodeJS Plugin** is missing or Jenkins hasn't been restarted.
+- **Solution**: Install the plugin and visit `http://localhost:8080/restart`.
+
+### Jenkins: `Tool type "nodejs" does not have an install of "nodejs" configured`
+- **Reason**: The tool is not named `nodejs` in the settings.
+- **Solution**: Go to **Manage Jenkins > Tools**, Add NodeJS, and set the **Name** exactly to `nodejs`.
+
+### Jenkins: `fatal: not in a git directory` (Obtain Jenkinsfile)
+- **Reason**: "Lightweight checkout" is failing to pull the config.
+- **Solution**: Go to Pipeline **Configure**, and **UNCHECK** the "Lightweight checkout" box.
+
+### Jenkins/Bitbucket: `buildx 0.17.0 or later`
+- **Error**: `compose build requires buildx 0.17.0 or later`
+- **Reason**: Your environment doesn't support BuildKit.
+- **Solution**: Set `DOCKER_BUILDKIT=0` in your environment (Jenkinsfile or bitbucket-pipelines.yml).
+
+### GitLab/Jenkins: `Healthcheck Timeout`
+- **Error**: `Timed out waiting for: http://127.0.0.1:3001/health`
+- **Reason**: 
+    1. Shared runners are slow; Kafka/DB haven't finished booting.
+    2. **Networking Collision**: If Jenkins is running in a container, `127.0.0.1` refers to Jenkins itself, not your app.
+- **Solution**: 
+    1. Increase timeout to **300000ms (5 mins)** in `scripts/run-e2e.js`.
+    2. **Use Host Alias**:
+        - **Jenkins/Local**: Set `WAIT_ON_HOST = 'host.docker.internal'` and `TEST_URL = 'http://host.docker.internal:3001'`.
+        - **GitLab CI**: Set `WAIT_ON_HOST = 'docker'` and `TEST_URL = 'http://docker:3001'` in your `.gitlab-ci.yml` variables.
+        - This allows the CI build container to "reach out" to your application container!
+
+### Flyway & Database Migration Errors
+- **Problem**: Infrastructure is healthy, but the app fails to start its web server.
+- **Reason**: The application waits for the Database to be ready and for Flyway migrations to complete before opening its port.
+- **Common Fixes**:
+    - **Slow DB Boot**: On some environments, MySQL/Postgres takes >60s to start. Our scripts automatically wait, but you may need to check `docker compose logs` to see if the DB is still initializing.
+    - **Migration Failure**: Check logs for `Migration failed` or `Access denied`. This usually means the `.env` credentials don't match the `docker-compose.yml` environment variables.
+    - **Wait-for-it**: Ensure your `Dockerfile` or `entrypoint` correctly uses the `wait-for-it.sh` script to block the app until the DB port is open.
+
+### Skipping Expensive E2E Tests
+- **Problem**: E2E tests are taking too long or failing on slow CI runners.
+- **Solution**: You can temporarily disable the E2E stage:
+    - **Jenkins**: Comment out the `stage('E2E Test')` block in your `Jenkinsfile`.
+    - **GitHub Actions**: Add `if: false` to the `e2e-tests` job in `.github/workflows/ci.yml`.
+    - **GitLab CI**: Add `when: manual` to the `run_e2e_tests` job in `.gitlab-ci.yml`.
+    - **Bitbucket**: Comment out the `- step: name: Run E2E Tests` section in your pipeline YAML.
 
 ---
 
 ## 🛠️ Generator Issues
 
-### 1. Templates not rendering correctly
-**Reason**: Modifications to `.yml` files instead of `.yml.ejs` templates.
-**Solution**: 
-- Always edit the `.ejs` versions of configuration files in `templates/common`. 
-- Ensure you use `<% %>` tags for conditional logic.
+### Templates not rendering correctly
+- **Reason**: Editing `.yml` files instead of the `.yml.ejs` templates.
+- **Solution**: Always modify the files inside the `templates/` directory ending in `.ejs`.
 
 > [!TIP]
 > Found a new issue? Feel free to [Open an Issue](https://github.com/paudang/nodejs-quickstart-structure/issues) on GitHub!

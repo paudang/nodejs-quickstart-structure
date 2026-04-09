@@ -3,6 +3,15 @@ pipeline {
 
     environment {
         CI = 'true'
+        DOCKER_BUILDKIT = '0'
+        PORT = '3001'
+        DB_PORT = '3307'
+        WAIT_ON_HOST = 'host.docker.internal'
+        TEST_URL = 'http://host.docker.internal:3001'
+    }
+
+    tools {
+        nodejs 'nodejs'
     }
 
     stages {
@@ -21,7 +30,7 @@ pipeline {
 
         stage('Unit Test') {
             steps {
-                sh 'npm run test:coverage'
+                sh 'npm run test:coverage -- --maxWorkers=2'
             }
         }
 

@@ -1,0 +1,96 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.2.0
+<% if (includeSecurity) { %>
+  snyk: snyk/snyk@2.1.0
+<% } %>
+
+executors:
+  node-executor:
+    docker:
+      - image: cimg/node:22.0
+  machine-executor:
+    machine:
+      image: ubuntu-2204:current
+
+jobs:
+  lint:
+    executor: node-executor
+    steps:
+      - checkout
+      - node/install-packages
+      - run: npm run lint
+
+  unit_test:
+    executor: node-executor
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Run Unit Tests with Coverage
+          command: npm run test:coverage -- --maxWorkers=2
+
+  e2e_test:
+    executor: machine-executor
+    steps:
+      - checkout
+      - node/install:
+          node-version: '22.0'
+      - run: npm ci
+      - run: npm run test:e2e
+
+<% if (includeSecurity) { %>
+  security_scan:
+    executor: node-executor
+    steps:
+      - checkout
+      - node/install-packages
+      - snyk/scan:
+          fail-on-issues: true
+          severity-threshold: high
+
+  sonarqube_analysis:
+    executor: node-executor
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: SonarQube Analysis
+          command: |
+            # Assuming sonar-scanner is available or run via npx
+            npx sonar-scanner
+<% } %>
+
+  build:
+    executor: node-executor
+    steps:
+      - checkout
+      - node/install-packages
+      - run: npm run build --if-present
+
+workflows:
+  build_and_test:
+    jobs:
+      - lint
+      - unit_test:
+          requires:
+            - lint
+      - e2e_test:
+          requires:
+            - unit_test
+<% if (includeSecurity) { %>
+      - security_scan:
+          requires:
+            - unit_test
+      - sonarqube_analysis:
+          requires:
+            - unit_test
+<% } %>
+      - build:
+          requires:
+            - e2e_test
+<% if (includeSecurity) { %>
+            - security_scan
+            - sonarqube_analysis
+<% } %>

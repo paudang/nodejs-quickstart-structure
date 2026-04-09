@@ -1,5 +1,7 @@
 variables:
   NODE_ENV: 'test'
+  WAIT_ON_HOST: docker
+  TEST_URL: http://docker:3001
 
 stages:
   - lint
@@ -30,7 +32,7 @@ run_unit_tests:
   stage: test
   image: node:22-slim
   script:
-    - npm run test:coverage
+    - npm run test:coverage -- --maxWorkers=2
 
 run_e2e_tests:
   stage: test
