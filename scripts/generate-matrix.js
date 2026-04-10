@@ -11,6 +11,7 @@ const viewEngines = ['None', 'EJS', 'Pug'];
 const databases = ['MySQL', 'PostgreSQL', 'MongoDB', 'None'];
 const communications = ['REST APIs', 'GraphQL', 'Kafka'];
 const cachings = ['None', 'Redis', 'Memory Cache'];
+const auths = ['None', 'JWT'];
 
 let mvcCases = [];
 let cleanArchCases = [];
@@ -21,26 +22,32 @@ for (const lang of languages) {
     for (const view of viewEngines) {
         for (const db of databases) {
             for (const comm of communications) {
-                const applicableCachings = db !== 'None' ? cachings : ['None'];
-                for (const cache of applicableCachings) {
-                    mvcCases.push(`| ${counter++} | ${lang} | MVC | ${view} | ${db} | ${comm} | ${cache} |`);
+                for (const auth of auths) {
+                    const applicableCachings = db !== 'None' ? cachings : ['None'];
+                    for (const cache of applicableCachings) {
+                        mvcCases.push(`| ${counter++} | ${lang} | MVC | ${view} | ${db} | ${comm} | ${cache} | ${auth} |`);
+                    }
                 }
             }
         }
     }
 }
 
+
 // Clean Architecture
 for (const lang of languages) {
     for (const db of databases) {
         for (const comm of communications) {
-            const applicableCachings = db !== 'None' ? cachings : ['None'];
-            for (const cache of applicableCachings) {
-                cleanArchCases.push(`| ${counter++} | ${lang} | Clean Architecture | N/A | ${db} | ${comm} | ${cache} |`);
+            for (const auth of auths) {
+                const applicableCachings = db !== 'None' ? cachings : ['None'];
+                for (const cache of applicableCachings) {
+                    cleanArchCases.push(`| ${counter++} | ${lang} | Clean Architecture | N/A | ${db} | ${comm} | ${cache} | ${auth} |`);
+                }
             }
         }
     }
 }
+
 
 const content = `# NodeJS Quickstart Generator - Test Cases
 
@@ -55,25 +62,28 @@ This document lists the **${counter - 1} possible project combinations** support
   - **With Database (54)**: 2 Lang × 1 View (None) × 3 DB × 3 Comm = 18 * 3 (Caching: None/Redis/Memory Cache) = 54
   - **No Database (6)**: 2 Lang × 1 View (None) × 1 DB × 3 Comm = 6 * 1 (Caching: None) = 6
 
-**Total Core Combinations: ${counter - 1} (240)**
+**Total Core Combinations: ${counter - 1} (480)**
 
 > **Note on CI/CD**: Each core combination can be generated with \`None\` (1 state) or any of the **5 CI Providers** in two states (with or without Enterprise Security Hardening).
 > 
-> **Total Validated Permutations**: ${counter - 1} × (1 + 5 × 2) = **2,640 Cases**
+> **Total Validated Permutations**: ${counter - 1} × (1 + 5 × 2) = **5,280 Cases**
+
 
 ---
 
 ## 1. MVC Architecture (${mvcCases.length} Cases)
 
-| # | Language | Architecture | View Engine | Database | Communication | Caching |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| # | Language | Architecture | View Engine | Database | Communication | Caching | Auth |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+
 ${mvcCases.join('\n')}
 
 ## 2. Clean Architecture (${cleanArchCases.length} Cases)
 *Note: Clean Architecture does not use server-side view engines (EJS/Pug).*
 
-| # | Language | Architecture | View Engine | Database | Communication | Caching |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| # | Language | Architecture | View Engine | Database | Communication | Caching | Auth |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+
 ${cleanArchCases.join('\n')}
 `;
 

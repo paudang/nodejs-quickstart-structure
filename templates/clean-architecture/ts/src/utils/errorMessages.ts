@@ -5,6 +5,7 @@ export const ERROR_MESSAGES = {
     INTERNAL_SERVER_ERROR: 'Internal Server Error',
     BAD_REQUEST: 'Bad Request',
     FETCH_USERS_ERROR: 'Error fetching users',
+    FETCH_USER_ERROR: 'Error fetching user',
     CREATE_USER_ERROR: 'Error creating user',
     UPDATE_USER_ERROR: 'Error updating user',
     DELETE_USER_ERROR: 'Error deleting user',

@@ -1,0 +1,60 @@
+<%_ if (architecture === 'Clean Architecture') { _%>
+import { JwtService } from '@/infrastructure/auth/jwtService';
+<%_ } else { _%>
+import { JwtService } from '@/services/jwtService';
+<%_ } _%>
+import jwt from 'jsonwebtoken';
+
+jest.mock('jsonwebtoken');
+
+describe('JwtService', () => {
+  const secret = 'test-secret';
+  const payload = { id: 1, email: 'test@example.com' };
+  const token = 'mock-token';
+
+  beforeEach(() => {
+    process.env.JWT_SECRET = 'test-secret';
+    jest.clearAllMocks();
+  });
+
+  describe('generateToken', () => {
+    it('should generate a token with standard expiration', () => {
+      (jwt.sign as jest.Mock).mockReturnValue(token);
+
+      const result = JwtService.generateToken(payload);
+
+      expect(jwt.sign).toHaveBeenCalledWith(payload, secret, { expiresIn: '1d' });
+      expect(result).toBe(token);
+    });
+
+    it('should generate a token with custom expiration', () => {
+      (jwt.sign as jest.Mock).mockReturnValue(token);
+
+      const result = JwtService.generateToken(payload, '2h');
+
+      expect(jwt.sign).toHaveBeenCalledWith(payload, secret, { expiresIn: '2h' });
+      expect(result).toBe(token);
+    });
+  });
+
+  describe('verifyToken', () => {
+    it('should return decoded payload for a valid token', () => {
+      (jwt.verify as jest.Mock).mockReturnValue(payload);
+
+      const result = JwtService.verifyToken(token);
+
+      expect(jwt.verify).toHaveBeenCalledWith(token, secret);
+      expect(result).toEqual(payload);
+    });
+
+    it('should return null for an invalid token', () => {
+      (jwt.verify as jest.Mock).mockImplementation(() => {
+        throw new Error('invalid token');
+      });
+
+      const result = JwtService.verifyToken(token);
+
+      expect(result).toBeNull();
+    });
+  });
+});

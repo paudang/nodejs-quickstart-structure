@@ -26,11 +26,12 @@ describe('CreateUser UseCase', () => {
     it('should create and save a new user', async () => {
         const name = 'Test User';
         const email = 'test@example.com';
+        const password = 'password123';
         const expectedResult = { id: 1, name, email };
 
         mockUserRepository.save.mockResolvedValue(expectedResult);
 
-        const result = await createUser.execute(name, email);
+        const result = await createUser.execute(name, email, password);
 
         expect(mockUserRepository.save).toHaveBeenCalledTimes(1);
         const savedUser = mockUserRepository.save.mock.calls[0][0];
@@ -46,6 +47,6 @@ describe('CreateUser UseCase', () => {
         const error = new Error('Database error');
         mockUserRepository.save.mockRejectedValue(error);
 
-        await expect(createUser.execute('Test', 'test@test.com')).rejects.toThrow(error);
+        await expect(createUser.execute('Test', 'test@test.com', 'pwd')).rejects.toThrow(error);
     });
 });

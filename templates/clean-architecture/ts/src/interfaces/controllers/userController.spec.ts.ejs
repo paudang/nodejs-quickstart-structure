@@ -146,7 +146,7 @@ describe('UserController (Clean Architecture)', () => {
 
             expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
 <% } -%>
-            expect(mockCreateUserUseCase.execute).toHaveBeenCalledWith(payload.name, payload.email);
+            expect(mockCreateUserUseCase.execute).toHaveBeenCalledWith(payload.name, payload.email, undefined);
         });
 
         it('should handle errors when creation fails (Error Handling)', async () => {

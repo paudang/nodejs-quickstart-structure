@@ -2,10 +2,11 @@ import { combinations } from './lib/validation-core.js';
 
 const target = {
     language: 'TypeScript',
-    architecture: 'Clean Architecture',
-    database: 'PostgreSQL',
-    communication: 'Kafka',
-    caching: 'Redis'
+    architecture: 'MVC',
+    database: 'MySQL',
+    communication: 'REST APIs',
+    caching: 'None',
+    auth: ['JWT']
 };
 
 const index = combinations.findIndex(c => 
@@ -13,7 +14,8 @@ const index = combinations.findIndex(c =>
     c.architecture === target.architecture &&
     c.database === target.database &&
     c.communication === target.communication &&
-    c.caching === target.caching
+    c.caching === target.caching &&
+    JSON.stringify(c.auth) === JSON.stringify(target.auth)
 );
 
 console.log(`Target Index: ${index}`);

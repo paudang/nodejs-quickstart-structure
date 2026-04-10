@@ -1,0 +1,34 @@
+const bcrypt = require('bcryptjs');
+const User = require('../models/User');
+const JwtService = require('../services/jwtService');
+const HTTP_STATUS = require('../utils/httpCodes');
+const logger = require('../utils/logger');
+
+const login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    <%_ if (database === 'MongoDB' || database === 'None') { -%>
+    const user = await User.findOne({ email });
+    <%_ } else { -%>
+    const user = await User.findOne({ where: { email } });
+    <%_ } -%>
+
+    if (!user) {
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid credentials' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid credentials' });
+    }
+
+    const token = JwtService.generateToken({ id: user.id || user._id, email: user.email });
+    res.json({ token });
+  } catch (error) {
+    logger.error('Login error:', error);
+    next(error);
+  }
+};
+
+module.exports = { login };

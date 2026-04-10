@@ -1,0 +1,22 @@
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+import cacheService from '@/infrastructure/caching/redisClient';
+import logger from '@/infrastructure/log/logger';
+
+export default class DeleteUser {
+    constructor(private userRepository: UserRepository) {}
+
+    async execute(id: number | string) {
+        const result = await this.userRepository.delete(id);
+        
+        if (result) {
+            try {
+                await cacheService.del('users:all');
+                await cacheService.del(`user:${id}`);
+            } catch (error) {
+                logger.warn('Failed to clear cache after user deletion:', error);
+            }
+        }
+        
+        return result;
+    }
+}

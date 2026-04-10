@@ -1,0 +1,17 @@
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+import cacheService from '@/infrastructure/caching/redisClient';
+
+export default class GetAllUsers {
+    constructor(private userRepository: UserRepository) {}
+
+    async execute() {
+        const cachedUsers = await cacheService.get('users:all');
+        if (cachedUsers) return cachedUsers;
+
+        const users = await this.userRepository.getUsers();
+
+        await cacheService.set('users:all', users, 3600); // Cache for 1 hour
+
+        return users;
+    }
+}

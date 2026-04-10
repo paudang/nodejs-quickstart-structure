@@ -1,0 +1,25 @@
+const jwt = require('jsonwebtoken');
+<% if (architecture === 'Clean Architecture') { %>
+const env = require('../infrastructure/config/env');
+<% } else { %>
+const { env } = require('../config/env');
+<% } %>
+
+class JwtService {
+  static SECRET = env.JWT_SECRET || 'your-secret-key';
+  static EXPIRES_IN = env.JWT_EXPIRES_IN || '1d';
+
+  static generateToken(payload) {
+    return jwt.sign(payload, this.SECRET, { expiresIn: this.EXPIRES_IN });
+  }
+
+  static verifyToken(token) {
+    try {
+      return jwt.verify(token, this.SECRET);
+    } catch (error) {
+      return null;
+    }
+  }
+}
+
+module.exports = JwtService;

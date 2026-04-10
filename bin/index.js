@@ -15,7 +15,7 @@ const program = new Command();
 
 program
     .name('nodejs-quickstart')
-    .description('🚀 CLI to scaffold production-ready Node.js microservices.\n\nGenerates projects with:\n- MVC or Clean Architecture\n- REST or Kafka\n- MySQL, PostgreSQL, or MongoDB\n- Docker, Flyway & Mongoose support')
+    .description('🚀 CLI to scaffold production-ready Node.js microservices.\n\nGenerates projects with:\n- MVC or Clean Architecture\n- REST, GraphQL or Kafka\n- MySQL, PostgreSQL, or MongoDB\n- Auth (None, JWT)\n- Docker, Flyway & Mongoose support')
     .version(pkg.version, '-v, --version', 'Output the current version')
     .addHelpText('after', `\n${chalk.yellow('Example:')}\n  $ nodejs-quickstart init   ${chalk.gray('# Start the interactive setup')}\n`);
 
@@ -32,7 +32,9 @@ program
     .option('--ci-provider <provider>', 'CI/CD Provider (None, GitHub Actions, Jenkins, GitLab CI, Bitbucket Pipelines, CircleCI)')
     .option('--include-security', 'Include Enterprise Security Hardening')
     .option('--no-include-security', 'Exclude Enterprise Security Hardening')
-    .option('--caching <type>', 'Caching Layer (None/Redis)')
+    .option('--caching <type>', 'Caching Layer (None/Redis/Memory Cache)')
+    .option('--auth <modes...>', 'Authentication Modes (None, JWT)')
+    .option('--advanced-options', 'Enable Advanced Options')
     .action(async (options) => {
         // Fix for Commander camelCase conversion
         if (options.ciProvider) {

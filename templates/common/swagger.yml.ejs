@@ -7,6 +7,13 @@ servers:
   - url: http://localhost:3000
     description: Local Server
 components:
+<%_ if (auth.includes('JWT')) { -%>
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+<%_ } -%>
   schemas:
     User:
       type: object
@@ -23,6 +30,12 @@ components:
         email:
           type: string
           description: The email of the user
+        <% if (auth.includes('JWT')) { %>
+        password:
+          type: string
+          writeOnly: true
+          description: The password of the user
+        <% } %>
       example:
         id: 1
         name: John Doe
@@ -30,7 +43,44 @@ components:
 tags:
   - name: Users
     description: The users managing API
+  <%_ if (auth.includes('JWT')) { -%>
+  - name: Auth
+    description: Authentication API
+  <%_ } -%>
 paths:
+<%_ if (auth.includes('JWT')) { -%>
+  /api/auth/login:
+    post:
+      summary: Login and receive a JWT token
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '401':
+          description: Invalid credentials
+<%_ } -%>
   /api/users:
     get:
       summary: Returns the list of all the users
@@ -65,6 +115,28 @@ paths:
         '500':
           description: Some server error
   /api/users/{id}:
+    get:
+      summary: Get a user by ID
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The user id
+      responses:
+        '200':
+          description: The user details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '500':
+          description: Some server error
     patch:
       summary: Update an existing user
       tags:

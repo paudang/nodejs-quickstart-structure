@@ -166,7 +166,7 @@ describe('UserController', () => {
     describe('createUser', () => {
         it('should successfully create a new user (Happy Path)', async () => {
             // Arrange
-            const payload = { name: 'Alice', email: 'alice@example.com' };
+            const payload = { name: 'Alice', email: 'alice@example.com', password: 'password123' };
 <% if (communication === 'GraphQL') { -%>
             const dataArg = payload;
 <% } else { -%>
@@ -211,7 +211,7 @@ describe('UserController', () => {
         it('should handle errors when creation fails (Error Handling)', async () => {
             // Arrange
             const error = new Error('Creation Error');
-            const payload = { name: 'Bob', email: 'bob@example.com' };
+            const payload = { name: 'Bob', email: 'bob@example.com', password: 'password123' };
 <% if (communication === 'GraphQL') { -%>
             const dataArg = payload;
 <% } else { -%>
@@ -232,7 +232,7 @@ describe('UserController', () => {
 <%_ if (communication === 'Kafka') { -%>
         it('should successfully create a new user with _id for Kafka (Happy Path)', async () => {
             // Arrange
-            const payload = { name: 'Bob', email: 'bob@example.com' };
+            const payload = { name: 'Bob', email: 'bob@example.com', password: 'password123' };
 <% if (communication === 'GraphQL') { -%>
             const dataArg = payload;
 <% } else { -%>
@@ -448,7 +448,7 @@ describe('UserController', () => {
 <% if (communication === 'GraphQL') { -%>
             await expect(createUser({ name: 'Alice', email: 'alice@example.com' })).rejects.toThrow(error);
 <% } else { -%>
-            mockRequest.body = { name: 'Alice', email: 'alice@example.com' };
+            mockRequest.body = { name: 'Alice', email: 'alice@example.com', password: 'password123' };
             await createUser(mockRequest, mockResponse, mockNext);
             expect(mockNext).toHaveBeenCalledWith(error);
 <% } -%>

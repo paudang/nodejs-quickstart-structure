@@ -29,6 +29,7 @@ This project follows a strict **7-Step Production-Ready Process** to ensure qual
 
 -   **Architecture**: <%= architecture %> (<% if (architecture === 'Clean Architecture') { %>Domain, UseCases, Infrastructure<% } else { %>MVC Pattern<% } %>).
 -   **Database**: <%= database %> <% if (database !== 'None') { %>(via <%= database === 'MongoDB' ? 'Mongoose' : 'Sequelize' %>)<% } %>.
+<% if (auth.includes('JWT')) { %>-   **Authentication**: JWT-based Auth (Sign Up, Login, Protected Routes).<% } %>
 -   **Security**: Helmet, CORS, Rate Limiting, HPP, Snyk SCA.
 -   **Quality**: 80%+ Test Coverage, Eslint, Prettier, Husky.
 -   **DevOps**: Multi-stage Docker, CI/CD ready (GitHub/GitLab/Jenkins/Bitbucket/CircleCI).
@@ -143,10 +144,18 @@ A Swagger UI for API documentation is available at:
 
 ### 🛣️ User Endpoints:
 - `GET /api/users`: List all users.
+- `GET /api/users/:id`: Get a user by ID.
 - `POST /api/users`: Create a new user.
 - `PATCH /api/users/:id`: Partially update a user.
 - `DELETE /api/users/:id`: Delete a user (Soft Delete).
+<% if (auth.includes('JWT')) { %>
+### 🔐 Auth Endpoints:
+- `POST /api/auth/login`: Exchange credentials for a JWT token.
+- `POST /api/users`: Acts as Sign Up when password is provided.
+  *Note: To access protected user endpoints (GET/PATCH/DELETE), include `Authorization: Bearer <your_token>` in the headers.*
+<% } %>
 <%_ } -%>
+
 
 <% if (communication === 'Kafka') { -%>
 ## 📡 Testing Kafka Asynchronous Flow

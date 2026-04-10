@@ -1,0 +1,21 @@
+const express = require('express');
+const { getUsers, createUser, updateUser, deleteUser } = require('../controllers/userController');
+<%_ if (auth.includes('JWT')) { _%>
+const authMiddleware = require('../../infrastructure/webserver/middleware/authMiddleware');
+<%_ if (communication === 'Kafka') { -%>
+const messageRoutes = require('./messageRoutes');
+<%_ } -%>
+<%_ } _%>
+
+const router = express.Router();
+
+router.get('/users', <% if (auth.includes('JWT')) { %>authMiddleware, <% } %>getUsers);
+router.post('/users', createUser);
+router.patch('/users/:id', <% if (auth.includes('JWT')) { %>authMiddleware, <% } %>updateUser);
+router.delete('/users/:id', <% if (auth.includes('JWT')) { %>authMiddleware, <% } %>deleteUser);
+
+<%_ if (communication === 'Kafka') { -%>
+router.use('/messages', messageRoutes);
+<%_ } -%>
+
+module.exports = router;

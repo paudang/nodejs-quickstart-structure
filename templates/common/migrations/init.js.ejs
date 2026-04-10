@@ -7,11 +7,13 @@ module.exports = {
       await db.collection('users').insertOne({
         name: 'Admin User',
         email: adminEmail,
+        <% if (auth.includes('JWT')) { %>password: '$2a$10$X.fO9PeyF0Lq0lF8uV6G9u4Vb4e5T0rF8l/JzM6S7X9u4Vb4e5T0r', // password: password123<% } %>
         createdAt: new Date(),
         updatedAt: new Date()
       });
       console.log('Admin User seeded successfully');
     } else {
+
       console.log('Admin User already exists, skipping seed');
     }
   },

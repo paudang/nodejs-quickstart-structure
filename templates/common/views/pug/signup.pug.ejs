@@ -1,0 +1,35 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        title Sign Up - <%= projectName %>
+        link(rel="stylesheet" href="/css/style.css")
+        style.
+            .auth-container { max-width: 400px; margin: 100px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+            .auth-container h2 { text-align: center; }
+            .form-group { margin-bottom: 15px; }
+            .form-group label { display: block; margin-bottom: 5px; }
+            .form-group input { width: 100%; padding: 8px; box-sizing: border-box; }
+            .btn { width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+            .btn:hover { background-color: #218838; }
+            .footer { text-align: center; margin-top: 15px; }
+    body
+        div.auth-container
+            h2 Sign Up
+            form(action="/api/users" method="POST")
+                div.form-group
+                    label(for="name") Full Name
+                    input(type="text" id="name" name="name" required)
+                div.form-group
+                    label(for="email") Email
+                    input(type="email" id="email" name="email" required)
+                div.form-group
+                    label(for="password") Password
+                    input(type="password" id="password" name="password" required)
+                button.btn(type="submit") Sign Up
+            div.footer
+                p Already have an account? 
+                    a(href="/login") Login
+                p
+                    a(href="/") Back to Home

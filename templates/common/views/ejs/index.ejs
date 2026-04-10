@@ -14,7 +14,14 @@
             <p class="subtitle">A production-ready Node.js microservice starter.</p>
         </header>
 
+        <% if (typeof auth !== 'undefined' && auth.includes('JWT')) { %>
+        <div class="auth-bar" style="text-align: right; margin-bottom: 20px;">
+            <a href="/login" class="btn-link">Login</a> | <a href="/signup" class="btn-link">Sign Up</a>
+        </div>
+        <% } %>
+
         <div class="card-grid">
+
             <div class="card">
                 <h3>Architecture</h3>
                 <p><%= architecture %></p>

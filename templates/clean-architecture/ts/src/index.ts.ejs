@@ -11,8 +11,10 @@ import { setupGracefulShutdown } from '@/utils/gracefulShutdown';
 import healthRoutes from '@/interfaces/routes/healthRoute';
 <% if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 import userRoutes from '@/interfaces/routes/userRoutes';
+<%_ if (auth.includes('JWT')) { -%>import authRoutes from '@/interfaces/routes/authRoutes';<%_ } -%>
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpecs from '@/config/swagger';<% } %>
+
 <%_ if (communication === 'Kafka') { -%>import { kafkaService } from '@/infrastructure/messaging/kafkaClient';<%_ } -%>
 <%_ if (communication === 'GraphQL') { -%>
 import { ApolloServer } from '@apollo/server';
@@ -53,7 +55,9 @@ app.use(morgan('combined', { stream: { write: (message) => logger.info(message.t
 
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 app.use('/api/users', userRoutes);
+<%_ if (auth.includes('JWT')) { -%>app.use('/api/auth', authRoutes);<%_ } -%>
 <%_ } -%>
+
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 <%_ } -%>

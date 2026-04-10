@@ -25,6 +25,7 @@ const DATABASES = ['None','MySQL', 'PostgreSQL', 'MongoDB'];
 const COMMUNICATIONS = ['REST APIs', 'GraphQL', 'Kafka']; 
 const CACHING = ['None', 'Redis', 'Memory Cache'];
 const VIEW_ENGINES_MVC = ['EJS', 'Pug', 'None'];
+const AUTHS = ['None', 'JWT'];
 
 export const combinations = [];
 
@@ -33,10 +34,11 @@ LANGUAGES.forEach(lang => {
     VIEW_ENGINES_MVC.forEach(view => {
         DATABASES.forEach(db => {
             COMMUNICATIONS.forEach(comm => {
+            for (const auth of AUTHS) {
                 const cachingOptions = db !== 'None' ? CACHING : ['None'];
                 cachingOptions.forEach(cache => {
                     combinations.push({
-                        projectName: `test_mvc_${lang}_${view}_${db}_${comm}_${cache}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                        projectName: `test_mvc_${lang}_${view}_${db}_${comm}_${cache}_${auth}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
                         language: lang,
                         architecture: 'MVC',
                         viewEngine: view,
@@ -44,10 +46,12 @@ LANGUAGES.forEach(lang => {
                         dbName: db !== 'None' ? 'testdb' : undefined,
                         communication: comm,
                         caching: cache,
+                        auth: [auth],
                         ciProvider: 'GitHub Actions',
                         includeSecurity: true
                     });
                 });
+            }
             });
         });
     });
@@ -58,11 +62,12 @@ LANGUAGES.forEach(lang => {
 LANGUAGES.forEach(lang => {
     DATABASES.forEach(db => {
         COMMUNICATIONS.forEach(comm => {
+        for (const auth of AUTHS) {
             const cachingOptions = db !== 'None' ? CACHING : ['None'];
 
             cachingOptions.forEach(cache => {
                 combinations.push({
-                    projectName: `test_clean_${lang}_${db}_${comm}_${cache}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                    projectName: `test_clean_${lang}_${db}_${comm}_${cache}_${auth}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
                     language: lang,
                     architecture: 'Clean Architecture',
                     viewEngine: 'None', 
@@ -70,10 +75,12 @@ LANGUAGES.forEach(lang => {
                     dbName: db !== 'None' ? 'testdb' : undefined,
                     communication: comm,
                     caching: cache,
+                    auth: [auth],
                     ciProvider: 'GitHub Actions',
                     includeSecurity: true
                 });
             });
+        }
         });
     });
 });
@@ -176,29 +183,52 @@ async function checkHealth(config, hostPort) {
                   if (config.communication === 'REST APIs' || config.communication === 'Kafka') {
                     try {
                         const baseUrl = `http://127.0.0.1:${port}/api/users`;
+                        const authUrl = `http://127.0.0.1:${port}/api/auth/login`;
+                        const testPassword = 'password123';
+                        const testEmail = `test${Date.now()}@example.com`;
                         
-                        // 1. Create
+                        // 1. Create (Sign Up)
                         const postRes = await fetch(baseUrl, {
                              method: 'POST',
                              headers: { 'Content-Type': 'application/json' },
-                             body: JSON.stringify({ name: 'Test User', email: `test${Date.now()}@example.com` })
+                             body: JSON.stringify({ 
+                               name: 'Test User', 
+                               email: testEmail,
+                               password: testPassword 
+                             })
                         });
                         
                         if (postRes.ok) {
                              const user = await postRes.json();
                              const userId = user.id || user._id;
 
+                             let headers = { 'Content-Type': 'application/json' };
+
+                             // 1b. Login if Auth is enabled
+                             if (config.auth && config.auth.includes('JWT')) {
+                                 const loginRes = await fetch(authUrl, {
+                                     method: 'POST',
+                                     headers: { 'Content-Type': 'application/json' },
+                                     body: JSON.stringify({ email: testEmail, password: testPassword })
+                                 });
+                                 if (!loginRes.ok) throw new Error('Login failed');
+                                 const { token } = await loginRes.json();
+                                 headers['Authorization'] = `Bearer ${token}`;
+                             }
+
                              // 2. Update
                              const patchRes = await fetch(`${baseUrl}/${userId}`, {
                                  method: 'PATCH',
-                                 headers: { 'Content-Type': 'application/json' },
+                                 headers,
                                  body: JSON.stringify({ name: 'Updated User' })
                              });
 
                              // 3. Delete
                              const deleteRes = await fetch(`${baseUrl}/${userId}`, {
-                                 method: 'DELETE'
+                                 method: 'DELETE',
+                                 headers
                              });
+
 
                              if (patchRes.ok && deleteRes.ok) {
                                  if (config.communication === 'Kafka') {
@@ -366,6 +396,13 @@ export async function runTest(config, index, options = {}, sharedPorts) {
 
         if (config.architecture === 'MVC') {
             args.push('--view-engine', config.viewEngine);
+        }
+
+        if (config.auth) {
+            args.push('--auth', ...config.auth);
+            if (config.auth.some(a => a !== 'None')) {
+                args.push('--advanced-options');
+            }
         }
 
         const command = `node ${cliPath} ${args.join(' ')}`;

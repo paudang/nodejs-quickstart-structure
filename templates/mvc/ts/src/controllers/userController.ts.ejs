@@ -13,6 +13,8 @@ import cacheService from '@/config/memoryCache';
 import { kafkaService } from '@/services/kafkaService';
 import { KAFKA_ACTIONS } from '@/utils/kafkaEvents';
 <%_ } -%>
+<% if (auth.includes('JWT')) { %>import bcrypt from 'bcryptjs';<% } %>
+
 
 export class UserController {
 <% if (communication === 'GraphQL') { -%>
@@ -40,22 +42,46 @@ export class UserController {
         }
     }
 
-    async createUser(data: { name: string, email: string }) {
+    async getUserById(id: string) {
         try {
-            const { name, email } = data;
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
+            const user = await User.findById(id);
+<%_ } else { -%>
+            const user = await User.findByPk(id);
+<%_ } -%>
+            if (!user) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+            return user;
+        } catch (error) {
+            logger.error(`${ERROR_MESSAGES.FETCH_USER_ERROR}:`, error);
+            throw error;
+        }
+    }
+
+    async createUser(data: { name: string, email: string, password?: string }) {
+        try {
+            <% if (auth.includes('JWT')) { %>
+            if (!password) throw new Error('Password is required');
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const user = await User.create({ name, email, password: hashedPassword });
+            <% } else { %>
             const user = await User.create({ name, email });
+            <% } %>
+
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
             await cacheService.del('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const userId = (user as any).id || (user as any)._id;
+            const rawUserForKafka = user as unknown as { id?: string | number; _id?: string | number; email: string };
+            const userId = rawUserForKafka.id || rawUserForKafka._id;
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: KAFKA_ACTIONS.USER_CREATED,
-                payload: { id: userId, email: user.email }
+                payload: { id: userId, email: rawUserForKafka.email }
             }), userId?.toString() || '');
 <%_ } -%>
-            return user;
+            const rawUser = user as unknown as { toJSON?: () => Record<string, unknown> };
+            const userJson = typeof rawUser.toJSON === 'function' ? rawUser.toJSON() : (user as unknown as Record<string, unknown>);
+            const { password: _, ...userWithoutPassword } = userJson;
+            return userWithoutPassword;
         } catch (error) {
             logger.error(`${ERROR_MESSAGES.CREATE_USER_ERROR}:`, error);
             throw error;
@@ -147,22 +173,52 @@ export class UserController {
         }
     }
 
+    async getUserById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+<%_ if (database === 'MongoDB' || database === 'None') { -%>
+            const user = await User.findById(id);
+<%_ } else { -%>
+            const user = await User.findByPk(id);
+<%_ } -%>
+            if (!user) {
+                return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+            }
+            res.json(user);
+        } catch (error) {
+            logger.error(`${ERROR_MESSAGES.FETCH_USER_ERROR}:`, error);
+            next(error);
+        }
+    }
+
     async createUser(req: Request, res: Response, next: NextFunction) {
         try {
-            const { name, email } = req.body || {};
+            const { name, email, password } = req.body || {};
+            <% if (auth.includes('JWT')) { %>
+            if (!password) {
+                return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Password is required' });
+            }
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const user = await User.create({ name, email, password: hashedPassword });
+            <% } else { %>
             const user = await User.create({ name, email });
+            <% } %>
+
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
             await cacheService.del('users:all');
 <%_ } -%>
 <%_ if (communication === 'Kafka') { -%>
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const userId = (user as any).id || (user as any)._id;
+            const rawUserForKafka = user as unknown as { id?: string | number; _id?: string | number; email: string };
+            const userId = rawUserForKafka.id || rawUserForKafka._id;
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: KAFKA_ACTIONS.USER_CREATED,
-                payload: { id: userId, email: user.email }
+                payload: { id: userId, email: rawUserForKafka.email }
             }), userId?.toString() || '');
 <%_ } -%>
-            res.status(HTTP_STATUS.CREATED).json(user);
+            const rawUser = user as unknown as { toJSON?: () => Record<string, unknown> };
+            const userJson = typeof rawUser.toJSON === 'function' ? rawUser.toJSON() : (user as unknown as Record<string, unknown>);
+            const { password: _, ...userWithoutPassword } = userJson;
+            res.status(HTTP_STATUS.CREATED).json(userWithoutPassword);
         } catch (error) {
             logger.error('Error creating user:', error);
             next(error);

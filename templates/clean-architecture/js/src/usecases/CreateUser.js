@@ -5,10 +5,11 @@ class CreateUser {
         this.userRepository = userRepository;
     }
 
-    async execute(name, email) {
-        const user = new User(null, name, email);
+    async execute(name, email, password) {
+        const user = new User(null, name, email, password);
         return await this.userRepository.save(user);
     }
+
 }
 
 module.exports = CreateUser;

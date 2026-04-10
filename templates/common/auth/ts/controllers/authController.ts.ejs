@@ -1,0 +1,48 @@
+import { Request, Response, NextFunction } from 'express';
+import bcrypt from 'bcryptjs';
+<% if (architecture === 'MVC') { %>
+import User from '@/models/User';
+import { JwtService } from '@/services/jwtService';
+<% } else { %>
+import User from '@/infrastructure/database/models/User';
+import { JwtService } from '@/infrastructure/auth/jwtService';
+<% } %>
+import { HTTP_STATUS } from '@/utils/httpCodes';
+<% if (architecture === 'MVC') { %>
+import logger from '@/utils/logger';
+<% } else { %>
+import logger from '@/infrastructure/log/logger';
+<% } %>
+
+export class AuthController {
+  async login(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, password } = req.body;
+
+      <%_ if (database === 'MongoDB' || database === 'None') { -%>
+      const user = await User.findOne({ email });
+      <%_ } else { -%>
+      const user = await User.findOne({ where: { email } });
+      <%_ } -%>
+
+      if (!user) {
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid credentials' });
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid credentials' });
+      }
+
+      const token = JwtService.generateToken({ 
+        id: user.id || (user as { _id?: string | number })._id as string | number, 
+        email: user.email 
+      });
+      res.json({ token });
+
+    } catch (error) {
+      logger.error('Login error:', error);
+      next(error);
+    }
+  }
+}

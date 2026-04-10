@@ -1,9 +1,14 @@
 import { HTTP_STATUS } from '@/utils/httpCodes';
+<%_ if (communication === 'Kafka') { _%>
 import { ERROR_MESSAGES } from '@/utils/errorMessages';
+<%_ } _%>
 <% if (communication !== 'GraphQL') { -%>
 import { Request, Response, NextFunction } from 'express';
 <% } -%>
 import { UserController } from '@/controllers/userController';
+<%_ if (auth.includes('JWT')) { _%>
+import bcrypt from 'bcryptjs';
+<%_ } _%>
 <%_ if (caching === 'Redis') { -%>
 import cacheService from '@/config/redisClient';
 <%_ } else if (caching === 'Memory Cache') { -%>
@@ -26,6 +31,12 @@ jest.mock('@/models/User', () => {
     };
 });
 const User = require('@/models/User');
+<%_ if (auth.includes('JWT')) { _%>
+jest.mock('bcryptjs', () => ({
+    hash: jest.fn().mockResolvedValue('hashed_password'),
+    compare: jest.fn().mockResolvedValue(true)
+}));
+<%_ } _%>
 <%_ if (caching === 'Redis') { -%>
 jest.mock('@/config/redisClient', () => ({
     getOrSet: jest.fn((_key, fetcher) => fetcher()),
@@ -179,7 +190,7 @@ describe('UserController', () => {
     describe('createUser', () => {
         it('should successfully create a new user (Happy Path)', async () => {
             // Arrange
-            const payload = { name: 'Alice', email: 'alice@example.com' };
+            const payload = { name: 'Alice', email: 'alice@example.com', password: 'password123' };
 <% if (communication === 'GraphQL') { -%>
             const dataArg = payload;
 <% } else { -%>
@@ -217,10 +228,25 @@ describe('UserController', () => {
 <%_ } -%>
         });
 
+<% if (auth.includes('JWT')) { %>
+        it('should return 400 if password is missing when auth is enabled', async () => {
+            // Arrange
+            const payload = { name: 'Alice', email: 'alice@example.com' };
+            mockRequest.body = payload;
+
+            // Act
+            await userController.createUser(mockRequest as Request, mockResponse as Response, mockNext);
+
+            // Assert
+            expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.BAD_REQUEST);
+            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Password is required' });
+        });
+<% } -%>
+
         it('should handle errors when creation fails (Error Handling)', async () => {
             // Arrange
             const error = new Error('Creation Error');
-            const payload = { name: 'Bob', email: 'bob@example.com' };
+            const payload = { name: 'Bob', email: 'bob@example.com', password: 'password123' };
 <% if (communication === 'GraphQL') { -%>
             const dataArg = payload;
 <% } else { -%>
@@ -447,7 +473,7 @@ describe('UserController', () => {
 <% if (communication === 'GraphQL') { -%>
             await expect(userController.createUser({ name: 'Alice', email: 'alice@example.com' })).rejects.toThrow(error);
 <% } else { -%>
-            mockRequest.body = { name: 'Alice', email: 'alice@example.com' };
+            mockRequest.body = { name: 'Alice', email: 'alice@example.com', password: 'password123' };
             await userController.createUser(mockRequest as Request, mockResponse as Response, mockNext);
             expect(mockNext).toHaveBeenCalledWith(error);
 <% } -%>
@@ -475,6 +501,52 @@ describe('UserController', () => {
             mockRequest.body = { name: 'Bob' };
             await userController.updateUser(mockRequest as Request, mockResponse as Response, mockNext);
             expect(mockNext).toHaveBeenCalledWith(error);
+<% } -%>
+        });
+    });
+
+    describe('getUserById', () => {
+        it('should successfully fetch a user by id', async () => {
+            const id = '1';
+            const expectedUser = { id, name: 'Alice', email: 'alice@test.com' };
+<% if (communication === 'GraphQL') { -%>
+            const idArg = id;
+<% } else { -%>
+            mockRequest.params = { id };
+<% } -%>
+
+<%_ if (database === 'MongoDB') { -%>
+            (User.findById as jest.Mock).mockResolvedValue(expectedUser);
+<%_ } else if (database === 'None') { -%>
+            (User.findByPk as jest.Mock).mockResolvedValue(expectedUser);
+<%_ } else { -%>
+            (User.findByPk as jest.Mock).mockResolvedValue(expectedUser);
+<%_ } -%>
+
+<% if (communication === 'GraphQL') { -%>
+            const result = await userController.getUserById(idArg);
+            expect(result).toEqual(expectedUser);
+<% } else { -%>
+            await userController.getUserById(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.OK);
+            expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
+<% } -%>
+        });
+
+        it('should return 404 if user not found', async () => {
+<% if (communication === 'GraphQL') { -%>
+            (User.findById as jest.Mock).mockResolvedValue(null);
+            (User.findByPk as jest.Mock).mockResolvedValue(null);
+            await expect(userController.getUserById('999')).rejects.toThrow();
+<% } else { -%>
+            mockRequest.params = { id: '999' };
+<%_ if (database === 'MongoDB') { -%>
+            (User.findById as jest.Mock).mockResolvedValue(null);
+<%_ } else { -%>
+            (User.findByPk as jest.Mock).mockResolvedValue(null);
+<%_ } -%>
+            await userController.getUserById(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.NOT_FOUND);
 <% } -%>
         });
     });

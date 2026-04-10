@@ -12,6 +12,13 @@ html(lang="en")
         h1 Welcome to #{projectName}
         p.subtitle A production-ready Node.js microservice starter.
 
+      if auth && auth.includes('JWT')
+        .auth-bar(style="text-align: right; margin-bottom: 20px;")
+          a.btn-link(href="/login") Login
+          |  | 
+          a.btn-link(href="/signup") Sign Up
+
+
       .card-grid
         .card
           h3 Architecture

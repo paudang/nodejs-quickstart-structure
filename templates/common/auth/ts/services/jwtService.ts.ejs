@@ -1,0 +1,26 @@
+import jwt from 'jsonwebtoken';
+import { env } from '@/config/env';
+
+export interface JwtPayload {
+  id: string | number;
+  email: string;
+}
+
+export class JwtService {
+  private static readonly SECRET = env.JWT_SECRET || 'your-secret-key';
+  private static readonly EXPIRES_IN = env.JWT_EXPIRES_IN || '1d';
+
+  static generateToken(payload: object, expiresIn?: string): string {
+    return jwt.sign(payload, this.SECRET, { 
+      expiresIn: expiresIn || this.EXPIRES_IN 
+    } as jwt.SignOptions);
+  }
+
+  static verifyToken(token: string): JwtPayload | null {
+    try {
+      return jwt.verify(token, this.SECRET) as JwtPayload;
+    } catch {
+      return null;
+    }
+  }
+}

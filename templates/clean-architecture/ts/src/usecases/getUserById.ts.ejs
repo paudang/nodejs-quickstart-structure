@@ -1,0 +1,20 @@
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+import cacheService from '@/infrastructure/caching/redisClient';
+
+export default class GetUserById {
+    constructor(private userRepository: UserRepository) {}
+
+    async execute(id: string | number) {
+        const cacheKey = `user:${id}`;
+        const cachedUser = await cacheService.get(cacheKey);
+        if (cachedUser) return cachedUser;
+
+        const user = await this.userRepository.findById(id);
+
+        if (user) {
+            await cacheService.set(cacheKey, user, 3600); // Cache for 1 hour
+        }
+
+        return user;
+    }
+}

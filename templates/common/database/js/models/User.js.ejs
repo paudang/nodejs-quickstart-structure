@@ -62,6 +62,12 @@ User.init(
       allowNull: false,
       unique: true,
     },
+    <% if (auth.includes('JWT')) { %>
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    <% } %>
     deletedAt: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -74,6 +80,7 @@ User.init(
     paranoid: true,
   }
 );
+
 
 module.exports = User;
 <% } -%>
