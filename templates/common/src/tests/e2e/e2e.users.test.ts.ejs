@@ -4,7 +4,9 @@ const SERVER_URL = process.env.TEST_URL || `http://127.0.0.1:${process.env.PORT 
 
 describe('E2E User Tests', () => {
   let userId: string;
+<%_ if (auth.includes('JWT')) { _%>
   let authToken: string;
+<%_ } _%>
   const uniqueEmail = `test_${Date.now()}@example.com`;
   const testPassword = 'password123';
 

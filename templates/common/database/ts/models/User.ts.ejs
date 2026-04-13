@@ -3,6 +3,9 @@ export interface User {
   id: string;
   name: string;
   email: string;
+<% if (auth.includes('JWT')) { -%>
+  password?: string;
+<% } -%>
 }
 
 export default class UserModel {
@@ -10,6 +13,12 @@ export default class UserModel {
 
   static async find() {
     return this.mockData;
+  }
+
+  static async findOne(query: Partial<User>) {
+    return this.mockData.find((u) => {
+      return Object.entries(query).every(([key, value]) => (u as unknown as Record<string, unknown>)[key] === value);
+    });
   }
 
   static async findAll() {

@@ -12,9 +12,9 @@ import cacheService from '@/config/memoryCache';
 <%_ } -%><%_ if (communication === 'Kafka') { -%>
 import { kafkaService } from '@/services/kafkaService';
 import { KAFKA_ACTIONS } from '@/utils/kafkaEvents';
+<%_ } -%><%_ if (auth.includes('JWT')) { %>
+import bcrypt from 'bcryptjs';
 <%_ } -%>
-<% if (auth.includes('JWT')) { %>import bcrypt from 'bcryptjs';<% } %>
-
 
 export class UserController {
 <% if (communication === 'GraphQL') { -%>
@@ -44,7 +44,7 @@ export class UserController {
 
     async getUserById(id: string) {
         try {
-<%_ if (database === 'MongoDB' || database === 'None') { -%>
+<%_ if (database === 'MongoDB') { -%>
             const user = await User.findById(id);
 <%_ } else { -%>
             const user = await User.findByPk(id);
@@ -57,8 +57,9 @@ export class UserController {
         }
     }
 
-    async createUser(data: { name: string, email: string, password?: string }) {
+    async createUser(data: { name: string, email: string<% if (auth.includes('JWT')) { %>, password?: string<% } %> }) {
         try {
+            const { name, email<% if (auth.includes('JWT')) { %>, password<% } %> } = data;
             <% if (auth.includes('JWT')) { %>
             if (!password) throw new Error('Password is required');
             const hashedPassword = await bcrypt.hash(password, 10);
@@ -176,7 +177,7 @@ export class UserController {
     async getUserById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-<%_ if (database === 'MongoDB' || database === 'None') { -%>
+<%_ if (database === 'MongoDB') { -%>
             const user = await User.findById(id);
 <%_ } else { -%>
             const user = await User.findByPk(id);
@@ -184,7 +185,7 @@ export class UserController {
             if (!user) {
                 return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
             }
-            res.json(user);
+            res.status(HTTP_STATUS.OK).json(user);
         } catch (error) {
             logger.error(`${ERROR_MESSAGES.FETCH_USER_ERROR}:`, error);
             next(error);

@@ -11,7 +11,8 @@ const form = reactive({
   communication: 'REST APIs',
   caching: 'None',
   ciProvider: 'GitHub Actions',
-  includeSecurity: false
+  includeSecurity: false,
+  auth: 'None'
 });
 
 const errors = reactive({
@@ -21,6 +22,7 @@ const errors = reactive({
 
 const showModal = ref(false);
 const copied = ref(false);
+const showAdvanced = ref(false);
 
 const nameRegex = /^[a-zA-Z0-9-_]+$/;
 
@@ -89,6 +91,16 @@ const cliCommand = computed(() => {
   cmd += ` --caching "${form.caching}"`;
   cmd += ` --ci-provider "${form.ciProvider}"`;
 
+  const isAdvanced = showAdvanced.value || form.auth !== 'None';
+
+  if (form.auth === 'JWT Authentication (Ready)') {
+    cmd += ` --auth JWT`;
+  } else if (isAdvanced) {
+    cmd += ` --auth None`;
+  } else if (form.auth !== 'None') {
+    cmd += ` --auth "${form.auth}"`;
+  }
+
   if (form.ciProvider !== 'None') {
     if (form.includeSecurity) {
       cmd += ` --include-security`;
@@ -96,6 +108,8 @@ const cliCommand = computed(() => {
       cmd += ` --no-include-security`;
     }
   }
+
+  cmd += isAdvanced ? ' --advanced-options' : ' --no-advanced-options';
 
   return cmd;
 });
@@ -118,6 +132,7 @@ export function useGenerator() {
     errors,
     showModal,
     copied,
+    showAdvanced,
     validateName,
     hasErrors,
     ext,

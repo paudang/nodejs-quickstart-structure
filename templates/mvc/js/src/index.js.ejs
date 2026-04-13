@@ -62,7 +62,6 @@ app.get('/login', (req, res) => res.render('login', { projectName: '<%= projectN
 app.get('/signup', (req, res) => res.render('signup', { projectName: '<%= projectName %>' }));
 <% } %>
 <% } -%>
-
 app.use('/health', healthRoutes);
 
 // Start Server Logic

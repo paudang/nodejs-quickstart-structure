@@ -13,7 +13,7 @@ import logger from '@/infrastructure/log/logger';
 <%_ if (communication === 'Kafka') { -%>
 import { kafkaService } from '@/infrastructure/messaging/kafkaClient';
 import { KAFKA_ACTIONS } from '@/utils/kafkaEvents';
-<%_ } -%>
+<%_ } %>
 
 export class UserController {
     private createUserUseCase: CreateUser;

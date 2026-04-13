@@ -407,6 +407,8 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             args.push('--auth', ...config.auth);
             if (config.auth.some(a => a !== 'None')) {
                 args.push('--advanced-options');
+            } else {
+                args.push('--no-advanced-options');
             }
         }
 

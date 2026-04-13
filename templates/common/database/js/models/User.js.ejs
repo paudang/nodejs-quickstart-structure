@@ -6,6 +6,12 @@ class UserModel {
     return this.mockData;
   }
 
+  static async findOne(query) {
+    return this.mockData.find((u) => {
+      return Object.entries(query).every(([key, value]) => u[key] === value);
+    });
+  }
+
   static async findAll() {
     return this.mockData;
   }

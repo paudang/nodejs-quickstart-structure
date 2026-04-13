@@ -43,7 +43,8 @@ const getUsers = async () => {
 
 const createUser = async (data) => {
   try {
-    const { name, email, password } = data;
+    const { name, email<% if (auth.includes('JWT')) { %>, password<% } %> } = data;
+    <% if (auth.includes('JWT')) { %>
     let user;
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -51,6 +52,9 @@ const createUser = async (data) => {
     } else {
       user = await User.create({ name, email });
     }
+    <% } else { %>
+    const user = await User.create({ name, email });
+    <% } %>
 
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
     await cacheService.del('users:all');

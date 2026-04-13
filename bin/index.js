@@ -35,6 +35,7 @@ program
     .option('--caching <type>', 'Caching Layer (None/Redis/Memory Cache)')
     .option('--auth <modes...>', 'Authentication Modes (None, JWT)')
     .option('--advanced-options', 'Enable Advanced Options')
+    .option('--no-advanced-options', 'Disable Advanced Options')
     .action(async (options) => {
         // Fix for Commander camelCase conversion
         if (options.ciProvider) {

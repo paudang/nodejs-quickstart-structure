@@ -40,6 +40,11 @@ jest.mock('@/infrastructure/database/database', () => ({}));
 describe('User Model', () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        <% if (database === 'None') { %>
+        const UserPath = '<% if (architecture === "MVC") { %>@/models/User<% } else { %>@/infrastructure/database/models/User<% } %>';
+        const User = require(UserPath).default;
+        User.mockData = [];
+        <% } %>
     });
 
     it('should be defined and initialized', () => {
@@ -77,6 +82,11 @@ describe('User Model', () => {
         const found = await User.findByPk(user.id);
         expect(found).toEqual(user);
         expect(await User.findByPk('invalid')).toBeUndefined();
+        
+        // findOne
+        const foundOne = await User.findOne({ email: data.email });
+        expect(foundOne).toEqual(user);
+        expect(await User.findOne({ email: 'nonexistent' })).toBeUndefined();
         
         // update
         const updated = await User.update(user.id, { name: 'Updated' });

@@ -1,4 +1,6 @@
+<% if (communication !== 'GraphQL') { -%>
 const HTTP_STATUS = require('@/utils/httpCodes');
+<% } -%>
 <% if (communication === 'GraphQL') { -%>
 const ERROR_MESSAGES = require('@/utils/errorMessages');
 <% } -%>
@@ -196,10 +198,12 @@ describe('UserController', () => {
             expect(result.name).toBe(payload.name);
             expect(result.email).toBe(payload.email);
 <%_ } else { _%>
-            expect(result).toEqual(expectedUser);
+            const { password, ...expectedUserWithoutPassword } = expectedUser;
+            expect(result).toEqual(expectedUserWithoutPassword);
             expect(User.create).toHaveBeenCalledWith({
-                ...payload,
-                <%_ if (auth.includes('JWT')) { _%>password: 'hashed_password'<%_ } _%>
+                name: payload.name,
+                email: payload.email
+                <%_ if (auth.includes('JWT')) { _%>, password: 'hashed_password'<%_ } _%>
             });
 <%_ } _%>
 <% } else { -%>
@@ -209,8 +213,9 @@ describe('UserController', () => {
             expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.CREATED);
             expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
             expect(User.create).toHaveBeenCalledWith({
-                ...payload,
-                <%_ if (auth.includes('JWT')) { _%>password: 'hashed_password'<%_ } _%>
+                name: payload.name,
+                email: payload.email
+                <%_ if (auth.includes('JWT')) { _%>, password: 'hashed_password'<%_ } _%>
             });
 <%_ } -%>
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
