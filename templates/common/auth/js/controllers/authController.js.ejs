@@ -7,13 +7,11 @@ const logger = require('../utils/logger');
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
-    <%_ if (database === 'MongoDB' || database === 'None') { -%>
+    <% if (database === 'MongoDB' || database === 'None') { %>
     const user = await User.findOne({ email });
-    <%_ } else { -%>
+    <% } else { %>
     const user = await User.findOne({ where: { email } });
-    <%_ } -%>
-
+    <% } %>
     if (!user) {
       return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid credentials' });
     }

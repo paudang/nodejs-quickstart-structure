@@ -1,7 +1,21 @@
 import GetUserById from '@/usecases/getUserById';
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 
-jest.mock('../infrastructure/repositories/UserRepository');
+jest.mock('@/infrastructure/repositories/UserRepository');
+
+<% if (caching === 'Redis') { -%>
+jest.mock('@/infrastructure/caching/redisClient', () => ({
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn()
+}));
+<% } else if (caching === 'Memory Cache') { -%>
+jest.mock('@/infrastructure/caching/memoryCache', () => ({
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn()
+}));
+<% } -%>
 
 describe('GetUserById Use Case', () => {
     let getUserById: GetUserById;

@@ -1,12 +1,12 @@
-const bcrypt = require('bcryptjs');
 <%_ if (architecture === 'Clean Architecture') { _%>
 const { AuthController } = require('../../../src/interfaces/controllers/auth/authController');
-const { JwtService } = require('../../../src/infrastructure/auth/jwtService');
+const JwtService = require('../../../src/infrastructure/auth/jwtService');
 <%_ } else { _%>
-const { AuthController } = require('../../../src/controllers/authController');
-const { JwtService } = require('../../../src/services/jwtService');
+const authController = require('../../../src/controllers/authController');
+const JwtService = require('../../../src/services/jwtService');
 <%_ } _%>
-const { HTTP_STATUS } = require('../../../src/utils/httpCodes');
+const HTTP_STATUS = require('../../../src/utils/httpCodes');
+const bcrypt = require('bcryptjs');
 
 jest.mock('bcryptjs');
 <%_ if (architecture === 'Clean Architecture') { _%>
@@ -24,13 +24,17 @@ const User = require('../../../src/models/User');
 <%_ } _%>
 
 describe('AuthController', () => {
-    let authController;
+    let controller;
     let mockReq;
     let mockRes;
     let next;
 
     beforeEach(() => {
-        authController = new AuthController();
+<%_ if (architecture === 'Clean Architecture') { _%>
+        controller = new AuthController();
+<%_ } else { _%>
+        controller = authController;
+<%_ } _%>
         mockReq = {
             body: {}
         };
@@ -50,7 +54,7 @@ describe('AuthController', () => {
             bcrypt.compare.mockResolvedValue(true);
             JwtService.generateToken.mockReturnValue('mock-token');
 
-            await authController.login(mockReq, mockRes, next);
+            await controller.login(mockReq, mockRes, next);
 
             expect(mockRes.json).toHaveBeenCalledWith({ token: 'mock-token' });
         });
@@ -59,7 +63,7 @@ describe('AuthController', () => {
             mockReq.body = { email: 'test@test.com', password: 'wrongpassword' };
             User.findOne.mockResolvedValue(null);
 
-            await authController.login(mockReq, mockRes, next);
+            await controller.login(mockReq, mockRes, next);
 
             expect(mockRes.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
         });

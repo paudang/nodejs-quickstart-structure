@@ -16,7 +16,7 @@ class JwtService {
   static verifyToken(token) {
     try {
       return jwt.verify(token, this.SECRET);
-    } catch (error) {
+    } catch {
       return null;
     }
   }

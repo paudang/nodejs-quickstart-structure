@@ -1,11 +1,17 @@
-<%_ if (architecture === 'Clean Architecture') { _%>
+<% if (architecture === 'Clean Architecture') { -%>
 import { JwtService } from '@/infrastructure/auth/jwtService';
-<%_ } else { _%>
+<% } else { -%>
 import { JwtService } from '@/services/jwtService';
-<%_ } _%>
+<% } -%>
 import jwt from 'jsonwebtoken';
 
 jest.mock('jsonwebtoken');
+jest.mock('@/config/env', () => ({
+  env: {
+    JWT_SECRET: 'test-secret',
+    JWT_EXPIRES_IN: '1d'
+  }
+}));
 
 describe('JwtService', () => {
   const secret = 'test-secret';
@@ -13,7 +19,6 @@ describe('JwtService', () => {
   const token = 'mock-token';
 
   beforeEach(() => {
-    process.env.JWT_SECRET = 'test-secret';
     jest.clearAllMocks();
   });
 

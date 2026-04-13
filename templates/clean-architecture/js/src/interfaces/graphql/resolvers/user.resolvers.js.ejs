@@ -9,8 +9,9 @@ const userResolvers = {
     }
   },
   Mutation: {
-    createUser: async (_, { name, email }) => {
-      return await userController.createUser({ name, email });
+    createUser: async (_, { name, email<% if (auth.some(a => a !=='None')) { %>, password<% } %> }) => {
+      const user = await userController.createUser({ name, email<% if (auth.some(a => a !=='None')) { %>, password<% } %> });
+      return user;
     },
     updateUser: async (_, { id, name, email }) => {
       return await userController.updateUser(id, { name, email });

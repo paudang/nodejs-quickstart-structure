@@ -1,5 +1,7 @@
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
-import cacheService from '@/infrastructure/caching/redisClient';
+<%_ if (caching !== 'None') { _%>
+import cacheService from '<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>';
+<%_ } _%>
 
 export default class GetUserById {
     constructor(private userRepository: UserRepository) {}

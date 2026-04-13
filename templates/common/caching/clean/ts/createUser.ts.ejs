@@ -1,18 +1,26 @@
 import { User } from '@/domain/user';
-
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
-<%_ if (caching === 'Redis') { -%>
+<% if (auth.includes('JWT')) { -%>
+import bcrypt from 'bcryptjs';
+<% } -%>
+<% if (caching === 'Redis') { -%>
 import cacheService from '@/infrastructure/caching/redisClient';
-<%_ } else if (caching === 'Memory Cache') { -%>
+<% } else if (caching === 'Memory Cache') { -%>
 import cacheService from '@/infrastructure/caching/memoryCache';
-<%_ } -%>
+<% } -%>
 import logger from '@/infrastructure/log/logger';
 
 export default class CreateUser {
     constructor(private userRepository: UserRepository) {}
 
-    async execute(name: string, email: string) {
-        const user = new User(null, name, email);
+    async execute(name: string, email: string, password?: string) {
+        let finalPassword = password;
+        <% if (auth.includes('JWT')) { -%>
+        if (password) {
+            finalPassword = await bcrypt.hash(password, 10);
+        }
+        <% } -%>
+        const user = new User(null, name, email, finalPassword);
         const savedUser = await this.userRepository.save(user);
 
         try {

@@ -95,6 +95,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+      <%_ if (auth.includes('JWT')) { -%>
+      security:
+        - bearerAuth: []
+      <%_ } -%>
     post:
       summary: Create a new user
       tags:
@@ -137,6 +141,10 @@ paths:
           description: User not found
         '500':
           description: Some server error
+      <%_ if (auth.includes('JWT')) { -%>
+      security:
+        - bearerAuth: []
+      <%_ } -%>
     patch:
       summary: Update an existing user
       tags:
@@ -170,6 +178,10 @@ paths:
           description: User not found
         '500':
           description: Some server error
+      <%_ if (auth.includes('JWT')) { -%>
+      security:
+        - bearerAuth: []
+      <%_ } -%>
     delete:
       summary: Delete an existing user
       tags:
@@ -188,3 +200,7 @@ paths:
           description: User not found
         '500':
           description: Some server error
+      <%_ if (auth.includes('JWT')) { -%>
+      security:
+        - bearerAuth: []
+      <%_ } -%>

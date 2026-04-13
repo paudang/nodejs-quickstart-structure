@@ -10,8 +10,8 @@ export const userResolvers = {
     }
   },
   Mutation: {
-    createUser: async (_: unknown, { name, email }: { name: string, email: string }) => {
-      const user = await userController.createUser({ name, email });
+    createUser: async (_: unknown, { name, email<% if (auth.some(a => a !=='None')) { %>, password<% } %> }: { name: string, email: string<% if (auth.some(a => a !=='None')) { %>, password: string<% } %> }) => {
+      const user = await userController.createUser({ name, email<% if (auth.some(a => a !=='None')) { %>, password<% } %> });
       return user;
     },
     updateUser: async (_: unknown, { id, name, email }: { id: string, name?: string, email?: string }) => {

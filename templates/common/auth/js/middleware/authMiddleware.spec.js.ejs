@@ -1,11 +1,11 @@
 <%_ if (architecture === 'Clean Architecture') { _%>
 const { authMiddleware } = require('../../../src/infrastructure/webserver/middleware/authMiddleware');
-const { JwtService } = require('../../../src/infrastructure/auth/jwtService');
+const JwtService = require('../../../src/infrastructure/auth/jwtService');
 <%_ } else { _%>
-const { authMiddleware } = require('../../../src/middleware/authMiddleware');
-const { JwtService } = require('../../../src/services/jwtService');
+const authMiddleware = require('../../../src/middleware/authMiddleware');
+const JwtService = require('../../../src/services/jwtService');
 <%_ } _%>
-const { HTTP_STATUS } = require('../../../src/utils/httpCodes');
+const HTTP_STATUS = require('../../../src/utils/httpCodes');
 
 <%_ if (architecture === 'Clean Architecture') { _%>
 jest.mock('../../../src/infrastructure/auth/jwtService');

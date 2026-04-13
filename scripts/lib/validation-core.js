@@ -274,13 +274,18 @@ async function checkHealth(config, hostPort) {
                          const gqlUrl = `http://127.0.0.1:${port}/graphql`;
                          
                          // 1. Create Mutation
-                         const createMutation = `mutation { createUser(name: "GQL Test", email: "gql${Date.now()}@test.com") { id } }`;
+                         const testPassword = 'password123';
+                         const createMutation = `mutation { createUser(name: "GQL Test", email: "gql${Date.now()}@test.com", password: "${testPassword}") { id } }`;
                          const createRes = await fetch(gqlUrl, {
                                method: 'POST',
                                headers: { 'Content-Type': 'application/json' },
                                body: JSON.stringify({ query: createMutation })
                          });
                          const createData = await createRes.json();
+                         if (createData.errors) {
+                             console.log(`!!! GraphQL Create Errors: ${JSON.stringify(createData.errors)}`, ANSI_RED);
+                             throw new Error('GraphQL mutation failed');
+                         }
                          const userId = createData.data.createUser.id;
 
                          // 2. Update Mutation
@@ -504,7 +509,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         return { success: false, error: err.message };
     } finally {
         log(`... Cleaning Up ...`);
-        if (!skipDocker) {
+        if (!skipDocker && isSuccess) {
             try {
                 await runCommand('docker compose down -v', projectPath, TEST_ENV);
             } catch (e) {}

@@ -35,6 +35,7 @@ describe('DeleteUser UseCase', () => {
         expect(result).toEqual(expectedResult);
 <%_ if (caching !== 'None') { -%>
         expect(cacheService.del).toHaveBeenCalledWith('users:all');
+        expect(cacheService.del).toHaveBeenCalledWith(`user:${id}`);
 <%_ } %>
     });
 

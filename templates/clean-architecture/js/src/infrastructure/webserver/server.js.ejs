@@ -9,8 +9,8 @@ const setupGracefulShutdown = require('../../utils/gracefulShutdown');
 const apiRoutes = require('../../interfaces/routes/api');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./swagger');
-<%_ if (auth.includes('JWT')) { -%>const authRoutes = require('../../interfaces/routes/authRoutes');<%_ } -%>
 <%_ } -%>
+<%_ if (auth.includes('JWT')) { -%>const authRoutes = require('../../interfaces/routes/authRoutes');<%_ } -%>
 
 <%_ if (communication === 'GraphQL') { -%>
 const { ApolloServer } = require('@apollo/server');
@@ -34,9 +34,8 @@ const startServer = async () => {
     app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
     <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
     app.use('/api', apiRoutes);
-    <%_ if (auth.includes('JWT')) { -%>app.use('/api/auth', authRoutes);<%_ } -%>
     <%_ } -%>
-
+    <%_ if (auth.includes('JWT')) { -%>app.use('/api/auth', authRoutes);<%_ } -%>
     <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
     <%_ } -%>

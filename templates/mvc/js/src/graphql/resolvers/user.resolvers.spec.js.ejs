@@ -25,9 +25,10 @@ describe('User Resolvers', () => {
 
   describe('Mutation.createUser', () => {
     it('should create and return a new user', async () => {
-      const result = await userResolvers.Mutation.createUser(null, { name: 'Jane', email: 'jane@example.com' });
+      const payload = { name: 'Jane', email: 'jane@example.com'<% if (auth.some(a => a !=='None')) { %>, password: 'password123'<% } %> };
+      const result = await userResolvers.Mutation.createUser(null, payload);
       expect(result).toEqual({ id: '1', name: 'Jane', email: 'jane@example.com' });
-      expect(mockCreateUser).toHaveBeenCalledWith({ name: 'Jane', email: 'jane@example.com' });
+      expect(mockCreateUser).toHaveBeenCalledWith(payload);
       expect(mockCreateUser).toHaveBeenCalledTimes(1);
     });
   });
