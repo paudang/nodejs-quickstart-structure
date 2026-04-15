@@ -11,21 +11,18 @@ class UserRepository {
       email: user.email,
       <% if (auth.includes('JWT')) { %>password: user.password<% } %>
     });
-<%_ if (database === 'MongoDB') { -%>
-    return { ...user, id: newUser._id.toString() };
-<%_ } else { -%>
-    return { ...user, id: newUser.id };
-<%_ } -%>
 <%_ if (auth.includes('JWT')) { -%>
     // Ensure password is not returned in the save result
     const result = { ...user, id: newUser.id || newUser._id.toString() };
     delete result.password;
     return result;
+<%_ } else if (database === 'MongoDB') { -%>
+    return { ...user, id: newUser._id.toString() };
+<%_ } else { -%>
+    return { ...user, id: newUser.id };
 <%_ } -%>
 <%_ } -%>
   }
-
-
 
   async getUsers() {
 <%_ if (database === 'None') { -%>

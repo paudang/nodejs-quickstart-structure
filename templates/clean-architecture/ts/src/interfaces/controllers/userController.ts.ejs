@@ -35,6 +35,11 @@ export class UserController {
     async createUser(data: { name: string, email: string, password?: string }) {
         try {
             const { name, email, password } = data;
+            <% if (auth.includes('JWT')) { -%>
+            if (!password) {
+                throw new Error('Password is required');
+            }
+            <% } -%>
             const user = await this.createUserUseCase.execute(name, email, password);
 <%_ if (communication === 'Kafka') { -%>
             const rawUserForKafka = user as unknown as { id?: string | number; _id?: string | number; email: string };
@@ -115,6 +120,11 @@ export class UserController {
     async createUser(req: Request, res: Response, next: NextFunction) {
         try {
             const { name, email, password } = req.body || {};
+            <% if (auth.includes('JWT')) { -%>
+            if (!password) {
+                return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Password is required' });
+            }
+            <% } -%>
             const user = await this.createUserUseCase.execute(name, email, password);
 <%_ if (communication === 'Kafka') { -%>
             const rawUserForKafka = user as unknown as { id?: string | number; _id?: string | number; email: string };

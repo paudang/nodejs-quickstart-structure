@@ -30,31 +30,58 @@ describe('AuthMiddleware', () => {
     jest.clearAllMocks();
   });
 
-  it('should return 401 if no authorization header is provided', () => {
-    authMiddleware(mockRequest as Request, mockResponse as Response, nextFunction);
+  it('should return 401 if no authorization header is provided', async () => {
+    await authMiddleware(mockRequest as Request, mockResponse as Response, nextFunction);
 
     expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
     expect(mockResponse.json).toHaveBeenCalledWith({ message: 'No token provided' });
     expect(nextFunction).not.toHaveBeenCalled();
   });
 
-  it('should return 401 if token is invalid', () => {
+  it('should return 401 if token is invalid', async () => {
     mockRequest.headers.authorization = 'Bearer invalid-token';
     (JwtService.verifyToken as jest.Mock).mockReturnValue(null);
 
-    authMiddleware(mockRequest as Request, mockResponse as Response, nextFunction);
+    await authMiddleware(mockRequest as Request, mockResponse as Response, nextFunction);
 
     expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
     expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Invalid or expired token' });
     expect(nextFunction).not.toHaveBeenCalled();
   });
 
-  it('should call next() and set req.user if token is valid', () => {
-    const payload = { id: 1, email: 'test@example.com' };
+  it('should return 401 if token is blacklisted', async () => {
+    const payload = { id: 1, email: 'test@example.com', jti: 'blacklisted-jti' };
     mockRequest.headers.authorization = 'Bearer valid-token';
     (JwtService.verifyToken as jest.Mock).mockReturnValue(payload);
+    
+    // Mock the blacklist check
+    <% if (caching !== 'None') { %>
+    const cacheService = require('<% if (architecture === "MVC") { if (caching === "Redis") { %>@/config/redisClient<% } else { %>@/config/memoryCache<% } } else { if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } } %>').default;
+    (cacheService.get as jest.Mock).mockResolvedValue(true);
+    <% } else { %>
+    JwtService.blacklistedTokens.set('blacklisted-jti', Date.now() + 10000);
+    <% } %>
 
-    authMiddleware(mockRequest as Request, mockResponse as Response, nextFunction);
+    await authMiddleware(mockRequest as Request, mockResponse as Response, nextFunction);
+
+    expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
+    expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Token revoked' });
+    expect(nextFunction).not.toHaveBeenCalled();
+  });
+
+  it('should call next() and set req.user if token is valid and not blacklisted', async () => {
+    const payload = { id: 1, email: 'test@example.com', jti: 'valid-jti' };
+    mockRequest.headers.authorization = 'Bearer valid-token';
+    (JwtService.verifyToken as jest.Mock).mockReturnValue(payload);
+    
+    <% if (caching !== 'None') { %>
+    const cacheService = require('<% if (architecture === "MVC") { if (caching === "Redis") { %>@/config/redisClient<% } else { %>@/config/memoryCache<% } } else { if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } } %>').default;
+    (cacheService.get as jest.Mock).mockResolvedValue(false);
+    <% } else { %>
+    JwtService.blacklistedTokens.delete('valid-jti');
+    <% } %>
+
+    await authMiddleware(mockRequest as Request, mockResponse as Response, nextFunction);
 
     expect(mockRequest.user).toEqual(payload);
     expect(nextFunction).toHaveBeenCalled();

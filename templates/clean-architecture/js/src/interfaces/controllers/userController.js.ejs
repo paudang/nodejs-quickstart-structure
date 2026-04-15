@@ -33,9 +33,14 @@ class UserController {
     }
 
     async createUser(data) {
-        const { name, email } = data;
+        const { name, email, password } = data;
         try {
-            const user = await this.createUserUseCase.execute(name, email);
+            <% if (auth.includes('JWT')) { %>
+            if (!password) {
+                throw new Error('Password is required');
+            }
+            <% } %>
+            const user = await this.createUserUseCase.execute(name, email, password);
 <%_ if (communication === 'Kafka') { -%>
             await sendMessage('user-topic', JSON.stringify({
                 action: KAFKA_ACTIONS.USER_CREATED,
@@ -94,9 +99,14 @@ class UserController {
     }
 
     async createUser(req, res, next) {
-        const { name, email } = req.body || {};
+        const { name, email, password } = req.body || {};
         try {
-            const user = await this.createUserUseCase.execute(name, email);
+            <% if (auth.includes('JWT')) { %>
+            if (!password) {
+                return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Password is required' });
+            }
+            <% } %>
+            const user = await this.createUserUseCase.execute(name, email, password);
 <%_ if (communication === 'Kafka') { -%>
             await sendMessage('user-topic', JSON.stringify({
                 action: KAFKA_ACTIONS.USER_CREATED,

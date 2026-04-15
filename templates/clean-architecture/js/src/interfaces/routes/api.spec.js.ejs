@@ -12,6 +12,10 @@ jest.mock('@/interfaces/controllers/userController', () => {
   }));
 });
 
+<% if (auth.includes('JWT')) { %>
+jest.mock('@/infrastructure/webserver/middleware/authMiddleware', () => (req, res, next) => next());
+<% } %>
+
 describe('ApiRoutes', () => {
     let app;
 

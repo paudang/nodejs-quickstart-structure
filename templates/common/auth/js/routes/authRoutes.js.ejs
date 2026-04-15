@@ -1,8 +1,16 @@
 const { Router } = require('express');
-const { login } = require('../controllers/authController');
+const AuthController = require('<% if (architecture === "MVC") { %>../controllers/authController<% } else { %>../controllers/auth/authController<% } %>');
+<% if (architecture === 'MVC') { %>
+const authMiddleware = require('../middleware/authMiddleware');
+<% } else { %>
+const authMiddleware = require('../../infrastructure/webserver/middleware/authMiddleware');
+<% } %>
 
 const router = Router();
+const authController = new AuthController();
 
-router.post('/login', login);
+router.post('/login', (req, res, next) => authController.login(req, res, next));
+router.post('/refresh', (req, res, next) => authController.refresh(req, res, next));
+router.post('/logout', authMiddleware, (req, res, next) => authController.logout(req, res, next));
 
 module.exports = router;

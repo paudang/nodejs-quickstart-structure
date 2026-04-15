@@ -120,7 +120,7 @@ describe('UserController (Clean Architecture)', () => {
     describe('createUser', () => {
         it('should successfully create a new user (Happy Path)', async () => {
             // Arrange
-            const payload = { name: 'Alice', email: 'alice@example.com' };
+            const payload = { name: 'Alice', email: 'alice@example.com'<% if (auth.includes('JWT')) { %>, password: 'password123'<% } %> };
 <% if (communication === 'GraphQL') { -%>
             const dataArg = payload;
 <% } else { -%>
@@ -148,8 +148,22 @@ describe('UserController (Clean Architecture)', () => {
 
             expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
 <% } -%>
-            expect(mockCreateUserUseCase.execute).toHaveBeenCalledWith(payload.name, payload.email, undefined);
+            expect(mockCreateUserUseCase.execute).toHaveBeenCalledWith(payload.name, payload.email, payload.password);
         });
+
+<% if (auth.includes('JWT')) { %>
+        it('should fail to create a user when password is missing and JWT is enabled', async () => {
+            const payload = { name: 'Alice', email: 'alice@example.com' };
+<% if (communication === 'GraphQL') { -%>
+            await expect(userController.createUser(payload)).rejects.toThrow('Password is required');
+<% } else { -%>
+            mockRequest.body = payload;
+            await userController.createUser(mockRequest as Request, mockResponse as Response, mockNext);
+            expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.BAD_REQUEST);
+            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Password is required' });
+<% } -%>
+        });
+<% } %>
 
         it('should handle errors when creation fails (Error Handling)', async () => {
             // Arrange

@@ -1,16 +1,25 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 <% if (architecture === 'Clean Architecture') { %>
-const env = require('../infrastructure/config/env');
+const { env } = require('../config/env');
 <% } else { %>
 const { env } = require('../config/env');
 <% } %>
 
 class JwtService {
   static SECRET = env.JWT_SECRET || 'your-secret-key';
-  static EXPIRES_IN = env.JWT_EXPIRES_IN || '1d';
+  static REFRESH_SECRET = env.JWT_REFRESH_SECRET || 'your-refresh-secret-key';
+  static EXPIRES_IN = env.JWT_EXPIRES_IN || '15m'; // Access tokens should be short-lived
+  static REFRESH_EXPIRES_IN = env.JWT_REFRESH_EXPIRES_IN || '7d';
 
-  static generateToken(payload) {
-    return jwt.sign(payload, this.SECRET, { expiresIn: this.EXPIRES_IN });
+  static generateToken(payload, expiresIn) {
+    const jti = crypto.randomUUID();
+    return jwt.sign({ ...payload, jti }, this.SECRET, { expiresIn: expiresIn || this.EXPIRES_IN });
+  }
+
+  static generateRefreshToken(payload, expiresIn) {
+    const jti = crypto.randomUUID();
+    return jwt.sign({ ...payload, jti }, this.REFRESH_SECRET, { expiresIn: expiresIn || this.REFRESH_EXPIRES_IN });
   }
 
   static verifyToken(token) {
@@ -20,6 +29,26 @@ class JwtService {
       return null;
     }
   }
+
+  static verifyRefreshToken(token) {
+    try {
+      return jwt.verify(token, this.REFRESH_SECRET);
+    } catch {
+      return null;
+    }
+  }
+
+  static decodeToken(token) {
+    try {
+      return jwt.decode(token);
+    } catch {
+      return null;
+    }
+  }
+
+  // Fallback in-memory storage if caching = 'None'
+  static activeRefreshTokens = new Map();
+  static blacklistedTokens = new Map();
 }
 
 module.exports = JwtService;

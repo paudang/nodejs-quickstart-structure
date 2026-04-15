@@ -1,8 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 <% if (architecture === 'MVC') { %>
 import { JwtService, JwtPayload } from '@/services/jwtService';
+<% if (caching !== 'None') { -%>
+import cacheService from '<% if (caching === "Redis") { %>@/config/redisClient<% } else { %>@/config/memoryCache<% } %>';
+<% } -%>
 <% } else { %>
 import { JwtService, JwtPayload } from '@/infrastructure/auth/jwtService';
+<% if (caching !== 'None') { -%>
+import cacheService from '<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>';
+<% } -%>
 <% } %>
 import { HTTP_STATUS } from '@/utils/httpCodes';
 
@@ -10,7 +16,7 @@ interface CustomRequest extends Request {
   user?: JwtPayload;
 }
 
-export const authMiddleware = (req: CustomRequest, res: Response, next: NextFunction) => {
+export const authMiddleware = async (req: CustomRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -22,6 +28,20 @@ export const authMiddleware = (req: CustomRequest, res: Response, next: NextFunc
 
   if (!decoded) {
     return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid or expired token' });
+  }
+
+  if (decoded.jti) {
+    <% if (caching !== 'None') { %>
+    const isBlacklisted = await cacheService.get(`blacklist:${decoded.jti}`);
+    if (isBlacklisted) {
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Token revoked' });
+    }
+    <% } else { %>
+    const expiryDate = JwtService.blacklistedTokens.get(decoded.jti);
+    if (expiryDate && Date.now() < expiryDate) {
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Token revoked' });
+    }
+    <% } %>
   }
 
   req.user = decoded;

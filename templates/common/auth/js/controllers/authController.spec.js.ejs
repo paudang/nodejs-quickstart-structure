@@ -1,26 +1,26 @@
 <%_ if (architecture === 'Clean Architecture') { _%>
-const { AuthController } = require('../../../src/interfaces/controllers/auth/authController');
-const JwtService = require('../../../src/infrastructure/auth/jwtService');
+const AuthController = require('@/interfaces/controllers/auth/authController');
+const JwtService = require('@/infrastructure/auth/jwtService');
 <%_ } else { _%>
-const authController = require('../../../src/controllers/authController');
-const JwtService = require('../../../src/services/jwtService');
+const AuthController = require('@/controllers/authController');
+const JwtService = require('@/services/jwtService');
 <%_ } _%>
-const HTTP_STATUS = require('../../../src/utils/httpCodes');
+const HTTP_STATUS = require('@/utils/httpCodes');
 const bcrypt = require('bcryptjs');
 
 jest.mock('bcryptjs');
 <%_ if (architecture === 'Clean Architecture') { _%>
-jest.mock('../../../src/infrastructure/auth/jwtService');
-jest.mock('../../../src/infrastructure/database/models/User', () => ({
+jest.mock('@/infrastructure/auth/jwtService');
+jest.mock('@/infrastructure/database/models/User', () => ({
     findOne: jest.fn()
 }));
-const User = require('../../../src/infrastructure/database/models/User');
+const User = require('@/infrastructure/database/models/User');
 <%_ } else { _%>
-jest.mock('../../../src/services/jwtService');
-jest.mock('../../../src/models/User', () => ({
+jest.mock('@/services/jwtService');
+jest.mock('@/models/User', () => ({
     findOne: jest.fn()
 }));
-const User = require('../../../src/models/User');
+const User = require('@/models/User');
 <%_ } _%>
 
 describe('AuthController', () => {
@@ -30,13 +30,10 @@ describe('AuthController', () => {
     let next;
 
     beforeEach(() => {
-<%_ if (architecture === 'Clean Architecture') { _%>
         controller = new AuthController();
-<%_ } else { _%>
-        controller = authController;
-<%_ } _%>
         mockReq = {
-            body: {}
+            body: {},
+            headers: {}
         };
         mockRes = {
             status: jest.fn().mockReturnThis(),
@@ -47,16 +44,25 @@ describe('AuthController', () => {
     });
 
     describe('login', () => {
-        it('should return token on success', async () => {
-            const user = { email: 'test@test.com', password: 'hashedpassword' };
+        it('should return tokens on success', async () => {
+            const user = { id: 1, email: 'test@test.com', password: 'hashedpassword' };
             mockReq.body = { email: 'test@test.com', password: 'password123' };
             User.findOne.mockResolvedValue(user);
             bcrypt.compare.mockResolvedValue(true);
-            JwtService.generateToken.mockReturnValue('mock-token');
+            JwtService.generateToken.mockReturnValue('mock-access-token');
+            JwtService.generateRefreshToken.mockReturnValue('mock-refresh-token');
+            JwtService.decodeToken.mockReturnValue({ jti: 'test-jti' });
+
+            // Mock cacheService
+            <% if (caching !== 'None') { %>
+            const cacheService = require('<% if (architecture === "MVC") { if (caching === "Redis") { %>@/config/redisClient<% } else { %>@/config/memoryCache<% } } else { if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } } %>');
+            cacheService.get.mockResolvedValue([]);
+            cacheService.set.mockResolvedValue();
+            <% } %>
 
             await controller.login(mockReq, mockRes, next);
 
-            expect(mockRes.json).toHaveBeenCalledWith({ token: 'mock-token' });
+            expect(mockRes.json).toHaveBeenCalledWith({ accessToken: 'mock-access-token', refreshToken: 'mock-refresh-token' });
         });
 
         it('should return 401 on invalid credentials', async () => {
@@ -66,6 +72,61 @@ describe('AuthController', () => {
             await controller.login(mockReq, mockRes, next);
 
             expect(mockRes.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
+        });
+    });
+
+    describe('refresh', () => {
+        it('should return new tokens for a valid refresh token', async () => {
+            mockReq.body = { refreshToken: 'valid-refresh' };
+            const decoded = { id: '1', email: 'test@test.com', jti: 'old-jti' };
+            JwtService.verifyRefreshToken.mockReturnValue(decoded);
+            JwtService.generateToken.mockReturnValue('new-access');
+            JwtService.generateRefreshToken.mockReturnValue('new-refresh');
+            JwtService.decodeToken.mockReturnValue({ jti: 'new-jti' });
+
+            <% if (caching !== 'None') { %>
+            const cacheService = require('<% if (architecture === "MVC") { if (caching === "Redis") { %>@/config/redisClient<% } else { %>@/config/memoryCache<% } } else { if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } } %>');
+            cacheService.get.mockResolvedValue(['old-jti']);
+            cacheService.set.mockResolvedValue();
+            <% } else { %>
+            JwtService.activeRefreshTokens.set('1', ['old-jti']);
+            <% } %>
+
+            await controller.refresh(mockReq, mockRes, next);
+
+            expect(mockRes.json).toHaveBeenCalledWith({ accessToken: 'new-access', refreshToken: 'new-refresh' });
+        });
+
+        it('should detect theft and revoke if jti is not active', async () => {
+            mockReq.body = { refreshToken: 'stolen-refresh' };
+            const decoded = { id: '1', email: 'test@test.com', jti: 'stolen-jti' };
+            JwtService.verifyRefreshToken.mockReturnValue(decoded);
+
+            <% if (caching !== 'None') { %>
+            const cacheService = require('<% if (architecture === "MVC") { if (caching === "Redis") { %>@/config/redisClient<% } else { %>@/config/memoryCache<% } } else { if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } } %>');
+            cacheService.get.mockResolvedValue(['different-jti']);
+            <% } else { %>
+            JwtService.activeRefreshTokens.set('1', ['different-jti']);
+            <% } %>
+
+            await controller.refresh(mockReq, mockRes, next);
+
+            expect(mockRes.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
+        });
+    });
+
+    describe('logout', () => {
+        it('should blacklist access jti and remove refresh jti', async () => {
+            mockReq.headers.authorization = 'Bearer access-token';
+            mockReq.body = { refreshToken: 'refresh-token' };
+            
+            JwtService.decodeToken
+                .mockReturnValueOnce({ jti: 'access-jti', exp: Math.floor(Date.now() / 1000) + 3600 })
+                .mockReturnValueOnce({ id: '1', jti: 'refresh-jti' });
+
+            await controller.logout(mockReq, mockRes, next);
+
+            expect(mockRes.json).toHaveBeenCalledWith({ message: 'Logged out successfully' });
         });
     });
 });

@@ -174,5 +174,51 @@ This ensures your authentication flow is both secure and event-driven out of the
 
 ---
 
+## 🔒 Advanced Security
+
+Our JWT implementation goes beyond basic tokens by providing **Refresh Token Rotation** and **Redis-based Token Revocation (Blacklisting)** for enterprise-grade security.
+
+### 1. Refresh Token Rotation
+When a user logs in, they receive two tokens:
+- **`accessToken`**: Short-lived (e.g., 15 minutes). Used to access protected routes.
+- **`refreshToken`**: Long-lived (e.g., 7 days). Used to silently obtain a new `accessToken` when it expires.
+
+To rotate your tokens, submit the active refresh token:
+
+```bash
+POST /api/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGciOiJIUz...long_token..."
+}
+```
+
+**Theft Detection**: Every `refreshToken` has a unique ID (`jti`). If an attacker steals a `refreshToken` and attempts to use it *after* it has already been used by the legitimate user, the server detects this reuse (theft) and **immediately revokes all active sessions** for that user, requiring them to log in again.
+
+### 2. Token Revocation (Blacklisting) & Logout
+Logging out on purely stateless JWT architectures is notoriously difficult. We solve this by implementing a highly performant **Token Blacklist**.
+
+When a user logs out:
+```bash
+POST /api/auth/logout
+Authorization: Bearer <active_accessToken>
+Content-Type: application/json
+
+{
+  "refreshToken": "<active_refreshToken>"
+}
+```
+
+1. The server reads the remaining time-to-live (TTL) on the `accessToken`.
+2. It stores the token's `jti` in **Redis** (or Memory Cache) with an exact expiration matching the TTL.
+3. It deletes the active `refreshToken` from the server's tracking lists.
+
+Every time a protected route is requested, the `authMiddleware` performs an ultra-fast check against Redis to ensure the provided `accessToken` isn't blacklisted.
+
+*(Note: If you disabled caching by selecting "None" during generation, this feature gracefully falls back to an in-memory Map, though state is lost upon server restarts).*
+
+---
+
 > [!TIP]
-> **Security Best Practice**: Never commit your `JWT_SECRET` to version control. Always use environment variables and ensure your `.env` file is listed in `.gitignore`.
+> **Security Best Practice**: Never commit your `JWT_SECRET` or `JWT_REFRESH_SECRET` to version control. Always use environment variables and ensure your `.env` file is listed in `.gitignore`.

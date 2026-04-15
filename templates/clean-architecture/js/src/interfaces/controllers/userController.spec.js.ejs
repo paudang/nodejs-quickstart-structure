@@ -1,5 +1,7 @@
 const UserController = require('@/interfaces/controllers/userController');
+<% if (communication === 'GraphQL') { -%>
 const ERROR_MESSAGES = require('@/utils/errorMessages');
+<% } -%>
 const CreateUser = require('@/usecases/CreateUser');
 const GetAllUsers = require('@/usecases/GetAllUsers');
 const UpdateUser = require('@/usecases/UpdateUser');
@@ -82,13 +84,14 @@ describe('UserController (Clean Architecture)', () => {
 
     describe('createUser', () => {
         it('should successfully create a new user (Happy Path)', async () => {
-            const payload = { name: 'Alice', email: 'alice@example.com' };
+            const payload = { name: 'Alice', email: 'alice@example.com'<% if (auth.includes('JWT')) { %>, password: 'password123'<% } %> };
 <%_ if (communication === 'GraphQL') { -%>
             const dataArg = payload;
 <%_ } else { -%>
             mockRequest.body = payload;
 <%_ } -%>
             const expectedUser = { id: '1', ...payload };
+            if (expectedUser.password) delete expectedUser.password;
             
             mockCreateUserUseCase.execute.mockResolvedValue(expectedUser);
 
@@ -105,8 +108,22 @@ describe('UserController (Clean Architecture)', () => {
 
             expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
 <%_ } -%>
-            expect(mockCreateUserUseCase.execute).toHaveBeenCalledWith(payload.name, payload.email);
+            expect(mockCreateUserUseCase.execute).toHaveBeenCalledWith(payload.name, payload.email, payload.password);
         });
+
+<% if (auth.includes('JWT')) { %>
+        it('should fail to create a user when password is missing and JWT is enabled', async () => {
+            const payload = { name: 'Alice', email: 'alice@example.com' };
+<%_ if (communication === 'GraphQL') { -%>
+            await expect(userController.createUser(payload)).rejects.toThrow('Password is required');
+<%_ } else { -%>
+            mockRequest.body = payload;
+            await userController.createUser(mockRequest, mockResponse, mockNext);
+            expect(mockResponse.status).toHaveBeenCalledWith(400);
+            expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Password is required' });
+<%_ } -%>
+        });
+<% } %>
     });
 
     describe('updateUser', () => {
@@ -145,6 +162,7 @@ describe('UserController (Clean Architecture)', () => {
 <%_ if (communication === 'GraphQL') { -%>
             await expect(userController.updateUser(id, { name: 'Fail' })).rejects.toThrow(error);
 <%_ } else { -%>
+            mockRequest.params = { id };
             await userController.updateUser(mockRequest, mockResponse, mockNext);
             expect(mockNext).toHaveBeenCalledWith(error);
 <%_ } -%>

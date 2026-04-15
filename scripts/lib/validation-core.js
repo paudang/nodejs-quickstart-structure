@@ -203,6 +203,7 @@ async function checkHealth(config, hostPort) {
                              const userId = user.id || user._id;
 
                              let headers = { 'Content-Type': 'application/json' };
+                             let currentRefreshToken = null;
 
                              // 1b. Login if Auth is enabled
                              if (config.auth && config.auth.includes('JWT')) {
@@ -212,8 +213,21 @@ async function checkHealth(config, hostPort) {
                                      body: JSON.stringify({ email: testEmail, password: testPassword })
                                  });
                                  if (!loginRes.ok) throw new Error('Login failed');
-                                 const { token } = await loginRes.json();
-                                 headers['Authorization'] = `Bearer ${token}`;
+                                 const { accessToken, refreshToken } = await loginRes.json();
+                                 headers['Authorization'] = `Bearer ${accessToken}`;
+                                 currentRefreshToken = refreshToken;
+
+                                 // 1c. Test Refresh
+                                 const refreshUrl = `http://127.0.0.1:${port}/api/auth/refresh`;
+                                 const refreshRes = await fetch(refreshUrl, {
+                                     method: 'POST',
+                                     headers: { 'Content-Type': 'application/json' },
+                                     body: JSON.stringify({ refreshToken })
+                                 });
+                                 if (!refreshRes.ok) throw new Error('Refresh token flow failed');
+                                 const refreshedTokens = await refreshRes.json();
+                                 headers['Authorization'] = `Bearer ${refreshedTokens.accessToken}`;
+                                 currentRefreshToken = refreshedTokens.refreshToken;
                              }
 
                              // 2. Update
@@ -228,6 +242,17 @@ async function checkHealth(config, hostPort) {
                                  method: 'DELETE',
                                  headers
                              });
+
+                             // 4. Logout
+                             if (config.auth && config.auth.includes('JWT')) {
+                                 const logoutUrl = `http://127.0.0.1:${port}/api/auth/logout`;
+                                 const logoutRes = await fetch(logoutUrl, {
+                                    method: 'POST',
+                                    headers,
+                                    body: JSON.stringify({ refreshToken: currentRefreshToken })
+                                 });
+                                 if (!logoutRes.ok) throw new Error('Logout failed');
+                             }
 
 
                              if (patchRes.ok && deleteRes.ok) {
