@@ -112,7 +112,7 @@ query GetAllUsers {
 **Mutation to create a user:**
 ```graphql
 mutation CreateUser {
-  createUser(name: "John Doe", email: "john@example.com") {
+  createUser(name: "John Doe", email: "john@example.com"<%_ if (auth.includes('JWT')) { _%>, password: "yourpassword123"<%_ } _%>) {
     id
     name
     email
@@ -148,15 +148,13 @@ A Swagger UI for API documentation is available at:
 - `POST /api/users`: Create a new user.
 - `PATCH /api/users/:id`: Partially update a user.
 - `DELETE /api/users/:id`: Delete a user (Soft Delete).
-<% if (auth.includes('JWT')) { %>
+<%_ if (auth.includes('JWT')) { %>
 ### 🔐 Auth Endpoints:
 - `POST /api/auth/login`: Exchange credentials for a JWT token.
 - `POST /api/users`: Acts as Sign Up when password is provided.
   *Note: To access protected user endpoints (GET/PATCH/DELETE), include `Authorization: Bearer <your_token>` in the headers.*
-<% } %>
-<%_ } -%>
-
-
+<% } -%>
+<% } -%>
 <% if (communication === 'Kafka') { -%>
 ## 📡 Testing Kafka Asynchronous Flow
 This project demonstrates a production-ready Kafka flow:

@@ -29,6 +29,7 @@ const { errorMiddleware } = require('./utils/errorMiddleware');
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
 
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>

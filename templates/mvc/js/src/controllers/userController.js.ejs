@@ -15,7 +15,6 @@ const { KAFKA_ACTIONS } = require('../utils/kafkaEvents');
 <%_ } -%>
 <% if (auth.includes('JWT')) { %>const bcrypt = require('bcryptjs');<% } %>
 
-
 <% if (communication === 'GraphQL') { -%>
 const getUsers = async () => {
   try {

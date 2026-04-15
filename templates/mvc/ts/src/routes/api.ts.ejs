@@ -3,7 +3,6 @@ import { UserController } from '@/controllers/userController';
 <%_ if (auth.includes('JWT')) { _%>
 import { authMiddleware } from '@/middleware/authMiddleware';
 <%_ } _%>
-
 const router = Router();
 const userController = new UserController();
 

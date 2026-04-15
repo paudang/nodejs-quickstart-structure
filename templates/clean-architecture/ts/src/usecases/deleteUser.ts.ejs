@@ -1,6 +1,8 @@
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
-import cacheService from '@/infrastructure/caching/redisClient';
+<%_ if (caching !== 'None') { _%>
+import cacheService from '<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>';
 import logger from '@/infrastructure/log/logger';
+<%_ } _%>
 
 export default class DeleteUser {
     constructor(private userRepository: UserRepository) {}
@@ -8,6 +10,7 @@ export default class DeleteUser {
     async execute(id: number | string) {
         const result = await this.userRepository.delete(id);
         
+        <%_ if (caching !== 'None') { _%>
         if (result) {
             try {
                 await cacheService.del('users:all');
@@ -16,6 +19,7 @@ export default class DeleteUser {
                 logger.warn('Failed to clear cache after user deletion:', error);
             }
         }
+        <%_ } _%>
         
         return result;
     }

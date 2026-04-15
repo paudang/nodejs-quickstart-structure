@@ -4,11 +4,11 @@ import { Request, Response, NextFunction } from 'express';
 import { HTTP_STATUS } from '@/utils/httpCodes';
 <% } -%>
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
-import CreateUser from '../../usecases/createUser';
-import GetAllUsers from '../../usecases/getAllUsers';
-import GetUserById from '../../usecases/getUserById';
-import UpdateUser from '../../usecases/updateUser';
-import DeleteUser from '../../usecases/deleteUser';
+import CreateUser from '@/usecases/createUser';
+import GetAllUsers from '@/usecases/getAllUsers';
+import GetUserById from '@/usecases/getUserById';
+import UpdateUser from '@/usecases/updateUser';
+import DeleteUser from '@/usecases/deleteUser';
 import logger from '@/infrastructure/log/logger';
 <%_ if (communication === 'Kafka') { -%>
 import { kafkaService } from '@/infrastructure/messaging/kafkaClient';

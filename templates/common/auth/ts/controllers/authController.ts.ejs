@@ -33,7 +33,7 @@ export class AuthController {
       }
 
       const token = JwtService.generateToken({ 
-        id: user.id || (user as { _id?: string | number })._id as string | number, 
+        id: user.id || ((user as unknown) as { _id?: string | number })._id as string | number, 
         email: user.email 
       });
       res.json({ token });

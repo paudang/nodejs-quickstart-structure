@@ -6,7 +6,9 @@ import bcrypt from 'bcryptjs';
 <% if (caching !== 'None') { -%>
 import cacheService from '<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>';
 <% } -%>
+<% if (caching !== 'None') { -%>
 import logger from '@/infrastructure/log/logger';
+<% } -%>
 
 export default class CreateUser {
     constructor(private userRepository: UserRepository) {}

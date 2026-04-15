@@ -194,7 +194,7 @@ async function checkHealth(config, hostPort) {
                              body: JSON.stringify({ 
                                name: 'Test User', 
                                email: testEmail,
-                               password: testPassword 
+                               ...(config.auth && config.auth.includes('JWT') ? { password: testPassword } : {})
                              })
                         });
                         
@@ -275,7 +275,8 @@ async function checkHealth(config, hostPort) {
                          
                          // 1. Create Mutation
                          const testPassword = 'password123';
-                         const createMutation = `mutation { createUser(name: "GQL Test", email: "gql${Date.now()}@test.com", password: "${testPassword}") { id } }`;
+                         const passwordArg = config.auth && config.auth.includes('JWT') ? `, password: "${testPassword}"` : '';
+                         const createMutation = `mutation { createUser(name: "GQL Test", email: "gql${Date.now()}@test.com"${passwordArg}) { id } }`;
                          const createRes = await fetch(gqlUrl, {
                                method: 'POST',
                                headers: { 'Content-Type': 'application/json' },

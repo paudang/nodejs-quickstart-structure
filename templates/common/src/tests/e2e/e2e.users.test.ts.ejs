@@ -21,7 +21,7 @@ describe('E2E User Tests', () => {
   it('should create a user via GraphQL', async () => {
     const query = `
       mutation {
-        createUser(name: "Test User", email: "${uniqueEmail}", password: "${testPassword}") {
+        createUser(name: "Test User", email: "${uniqueEmail}"<%_ if (auth.includes('JWT')) { _%>, password: "${testPassword}"<%_ } _%>) {
           id
           name
           email
@@ -40,7 +40,7 @@ describe('E2E User Tests', () => {
   it('should create a user successfully (Signup)', async () => {
     const response = await request(SERVER_URL)
       .post('/api/users')
-      .send({ name: 'Test User', email: uniqueEmail, password: testPassword });
+      .send({ name: 'Test User', email: uniqueEmail<%_ if (auth.includes('JWT')) { _%>, password: testPassword <%_ } _%>});
 
     expect([201, 202]).toContain(response.statusCode);
     userId = response.body.id || response.body._id;

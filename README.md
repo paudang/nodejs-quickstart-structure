@@ -40,7 +40,7 @@ The v2.0.0 release is a major leap forward, turning the generator into a **Commu
 - [🚀 Quick Start](#-quick-start)
 - [✨ Key Features](#-key-features)
 - [🛡️ Professional Standards](#-professional-standards)
-- [🧩 2,640+ Project Combinations](#-2640-project-combinations)
+- [🧩 5,280+ Project Combinations](#-5280-project-combinations)
 - [⚙️ Configuration Options](#-configuration-options)
 - [🏗️ Generated Project Structure](#-generated-project-structure)
 - [📖 Documentation](#-documentation)
@@ -93,14 +93,14 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 
 ---
 
-## 🧩 2,640+ Project Combinations
+## 🧩 5,280+ Project Combinations
 
 The CLI supports a massive number of configurations to fit your exact needs:
 
-- **240 Core Combinations**:
-  - **MVC Architecture**: 180 variants (Languages × View Engines × Databases × Communication Patterns × Caching)
-  - **Clean Architecture**: 60 variants (Languages × Databases × Communication Patterns × Caching)
-- **2,640+ Total Scenarios**:
+- **480 Core Combinations**:
+  - **MVC Architecture**: 360 variants (Languages × View Engines × Databases × Communication Patterns × Caching × Auth)
+  - **Clean Architecture**: 120 variants (Languages × Databases × Communication Patterns × Caching × Auth)
+- **5,280+ Total Scenarios**:
   - Every combination can be generated across 3 CI/CD providers.
   - Optional **Enterprise-Grade Security Hardening** doubles the scenarios.
   - Every single scenario is verified to be compatible with our **80% Coverage Threshold** policy.

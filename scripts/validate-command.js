@@ -33,7 +33,7 @@ LANGUAGES.forEach(lang => {
                             const securityOptions = ci !== 'None' ? [true, false] : [false];
                             securityOptions.forEach(sec => {
                                 combinations.push({
-                                    projectName: `t2640_${Math.random().toString(36).substring(2, 8)}`,
+                                    projectName: `t5280_${Math.random().toString(36).substring(2, 8)}`,
                                     language: lang,
                                     architecture: arch,
                                     viewEngine: view,
@@ -55,7 +55,7 @@ LANGUAGES.forEach(lang => {
 
 async function runCommand(command, cwd) {
     return new Promise((resolve, reject) => {
-        // Using inherit to let users see error stack traces if one of the 2640 fails to compile
+        // Using inherit to let users see error stack traces if one of the 5280 fails to compile
         const child = spawn(command, {
             cwd,
             stdio: 'inherit',
@@ -88,7 +88,7 @@ function pLimit(concurrency) {
 }
 
 async function runTest(config, index) {
-    const testDir = path.resolve(__dirname, '../temp_2640_workspace');
+    const testDir = path.resolve(__dirname, '../temp_5280_workspace');
     const projectPath = path.join(testDir, config.projectName);
 
     try {
@@ -130,7 +130,7 @@ async function runTest(config, index) {
 
 async function start() {
     console.log(`${ANSI_CYAN}>>> Preparing Exhaustive Matrix Verification for ${combinations.length} combinations...${ANSI_RESET}`);
-    await fs.remove(path.resolve(__dirname, '../temp_2640_workspace'));
+    await fs.remove(path.resolve(__dirname, '../temp_5280_workspace'));
 
     // 50 concurrency for generating IO file chunks locally without dragging the system down.
     const concurrency = parseInt(process.argv[2] || "5");
@@ -162,21 +162,21 @@ async function start() {
 
     const timeTaken = ((Date.now() - startTime) / 1000).toFixed(1);
 
-    console.log(`\n${ANSI_CYAN}=== 2,640 Validation Summary ===${ANSI_RESET}`);
+    console.log(`\n${ANSI_CYAN}=== 5,280 Validation Summary ===${ANSI_RESET}`);
     console.log(`Execution Time: ${timeTaken}s`);
     console.log(`Total Variants Tested: ${passed + failed}`);
     console.log(`${ANSI_GREEN}Passed (Zero Templates Errors): ${passed}${ANSI_RESET}`);
 
     if (failed > 0) {
         console.log(`${ANSI_RED}Failed Template Triggers: ${failed}${ANSI_RESET}`);
-        fs.writeFileSync('2640_failures.log', JSON.stringify(failures, null, 2));
-        console.log(`${ANSI_RED}Check 2640_failures.log for EJS rendering traces.${ANSI_RESET}`);
+        fs.writeFileSync('5280_failures.log', JSON.stringify(failures, null, 2));
+        console.log(`${ANSI_RED}Check 5280_failures.log for EJS rendering traces.${ANSI_RESET}`);
         process.exit(1);
     } else {
-        console.log(`${ANSI_GREEN}✓ SUCCESS! All 2,640 UI-mapped combinations cleanly render templates!${ANSI_RESET}`);
+        console.log(`${ANSI_GREEN}✓ SUCCESS! All 5,280 UI-mapped combinations cleanly render templates!${ANSI_RESET}`);
     }
 
-    await fs.remove(path.resolve(__dirname, '../temp_2640_workspace'));
+    await fs.remove(path.resolve(__dirname, '../temp_5280_workspace'));
 }
 
 start();

@@ -3,7 +3,7 @@
 > The #1 AI-Native Scaffolding Tool for Production-Ready Node.js Microservices.
 
 ## Project Vision
-To provide a 2,640+ scenario-verified foundation for modern developers, optimized for **Agentic Engineering** and **Clean Architecture**. This project bridges the gap between AI generation and Enterprise-grade engineering.
+To provide a 5,280+ scenario-verified foundation for modern developers, optimized for **Agentic Engineering** and **Clean Architecture**. This project bridges the gap between AI generation and Enterprise-grade engineering.
 
 ## Tech Stack
 - **Languages**: TypeScript (Recommended), JavaScript
