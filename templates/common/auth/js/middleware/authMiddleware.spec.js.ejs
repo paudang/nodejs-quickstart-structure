@@ -12,6 +12,15 @@ jest.mock('@/infrastructure/auth/jwtService');
 <%_ } else { _%>
 jest.mock('@/services/jwtService');
 <%_ } _%>
+<%_ if (caching !== 'None') { _%>
+<%_ const cachePath = (architecture === "MVC") ? (caching === "Redis" ? "@/config/redisClient" : "@/config/memoryCache") : (caching === "Redis" ? "@/infrastructure/caching/redisClient" : "@/infrastructure/caching/memoryCache"); _%>
+jest.mock('<%= cachePath %>', () => ({
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn()
+}), { virtual: true });
+const cacheService = require('<%= cachePath %>');
+<%_ } _%>
 
 describe('AuthMiddleware', () => {
     let mockReq;
@@ -43,7 +52,6 @@ describe('AuthMiddleware', () => {
         
         // Mock the blacklist check
         <% if (caching !== 'None') { %>
-        const cacheService = require('<% if (architecture === "MVC") { if (caching === "Redis") { %>@/config/redisClient<% } else { %>@/config/memoryCache<% } } else { if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } } %>');
         cacheService.get.mockResolvedValue(true);
         <% } else { %>
         JwtService.blacklistedTokens.set('blacklisted-jti', Date.now() + 10000);
@@ -62,7 +70,6 @@ describe('AuthMiddleware', () => {
         JwtService.verifyToken.mockReturnValue(user);
 
         <% if (caching !== 'None') { %>
-        const cacheService = require('<% if (architecture === "MVC") { if (caching === "Redis") { %>@/config/redisClient<% } else { %>@/config/memoryCache<% } } else { if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } } %>');
         cacheService.get.mockResolvedValue(false);
         <% } else { %>
         JwtService.blacklistedTokens.delete('valid-jti');

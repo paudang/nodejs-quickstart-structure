@@ -464,7 +464,7 @@ describe('UserController', () => {
             const error = new Error('Database Error');
             User.create.mockRejectedValue(error);
 <% if (communication === 'GraphQL') { -%>
-            await expect(createUser({ name: 'Alice', email: 'alice@example.com' })).rejects.toThrow(error);
+            await expect(createUser({ name: 'Alice', email: 'alice@example.com'<% if (auth.includes('JWT')) { %>, password: 'password123'<% } %> })).rejects.toThrow(error);
 <% } else { -%>
             mockRequest.body = { name: 'Alice', email: 'alice@example.com', password: 'password123' };
             await createUser(mockRequest, mockResponse, mockNext);

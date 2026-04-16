@@ -24,6 +24,19 @@ jest.mock('@/models/User', () => ({ findOne: jest.fn() }));
 const User = require('@/models/User');
 <%_ } _%>
 
+<%_ if (caching !== 'None') { _%>
+<%_ const cachePath = (architecture === "MVC") ? (caching === "Redis" ? "@/config/redisClient" : "@/config/memoryCache") : (caching === "Redis" ? "@/infrastructure/caching/redisClient" : "@/infrastructure/caching/memoryCache"); _%>
+jest.mock('<%= cachePath %>', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn()
+  }
+}), { virtual: true });
+import cacheService from '<%= cachePath %>';
+<%_ } _%>
+
 describe('AuthController', () => {
   let authController: AuthController;
   let mockRequest: any;
@@ -74,15 +87,9 @@ describe('AuthController', () => {
       (JwtService.generateRefreshToken as jest.Mock).mockReturnValue('mock-refresh-token');
       (JwtService.decodeToken as jest.Mock).mockReturnValue({ jti: 'test-jti' });
 
-      // Mock cacheService if it exists
-      jest.mock('@/config/redisClient', () => ({ get: jest.fn(), set: jest.fn(), del: jest.fn() }), { virtual: true });
-      jest.mock('@/config/memoryCache', () => ({ get: jest.fn(), set: jest.fn(), del: jest.fn() }), { virtual: true });
-      jest.mock('@/infrastructure/caching/redisClient', () => ({ get: jest.fn(), set: jest.fn(), del: jest.fn() }), { virtual: true });
-      jest.mock('@/infrastructure/caching/memoryCache', () => ({ get: jest.fn(), set: jest.fn(), del: jest.fn() }), { virtual: true });
-
       await authController.login(mockRequest as Request, mockResponse as Response, nextFunction);
 
-      expect(mockResponse.json).toHaveBeenCalledWith({ accessToken: 'mock-token', refreshToken: 'mock-refresh-token' });
+      expect(mockResponse.json).toHaveBeenCalledWith({ token: 'mock-token', accessToken: 'mock-token', refreshToken: 'mock-refresh-token' });
     });
 
     it('should call next with error if something fails', async () => {
@@ -107,7 +114,6 @@ describe('AuthController', () => {
 
       // Mock cache success
       <% if (caching !== 'None') { %>
-      const cacheService = require('<% if (architecture === "MVC") { if (caching === "Redis") { %>@/config/redisClient<% } else { %>@/config/memoryCache<% } } else { if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } } %>').default;
       (cacheService.get as jest.Mock).mockResolvedValue(['old-jti']);
       <% } else { %>
       JwtService.activeRefreshTokens.set('1', ['old-jti']);
@@ -124,7 +130,6 @@ describe('AuthController', () => {
       (JwtService.verifyRefreshToken as jest.Mock).mockReturnValue(decoded);
 
       <% if (caching !== 'None') { %>
-      const cacheService = require('<% if (architecture === "MVC") { if (caching === "Redis") { %>@/config/redisClient<% } else { %>@/config/memoryCache<% } } else { if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } } %>').default;
       (cacheService.get as jest.Mock).mockResolvedValue(['some-other-jti']);
       <% } else { %>
       JwtService.activeRefreshTokens.set('1', ['some-other-jti']);
@@ -139,7 +144,7 @@ describe('AuthController', () => {
 
   describe('logout', () => {
     it('should blacklist the access token and remove the refresh token', async () => {
-      mockRequest.headers.authorization = 'Bearer access-token';
+      mockRequest.headers = { authorization: 'Bearer access-token' };
       mockRequest.body = { refreshToken: 'refresh-token' };
       
       (JwtService.decodeToken as jest.Mock)

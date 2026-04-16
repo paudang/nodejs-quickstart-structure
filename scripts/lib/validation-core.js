@@ -578,9 +578,12 @@ export async function runValidation(options = {}) {
 
     const testPromises = combinations.map((config, i) => {
         if (specificTestIndex !== undefined) {
-            if (i !== specificTestIndex) return null;
+            const isMatch = Array.isArray(specificTestIndex) 
+                ? specificTestIndex.includes(i)
+                : i === specificTestIndex;
+            if (!isMatch) return null;
         } else {
-            if (i < startIndex || i > endIndex) return null;
+            if (i < startIndex || (endIndex !== undefined && i > endIndex)) return null;
         }
         
         return limit(async () => {
@@ -597,7 +600,10 @@ export async function runValidation(options = {}) {
                     });
                 }
                 if (!result.success && specificTestIndex !== undefined) {
-                     process.exit(1);
+                     // If it's a single specific test, exit on failure
+                     if (!Array.isArray(specificTestIndex)) {
+                        process.exit(1);
+                     }
                 }
             } catch (error) {
                  failed++;

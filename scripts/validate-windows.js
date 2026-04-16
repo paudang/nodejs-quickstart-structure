@@ -7,7 +7,11 @@ let startIndex = 0;
 let endIndex = undefined;
 
 if (args.length === 1) {
-    specificIndex = parseInt(args[0]);
+    if (args[0].includes(',')) {
+        specificIndex = args[0].split(',').map(s => parseInt(s.trim()));
+    } else {
+        specificIndex = parseInt(args[0]);
+    }
 } else if (args.length >= 2) {
     startIndex = parseInt(args[0]);
     endIndex = parseInt(args[1]);

@@ -56,7 +56,7 @@ class AuthController {
     JwtService.activeRefreshTokens.set(userId, activeTokens);
     <% } %>
 
-    res.json({ accessToken, refreshToken });
+    res.json({ token: accessToken, accessToken, refreshToken });
   } catch (error) {
     logger.error('Login error:', error);
     next(error);

@@ -6,9 +6,11 @@ const mockGetUsers = jest.fn().mockImplementation((req, res) => res.status(200).
 const mockCreateUser = jest.fn().mockImplementation((req, res) => res.status(201).json({ id: '1', name: 'Test' }));
 const mockGetUserById = jest.fn().mockImplementation((req, res) => res.status(200).json({ id: '1', name: 'Test' }));
 
+<% if (auth.includes('JWT')) { -%>
 jest.mock('@/infrastructure/webserver/middleware/authMiddleware', () => ({
   authMiddleware: (req: any, res: any, next: any) => next()
 }));
+<% } -%>
 
 jest.mock('@/interfaces/controllers/userController', () => {
   return {

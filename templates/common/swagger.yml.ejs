@@ -78,8 +78,67 @@ paths:
                 properties:
                   token:
                     type: string
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
         '401':
           description: Invalid credentials
+  /api/auth/refresh:
+    post:
+      summary: Refresh access token using a refresh token
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+        '401':
+          description: Invalid refresh token
+  /api/auth/logout:
+    post:
+      summary: Logout and revoke refresh token
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 <%_ } -%>
   /api/users:
     get:
