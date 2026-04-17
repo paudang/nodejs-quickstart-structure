@@ -1,0 +1,27 @@
+<%_ if (caching !== 'None') { _%>
+const cacheService = require('<% if (caching === "Redis") { %>../infrastructure/caching/redisClient<% } else { %>../infrastructure/caching/memoryCache<% } %>');
+const logger = require('../infrastructure/log/logger');
+<%_ } _%>
+
+class DeleteUser {
+  constructor(userRepository) {
+    this.userRepository = userRepository;
+  }
+
+  async execute(id) {
+    const result = await this.userRepository.delete(id);
+    <%_ if (caching !== 'None') { -%>
+    if (result) {
+        try {
+            await cacheService.del('users:all');
+            await cacheService.del(`user:${id}`);
+            logger.info(`Invalidated cache for user ${id}`);
+        } catch (error) {
+            logger.error('Cache error (del):', error);
+        }
+    }<%_ } -%>
+    return result;
+  }
+}
+
+module.exports = DeleteUser;

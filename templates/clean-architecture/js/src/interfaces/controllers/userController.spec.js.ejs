@@ -11,6 +11,7 @@ jest.mock('@/usecases/CreateUser');
 jest.mock('@/usecases/GetAllUsers');
 jest.mock('@/usecases/UpdateUser');
 jest.mock('@/usecases/DeleteUser');
+jest.mock('@/usecases/GetUserById');
 <%_ if (communication === 'Kafka') { -%>
 jest.mock('@/infrastructure/messaging/kafkaClient', () => ({
     sendMessage: jest.fn().mockResolvedValue(undefined)
@@ -24,6 +25,7 @@ describe('UserController (Clean Architecture)', () => {
     let mockGetAllUsersUseCase;
     let mockUpdateUserUseCase;
     let mockDeleteUserUseCase;
+    let mockGetUserByIdUseCase;
 <%_ if (communication !== 'GraphQL') { -%>
     let mockRequest;
     let mockResponse;
@@ -40,6 +42,8 @@ describe('UserController (Clean Architecture)', () => {
         mockGetAllUsersUseCase = GetAllUsers.mock.instances[0];
         mockUpdateUserUseCase = UpdateUser.mock.instances[0];
         mockDeleteUserUseCase = DeleteUser.mock.instances[0];
+        const GetUserById = require('@/usecases/GetUserById');
+        mockGetUserByIdUseCase = GetUserById.mock.instances[0];
 
 <%_ if (communication !== 'GraphQL') { -%>
         mockRequest = {
@@ -126,6 +130,36 @@ describe('UserController (Clean Architecture)', () => {
 <% } %>
     });
 
+    describe('getUserById', () => {
+        it('should return a user if found (Happy Path)', async () => {
+            const id = '1';
+            const userMock = { id, name: 'Test', email: 'test@example.com' };
+            mockGetUserByIdUseCase.execute.mockResolvedValue(userMock);
+
+<%_ if (communication === 'GraphQL') { -%>
+            const result = await userController.getUserById(id);
+            expect(result).toEqual(userMock);
+<%_ } else { -%>
+            mockRequest.params = { id };
+            await userController.getUserById(mockRequest, mockResponse, mockNext);
+            expect(mockResponse.json).toHaveBeenCalledWith(userMock);
+<%_ } -%>
+        });
+
+        it('should return 404 if user not found (Error Handling)', async () => {
+            const id = '999';
+            mockGetUserByIdUseCase.execute.mockResolvedValue(null);
+
+<%_ if (communication === 'GraphQL') { -%>
+            await expect(userController.getUserById(id)).rejects.toThrow(ERROR_MESSAGES.USER_NOT_FOUND);
+<%_ } else { -%>
+            mockRequest.params = { id };
+            await userController.getUserById(mockRequest, mockResponse, mockNext);
+            expect(mockResponse.status).toHaveBeenCalledWith(404);
+<%_ } -%>
+        });
+    });
+
     describe('updateUser', () => {
         it('should successfully update a user (Happy Path)', async () => {
             const id = '1';
@@ -153,6 +187,19 @@ describe('UserController (Clean Architecture)', () => {
             expect(sendMessage).toHaveBeenCalled();
 <%_ } -%>
             expect(mockUpdateUserUseCase.execute).toHaveBeenCalledWith(id, payload);
+        });
+
+        it('should return 404 if user to update is not found (Error Handling)', async () => {
+            const id = '999';
+            mockUpdateUserUseCase.execute.mockResolvedValue(null);
+
+<%_ if (communication === 'GraphQL') { -%>
+            await expect(userController.updateUser(id, { name: 'Fail' })).rejects.toThrow(ERROR_MESSAGES.USER_NOT_FOUND);
+<%_ } else { -%>
+            mockRequest.params = { id };
+            await userController.updateUser(mockRequest, mockResponse, mockNext);
+            expect(mockResponse.status).toHaveBeenCalledWith(404);
+<%_ } -%>
         });
 
         it('should handle database errors during update (Error Handling)', async () => {

@@ -46,6 +46,33 @@ describe('UserRepository', () => {
         });
     });
 
+    describe('findById', () => {
+        it('should return a user if found (Happy Path)', async () => {
+            const id = '1';
+            const userData = { id, name: 'Test User', email: 'test@example.com' };
+<%_ if (database === 'MongoDB') { -%>
+            UserModel.findById.mockResolvedValue({ _id: id, ...userData });
+<%_ } else if (database === 'None') { -%>
+            UserModel.findByPk.mockResolvedValue(userData);
+<%_ } else { -%>
+            UserModel.findByPk.mockResolvedValue(userData);
+<%_ } -%>
+            const result = await userRepository.findById(id);
+            expect(result).toEqual(userData);
+        });
+
+        it('should return null if user not found (Error Handling)', async () => {
+            const id = '999';
+<%_ if (database === 'MongoDB') { -%>
+            UserModel.findById.mockResolvedValue(null);
+<%_ } else { -%>
+            UserModel.findByPk.mockResolvedValue(null);
+<%_ } -%>
+            const result = await userRepository.findById(id);
+            expect(result).toBeNull();
+        });
+    });
+
     describe('getUsers', () => {
         it('should return a list of mapped UserEntities (Happy Path)', async () => {
 <%_ if (database === 'MongoDB') { -%>

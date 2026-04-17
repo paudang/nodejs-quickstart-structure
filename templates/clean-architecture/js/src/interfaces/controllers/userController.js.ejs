@@ -2,6 +2,7 @@ const CreateUser = require('../../usecases/CreateUser');
 const GetAllUsers = require('../../usecases/GetAllUsers');
 const UpdateUser = require('../../usecases/UpdateUser');
 const DeleteUser = require('../../usecases/DeleteUser');
+const GetUserById = require('../../usecases/GetUserById');
 const UserRepository = require('../../infrastructure/repositories/UserRepository');
 const ERROR_MESSAGES = require('../../utils/errorMessages');
 <% if (communication !== 'GraphQL') { -%>
@@ -20,6 +21,7 @@ class UserController {
         this.getAllUsersUseCase = new GetAllUsers(this.userRepository);
         this.updateUserUseCase = new UpdateUser(this.userRepository);
         this.deleteUserUseCase = new DeleteUser(this.userRepository);
+        this.getUserByIdUseCase = new GetUserById(this.userRepository);
     }
 
 <% if (communication === 'GraphQL') { -%>
@@ -50,6 +52,17 @@ class UserController {
             return user;
         } catch (error) {
             logger.error(`${ERROR_MESSAGES.CREATE_USER_ERROR}:`, error);
+            throw error;
+        }
+    }
+
+    async getUserById(id) {
+        try {
+            const user = await this.getUserByIdUseCase.execute(id);
+            if (!user) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+            return user;
+        } catch (error) {
+            logger.error(`${ERROR_MESSAGES.FETCH_USER_ERROR}:`, error);
             throw error;
         }
     }
@@ -157,6 +170,20 @@ class UserController {
             res.status(HTTP_STATUS.OK).json({ message: 'User deleted successfully' });
         } catch (error) {
             logger.error(`${ERROR_MESSAGES.DELETE_USER_ERROR}:`, error);
+            next(error);
+        }
+    }
+
+    async getUserById(req, res, next) {
+        const { id } = req.params;
+        try {
+            const user = await this.getUserByIdUseCase.execute(id);
+            if (!user) {
+                return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+            }
+            res.json(user);
+        } catch (error) {
+            logger.error(`${ERROR_MESSAGES.FETCH_USER_ERROR}:`, error);
             next(error);
         }
     }

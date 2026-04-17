@@ -8,7 +8,9 @@ describe('E2E User Tests', () => {
     let authToken;
 <%_ } _%>
     const uniqueEmail = `test_${Date.now()}@example.com`;
+<%_ if (auth.includes('JWT')) { _%>
     const testPassword = 'password123';
+<%_ } _%>
 
 <%_ if (auth.includes('JWT') && communication !== 'GraphQL') { _%>
     it('should fail to fetch users without token (Protected Route)', async () => {

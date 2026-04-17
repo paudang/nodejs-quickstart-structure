@@ -24,6 +24,20 @@ class UserRepository {
 <%_ } -%>
   }
 
+  async findById(id) {
+<%_ if (database === 'None') { -%>
+    return await UserModel.findByPk(id);
+<%_ } else if (database === 'MongoDB') { -%>
+    const user = await UserModel.findById(id);
+    if (!user) return null;
+    return { id: user._id.toString(), name: user.name, email: user.email };
+<%_ } else { -%>
+    const user = await UserModel.findByPk(id);
+    if (!user) return null;
+    return { id: user.id || 0, name: user.name, email: user.email };
+<%_ } -%>
+  }
+
   async getUsers() {
 <%_ if (database === 'None') { -%>
     return await UserModel.find();

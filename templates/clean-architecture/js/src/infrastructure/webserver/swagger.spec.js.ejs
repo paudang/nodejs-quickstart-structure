@@ -1,0 +1,14 @@
+<% if (communication === 'REST APIs' || communication === 'Kafka') { -%>
+const swaggerDocument = require('@/infrastructure/webserver/swagger');
+
+jest.mock('yamljs', () => ({
+    load: jest.fn().mockReturnValue({ swagger: '2.0', info: { title: 'Test API' } }),
+}));
+
+describe('Swagger Documentation', () => {
+    it('should load the swagger document', () => {
+        expect(swaggerDocument).toBeDefined();
+        expect(swaggerDocument.swagger).toBe('2.0');
+    });
+});
+<% } -%>

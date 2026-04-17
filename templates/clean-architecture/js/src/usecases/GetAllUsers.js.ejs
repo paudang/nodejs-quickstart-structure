@@ -1,0 +1,36 @@
+<%_ if (caching !== 'None') { _%>
+const cacheService = require('<% if (caching === "Redis") { %>../infrastructure/caching/redisClient<% } else { %>../infrastructure/caching/memoryCache<% } %>');
+const logger = require('../infrastructure/log/logger');
+<%_ } _%>
+
+class GetAllUsers {
+    constructor(userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    async execute() {
+        <%_ if (caching !== 'None') { -%>
+        const cacheKey = 'users:all';
+        try {
+            const cachedUsers = await cacheService.get(cacheKey);
+            if (cachedUsers) {
+                logger.info('Serving users from cache');
+                return cachedUsers;
+            }
+        } catch (error) {
+            logger.error('Cache error (get):', error);
+        }<%_ } -%>
+        const users = await this.userRepository.getUsers();
+        <%_ if (caching !== 'None') { -%>
+        if (users) {
+            try {
+                await cacheService.set(cacheKey, users, 3600); // Cache for 1 hour
+            } catch (error) {
+                logger.error('Cache error (set):', error);
+            }
+        }<%_ } -%>
+        return users;
+    }
+}
+
+module.exports = GetAllUsers;

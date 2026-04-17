@@ -20,7 +20,7 @@ function log(msg, color = ANSI_RESET) {
     fs.appendFileSync(LOG_FILE, `[${timestamp}] ${msg}\n`);
 }
 
-const LANGUAGES = ['TypeScript', 'JavaScript'];
+const LANGUAGES = ['JavaScript', 'TypeScript'];
 const DATABASES = ['None','MySQL', 'PostgreSQL', 'MongoDB'];
 const COMMUNICATIONS = ['REST APIs', 'GraphQL', 'Kafka']; 
 const CACHING = ['None', 'Redis', 'Memory Cache'];

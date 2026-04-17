@@ -1,4 +1,18 @@
 const GetAllUsers = require('@/usecases/GetAllUsers');
+
+<% if (caching === 'Redis') { -%>
+jest.mock('@/infrastructure/caching/redisClient', () => ({
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn()
+}));
+<% } else if (caching === 'Memory Cache') { -%>
+jest.mock('@/infrastructure/caching/memoryCache', () => ({
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn()
+}));
+<% } -%>
 const UserRepository = require('@/infrastructure/repositories/UserRepository');
 <%_ if (caching !== 'None') { -%>
 const cacheService = require('<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>');
