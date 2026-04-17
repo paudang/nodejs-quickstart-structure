@@ -21,10 +21,25 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
 | **Path A: Next-Gen Web UI** (Recommended ⭐️) | **Path B: Interactive CLI** |
 | :--- | :--- |
 | <a href="https://paudang.github.io/nodejs-quickstart-structure/"><img src="docs/public/v2-preview.png" width="100%" alt="UI Preview"></a> | <img src="docs/demo.gif" width="100%" alt="CLI Demo"> |
-| **[Try Visual Configurator](https://paudang.github.io/nodejs-quickstart-structure/)** | `npx nodejs-quickstart-structure init` |
+| [Try Visual Configurator →](https://paudang.github.io/nodejs-quickstart-structure/) | [See CLI Commands ↓](#-path-b-interactive-cli) |
 | ✨ **Visual Preview**: Real-time folder simulation. | ⚡ **Fast & Direct**: Quickly scaffold in terminal. |
-| 🛠️ **Zero-Prompt**: Paste a tailored command. | ⌨️ **Interactive**: Guided CLI configuration. |
-| 📖 **Docs Sync**: Deep-links for every feature. | 🦾 **AI-Ready**: Generates `.cursorrules`. |
+| 🛠️ **Zero-Prompt**: Paste a tailored command. | 🦾 **AI-Ready**: Generates `.cursorrules`. |
+
+---
+
+### 🦾 Path B: Interactive CLI
+**Scaffold your project directly from your terminal in seconds.**
+
+```bash
+npx nodejs-quickstart-structure init
+```
+
+*Or install globally:*
+```bash
+npm install -g nodejs-quickstart-structure
+# Then run:
+nodejs-quickstart init
+```
 
 ---
 
