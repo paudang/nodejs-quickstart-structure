@@ -14,30 +14,51 @@
 
 ---
 
-A powerful CLI tool to scaffold production-ready Node.js microservices with built-in best practices. Choose between **MVC** or **Clean Architecture**, **JavaScript** or **TypeScript**, and your preferred tech stack in seconds.
+A powerful ecosystem to scaffold production-ready Node.js microservices with built-in best practices. Choose between **MVC** or **Clean Architecture**, **JavaScript** or **TypeScript**, and your preferred tech stack in seconds.
 
-🎯 **[Try the Next-Gen Web UI Configurator!](https://paudang.github.io/nodejs-quickstart-structure/)**
+## 🚀 Choose Your Journey
+
+### Path A: Next-Gen Web UI (Recommended ⭐️)
+**[Try the Visual Configurator](https://paudang.github.io/nodejs-quickstart-structure/)**
 *Generate your exact architecture in the browser with real-time folder simulation.*
 
-![Demo](docs/demo.gif)
+[![UI Preview](docs/public/v2-preview.png)](https://paudang.github.io/nodejs-quickstart-structure/)
+
+- **✨ Visual Preview**: See your folder structure change in real-time as you toggle options.
+- **🛠️ Zero-Prompt Workspace**: Configure your stack and copy a tailored `npx` command instantly.
+- **📖 Documentation Sync**: Integrated guides for every architectural choice.
+
+### Path B: Interactive CLI
+**Quickly scaffold directly from your terminal.**
+
+```bash
+npx nodejs-quickstart-structure@latest init
+```
+
+*Or install globally:*
+```bash
+npm install -g nodejs-quickstart-structure
+# Then run:
+nodejs-quickstart init
+```
 
 ---
 
 ## 🆕 What's New in v2.0.0
 
-The v2.0.0 release is a major leap forward, turning the generator into a **Community Standard** for Node.js development:
+The v2.0.0 release is a major leap forward, turning the generator into a **Community Standard**:
 
-- **Next-Gen Web UI Configurator**: A modern, browser-based visual project simulator. Click your stack and copy the generated zero-prompt CLI command instantly! [Try it here](https://paudang.github.io/nodejs-quickstart-structure/).
-- **🦾 AI-Native Foundation**: Built-in `.cursorrules` and Agent skills optimized for **Cursor** & AI coding assistants.
+- **Next-Gen Web UI**: A browser-based visual project simulator with real-time folder previews.
+- **🦾 AI-Native Foundation**: Built-in `.cursorrules` optimized for **Cursor** & AI coding assistants.
 - **🏗️ Enterprise Clean Architecture**: High-fidelity structure for professional Microservices (TS/JS).
-- **🛡️ Hardened Security**: Integrated Snyk & SonarCloud logic in the core templates.
-- **⚡ Zero-Prompt Workflow**: Generate projects with a single CLI command—no more answering prompts manually.
+- **🛡️ Hardened Security**: Integrated Snyk & SonarCloud logic in core templates.
+- **⚡ Zero-Prompt Workflow**: Generate projects with a single CLI command.
 
 ---
 
 ## 📌 Table of Contents
 
-- [🚀 Quick Start](#-quick-start)
+- [🚀 Quick Start](#-choose-your-journey)
 - [✨ Key Features](#-key-features)
 - [🛡️ Professional Standards](#-professional-standards)
 - [🧩 5,280+ Project Combinations](#-5280-project-combinations)
@@ -45,26 +66,6 @@ The v2.0.0 release is a major leap forward, turning the generator into a **Commu
 - [🏗️ Generated Project Structure](#-generated-project-structure)
 - [📖 Documentation](#-documentation)
 - [🗺️ Support & Roadmap](#️-roadmap--support)
-
----
-
-## 🚀 Quick Start
-
-Generate your professional Node.js project in seconds without installing anything globally:
-
-```bash
-npx nodejs-quickstart-structure@latest init
-```
-
-### Installation (Optional)
-
-If you prefer to install it globally:
-
-```bash
-npm install -g nodejs-quickstart-structure
-# Then run:
-nodejs-quickstart init
-```
 
 ---
 
@@ -76,6 +77,7 @@ nodejs-quickstart init
 - **Database Ready**: Pre-configured for **MySQL**, **PostgreSQL**, or **MongoDB**.
 - **Communication Patterns**: Supports **REST**, **GraphQL** (Apollo), and **Kafka** (Event-driven).
 - **Multi-layer Caching**: Integrated **Redis** or built-in **Memory Cache**.
+- **Pluggable Authentication**: Built-in **JWT** support (Refresh/Access tokens).
 - **AI-Native Optimized**: specifically designed for **Cursor** and AI agents, including built-in `.cursorrules` and Agent Skill prompts. 🚀
 
 ---
@@ -117,8 +119,9 @@ The CLI will guide you through:
 5. **Database**: `MySQL` | `PostgreSQL` | `MongoDB`
 6. **Communication**: `REST` | `GraphQL` | `Kafka`
 7. **Caching**: `None` | `Redis` | `Memory Cache`
-8. **CI/CD**: `GitHub Actions` | `Jenkins` | `GitLab CI` | `CircleCI` | `Bitbucket Pipelines`
-9. **Security**: (Optional) Snyk & SonarCloud Hardening
+8. **Auth**: `None` | `JWT`
+9. **CI/CD**: `GitHub Actions` | `Jenkins` | `GitLab CI` | `CircleCI` | `Bitbucket Pipelines`
+10. **Security**: (Optional) Snyk & SonarCloud Hardening
 
 ---
 

@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "Node.js Quickstart Generator"
   text: "Production-ready structure in seconds"
-  tagline: "Scaffold MVC or Clean Architecture with Kafka, GraphQL, Redis, and more."
+  tagline: "Scaffold MVC or Clean Architecture with JWT Auth, Kafka, GraphQL, and more."
   actions:
     - theme: brand
       text: 🚀 Quickstart
@@ -12,10 +12,10 @@ hero:
     - theme: alt
       text: 📖 Documentation
       link: /guide/getting-started
-
+  
 features:
   - title: 5,280+ Combinations
-    details: Choose your language (TS/JS), architecture (MVC/Clean), communication (REST/GraphQL/Kafka), and CI/CD/Security scenarios.
+    details: Language (TS/JS), Architecture (MVC/Clean), Auth (JWT), Communication (REST/GraphQL/Kafka), and CI/CD/Security.
   - title: AI-Native Ready
     details: Pre-configured .cursorrules and Agent Skill prompts to boost your productivity with AI tools.
   - title: Production Standards

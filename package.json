@@ -63,11 +63,12 @@
     "inquirer": "^13.3.2"
   },
   "overrides": {
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.25.0",
+    "vite": "^6.4.2"
   },
   "devDependencies": {
     "snyk": "^1.1303.2",
-    "vitepress": "^1.0.0-rc.45"
+    "vitepress": "^1.6.4"
   },
   "files": [
     "bin",
