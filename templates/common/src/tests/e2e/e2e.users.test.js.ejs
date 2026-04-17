@@ -14,22 +14,19 @@ describe('E2E User Tests', () => {
 
 <%_ if (auth.includes('JWT')) { _%>
     it('should fail to fetch users without token (Protected)', async () => {
-        let response;
-        /* eslint-disable no-constant-condition */
-        if ('<%- communication %>' === 'GraphQL') {
-        /* eslint-enable no-constant-condition */
-            const query = `{ getAllUsers { id name } }`;
-            response = await request(SERVER_URL).post('/graphql').send({ query });
-            // In GraphQL errors are usually in the body with 200/400 status
-            if (response.statusCode === 200 && response.body.errors) {
-              expect(response.body.errors[0].message.toLowerCase()).toContain('unauthorized');
-            } else {
-              expect([401, 400]).toContain(response.statusCode);
-            }
+<%_ if (communication === 'GraphQL') { _%>
+        const query = `{ getAllUsers { id name } }`;
+        const response = await request(SERVER_URL).post('/graphql').send({ query });
+        // In GraphQL errors are usually in the body with 200/400 status
+        if (response.statusCode === 200 && response.body.errors) {
+          expect(response.body.errors[0].message.toLowerCase()).toContain('unauthorized');
         } else {
-            response = await request(SERVER_URL).get('/api/users');
-            expect(response.statusCode).toBe(401);
+          expect([401, 400]).toContain(response.statusCode);
         }
+<%_ } else { _%>
+        const response = await request(SERVER_URL).get('/api/users');
+        expect(response.statusCode).toBe(401);
+<%_ } _%>
     });
 <%_ } _%>
 
