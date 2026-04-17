@@ -43,7 +43,7 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
 **Scaffold your project directly from your terminal in seconds.**
 
 ```bash
-npx nodejs-quickstart-structure init
+npx nodejs-quickstart-structure@latest init
 ```
 
 *Or install globally:*
