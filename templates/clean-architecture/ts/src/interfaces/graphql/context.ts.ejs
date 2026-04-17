@@ -1,17 +1,23 @@
 import { Request } from 'express';
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+<% if (auth.includes('JWT')) { %>import { JwtService } from '@/infrastructure/auth/jwtService';<% } %>
 
 export interface MyContext {
-  token?: string;
   userRepository: UserRepository;
+  user?: unknown;
 }
 
-export const gqlContext = async ({ req }: { req: Request }): Promise<MyContext> => {
-  const token = req.headers.authorization || '';
+export const gqlContext = async ({ req: <% if (auth.includes('JWT')) { %>req<% } else { %>_req<% } %> }: { req: Request }): Promise<MyContext> => {
   const userRepository = new UserRepository();
-  
-  return { 
-    token, 
-    userRepository 
-  };
+  const context: MyContext = { userRepository };
+  <% if (auth.includes('JWT')) { %>
+  const authHeader = req.headers.authorization || '';
+  if (authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    const user = JwtService.verifyToken(token);
+    if (user) {
+      context.user = user;
+    }
+  }<% } %>
+  return context;
 };

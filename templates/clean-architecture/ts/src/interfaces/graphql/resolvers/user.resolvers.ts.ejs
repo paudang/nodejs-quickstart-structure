@@ -1,10 +1,14 @@
 import { UserController } from '@/interfaces/controllers/userController';
+import { MyContext } from '@/interfaces/graphql/context';
 
 const userController = new UserController();
 
 export const userResolvers = {
   Query: {
-    getAllUsers: async () => {
+    getAllUsers: async (_: unknown, __: unknown, <% if (auth.includes('JWT')) { %>context<% } else { %>_context<% } %>: MyContext) => {
+      <%_ if (auth.includes('JWT')) { -%>
+      if (!context.user) throw new Error('Unauthorized');
+      <% } %>
       const users = await userController.getUsers();
       return users;
     }
@@ -14,11 +18,17 @@ export const userResolvers = {
       const user = await userController.createUser({ name, email<% if (auth.some(a => a !=='None')) { %>, password<% } %> });
       return user;
     },
-    updateUser: async (_: unknown, { id, name, email }: { id: string, name?: string, email?: string }) => {
+    updateUser: async (_: unknown, { id, name, email }: { id: string, name?: string, email?: string }, <% if (auth.includes('JWT')) { %>context<% } else { %>_context<% } %>: MyContext) => {
+      <%_ if (auth.includes('JWT')) { -%>
+      if (!context.user) throw new Error('Unauthorized');
+      <% } %>
       const user = await userController.updateUser(id, { name, email });
       return user;
     },
-    deleteUser: async (_: unknown, { id }: { id: string }) => {
+    deleteUser: async (_: unknown, { id }: { id: string }, <% if (auth.includes('JWT')) { %>context<% } else { %>_context<% } %>: MyContext) => {
+      <%_ if (auth.includes('JWT')) { -%>
+      if (!context.user) throw new Error('Unauthorized');
+      <% } %>
       const result = await userController.deleteUser(id);
       return result;
     }

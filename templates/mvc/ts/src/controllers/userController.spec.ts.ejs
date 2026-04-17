@@ -210,6 +210,7 @@ describe('UserController', () => {
             const result = await userController.createUser(dataArg) as any;
 
             // Assert
+            expect(result!.password).toBeUndefined();
             const { password, ...expectedUserWithoutPassword } = expectedUser as any;
             expect(result!).toEqual(expectedUserWithoutPassword);
 <% } else { -%>

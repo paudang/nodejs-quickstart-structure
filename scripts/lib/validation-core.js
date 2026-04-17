@@ -20,7 +20,7 @@ function log(msg, color = ANSI_RESET) {
     fs.appendFileSync(LOG_FILE, `[${timestamp}] ${msg}\n`);
 }
 
-const LANGUAGES = ['JavaScript', 'TypeScript'];
+const LANGUAGES = ['TypeScript', 'JavaScript'];
 const DATABASES = ['None','MySQL', 'PostgreSQL', 'MongoDB'];
 const COMMUNICATIONS = ['REST APIs', 'GraphQL', 'Kafka']; 
 const CACHING = ['None', 'Redis', 'Memory Cache'];
@@ -297,15 +297,17 @@ async function checkHealth(config, hostPort) {
                 } else if (config.communication === 'GraphQL') {
                      try {
                          const gqlUrl = `http://127.0.0.1:${port}/graphql`;
+                         const authUrl = `http://127.0.0.1:${port}/api/auth/login`;
                          
                          // 1. Create Mutation
                          const testPassword = 'password123';
+                         const testEmail = `gql${Date.now()}@test.com`;
                          const passwordArg = config.auth && config.auth.includes('JWT') ? `, password: "${testPassword}"` : '';
-                         const createMutation = `mutation { createUser(name: "GQL Test", email: "gql${Date.now()}@test.com"${passwordArg}) { id } }`;
+                         const createMutation = `mutation { createUser(name: "GQL Test", email: "${testEmail}"${passwordArg}) { id } }`;
                          const createRes = await fetch(gqlUrl, {
-                               method: 'POST',
-                               headers: { 'Content-Type': 'application/json' },
-                               body: JSON.stringify({ query: createMutation })
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ query: createMutation })
                          });
                          const createData = await createRes.json();
                          if (createData.errors) {
@@ -314,26 +316,47 @@ async function checkHealth(config, hostPort) {
                          }
                          const userId = createData.data.createUser.id;
 
+                         let headers = { 'Content-Type': 'application/json' };
+                         
+                         // 1b. Login if Auth is enabled
+                         if (config.auth && config.auth.includes('JWT')) {
+                             const loginRes = await fetch(authUrl, {
+                                 method: 'POST',
+                                 headers: { 'Content-Type': 'application/json' },
+                                 body: JSON.stringify({ email: testEmail, password: testPassword })
+                             });
+                             if (!loginRes.ok) throw new Error('Login failed for GraphQL user');
+                             const { accessToken } = await loginRes.json();
+                             headers['Authorization'] = `Bearer ${accessToken}`;
+                         }
+
                          // 2. Update Mutation
                          const updateMutation = `mutation { updateUser(id: "${userId}", name: "GQL Updated") { id name } }`;
-                         await fetch(gqlUrl, {
-                               method: 'POST',
-                               headers: { 'Content-Type': 'application/json' },
-                               body: JSON.stringify({ query: updateMutation })
+                         const updateRes = await fetch(gqlUrl, {
+                                method: 'POST',
+                                headers,
+                                body: JSON.stringify({ query: updateMutation })
                          });
+                         const updateData = await updateRes.json();
+                         if (updateData.errors) {
+                             console.log(`!!! GraphQL Update Errors: ${JSON.stringify(updateData.errors)}`, ANSI_RED);
+                             throw new Error('GraphQL update mutation failed');
+                         }
 
                          // 3. Delete Mutation
                          const deleteMutation = `mutation { deleteUser(id: "${userId}") }`;
                          const deleteRes = await fetch(gqlUrl, {
-                               method: 'POST',
-                               headers: { 'Content-Type': 'application/json' },
-                               body: JSON.stringify({ query: deleteMutation })
+                                method: 'POST',
+                                headers,
+                                body: JSON.stringify({ query: deleteMutation })
                          });
                          const deleteData = await deleteRes.json();
                          
-                         if (deleteData.data.deleteUser) {
-                               console.log('✓ Health Check Passed (Full GraphQL CRUD functional)', ANSI_GREEN);
+                         if (deleteData.data && deleteData.data.deleteUser) {
+                               console.log('✓ Health Check Passed (Full GraphQL CRUD functional with Auth)', ANSI_GREEN);
                                return true;
+                         } else if (deleteData.errors) {
+                               console.log(`!!! GraphQL Delete Errors: ${JSON.stringify(deleteData.errors)}`, ANSI_RED);
                          }
                      } catch (err) {}
                 } else {

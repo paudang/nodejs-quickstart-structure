@@ -20,6 +20,7 @@ components:
       required:
         - name
         - email
+        <% if (auth.includes('JWT')) { %>- password<% } %>
       properties:
         id:
           type: integer
@@ -226,6 +227,10 @@ paths:
                   type: string
                 email:
                   type: string
+                <% if (auth.includes('JWT')) { %>
+                password:
+                  type: string
+                <% } %>
       responses:
         '200':
           description: The updated user

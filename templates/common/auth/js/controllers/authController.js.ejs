@@ -24,99 +24,99 @@ class AuthController {
   }
 
   async login(req, res, next) {
-  try {
-    const { email, password } = req.body;
-    <% if (database === 'MongoDB' || database === 'None') { %>
-    const user = await User.findOne({ email });
-    <% } else { %>
-    const user = await User.findOne({ where: { email } });
-    <% } %>
-    if (!user) {
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid credentials' });
+    try {
+      const { email, password } = req.body;
+      <% if (database === 'MongoDB' || database === 'None') { %>
+      const user = await User.findOne({ email });
+      <% } else { %>
+      const user = await User.findOne({ where: { email } });
+      <% } %>
+      if (!user) {
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid credentials' });
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid credentials' });
+      }
+
+      const userId = String(user.id || user._id);
+      const accessToken = JwtService.generateToken({ id: userId, email: user.email });
+      const refreshToken = JwtService.generateRefreshToken({ id: userId, email: user.email });
+      const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
+
+      <% if (caching !== 'None') { %>
+      const cacheKey = `refresh_tokens:${userId}`;
+      const activeTokens = await cacheService.get(cacheKey) || [];
+      activeTokens.push(refreshJti);
+      await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
+      <% } else { %>
+      const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
+      activeTokens.push(refreshJti);
+      JwtService.activeRefreshTokens.set(userId, activeTokens);
+      <% } %>
+
+      res.json({ token: accessToken, accessToken, refreshToken });
+    } catch (error) {
+      logger.error('Login error:', error);
+      next(error);
     }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid credentials' });
-    }
-
-    const userId = String(user.id || user._id);
-    const accessToken = JwtService.generateToken({ id: userId, email: user.email });
-    const refreshToken = JwtService.generateRefreshToken({ id: userId, email: user.email });
-    const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
-
-    <% if (caching !== 'None') { %>
-    const cacheKey = `refresh_tokens:${userId}`;
-    const activeTokens = await cacheService.get(cacheKey) || [];
-    activeTokens.push(refreshJti);
-    await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
-    <% } else { %>
-    const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
-    activeTokens.push(refreshJti);
-    JwtService.activeRefreshTokens.set(userId, activeTokens);
-    <% } %>
-
-    res.json({ token: accessToken, accessToken, refreshToken });
-  } catch (error) {
-    logger.error('Login error:', error);
-    next(error);
-  }
   }
 
   async refresh(req, res, next) {
-  try {
-    const { refreshToken } = req.body;
-    if (!refreshToken) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'Refresh token is required' });
+    try {
+      const { refreshToken } = req.body;
+      if (!refreshToken) {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'Refresh token is required' });
+      }
+
+      const decoded = JwtService.verifyRefreshToken(refreshToken);
+      if (!decoded || !decoded.id || !decoded.jti) {
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid refresh token' });
+      }
+
+      const userId = String(decoded.id);
+      const incomingJti = decoded.jti;
+
+      <% if (caching !== 'None') { %>
+      const cacheKey = `refresh_tokens:${userId}`;
+      let activeTokens = await cacheService.get(cacheKey) || [];
+      
+      if (!activeTokens.includes(incomingJti)) {
+        logger.warn(`Token theft detected for user ${userId}. Revoking all sessions.`);
+        await cacheService.del(cacheKey);
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid session' });
+      }
+
+      activeTokens = activeTokens.filter(t => t !== incomingJti);
+      const newAccessToken = JwtService.generateToken({ id: userId, email: decoded.email });
+      const newRefreshToken = JwtService.generateRefreshToken({ id: userId, email: decoded.email });
+      const newRefreshJti = JwtService.decodeToken(newRefreshToken)?.jti;
+      
+      activeTokens.push(newRefreshJti);
+      await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
+      <% } else { %>
+      let activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
+      
+      if (!activeTokens.includes(incomingJti)) {
+        logger.warn(`Token theft detected for user ${userId}. Revoking all sessions.`);
+        JwtService.activeRefreshTokens.delete(userId);
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid session' });
+      }
+
+      activeTokens = activeTokens.filter(t => t !== incomingJti);
+      const newAccessToken = JwtService.generateToken({ id: userId, email: decoded.email });
+      const newRefreshToken = JwtService.generateRefreshToken({ id: userId, email: decoded.email });
+      const newRefreshJti = JwtService.decodeToken(newRefreshToken)?.jti;
+      
+      activeTokens.push(newRefreshJti);
+      JwtService.activeRefreshTokens.set(userId, activeTokens);
+      <% } %>
+      res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+    } catch (error) {
+      logger.error('Refresh token error:', error);
+      next(error);
     }
-
-    const decoded = JwtService.verifyRefreshToken(refreshToken);
-    if (!decoded || !decoded.id || !decoded.jti) {
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid refresh token' });
-    }
-
-    const userId = String(decoded.id);
-    const incomingJti = decoded.jti;
-
-    <% if (caching !== 'None') { %>
-    const cacheKey = `refresh_tokens:${userId}`;
-    let activeTokens = await cacheService.get(cacheKey) || [];
-    
-    if (!activeTokens.includes(incomingJti)) {
-      logger.warn(`Token theft detected for user ${userId}. Revoking all sessions.`);
-      await cacheService.del(cacheKey);
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid session' });
-    }
-
-    activeTokens = activeTokens.filter(t => t !== incomingJti);
-    const newAccessToken = JwtService.generateToken({ id: userId, email: decoded.email });
-    const newRefreshToken = JwtService.generateRefreshToken({ id: userId, email: decoded.email });
-    const newRefreshJti = JwtService.decodeToken(newRefreshToken)?.jti;
-    
-    activeTokens.push(newRefreshJti);
-    await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
-    <% } else { %>
-    let activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
-    
-    if (!activeTokens.includes(incomingJti)) {
-      logger.warn(`Token theft detected for user ${userId}. Revoking all sessions.`);
-      JwtService.activeRefreshTokens.delete(userId);
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Invalid session' });
-    }
-
-    activeTokens = activeTokens.filter(t => t !== incomingJti);
-    const newAccessToken = JwtService.generateToken({ id: userId, email: decoded.email });
-    const newRefreshToken = JwtService.generateRefreshToken({ id: userId, email: decoded.email });
-    const newRefreshJti = JwtService.decodeToken(newRefreshToken)?.jti;
-    
-    activeTokens.push(newRefreshJti);
-    JwtService.activeRefreshTokens.set(userId, activeTokens);
-    <% } %>
-    res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
-  } catch (error) {
-    logger.error('Refresh token error:', error);
-    next(error);
-  }
   }
 
   async logout(req, res, next) {

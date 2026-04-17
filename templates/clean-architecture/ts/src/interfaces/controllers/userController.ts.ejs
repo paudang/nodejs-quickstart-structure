@@ -14,7 +14,6 @@ import logger from '@/infrastructure/log/logger';
 import { kafkaService } from '@/infrastructure/messaging/kafkaClient';
 import { KAFKA_ACTIONS } from '@/utils/kafkaEvents';
 <%_ } %>
-
 export class UserController {
     private createUserUseCase: CreateUser;
     private getAllUsersUseCase: GetAllUsers;
@@ -120,11 +119,11 @@ export class UserController {
     async createUser(req: Request, res: Response, next: NextFunction) {
         try {
             const { name, email, password } = req.body || {};
-            <% if (auth.includes('JWT')) { -%>
+<% if (auth.includes('JWT')) { -%>
             if (!password) {
                 return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Password is required' });
             }
-            <% } -%>
+<% } -%>
             const user = await this.createUserUseCase.execute(name, email, password);
 <%_ if (communication === 'Kafka') { -%>
             const rawUserForKafka = user as unknown as { id?: string | number; _id?: string | number; email: string };

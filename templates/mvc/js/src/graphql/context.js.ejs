@@ -1,7 +1,18 @@
+<% if (auth.includes('JWT')) { %>const JwtService = require('../services/jwtService');<% } %>
+
 const gqlContext = async ({ req }) => {
-  // Setup authorization or context here
-  const token = req.headers.authorization || '';
-  return { token };
+  const context = {};
+  <% if (auth.includes('JWT')) { %>
+  const authHeader = req.headers.authorization || '';
+  if (authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    const user = JwtService.verifyToken(token);
+    if (user) {
+      context.user = user;
+    }
+  }<% } %>
+  
+  return context;
 };
 
 module.exports = { gqlContext };

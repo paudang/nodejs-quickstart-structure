@@ -12,10 +12,24 @@ describe('E2E User Tests', () => {
     const testPassword = 'password123';
 <%_ } _%>
 
-<%_ if (auth.includes('JWT') && communication !== 'GraphQL') { _%>
-    it('should fail to fetch users without token (Protected Route)', async () => {
-        const response = await request(SERVER_URL).get('/api/users');
-        expect(response.statusCode).toBe(401);
+<%_ if (auth.includes('JWT')) { _%>
+    it('should fail to fetch users without token (Protected)', async () => {
+        let response;
+        /* eslint-disable no-constant-condition */
+        if ('<%- communication %>' === 'GraphQL') {
+        /* eslint-enable no-constant-condition */
+            const query = `{ getAllUsers { id name } }`;
+            response = await request(SERVER_URL).post('/graphql').send({ query });
+            // In GraphQL errors are usually in the body with 200/400 status
+            if (response.statusCode === 200 && response.body.errors) {
+              expect(response.body.errors[0].message.toLowerCase()).toContain('unauthorized');
+            } else {
+              expect([401, 400]).toContain(response.statusCode);
+            }
+        } else {
+            response = await request(SERVER_URL).get('/api/users');
+            expect(response.statusCode).toBe(401);
+        }
     });
 <%_ } _%>
 
@@ -35,6 +49,7 @@ describe('E2E User Tests', () => {
             .send({ query });
 
         expect(response.statusCode).toBe(200);
+        expect(response.body.errors).toBeUndefined();
         userId = response.body.data.createUser.id;
         expect(userId).toBeDefined();
     });
@@ -56,12 +71,27 @@ describe('E2E User Tests', () => {
             .send({ email: uniqueEmail, password: testPassword });
 
         expect(response.statusCode).toBe(200);
-        expect(response.body.token).toBeDefined();
-        authToken = response.body.token;
+        expect(response.body.accessToken || response.body.token).toBeDefined();
+        authToken = response.body.accessToken || response.body.token;
     });
 <%_ } _%>
 
 <%_ if (communication === 'GraphQL') { -%>
+    it('should fetch all users via GraphQL', async () => {
+        const query = `{ getAllUsers { id name email } }`;
+        const response = await request(SERVER_URL)
+            .post('/graphql')
+            <%_ if (auth.includes('JWT')) { _%>
+            .set('Authorization', `Bearer ${authToken}`)
+            <%_ } _%>
+            .send({ query });
+
+        expect(response.statusCode).toBe(200);
+        expect(Array.isArray(response.body.data.getAllUsers)).toBe(true);
+        const user = response.body.data.getAllUsers.find(u => u.id === userId);
+        expect(user).toBeDefined();
+    });
+
     it('should update a user via GraphQL', async () => {
         const query = `
             mutation {
@@ -101,6 +131,16 @@ describe('E2E User Tests', () => {
         expect(response.body.data.deleteUser).toBe(true);
     });
 <%_ } else { -%>
+    it('should fetch users successfully', async () => {
+        const response = await request(SERVER_URL)
+            .get('/api/users')
+            <%_ if (auth.includes('JWT')) { _%>
+            .set('Authorization', `Bearer ${authToken}`)
+            <%_ } _%>;
+        expect(response.statusCode).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+    });
+
     it('should update a user successfully', async () => {
         const response = await request(SERVER_URL)
             .patch(`/api/users/${userId}`)

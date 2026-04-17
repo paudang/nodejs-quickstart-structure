@@ -195,15 +195,15 @@ export class UserController {
     async createUser(req: Request, res: Response, next: NextFunction) {
         try {
             const { name, email, password } = req.body || {};
-            <% if (auth.includes('JWT')) { %>
+<% if (auth.includes('JWT')) { %>
             if (!password) {
                 return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Password is required' });
             }
             const hashedPassword = await bcrypt.hash(password, 10);
             const user = await User.create({ name, email, password: hashedPassword });
-            <% } else { %>
+<% } else { %>
             const user = await User.create({ name, email });
-            <% } %>
+<% } %>
 
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
             await cacheService.del('users:all');

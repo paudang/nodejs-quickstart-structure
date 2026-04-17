@@ -2,19 +2,23 @@ const userController = require('../../controllers/userController');
 
 const userResolvers = {
   Query: {
-    getAllUsers: async () => {
+    getAllUsers: async (_, __, <% if (auth.includes('JWT')) { %>{ user }<% } else { %>_context<% } %>) => {
+      <% if (auth.includes('JWT')) { %>if (!user) throw new Error('Unauthorized');<% } %>
       return await userController.getUsers();
     }
   },
   Mutation: {
     createUser: async (_, { name, email<% if (auth.some(a => a !=='None')) { %>, password<% } %> }) => {
+      // Create user is typically public for registration
       const user = await userController.createUser({ name, email<% if (auth.some(a => a !=='None')) { %>, password<% } %> });
       return user;
     },
-    updateUser: async (_, { id, name, email }) => {
+    updateUser: async (_, { id, name, email }, <% if (auth.includes('JWT')) { %>{ user }<% } else { %>_context<% } %>) => {
+      <% if (auth.includes('JWT')) { %>if (!user) throw new Error('Unauthorized');<% } %>
       return await userController.updateUser(id, { name, email });
     },
-    deleteUser: async (_, { id }) => {
+    deleteUser: async (_, { id }, <% if (auth.includes('JWT')) { %>{ user }<% } else { %>_context<% } %>) => {
+      <% if (auth.includes('JWT')) { %>if (!user) throw new Error('Unauthorized');<% } %>
       return await userController.deleteUser(id);
     }
   }<%_ if (database === 'MongoDB') { -%>,

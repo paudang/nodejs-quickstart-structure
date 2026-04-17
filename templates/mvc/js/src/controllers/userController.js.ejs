@@ -14,7 +14,6 @@ const { sendMessage } = require('../services/kafkaService');
 const { KAFKA_ACTIONS } = require('../utils/kafkaEvents');
 <%_ } -%>
 <% if (auth.includes('JWT')) { %>const bcrypt = require('bcryptjs');<% } %>
-
 <% if (communication === 'GraphQL') { -%>
 const getUsers = async () => {
   try {
@@ -64,7 +63,7 @@ const createUser = async (data) => {
       payload: { id: user.id || user._id, email: user.email }
     }), (user.id || user._id).toString());
 <%_ } -%>
-    const userObj = user.toJSON ? user.toJSON() : user;
+    const userObj = user.toJSON ? user.toJSON() : { ...user };
     delete userObj.password;
     return userObj;
   } catch (error) {
@@ -182,7 +181,7 @@ const createUser = async (req, res, next) => {
       payload: { id: user.id || user._id, email: user.email }
     }), (user.id || user._id).toString());
 <%_ } -%>
-    const userObj = user.toJSON ? user.toJSON() : user;
+    const userObj = user.toJSON ? user.toJSON() : { ...user };
     delete userObj.password;
     res.status(HTTP_STATUS.CREATED).json(userObj);
   } catch (error) {

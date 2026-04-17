@@ -236,5 +236,47 @@
             <a href="/" class="back-home">← Back to home</a>
         </div>
     </div>
+
+    <% if (communication === 'GraphQL') { %>
+    <script>
+        document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            const query = `
+                mutation CreateUser($name: String!, $email: String!, $password: String!) {
+                    createUser(name: $name, email: $email, password: $password) {
+                        id
+                        name
+                        email
+                    }
+                }
+            `;
+
+            try {
+                const response = await fetch('/graphql', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query,
+                        variables: data
+                    })
+                });
+
+                const result = await response.json();
+                if (result.errors) {
+                    alert('Error: ' + result.errors[0].message);
+                } else {
+                    alert('Account created successfully! Please login.');
+                    window.location.href = '/login';
+                }
+            } catch (err) {
+                console.error(err);
+                alert('An error occurred during signup.');
+            }
+        });
+    </script>
+    <% } %>
 </body>
 </html>

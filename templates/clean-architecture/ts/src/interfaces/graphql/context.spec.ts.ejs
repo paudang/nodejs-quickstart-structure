@@ -1,32 +1,47 @@
-import { gqlContext } from '@/interfaces/graphql/context';
 import { Request } from 'express';
-import { resolvers } from '@/interfaces/graphql/resolvers';
-import { typeDefs } from '@/interfaces/graphql/typeDefs';
+<% if (auth.includes('JWT')) { %>import { JwtService } from '@/infrastructure/auth/jwtService';
+jest.mock('@/infrastructure/auth/jwtService');<% } %>
+import { gqlContext } from '@/interfaces/graphql/context';
 
 jest.mock('@/infrastructure/repositories/UserRepository');
 
 describe('GraphQL Context', () => {
-  it('should exercise GraphQL index entry points', () => {
-    expect(resolvers).toBeDefined();
-    expect(typeDefs).toBeDefined();
-  });
-  it('should return context with token when authorization header is present', async () => {
-    const mockRequest = {
-      headers: {
-        authorization: 'Bearer token123',
-      },
-    } as Request;
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
-    const context = await gqlContext({ req: mockRequest });
-    expect(context.token).toBe('Bearer token123');
-  });
+    it('should return context with user when authorization header is present and valid', async () => {
+        <% if (auth.includes('JWT')) { %>
+        const mockUser = { id: '1', email: 'test@test.com' };
+        (JwtService.verifyToken as jest.Mock).mockReturnValue(mockUser);
+        const mockRequest = {
+            headers: {
+                authorization: 'Bearer valid-token',
+            },
+        } as Request;
 
-  it('should return context with empty token when authorization header is missing', async () => {
-    const mockRequest = {
-      headers: {},
-    } as Request;
+        const context = await gqlContext({ req: mockRequest });
+        expect(context.user).toEqual(mockUser);
+        expect(JwtService.verifyToken).toHaveBeenCalledWith('valid-token');
+        <% } else { %>
+        const mockRequest = {
+            headers: {
+                authorization: 'Bearer token123',
+            },
+        } as Request;
+        const context = await gqlContext({ req: mockRequest });
+        expect(context.user).toBeUndefined();
+        <% } %>
+        expect(context.userRepository).toBeDefined();
+    });
 
-    const context = await gqlContext({ req: mockRequest });
-    expect(context.token).toBe('');
-  });
+    it('should return context without user when authorization header is missing', async () => {
+        const mockRequest = {
+            headers: {},
+        } as Request;
+
+        const context = await gqlContext({ req: mockRequest });
+        expect(context.user).toBeUndefined();
+        expect(context.userRepository).toBeDefined();
+    });
 });

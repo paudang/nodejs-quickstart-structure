@@ -114,11 +114,11 @@ class UserController {
     async createUser(req, res, next) {
         const { name, email, password } = req.body || {};
         try {
-            <% if (auth.includes('JWT')) { %>
+<% if (auth.includes('JWT')) { %>
             if (!password) {
                 return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Password is required' });
             }
-            <% } %>
+<% } %>
             const user = await this.createUserUseCase.execute(name, email, password);
 <%_ if (communication === 'Kafka') { -%>
             await sendMessage('user-topic', JSON.stringify({

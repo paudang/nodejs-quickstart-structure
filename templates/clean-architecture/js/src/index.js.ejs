@@ -1,5 +1,7 @@
 const startServer = require('./infrastructure/webserver/server');
+<% if (database !== 'None' || communication === 'Kafka') { -%>
 const logger = require('./infrastructure/log/logger');
+<% } -%>
 <% if (communication === 'Kafka') { -%>
 const { connectKafka } = require('./infrastructure/messaging/kafkaClient');
 <% } -%>
