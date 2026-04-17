@@ -20,7 +20,7 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
  
 | **Path A: Next-Gen Web UI** (Recommended ⭐️) | **Path B: Interactive CLI** |
 | :--- | :--- |
-| <a href="https://paudang.github.io/nodejs-quickstart-structure/"><img src="docs/public/v2-preview.png" width="500" alt="UI Preview"></a> | <img src="docs/demo.gif" width="500" alt="CLI Demo"> |
+| <a href="https://paudang.github.io/nodejs-quickstart-structure/"><img src="docs/public/v2-preview.png" width="100%" alt="UI Preview"></a> | <img src="docs/demo.gif" width="100%" alt="CLI Demo"> |
 | **[Try Visual Configurator](https://paudang.github.io/nodejs-quickstart-structure/)** | `npx nodejs-quickstart-structure init` |
 | ✨ **Visual Preview**: Real-time folder simulation. | ⚡ **Fast & Direct**: Quickly scaffold in terminal. |
 | 🛠️ **Zero-Prompt**: Paste a tailored command. | ⌨️ **Interactive**: Guided CLI configuration. |
