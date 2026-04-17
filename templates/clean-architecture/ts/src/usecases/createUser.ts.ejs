@@ -15,22 +15,21 @@ export default class CreateUser {
 
     async execute(name: string, email: string, password?: string) {
         let finalPassword = password;
-        <% if (auth.includes('JWT')) { -%>
+<% if (auth.includes('JWT')) { -%>
         if (password) {
             finalPassword = await bcrypt.hash(password, 10);
         }
-        <% } -%>
+<% } -%>
         const user = new User(null, name, email, finalPassword);
         const savedUser = await this.userRepository.save(user);
-        
-        <%_ if (caching !== 'None') { _%>
+<% if (caching !== 'None') { -%>
         try {
             await cacheService.del('users:all');
         } catch (error) {
             logger.warn('Failed to clear cache after user creation:', error);
         }
-        <%_ } _%>
-        
+<% } -%>
+
         return savedUser;
     }
 }

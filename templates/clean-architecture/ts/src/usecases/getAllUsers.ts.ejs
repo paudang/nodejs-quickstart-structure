@@ -7,16 +7,14 @@ export default class GetAllUsers {
     constructor(private userRepository: UserRepository) {}
 
     async execute() {
-        <%_ if (caching !== 'None') { _%>
+        <%_ if (caching !== 'None') { -%>
         const cachedUsers = await cacheService.get('users:all');
         if (cachedUsers) return cachedUsers;
-        <%_ } _%>
-
+        <%_ } -%>
         const users = await this.userRepository.getUsers();
-
-        <%_ if (caching !== 'None') { _%>
+        <%_ if (caching !== 'None') { -%>
         await cacheService.set('users:all', users, 3600); // Cache for 1 hour
-        <%_ } _%>
+        <%_ } -%>
 
         return users;
     }

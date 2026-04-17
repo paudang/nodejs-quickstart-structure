@@ -1,7 +1,7 @@
 <% if (communication !== 'GraphQL') { -%>
 import { HTTP_STATUS } from '@/utils/httpCodes';
 <% } -%>
-<%_ if (communication === 'Kafka' || communication === 'GraphQL') { _%>
+<%_ if (communication === 'GraphQL') { _%>
 import { ERROR_MESSAGES } from '@/utils/errorMessages';
 <%_ } _%>
 <% if (communication !== 'GraphQL') { -%>

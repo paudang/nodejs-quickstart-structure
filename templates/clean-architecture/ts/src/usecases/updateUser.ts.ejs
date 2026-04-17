@@ -10,8 +10,7 @@ export default class UpdateUser {
 
     async execute(id: number | string, data: Partial<User>) {
         const user = await this.userRepository.update(id, data);
-        
-        <%_ if (caching !== 'None') { _%>
+        <%_ if (caching !== 'None') { -%>
         if (user) {
             try {
                 await cacheService.del('users:all');
@@ -19,8 +18,7 @@ export default class UpdateUser {
             } catch (error) {
                 logger.warn('Failed to clear cache after user update:', error);
             }
-        }
-        <%_ } _%>
+        }<%_ } -%>
         
         return user;
     }

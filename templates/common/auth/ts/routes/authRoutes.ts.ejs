@@ -1,14 +1,15 @@
 import { Router } from 'express';
-<% if (architecture === 'MVC') { %>
+<%_ if (architecture === 'MVC') { -%>
 import { AuthController } from '@/controllers/authController';
-<% } else { %>
+<%_ } else { -%>
 import { AuthController } from '@/interfaces/controllers/auth/authController';
-<% } %>
-<% if (architecture === 'MVC') { %>
+<%_ } -%>
+<%_ if (architecture === 'MVC') { -%>
 import { authMiddleware } from '@/middleware/authMiddleware';
-<% } else { %>
+<%_ } else { -%>
 import { authMiddleware } from '@/infrastructure/webserver/middleware/authMiddleware';
-<% } %>
+<%_ } -%>
+
 const router = Router();
 const authController = new AuthController();
 

@@ -9,8 +9,7 @@ export default class DeleteUser {
 
     async execute(id: number | string) {
         const result = await this.userRepository.delete(id);
-        
-        <%_ if (caching !== 'None') { _%>
+        <%_ if (caching !== 'None') { -%>
         if (result) {
             try {
                 await cacheService.del('users:all');
@@ -18,8 +17,7 @@ export default class DeleteUser {
             } catch (error) {
                 logger.warn('Failed to clear cache after user deletion:', error);
             }
-        }
-        <%_ } _%>
+        }<%_ } -%>
         
         return result;
     }

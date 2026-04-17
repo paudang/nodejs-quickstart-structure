@@ -7,19 +7,16 @@ export default class GetUserById {
     constructor(private userRepository: UserRepository) {}
 
     async execute(id: string | number) {
-        <%_ if (caching !== 'None') { _%>
+        <%_ if (caching !== 'None') { -%>
         const cacheKey = `user:${id}`;
         const cachedUser = await cacheService.get(cacheKey);
         if (cachedUser) return cachedUser;
-        <%_ } _%>
-
+        <%_ } -%>
         const user = await this.userRepository.findById(id);
-
-        <%_ if (caching !== 'None') { _%>
+        <%_ if (caching !== 'None') { -%>
         if (user) {
             await cacheService.set(`user:${id}`, user, 3600); // Cache for 1 hour
-        }
-        <%_ } _%>
+        }<%_ } -%>
 
         return user;
     }

@@ -1,4 +1,18 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+ 
+## [2.1.0] - 2026-04-17
+
+### Added
+- **Pluggable JWT Authentication**: Introduced a robust, production-ready authentication system.
+  - Supports **Access & Refresh Token Rotation** for enhanced security.
+  - Integrated **Token Revocation (Blacklisting)** via Redis or Memory Cache.
+  - Secure logout flows and theft detection for refresh tokens.
+  - Seamless integration with both REST and GraphQL protocols across all architectures.
+- **VitePress Documentation Upgrade**: Detailed [Authentication Blueprint](https://paudang.github.io/nodejs-quickstart-structure/blueprints/authentication) and cross-feature documentation updates.
+- **Security Hardening**: Resolved moderate vulnerabilities in `vite` and `vitepress` by implementing version overrides and dependency upgrades (VitePress v1.6.4+).
+- **Interactive README 2.0**: Completely redesigned the project landing page with a "Choose Your Journey" dual-workflow (Web UI vs CLI) and visual action previews.
+
+---
 
 ## [2.0.1] - 2026-04-07
 

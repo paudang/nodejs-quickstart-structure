@@ -30,7 +30,7 @@ import cacheService from '<%= cachePath %>';
 describe('AuthMiddleware', () => {
   let mockRequest: any;
   let mockResponse: any;
-  let nextFunction: NextFunction = jest.fn();
+  const nextFunction: NextFunction = jest.fn();
 
   beforeEach(() => {
     mockRequest = {

@@ -41,7 +41,7 @@ describe('AuthController', () => {
   let authController: AuthController;
   let mockRequest: any;
   let mockResponse: any;
-  let nextFunction: NextFunction = jest.fn();
+  const nextFunction: NextFunction = jest.fn();
 
   beforeEach(() => {
     authController = new AuthController();
