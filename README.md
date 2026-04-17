@@ -31,6 +31,8 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
 ### Path B: Interactive CLI
 **Quickly scaffold directly from your terminal.**
 
+![CLI Demo](docs/demo.gif)
+
 ```bash
 npx nodejs-quickstart-structure@latest init
 ```
@@ -103,7 +105,7 @@ The CLI supports a massive number of configurations to fit your exact needs:
   - **MVC Architecture**: 360 variants (Languages × View Engines × Databases × Communication Patterns × Caching × Auth)
   - **Clean Architecture**: 120 variants (Languages × Databases × Communication Patterns × Caching × Auth)
 - **5,280+ Total Scenarios**:
-  - Every combination can be generated across 3 CI/CD providers.
+  - Every combination can be generated across 5 CI/CD providers.
   - Optional **Enterprise-Grade Security Hardening** doubles the scenarios.
   - Every single scenario is verified to be compatible with our **80% Coverage Threshold** policy.
 
