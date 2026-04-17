@@ -29,7 +29,35 @@ const AUTHS = ['None', 'JWT'];
 
 export const combinations = [];
 
-// 1. MVC Combinations
+// 1. Clean Architecture Combinations
+LANGUAGES.forEach(lang => {
+    DATABASES.forEach(db => {
+        COMMUNICATIONS.forEach(comm => {
+        for (const auth of AUTHS) {
+            const cachingOptions = db !== 'None' ? CACHING : ['None'];
+
+            cachingOptions.forEach(cache => {
+                combinations.push({
+                    projectName: `test_clean_${lang}_${db}_${comm}_${cache}_${auth}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                    language: lang,
+                    architecture: 'Clean Architecture',
+                    viewEngine: 'None', 
+                    database: db,
+                    dbName: db !== 'None' ? 'testdb' : undefined,
+                    communication: comm,
+                    caching: cache,
+                    auth: [auth],
+                    ciProvider: 'GitHub Actions',
+                    includeSecurity: true
+                });
+            });
+        }
+        });
+    });
+});
+
+
+// 2. MVC Combinations
 LANGUAGES.forEach(lang => {
     VIEW_ENGINES_MVC.forEach(view => {
         DATABASES.forEach(db => {
@@ -53,34 +81,6 @@ LANGUAGES.forEach(lang => {
                 });
             }
             });
-        });
-    });
-});
-
-
-// 2. Clean Architecture Combinations
-LANGUAGES.forEach(lang => {
-    DATABASES.forEach(db => {
-        COMMUNICATIONS.forEach(comm => {
-        for (const auth of AUTHS) {
-            const cachingOptions = db !== 'None' ? CACHING : ['None'];
-
-            cachingOptions.forEach(cache => {
-                combinations.push({
-                    projectName: `test_clean_${lang}_${db}_${comm}_${cache}_${auth}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-                    language: lang,
-                    architecture: 'Clean Architecture',
-                    viewEngine: 'None', 
-                    database: db,
-                    dbName: db !== 'None' ? 'testdb' : undefined,
-                    communication: comm,
-                    caching: cache,
-                    auth: [auth],
-                    ciProvider: 'GitHub Actions',
-                    includeSecurity: true
-                });
-            });
-        }
         });
     });
 });

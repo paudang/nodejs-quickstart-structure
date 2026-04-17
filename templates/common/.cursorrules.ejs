@@ -58,3 +58,12 @@ When indexing or searching the workspace, ignore the following paths to prevent 
   - `controllers`: Request handlers and business logic.
   - `routes`: Define endpoints routing to controllers.
 <% } -%>
+
+### 5. Security & Authentication
+<% if (auth.includes('JWT')) { -%>
+- **Protected Routes**: When adding new routes, consider if they need `authMiddleware`.
+- **User Identity**: Extract user info from `req.user` (populated by middleware).
+- **Sensitive Data**: Never return passwords in API responses (ensure `.toJSON()` or DTOs handle this).
+<% } -%>
+- **Input Validation**: Always validate user input using schemas or controller-level checks.
+- **Sanitization**: Ensure inputs are sanitized before being used in DB queries (though our ORMs like Sequelize/Mongoose handle much of this).

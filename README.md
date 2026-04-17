@@ -17,41 +17,24 @@
 A powerful ecosystem to scaffold production-ready Node.js microservices with built-in best practices. Choose between **MVC** or **Clean Architecture**, **JavaScript** or **TypeScript**, and your preferred tech stack in seconds.
 
 ## 🚀 Choose Your Journey
-
-### Path A: Next-Gen Web UI (Recommended ⭐️)
-**[Try the Visual Configurator](https://paudang.github.io/nodejs-quickstart-structure/)**
-*Generate your exact architecture in the browser with real-time folder simulation.*
-
-[![UI Preview](docs/public/v2-preview.png)](https://paudang.github.io/nodejs-quickstart-structure/)
-
-- **✨ Visual Preview**: See your folder structure change in real-time as you toggle options.
-- **🛠️ Zero-Prompt Workspace**: Configure your stack and copy a tailored `npx` command instantly.
-- **📖 Documentation Sync**: Integrated guides for every architectural choice.
-
-### Path B: Interactive CLI
-**Quickly scaffold directly from your terminal.**
-
-![CLI Demo](docs/demo.gif)
-
-```bash
-npx nodejs-quickstart-structure@latest init
-```
-
-*Or install globally:*
-```bash
-npm install -g nodejs-quickstart-structure
-# Then run:
-nodejs-quickstart init
-```
+ 
+| **Path A: Next-Gen Web UI** (Recommended ⭐️) | **Path B: Interactive CLI** |
+| :--- | :--- |
+| [![UI Preview](docs/public/v2-preview.png)](https://paudang.github.io/nodejs-quickstart-structure/) | ![CLI Demo](docs/demo.gif) |
+| **[Try Visual Configurator](https://paudang.github.io/nodejs-quickstart-structure/)** | `npx nodejs-quickstart-structure init` |
+| ✨ **Visual Preview**: Real-time folder simulation. | ⚡ **Fast & Direct**: Quickly scaffold in terminal. |
+| 🛠️ **Zero-Prompt**: Paste a tailored command. | ⌨️ **Interactive**: Guided CLI configuration. |
+| 📖 **Docs Sync**: Deep-links for every feature. | 🦾 **AI-Ready**: Generates `.cursorrules`. |
 
 ---
 
-## 🆕 What's New in v2.0.0
-
-The v2.0.0 release is a major leap forward, turning the generator into a **Community Standard**:
-
-- **Next-Gen Web UI**: A browser-based visual project simulator with real-time folder previews.
-- **🦾 AI-Native Foundation**: Built-in `.cursorrules` optimized for **Cursor** & AI coding assistants.
+## 🆕 What's New in v2.1 (The Authentication Release)
+ 
+ The v2.1.0 release is a major leap forward, turning the generator into a **Community Standard**:
+ 
+- **🔐 Pluggable JWT Authentication**: Production-ready access & refresh token patterns with automatic PM2/Environment configuration.
+- **🦾 AI-Native Foundation**: Built-in `.cursorrules` optimized for **Cursor** & AI agents—projects are "Born to be Autonomously Coded."
+- **🖼️ Next-Gen Web UI**: A browser-based visual project simulator with real-time folder previews.
 - **🏗️ Enterprise Clean Architecture**: High-fidelity structure for professional Microservices (TS/JS).
 - **🛡️ Hardened Security**: Integrated Snyk & SonarCloud logic in core templates.
 - **⚡ Zero-Prompt Workflow**: Generate projects with a single CLI command.

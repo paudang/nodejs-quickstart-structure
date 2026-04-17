@@ -112,7 +112,6 @@ class AuthController {
     activeTokens.push(newRefreshJti);
     JwtService.activeRefreshTokens.set(userId, activeTokens);
     <% } %>
-
     res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
   } catch (error) {
     logger.error('Refresh token error:', error);
@@ -132,16 +131,13 @@ class AuthController {
       
       if (decodedAccess && decodedAccess.jti && decodedAccess.exp) {
         const remainingTime = Math.max(0, decodedAccess.exp - Math.floor(Date.now() / 1000));
-        
         <% if (caching !== 'None') { %>
         if (remainingTime > 0) {
             await cacheService.set(`blacklist:${decodedAccess.jti}`, true, remainingTime);
-        }
-        <% } else { %>
+        }<% } else { %>
         if (remainingTime > 0) {
             JwtService.blacklistedTokens.set(decodedAccess.jti, Date.now() + remainingTime * 1000);
-        }
-        <% } %>
+        }<% } %>
       }
 
       const { refreshToken } = req.body;
@@ -157,8 +153,7 @@ class AuthController {
            <% } else { %>
            let activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
            activeTokens = activeTokens.filter(t => t !== decodedRefresh.jti);
-           JwtService.activeRefreshTokens.set(userId, activeTokens);
-           <% } %>
+           JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
         }
       }
 
