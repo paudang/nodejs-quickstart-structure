@@ -139,7 +139,8 @@ describe('UserRepository', () => {
             const mockDbRecord = { _id: { toString: () => '1' }, name: 'Updated', email: 'test@example.com' };
             (UserModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockDbRecord);
 <% } else if (database === 'None') { -%>
-            (UserModel.update as jest.Mock).mockResolvedValue(null); // Value not used for result comparison in this block
+            const mockDbRecord = { id: '1', name: 'Updated', email: 'test@example.com' };
+            (UserModel.update as jest.Mock).mockResolvedValue(mockDbRecord);
 <% } else { -%>
             const mockDbRecord = { id: '1', name: 'Updated', email: 'test@example.com', update: jest.fn().mockResolvedValue(true) };
             (UserModel.findByPk as jest.Mock).mockResolvedValue(mockDbRecord);
