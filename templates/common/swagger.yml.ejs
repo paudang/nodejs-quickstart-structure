@@ -227,10 +227,6 @@ paths:
                   type: string
                 email:
                   type: string
-                <% if (auth.includes('JWT')) { %>
-                password:
-                  type: string
-                <% } %>
       responses:
         '200':
           description: The updated user

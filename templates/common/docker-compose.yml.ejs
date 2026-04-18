@@ -41,7 +41,9 @@ services:
 <%_ } -%>
 <%_ if (auth.includes('JWT')) { -%>
       - JWT_SECRET=your_jwt_secret_key_here_change_it
+      - JWT_REFRESH_SECRET=your_jwt_refresh_secret_key_here_change_it
       - JWT_EXPIRES_IN=1d
+      - JWT_REFRESH_EXPIRES_IN=7d
 <%_ } -%>
 <%_ } else { -%>
     environment:
@@ -70,7 +72,9 @@ services:
 <%_ } -%>
 <%_ if (auth.includes('JWT')) { -%>
       - JWT_SECRET=your_jwt_secret_key_here_change_it
+      - JWT_REFRESH_SECRET=your_jwt_refresh_secret_key_here_change_it
       - JWT_EXPIRES_IN=1d
+      - JWT_REFRESH_EXPIRES_IN=7d
 <%_ } -%>
 <%_ } -%>
 <%_ if (database !== 'None') { -%>
