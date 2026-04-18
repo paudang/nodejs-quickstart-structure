@@ -17,6 +17,7 @@ const VIEW_ENGINES_MVC = ['None', 'EJS', 'Pug'];
 const DATABASES = ['None', 'MySQL', 'PostgreSQL', 'MongoDB'];
 const COMMUNICATIONS = ['REST APIs', 'GraphQL', 'Kafka'];
 const CI_PROVIDERS = ['None', 'GitHub Actions', 'Jenkins', 'GitLab CI', 'CircleCI', 'Bitbucket Pipelines'];
+const AUTH_MODES = ['None', 'JWT'];
 
 const combinations = [];
 
@@ -32,17 +33,21 @@ LANGUAGES.forEach(lang => {
                         CI_PROVIDERS.forEach(ci => {
                             const securityOptions = ci !== 'None' ? [true, false] : [false];
                             securityOptions.forEach(sec => {
-                                combinations.push({
-                                    projectName: `t5280_${Math.random().toString(36).substring(2, 8)}`,
-                                    language: lang,
-                                    architecture: arch,
-                                    viewEngine: view,
-                                    database: db,
-                                    dbName: db !== 'None' ? 'testdb' : undefined,
-                                    communication: comm,
-                                    caching: cache,
-                                    ciProvider: ci,
-                                    includeSecurity: sec
+                                AUTH_MODES.forEach(auth => {
+                                    combinations.push({
+                                        projectName: `t5280_${Math.random().toString(36).substring(2, 8)}`,
+                                        language: lang,
+                                        architecture: arch,
+                                        viewEngine: view,
+                                        database: db,
+                                        dbName: db !== 'None' ? 'testdb' : undefined,
+                                        communication: comm,
+                                        caching: cache,
+                                        ciProvider: ci,
+                                        includeSecurity: sec,
+                                        auth: auth,
+                                        advancedOptions: auth !== 'None'
+                                    });
                                 });
                             });
                         });
@@ -112,6 +117,16 @@ async function runTest(config, index) {
         }
 
         args.push('--caching', `"${config.caching}"`);
+
+        if (config.auth) {
+            args.push('--auth', config.auth);
+        }
+
+        if (config.advancedOptions) {
+            args.push('--advanced-options');
+        } else {
+            args.push('--no-advanced-options');
+        }
 
         if (config.architecture === 'MVC') {
             args.push('--view-engine', config.viewEngine);

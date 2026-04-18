@@ -132,8 +132,8 @@ describe('E2E User Tests', () => {
         const response = await request(SERVER_URL)
             .get('/api/users')
             <%_ if (auth.includes('JWT')) { _%>
-            .set('Authorization', `Bearer ${authToken}`)
-            <%_ } _%>;
+            .set('Authorization', `Bearer ${authToken}`);
+            <%_ } _%>
         expect(response.statusCode).toBe(200);
         expect(Array.isArray(response.body)).toBe(true);
     });
