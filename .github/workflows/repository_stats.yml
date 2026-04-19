@@ -1,30 +1,26 @@
-name: Repo Clone Stats Tracker
+name: Repository Traffic Tracker
 
 on:
   schedule:
+    # Runs at 00:00 UTC every day
     - cron: '0 0 * * *'
-  workflow_dispatch: 
+  workflow_dispatch: # Allows manual triggering for testing
 
 jobs:
   run-stats:
+    name: Fetch and Store Stats
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Essential for the bot to create/push to the output branch
+
     steps:
-      - name: Checkout branch output
+      - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          ref: output
-          fail-on-missing-checkout: false
 
-      - name: Fetch and Store Stats
-        uses: teoxoy/profile-repository-stats@v1.2
+      - name: Generate Traffic Statistics
+        uses: JstnMcBrd/repo-stats@v1
         with:
+          # Your Personal Access Token stored in Secrets
           token: ${{ secrets.GH_TOKEN }}
-          repository: ${{ github.repository }}
-
-      - name: Save Changes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Update clone statistics" || exit 0
-          git push origin output
+          # The branch where data will be stored (created automatically)
+          data-branch: output
