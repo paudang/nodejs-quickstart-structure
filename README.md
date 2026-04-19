@@ -1,16 +1,16 @@
 # Node.js Quickstart Generator
 
 [![npm version](https://img.shields.io/npm/v/nodejs-quickstart-structure.svg?style=flat-square)](https://www.npmjs.com/package/nodejs-quickstart-structure)
+![Total Clones](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=total%20clones&query=total_clones&url=https%3A%2F%2Fraw.githubusercontent.com%2Fpaudang%2Fnodejs-quickstart-structure%2Foutput%2Ftotal_stats.json&style=flat-square)
 [![npm total downloads](https://img.shields.io/npm/dt/nodejs-quickstart-structure?style=flat-square&color=emerald&label=Downloads)](https://www.npmjs.com/package/nodejs-quickstart-structure)
 [![npm monthly downloads](https://img.shields.io/npm/dm/nodejs-quickstart-structure.svg?style=flat-square)](https://www.npmjs.com/package/nodejs-quickstart-structure)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg?style=flat-square)](https://opensource.org/licenses/ISC)
-![Total Clones](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=total%20clones&query=total_clones&url=https%3A%2F%2Fraw.githubusercontent.com%2Fpaudang%2Fnodejs-quickstart-structure%2Foutput%2Ftotal_stats.json)
 
 ### 📈 Real-world Adoption
 | **Metric** | **Insight** |
 | :--- | :--- |
 | 🔥 **4,000+** | Downloads on npm |
-| 🚀 **1,200+** | Recent GitHub Clones |
+| 🚀 **1,500+** | Recent GitHub Clones |
 | 🌍 **Trusted by** | Devs from **Google**, **Viblo**, and global tech teams |
 
 ---
