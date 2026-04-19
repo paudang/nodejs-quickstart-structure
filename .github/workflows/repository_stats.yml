@@ -2,25 +2,50 @@ name: Repository Traffic Tracker
 
 on:
   schedule:
-    # Runs at 00:00 UTC every day
-    - cron: '0 0 * * *'
-  workflow_dispatch: # Allows manual triggering for testing
+    - cron: '0 0 * * *' # Runs daily at midnight
+  workflow_dispatch: # Manual trigger
 
 jobs:
-  run-stats:
-    name: Fetch and Store Stats
+  build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Essential for the bot to create/push to the output branch
+      contents: write
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout Output Branch
         uses: actions/checkout@v4
-
-      - name: Generate Traffic Statistics
-        uses: JstnMcBrd/repo-stats@v1
         with:
-          # Your Personal Access Token stored in Secrets
-          token: ${{ secrets.GH_TOKEN }}
-          # The branch where data will be stored (created automatically)
-          data-branch: output
+          ref: output
+          # If the output branch doesn't exist yet, we'll handle that
+        continue-on-error: true
+
+      - name: Create Output Branch if Missing
+        run: |
+          if ! git show-ref --verify --quiet refs/remotes/origin/output; then
+            git checkout --orphan output
+            git rm -rf .
+            echo "# Repository Stats Data" > README.md
+            git add README.md
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -m "Initialize output branch"
+            git push origin output
+          else
+            git checkout output
+          fi
+
+      - name: Fetch Clone Data from GitHub API
+        run: |
+          mkdir -p stats
+          curl -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/repos/${{ github.repository }}/traffic/clones \
+               > stats/clones-$(date +%Y-%m-%d).json
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add stats/
+          git commit -m "Add clone stats for $(date +%Y-%m-%d)"
+          git push origin output
