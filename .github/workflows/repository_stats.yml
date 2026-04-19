@@ -2,8 +2,8 @@ name: Repository Traffic Tracker
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs daily at midnight
-  workflow_dispatch: # Manual trigger
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -12,40 +12,40 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout Output Branch
+      - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          ref: output
-          # If the output branch doesn't exist yet, we'll handle that
-        continue-on-error: true
+          fetch-depth: 0
 
-      - name: Create Output Branch if Missing
+      - name: Fetch Stats and Push to Output Branch
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          if ! git show-ref --verify --quiet refs/remotes/origin/output; then
-            git checkout --orphan output
-            git rm -rf .
-            echo "# Repository Stats Data" > README.md
-            git add README.md
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git commit -m "Initialize output branch"
-            git push origin output
-          else
-            git checkout output
-          fi
-
-      - name: Fetch Clone Data from GitHub API
-        run: |
-          mkdir -p stats
-          curl -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-               -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/repos/${{ github.repository }}/traffic/clones \
-               > stats/clones-$(date +%Y-%m-%d).json
-
-      - name: Commit and Push
-        run: |
+          # 1. Setup Git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add stats/
-          git commit -m "Add clone stats for $(date +%Y-%m-%d)"
+
+          # 2. Fetch traffic data from GitHub API
+          mkdir -p stats-data
+          curl -H "Authorization: token $GH_TOKEN" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/repos/${{ github.repository }}/traffic/clones \
+               > stats-data/clones-$(date +%Y-%m-%d).json
+
+          # 3. Handle the 'output' branch
+          # Check if branch exists on remote
+          if git ls-remote --exit-code --heads origin output; then
+            git fetch origin output
+            git checkout output
+          else
+            git checkout --orphan output
+            git rm -rf .
+          fi
+
+          # 4. Move data and Commit
+          mkdir -p traffic-history
+          mv stats-data/* traffic-history/
+          
+          git add traffic-history/
+          git commit -m "Update clone stats for $(date +%Y-%m-%d)"
           git push origin output
