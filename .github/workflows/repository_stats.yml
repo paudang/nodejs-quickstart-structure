@@ -15,9 +15,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
+          ref: output
           fetch-depth: 0
+        continue-on-error: true
 
-      - name: Fetch Stats and Push to Output Branch
+      - name: Fetch Stats and Calculate Total
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
@@ -25,27 +27,38 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 2. Fetch traffic data from GitHub API
-          mkdir -p stats-data
+          # 2. Get data from API
           curl -H "Authorization: token $GH_TOKEN" \
                -H "Accept: application/vnd.github.v3+json" \
                https://api.github.com/repos/${{ github.repository }}/traffic/clones \
-               > stats-data/clones-$(date +%Y-%m-%d).json
+               > latest_api_data.json
 
-          # 3. Handle the 'output' branch
-          # Check if branch exists on remote
-          if git ls-remote --exit-code --heads origin output; then
-            git fetch origin output
-            git checkout output
-          else
-            git checkout --orphan output
-            git rm -rf .
-          fi
+          # 3. Process Logic with Node.js (Quick & Accurate)
+          node -e "
+          const fs = require('fs');
+          const apiData = JSON.parse(fs.readFileSync('latest_api_data.json', 'utf8'));
+          let summary = { total_clones: 1200, daily_history: {} };
 
-          # 4. Move data and Commit
-          mkdir -p traffic-history
-          mv stats-data/* traffic-history/
-          
-          git add traffic-history/
-          git commit -m "Update clone stats for $(date +%Y-%m-%d)"
+          // Load existing summary if exists
+          if (fs.existsSync('total_stats.json')) {
+            summary = JSON.parse(fs.readFileSync('total_stats.json', 'utf8'));
+          }
+
+          // Update daily history and recalculate total
+          apiData.clones.forEach(day => {
+            const date = day.timestamp.split('T')[0];
+            summary.daily_history[date] = day.count;
+          });
+
+          // Calculate Grand Total: Legacy 1200 + sum of all unique days recorded
+          const dailySum = Object.values(summary.daily_history).reduce((a, b) => a + b, 0);
+          summary.total_clones = 1200 + dailySum;
+          summary.last_update = new Date().toISOString();
+
+          fs.writeFileSync('total_stats.json', JSON.stringify(summary, null, 2));
+          "
+
+          # 4. Commit and Push
+          git add total_stats.json
+          git commit -m "Update total stats: $(date +%Y-%m-%d)"
           git push origin output
