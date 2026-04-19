@@ -1,0 +1,30 @@
+name: Repo Clone Stats Tracker
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch: 
+
+jobs:
+  run-stats:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch output
+        uses: actions/checkout@v4
+        with:
+          ref: output
+          fail-on-missing-checkout: false
+
+      - name: Fetch and Store Stats
+        uses: teoxoy/profile-repository-stats@v1.2
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          repository: ${{ github.repository }}
+
+      - name: Save Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Update clone statistics" || exit 0
+          git push origin output
