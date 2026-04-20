@@ -65,11 +65,11 @@ describe('AuthController', () => {
             // Mock cacheService
             <% if (caching !== 'None') { %>
             cacheService.get.mockResolvedValue([]);
-            cacheService.set.mockResolvedValue();
-            <% } %>
+            cacheService.set.mockResolvedValue();<% } %>
 
             await controller.login(mockReq, mockRes, next);
 
+            expect(JwtService.generateToken).toHaveBeenCalledWith(expect.objectContaining({ sid: 'test-jti' }));
             expect(mockRes.json).toHaveBeenCalledWith({ token: 'mock-access-token', accessToken: 'mock-access-token', refreshToken: 'mock-refresh-token' });
         });
 
@@ -107,11 +107,11 @@ describe('AuthController', () => {
             cacheService.get.mockResolvedValue(['old-jti']);
             cacheService.set.mockResolvedValue();
             <% } else { %>
-            JwtService.activeRefreshTokens.set('1', ['old-jti']);
-            <% } %>
+            JwtService.activeRefreshTokens.set('1', ['old-jti']);<% } %>
 
             await controller.refresh(mockReq, mockRes, next);
 
+            expect(JwtService.generateToken).toHaveBeenCalledWith(expect.objectContaining({ sid: 'new-jti' }));
             expect(mockRes.json).toHaveBeenCalledWith({ accessToken: 'new-access', refreshToken: 'new-refresh' });
         });
 
@@ -123,8 +123,7 @@ describe('AuthController', () => {
             <% if (caching !== 'None') { %>
             cacheService.get.mockResolvedValue(['different-jti']);
             <% } else { %>
-            JwtService.activeRefreshTokens.set('1', ['different-jti']);
-            <% } %>
+            JwtService.activeRefreshTokens.set('1', ['different-jti']);<% } %>
 
             await controller.refresh(mockReq, mockRes, next);
 

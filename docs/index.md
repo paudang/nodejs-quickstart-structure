@@ -23,7 +23,7 @@ features:
   - title: "Enterprise DevSecOps 🛡️"
     details: Hardened with Snyk & SonarCloud, plus multi-stage Docker and Flyway migrations out of the box.
   - title: "Community Insights 📈"
-    details: 4,000+ Downloads on npm and 1,200+ Git Clones in the last 14 days (Deep architectural research).
+    details: 4,000+ Downloads on npm and 1,500+ Git Clones in the last 14 days (Deep architectural research).
   - title: "Next Gen: Web UI (Live Now) 🔥"
     details: Try our browser-based generator featuring real-time visualization and unified configuration below.
 ---

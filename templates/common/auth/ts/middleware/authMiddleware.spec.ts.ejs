@@ -81,15 +81,43 @@ describe('AuthMiddleware', () => {
     expect(nextFunction).not.toHaveBeenCalled();
   });
 
-  it('should call next() and set req.user if token is valid and not blacklisted', async () => {
-    const payload = { id: 1, email: 'test@example.com', jti: 'valid-jti' };
+  it('should return 401 if session is expired (sid not in activeTokens)', async () => {
+    const payload = { id: 1, email: 'test@example.com', jti: 'valid-jti', sid: 'expired-sid' };
     mockRequest.headers.authorization = 'Bearer valid-token';
     (JwtService.verifyToken as jest.Mock).mockReturnValue(payload);
     
     <% if (caching !== 'None') { %>
-    (cacheService.get as jest.Mock).mockResolvedValue(false);
+    (cacheService.get as jest.Mock).mockImplementation((key: string) => {
+      if (key.startsWith('blacklist:')) return Promise.resolve(false);
+      if (key === 'refresh_tokens:1') return Promise.resolve(['other-sid']);
+      return Promise.resolve(null);
+    });
     <% } else { %>
     JwtService.blacklistedTokens.delete('valid-jti');
+    JwtService.activeRefreshTokens.set('1', ['other-sid']);
+    <% } %>
+
+    await authMiddleware(mockRequest as Request, mockResponse as Response, nextFunction);
+
+    expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
+    expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Session expired' });
+    expect(nextFunction).not.toHaveBeenCalled();
+  });
+
+  it('should call next() and set req.user if token is valid, not blacklisted and session is active', async () => {
+    const payload = { id: 1, email: 'test@example.com', jti: 'valid-jti', sid: 'active-sid' };
+    mockRequest.headers.authorization = 'Bearer valid-token';
+    (JwtService.verifyToken as jest.Mock).mockReturnValue(payload);
+    
+    <% if (caching !== 'None') { %>
+    (cacheService.get as jest.Mock).mockImplementation((key: string) => {
+      if (key.startsWith('blacklist:')) return Promise.resolve(false);
+      if (key === 'refresh_tokens:1') return Promise.resolve(['active-sid']);
+      return Promise.resolve(null);
+    });
+    <% } else { %>
+    JwtService.blacklistedTokens.delete('valid-jti');
+    JwtService.activeRefreshTokens.set('1', ['active-sid']);
     <% } %>
 
     await authMiddleware(mockRequest as Request, mockResponse as Response, nextFunction);

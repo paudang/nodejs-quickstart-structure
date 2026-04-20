@@ -27,17 +27,28 @@ const authMiddleware = async (req, res, next) => {
   }
 
   if (decoded.jti) {
-    <% if (caching !== 'None') { %>
+    <%_ if (caching !== 'None') { -%>
     const isBlacklisted = await cacheService.get(`blacklist:${decoded.jti}`);
     if (isBlacklisted) {
       return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Token revoked' });
-    }
-    <% } else { %>
+    }<%_ } else { -%>
     const expiryDate = JwtService.blacklistedTokens.get(decoded.jti);
     if (expiryDate && Date.now() < expiryDate) {
       return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Token revoked' });
-    }
-    <% } %>
+    }<% } %>
+  }
+
+  if (decoded.sid) {
+    <%_ if (caching !== 'None') { %>
+    const cacheKey = `refresh_tokens:${decoded.id}`;
+    const activeTokens = await cacheService.get(cacheKey) || [];
+    if (!activeTokens.includes(decoded.sid)) {
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Session expired' });
+    }<%_ } else { -%>
+    const activeTokens = JwtService.activeRefreshTokens.get(String(decoded.id)) || [];
+    if (!activeTokens.includes(decoded.sid)) {
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Session expired' });
+    }<%_ } -%>
   }
 
   req.user = decoded;

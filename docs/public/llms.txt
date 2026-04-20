@@ -28,7 +28,7 @@ To provide a 5,280+ scenario-verified foundation for modern developers, optimize
 
 ## Social Proof
 - 🚀 **4,000+ Downloads**
-- 🔥 **1,200+ Recent Clones**
+- 🔥 **1,500+ Recent Clones**
 - 🌍 Used by teams at **Google**, **Viblo**, and global tech startups.
 
 ## Documentation

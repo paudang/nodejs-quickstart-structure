@@ -54,8 +54,7 @@ describe('AuthMiddleware', () => {
         <% if (caching !== 'None') { %>
         cacheService.get.mockResolvedValue(true);
         <% } else { %>
-        JwtService.blacklistedTokens.set('blacklisted-jti', Date.now() + 10000);
-        <% } %>
+        JwtService.blacklistedTokens.set('blacklisted-jti', Date.now() + 10000);<% } %>
 
         await authMiddleware(mockReq, mockRes, next);
 
@@ -64,16 +63,42 @@ describe('AuthMiddleware', () => {
         expect(next).not.toHaveBeenCalled();
     });
 
-    it('should set req.user and call next if token is valid and not blacklisted', async () => {
-        const user = { id: 1, jti: 'valid-jti' };
+    it('should return 401 if session is expired (sid not in activeTokens)', async () => {
+        const user = { id: 1, email: 'test@example.com', jti: 'valid-jti', sid: 'expired-sid' };
+        mockReq.headers.authorization = 'Bearer valid-token';
+        JwtService.verifyToken.mockReturnValue(user);
+        
+        <% if (caching !== 'None') { %>
+        cacheService.get.mockImplementation((key) => {
+            if (key.startsWith('blacklist:')) return Promise.resolve(false);
+            if (key === 'refresh_tokens:1') return Promise.resolve(['other-sid']);
+            return Promise.resolve(null);
+        });
+        <% } else { %>
+        JwtService.blacklistedTokens.delete('valid-jti');
+        JwtService.activeRefreshTokens.set('1', ['other-sid']);<% } %>
+
+        await authMiddleware(mockReq, mockRes, next);
+
+        expect(mockRes.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
+        expect(mockRes.json).toHaveBeenCalledWith({ message: 'Session expired' });
+        expect(next).not.toHaveBeenCalled();
+    });
+
+    it('should set req.user and call next if token is valid, not blacklisted and session is active', async () => {
+        const user = { id: 1, jti: 'valid-jti', sid: 'active-sid' };
         mockReq.headers.authorization = 'Bearer valid-token';
         JwtService.verifyToken.mockReturnValue(user);
 
         <% if (caching !== 'None') { %>
-        cacheService.get.mockResolvedValue(false);
+        cacheService.get.mockImplementation((key) => {
+            if (key.startsWith('blacklist:')) return Promise.resolve(false);
+            if (key === 'refresh_tokens:1') return Promise.resolve(['active-sid']);
+            return Promise.resolve(null);
+        });
         <% } else { %>
         JwtService.blacklistedTokens.delete('valid-jti');
-        <% } %>
+        JwtService.activeRefreshTokens.set('1', ['active-sid']);<% } %>
 
         await authMiddleware(mockReq, mockRes, next);
 
