@@ -89,10 +89,30 @@
         </select>
       </div>
     </div>
-    
+
     <div class="checkbox-group">
       <input type="checkbox" id="security-check" v-model="form.includeSecurity" :disabled="form.ciProvider === 'None'" />
       <label for="security-check">Enable Enterprise Security Hardening (Snyk + SonarCloud)</label>
+    </div>
+    
+    <div style="margin-top: 1rem; border-top: 1px solid var(--vp-c-divider); padding-top: 1rem;">
+      <div 
+        @click="showAdvanced = !showAdvanced" 
+        style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; font-size: 0.9em; color: var(--vp-c-brand);"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :style="{ transform: showAdvanced ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        Advanced Options
+      </div>
+      <div v-show="showAdvanced" style="margin-top: 1rem;" class="form-grid">
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label">Authentication</label>
+          <select class="form-control" v-model="form.auth">
+            <option value="None">None</option>
+            <option value="JWT Authentication (Ready)">JWT Authentication (Ready)</option>
+            <option value="OAuth2 - Google/GitHub (Coming Soon)" disabled>OAuth2 - Google/GitHub (Coming Soon)</option>
+          </select>
+        </div>
+      </div>
     </div>
 
     <button class="btn-primary" @click="generateCommand" :disabled="hasErrors">
@@ -105,5 +125,5 @@
 <script setup>
 import { useGenerator } from '../composables/useGenerator';
 
-const { form, errors, hasErrors, validateName, generateCommand } = useGenerator();
+const { form, errors, hasErrors, showAdvanced, validateName, generateCommand } = useGenerator();
 </script>

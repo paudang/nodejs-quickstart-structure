@@ -15,7 +15,7 @@ describe('UserRepository', () => {
     describe('save', () => {
         it('should save and return a newly created user (Happy Path)', async () => {
             // Arrange
-            const payload = { id: '', name: 'TestUser', email: 'test@example.com' };
+            const payload = { id: '', name: 'TestUser', email: 'test@example.com', password: 'password123' };
 <%_ if (database === 'MongoDB') { -%>
             const mockDbRecord = { _id: { toString: () => '1' }, name: 'TestUser', email: 'test@example.com' };
             (UserModel.create as jest.Mock).mockResolvedValue(mockDbRecord);
@@ -34,7 +34,11 @@ describe('UserRepository', () => {
             expect(result.name).toEqual(payload.name)
 <%_ } else { -%>
             expect(result).toEqual({ id: '1', name: 'TestUser', email: 'test@example.com' });
-            expect(UserModel.create).toHaveBeenCalledWith({ name: payload.name, email: payload.email });
+            expect(UserModel.create).toHaveBeenCalledWith({ 
+                name: payload.name, 
+                email: payload.email,
+                <% if (auth.includes('JWT')) { %>password: payload.password<% } %>
+            });
 <%_ } -%>
         });
 
@@ -43,13 +47,56 @@ describe('UserRepository', () => {
             // Mocks do not naturally fail 
 <%_ } else { -%>
             // Arrange
-            const payload = { id: '', name: 'FailUser', email: 'fail@example.com' };
+            const payload = { id: '', name: 'FailUser', email: 'fail@example.com', password: 'password123' };
             const error = new Error('DB Connection Refused');
             (UserModel.create as jest.Mock).mockRejectedValue(error);
 
             // Act & Assert
             await expect(userRepository.save(payload)).rejects.toThrow(error);
 <%_ } -%>
+        });
+    });
+
+    describe('findById', () => {
+        it('should find and return a user by id (Happy Path)', async () => {
+            // Arrange
+            const id = '1';
+<%_ if (database === 'MongoDB') { -%>
+            const mockDbRecord = { _id: { toString: () => '1' }, name: 'TestUser', email: 'test@example.com' };
+            (UserModel.findById as jest.Mock).mockResolvedValue(mockDbRecord);
+<%_ } else if (database === 'None') { -%>
+            const mockDbRecord = { id: '1', name: 'TestUser', email: 'test@example.com' };
+            (UserModel.findByPk as jest.Mock).mockResolvedValue(mockDbRecord);
+<%_ } else { -%>
+            const mockDbRecord = { id: '1', name: 'TestUser', email: 'test@example.com' };
+            (UserModel.findByPk as jest.Mock).mockResolvedValue(mockDbRecord);
+<%_ } -%>
+
+            // Act
+            const result = await userRepository.findById(id);
+
+            // Assert
+            expect(result).toEqual({ id: '1', name: 'TestUser', email: 'test@example.com' });
+<%_ if (database === 'MongoDB') { -%>
+            expect(UserModel.findById).toHaveBeenCalledWith(id);
+<%_ } else { -%>
+            expect(UserModel.findByPk).toHaveBeenCalledWith(id);
+<%_ } -%>
+        });
+
+        it('should return null if user not found', async () => {
+            // Arrange
+<%_ if (database === 'MongoDB') { -%>
+            (UserModel.findById as jest.Mock).mockResolvedValue(null);
+<%_ } else { -%>
+            (UserModel.findByPk as jest.Mock).mockResolvedValue(null);
+<%_ } -%>
+
+            // Act
+            const result = await userRepository.findById('999');
+
+            // Assert
+            expect(result).toBeNull();
         });
     });
 
@@ -88,17 +135,16 @@ describe('UserRepository', () => {
             // Arrange
             const id = '1';
             const data = { name: 'Updated' };
-            const expectedUser = { id: '1', name: 'Updated', email: 'test@example.com' };
-
 <%_ if (database === 'MongoDB') { -%>
             const mockDbRecord = { _id: { toString: () => '1' }, name: 'Updated', email: 'test@example.com' };
             (UserModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockDbRecord);
-<%_ } else if (database === 'None') { -%>
-            (UserModel.update as jest.Mock).mockResolvedValue(expectedUser);
-<%_ } else { -%>
+<% } else if (database === 'None') { -%>
+            const mockDbRecord = { id: '1', name: 'Updated', email: 'test@example.com' };
+            (UserModel.update as jest.Mock).mockResolvedValue(mockDbRecord);
+<% } else { -%>
             const mockDbRecord = { id: '1', name: 'Updated', email: 'test@example.com', update: jest.fn().mockResolvedValue(true) };
             (UserModel.findByPk as jest.Mock).mockResolvedValue(mockDbRecord);
-<%_ } -%>
+<% } -%>
 
             // Act
             const result = await userRepository.update(id, data);

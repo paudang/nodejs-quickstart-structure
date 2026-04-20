@@ -1,0 +1,161 @@
+<%_ if (architecture === 'Clean Architecture') { _%>
+import { AuthController } from '@/interfaces/controllers/auth/authController';
+import { JwtService } from '@/infrastructure/auth/jwtService';
+<%_ } else { _%>
+import { AuthController } from '@/controllers/authController';
+import { JwtService } from '@/services/jwtService';
+<%_ } _%>
+import { HTTP_STATUS } from '@/utils/httpCodes';
+import bcrypt from 'bcryptjs';
+import { Request, Response, NextFunction } from 'express';
+
+<%_ if (architecture === 'Clean Architecture') { _%>
+jest.mock('@/infrastructure/auth/jwtService');
+<%_ } else { _%>
+jest.mock('@/services/jwtService');
+<%_ } _%>
+jest.mock('bcryptjs');
+
+<%_ if (architecture === 'Clean Architecture') { _%>
+jest.mock('@/infrastructure/database/models/User', () => ({ findOne: jest.fn() }));
+const User = require('@/infrastructure/database/models/User');
+<%_ } else { _%>
+jest.mock('@/models/User', () => ({ findOne: jest.fn() }));
+const User = require('@/models/User');
+<%_ } _%>
+
+<%_ if (caching !== 'None') { _%>
+<%_ const cachePath = (architecture === "MVC") ? (caching === "Redis" ? "@/config/redisClient" : "@/config/memoryCache") : (caching === "Redis" ? "@/infrastructure/caching/redisClient" : "@/infrastructure/caching/memoryCache"); _%>
+jest.mock('<%= cachePath %>', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn()
+  }
+}), { virtual: true });
+import cacheService from '<%= cachePath %>';
+<%_ } _%>
+
+describe('AuthController', () => {
+  let authController: AuthController;
+  let mockRequest: any;
+  let mockResponse: any;
+  const nextFunction: NextFunction = jest.fn();
+
+  beforeEach(() => {
+    authController = new AuthController();
+    mockRequest = {
+      body: {}
+    };
+    mockResponse = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn()
+    };
+    jest.clearAllMocks();
+  });
+
+  describe('login', () => {
+    it('should return 401 if user not found', async () => {
+      mockRequest.body = { email: 'notfound@test.com', password: 'password' };
+      (User.findOne as jest.Mock).mockResolvedValue(null);
+
+      await authController.login(mockRequest as Request, mockResponse as Response, nextFunction);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Invalid credentials' });
+    });
+
+    it('should return 401 if password does not match', async () => {
+      const user = { email: 'test@test.com', password: 'hashedpassword' };
+      mockRequest.body = { email: 'test@test.com', password: 'wrongpassword' };
+      (User.findOne as jest.Mock).mockResolvedValue(user);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      await authController.login(mockRequest as Request, mockResponse as Response, nextFunction);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Invalid credentials' });
+    });
+
+    it('should return 200 and a token if credentials are valid', async () => {
+      const user = { id: 1, email: 'test@test.com', password: 'hashedpassword' };
+      mockRequest.body = { email: 'test@test.com', password: 'password123' };
+      (User.findOne as jest.Mock).mockResolvedValue(user);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      (JwtService.generateToken as jest.Mock).mockReturnValue('mock-token');
+      (JwtService.generateRefreshToken as jest.Mock).mockReturnValue('mock-refresh-token');
+      (JwtService.decodeToken as jest.Mock).mockReturnValue({ jti: 'test-jti' });
+
+      await authController.login(mockRequest as Request, mockResponse as Response, nextFunction);
+
+      expect(JwtService.generateToken).toHaveBeenCalledWith(expect.objectContaining({ sid: 'test-jti' }));
+      expect(mockResponse.json).toHaveBeenCalledWith({ token: 'mock-token', accessToken: 'mock-token', refreshToken: 'mock-refresh-token' });
+    });
+
+    it('should call next with error if something fails', async () => {
+      const error = new Error('DB Error');
+      mockRequest.body = { email: 'test@test.com', password: 'password123' };
+      (User.findOne as jest.Mock).mockRejectedValue(error);
+
+      await authController.login(mockRequest as Request, mockResponse as Response, nextFunction);
+
+      expect(nextFunction).toHaveBeenCalledWith(error);
+    });
+  });
+
+  describe('refresh', () => {
+    it('should return new tokens for a valid refresh token', async () => {
+      mockRequest.body = { refreshToken: 'valid-refresh' };
+      const decoded = { id: '1', email: 'test@test.com', jti: 'old-jti' };
+      (JwtService.verifyRefreshToken as jest.Mock).mockReturnValue(decoded);
+      (JwtService.generateToken as jest.Mock).mockReturnValue('new-access');
+      (JwtService.generateRefreshToken as jest.Mock).mockReturnValue('new-refresh');
+      (JwtService.decodeToken as jest.Mock).mockReturnValue({ jti: 'new-jti' });
+
+      // Mock cache success
+      <% if (caching !== 'None') { %>
+      (cacheService.get as jest.Mock).mockResolvedValue(['old-jti']);
+      <% } else { %>
+      JwtService.activeRefreshTokens.set('1', ['old-jti']);
+      <% } %>
+
+      await authController.refresh(mockRequest as Request, mockResponse as Response, nextFunction);
+
+      expect(JwtService.generateToken).toHaveBeenCalledWith(expect.objectContaining({ sid: 'new-jti' }));
+      expect(mockResponse.json).toHaveBeenCalledWith({ accessToken: 'new-access', refreshToken: 'new-refresh' });
+    });
+
+    it('should detect theft and revoke all tokens if jti is not active', async () => {
+      mockRequest.body = { refreshToken: 'stolen-refresh' };
+      const decoded = { id: '1', email: 'test@test.com', jti: 'stolen-jti' };
+      (JwtService.verifyRefreshToken as jest.Mock).mockReturnValue(decoded);
+
+      <% if (caching !== 'None') { %>
+      (cacheService.get as jest.Mock).mockResolvedValue(['some-other-jti']);
+      <% } else { %>
+      JwtService.activeRefreshTokens.set('1', ['some-other-jti']);
+      <% } %>
+
+      await authController.refresh(mockRequest as Request, mockResponse as Response, nextFunction);
+
+      expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Invalid session' });
+    });
+  });
+
+  describe('logout', () => {
+    it('should blacklist the access token and remove the refresh token', async () => {
+      mockRequest.headers = { authorization: 'Bearer access-token' };
+      mockRequest.body = { refreshToken: 'refresh-token' };
+      
+      (JwtService.decodeToken as jest.Mock)
+        .mockReturnValueOnce({ jti: 'access-jti', exp: Math.floor(Date.now() / 1000) + 3600 }) // for access token
+        .mockReturnValueOnce({ id: '1', jti: 'refresh-jti' }); // for refresh token
+
+      await authController.logout(mockRequest as Request, mockResponse as Response, nextFunction);
+
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: 'Logged out successfully' });
+    });
+  });
+});

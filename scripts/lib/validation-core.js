@@ -25,44 +25,20 @@ const DATABASES = ['None','MySQL', 'PostgreSQL', 'MongoDB'];
 const COMMUNICATIONS = ['REST APIs', 'GraphQL', 'Kafka']; 
 const CACHING = ['None', 'Redis', 'Memory Cache'];
 const VIEW_ENGINES_MVC = ['EJS', 'Pug', 'None'];
+const AUTHS = ['None', 'JWT'];
 
 export const combinations = [];
 
-// 1. MVC Combinations
-LANGUAGES.forEach(lang => {
-    VIEW_ENGINES_MVC.forEach(view => {
-        DATABASES.forEach(db => {
-            COMMUNICATIONS.forEach(comm => {
-                const cachingOptions = db !== 'None' ? CACHING : ['None'];
-                cachingOptions.forEach(cache => {
-                    combinations.push({
-                        projectName: `test_mvc_${lang}_${view}_${db}_${comm}_${cache}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-                        language: lang,
-                        architecture: 'MVC',
-                        viewEngine: view,
-                        database: db,
-                        dbName: db !== 'None' ? 'testdb' : undefined,
-                        communication: comm,
-                        caching: cache,
-                        ciProvider: 'GitHub Actions',
-                        includeSecurity: true
-                    });
-                });
-            });
-        });
-    });
-});
-
-
-// 2. Clean Architecture Combinations
+// 1. Clean Architecture Combinations
 LANGUAGES.forEach(lang => {
     DATABASES.forEach(db => {
         COMMUNICATIONS.forEach(comm => {
+        for (const auth of AUTHS) {
             const cachingOptions = db !== 'None' ? CACHING : ['None'];
 
             cachingOptions.forEach(cache => {
                 combinations.push({
-                    projectName: `test_clean_${lang}_${db}_${comm}_${cache}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                    projectName: `test_clean_${lang}_${db}_${comm}_${cache}_${auth}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
                     language: lang,
                     architecture: 'Clean Architecture',
                     viewEngine: 'None', 
@@ -70,9 +46,40 @@ LANGUAGES.forEach(lang => {
                     dbName: db !== 'None' ? 'testdb' : undefined,
                     communication: comm,
                     caching: cache,
+                    auth: [auth],
                     ciProvider: 'GitHub Actions',
                     includeSecurity: true
                 });
+            });
+        }
+        });
+    });
+});
+
+
+// 2. MVC Combinations
+LANGUAGES.forEach(lang => {
+    VIEW_ENGINES_MVC.forEach(view => {
+        DATABASES.forEach(db => {
+            COMMUNICATIONS.forEach(comm => {
+            for (const auth of AUTHS) {
+                const cachingOptions = db !== 'None' ? CACHING : ['None'];
+                cachingOptions.forEach(cache => {
+                    combinations.push({
+                        projectName: `test_mvc_${lang}_${view}_${db}_${comm}_${cache}_${auth}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                        language: lang,
+                        architecture: 'MVC',
+                        viewEngine: view,
+                        database: db,
+                        dbName: db !== 'None' ? 'testdb' : undefined,
+                        communication: comm,
+                        caching: cache,
+                        auth: [auth],
+                        ciProvider: 'GitHub Actions',
+                        includeSecurity: true
+                    });
+                });
+            }
             });
         });
     });
@@ -176,29 +183,77 @@ async function checkHealth(config, hostPort) {
                   if (config.communication === 'REST APIs' || config.communication === 'Kafka') {
                     try {
                         const baseUrl = `http://127.0.0.1:${port}/api/users`;
+                        const authUrl = `http://127.0.0.1:${port}/api/auth/login`;
+                        const testPassword = 'password123';
+                        const testEmail = `test${Date.now()}@example.com`;
                         
-                        // 1. Create
+                        // 1. Create (Sign Up)
                         const postRes = await fetch(baseUrl, {
                              method: 'POST',
                              headers: { 'Content-Type': 'application/json' },
-                             body: JSON.stringify({ name: 'Test User', email: `test${Date.now()}@example.com` })
+                             body: JSON.stringify({ 
+                               name: 'Test User', 
+                               email: testEmail,
+                               ...(config.auth && config.auth.includes('JWT') ? { password: testPassword } : {})
+                             })
                         });
                         
                         if (postRes.ok) {
                              const user = await postRes.json();
                              const userId = user.id || user._id;
 
+                             let headers = { 'Content-Type': 'application/json' };
+                             let currentRefreshToken = null;
+
+                             // 1b. Login if Auth is enabled
+                             if (config.auth && config.auth.includes('JWT')) {
+                                 const loginRes = await fetch(authUrl, {
+                                     method: 'POST',
+                                     headers: { 'Content-Type': 'application/json' },
+                                     body: JSON.stringify({ email: testEmail, password: testPassword })
+                                 });
+                                 if (!loginRes.ok) throw new Error('Login failed');
+                                 const { accessToken, refreshToken } = await loginRes.json();
+                                 headers['Authorization'] = `Bearer ${accessToken}`;
+                                 currentRefreshToken = refreshToken;
+
+                                 // 1c. Test Refresh
+                                 const refreshUrl = `http://127.0.0.1:${port}/api/auth/refresh`;
+                                 const refreshRes = await fetch(refreshUrl, {
+                                     method: 'POST',
+                                     headers: { 'Content-Type': 'application/json' },
+                                     body: JSON.stringify({ refreshToken })
+                                 });
+                                 if (!refreshRes.ok) throw new Error('Refresh token flow failed');
+                                 const refreshedTokens = await refreshRes.json();
+                                 headers['Authorization'] = `Bearer ${refreshedTokens.accessToken}`;
+                                 currentRefreshToken = refreshedTokens.refreshToken;
+                             }
+
                              // 2. Update
                              const patchRes = await fetch(`${baseUrl}/${userId}`, {
                                  method: 'PATCH',
-                                 headers: { 'Content-Type': 'application/json' },
+                                 headers,
                                  body: JSON.stringify({ name: 'Updated User' })
                              });
 
                              // 3. Delete
                              const deleteRes = await fetch(`${baseUrl}/${userId}`, {
-                                 method: 'DELETE'
+                                 method: 'DELETE',
+                                 headers
                              });
+
+                             // 4. Logout
+                             if (config.auth && config.auth.includes('JWT')) {
+                                 const logoutUrl = `http://127.0.0.1:${port}/api/auth/logout`;
+                                 const logoutRes = await fetch(logoutUrl, {
+                                    method: 'POST',
+                                    headers,
+                                    body: JSON.stringify({ refreshToken: currentRefreshToken })
+                                 });
+                                 if (!logoutRes.ok) throw new Error('Logout failed');
+                             }
+
 
                              if (patchRes.ok && deleteRes.ok) {
                                  if (config.communication === 'Kafka') {
@@ -242,37 +297,66 @@ async function checkHealth(config, hostPort) {
                 } else if (config.communication === 'GraphQL') {
                      try {
                          const gqlUrl = `http://127.0.0.1:${port}/graphql`;
+                         const authUrl = `http://127.0.0.1:${port}/api/auth/login`;
                          
                          // 1. Create Mutation
-                         const createMutation = `mutation { createUser(name: "GQL Test", email: "gql${Date.now()}@test.com") { id } }`;
+                         const testPassword = 'password123';
+                         const testEmail = `gql${Date.now()}@test.com`;
+                         const passwordArg = config.auth && config.auth.includes('JWT') ? `, password: "${testPassword}"` : '';
+                         const createMutation = `mutation { createUser(name: "GQL Test", email: "${testEmail}"${passwordArg}) { id } }`;
                          const createRes = await fetch(gqlUrl, {
-                               method: 'POST',
-                               headers: { 'Content-Type': 'application/json' },
-                               body: JSON.stringify({ query: createMutation })
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ query: createMutation })
                          });
                          const createData = await createRes.json();
+                         if (createData.errors) {
+                             console.log(`!!! GraphQL Create Errors: ${JSON.stringify(createData.errors)}`, ANSI_RED);
+                             throw new Error('GraphQL mutation failed');
+                         }
                          const userId = createData.data.createUser.id;
+
+                         let headers = { 'Content-Type': 'application/json' };
+                         
+                         // 1b. Login if Auth is enabled
+                         if (config.auth && config.auth.includes('JWT')) {
+                             const loginRes = await fetch(authUrl, {
+                                 method: 'POST',
+                                 headers: { 'Content-Type': 'application/json' },
+                                 body: JSON.stringify({ email: testEmail, password: testPassword })
+                             });
+                             if (!loginRes.ok) throw new Error('Login failed for GraphQL user');
+                             const { accessToken } = await loginRes.json();
+                             headers['Authorization'] = `Bearer ${accessToken}`;
+                         }
 
                          // 2. Update Mutation
                          const updateMutation = `mutation { updateUser(id: "${userId}", name: "GQL Updated") { id name } }`;
-                         await fetch(gqlUrl, {
-                               method: 'POST',
-                               headers: { 'Content-Type': 'application/json' },
-                               body: JSON.stringify({ query: updateMutation })
+                         const updateRes = await fetch(gqlUrl, {
+                                method: 'POST',
+                                headers,
+                                body: JSON.stringify({ query: updateMutation })
                          });
+                         const updateData = await updateRes.json();
+                         if (updateData.errors) {
+                             console.log(`!!! GraphQL Update Errors: ${JSON.stringify(updateData.errors)}`, ANSI_RED);
+                             throw new Error('GraphQL update mutation failed');
+                         }
 
                          // 3. Delete Mutation
                          const deleteMutation = `mutation { deleteUser(id: "${userId}") }`;
                          const deleteRes = await fetch(gqlUrl, {
-                               method: 'POST',
-                               headers: { 'Content-Type': 'application/json' },
-                               body: JSON.stringify({ query: deleteMutation })
+                                method: 'POST',
+                                headers,
+                                body: JSON.stringify({ query: deleteMutation })
                          });
                          const deleteData = await deleteRes.json();
                          
-                         if (deleteData.data.deleteUser) {
-                               console.log('✓ Health Check Passed (Full GraphQL CRUD functional)', ANSI_GREEN);
+                         if (deleteData.data && deleteData.data.deleteUser) {
+                               console.log('✓ Health Check Passed (Full GraphQL CRUD functional with Auth)', ANSI_GREEN);
                                return true;
+                         } else if (deleteData.errors) {
+                               console.log(`!!! GraphQL Delete Errors: ${JSON.stringify(deleteData.errors)}`, ANSI_RED);
                          }
                      } catch (err) {}
                 } else {
@@ -366,6 +450,15 @@ export async function runTest(config, index, options = {}, sharedPorts) {
 
         if (config.architecture === 'MVC') {
             args.push('--view-engine', config.viewEngine);
+        }
+
+        if (config.auth) {
+            args.push('--auth', ...config.auth);
+            if (config.auth.some(a => a !== 'None')) {
+                args.push('--advanced-options');
+            } else {
+                args.push('--no-advanced-options');
+            }
         }
 
         const command = `node ${cliPath} ${args.join(' ')}`;
@@ -467,7 +560,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         return { success: false, error: err.message };
     } finally {
         log(`... Cleaning Up ...`);
-        if (!skipDocker) {
+        if (!skipDocker && isSuccess) {
             try {
                 await runCommand('docker compose down -v', projectPath, TEST_ENV);
             } catch (e) {}
@@ -508,9 +601,12 @@ export async function runValidation(options = {}) {
 
     const testPromises = combinations.map((config, i) => {
         if (specificTestIndex !== undefined) {
-            if (i !== specificTestIndex) return null;
+            const isMatch = Array.isArray(specificTestIndex) 
+                ? specificTestIndex.includes(i)
+                : i === specificTestIndex;
+            if (!isMatch) return null;
         } else {
-            if (i < startIndex || i > endIndex) return null;
+            if (i < startIndex || (endIndex !== undefined && i > endIndex)) return null;
         }
         
         return limit(async () => {
@@ -527,7 +623,10 @@ export async function runValidation(options = {}) {
                     });
                 }
                 if (!result.success && specificTestIndex !== undefined) {
-                     process.exit(1);
+                     // If it's a single specific test, exit on failure
+                     if (!Array.isArray(specificTestIndex)) {
+                        process.exit(1);
+                     }
                 }
             } catch (error) {
                  failed++;

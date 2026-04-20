@@ -1,0 +1,20 @@
+import { Router } from 'express';
+<%_ if (architecture === 'MVC') { -%>
+import { AuthController } from '@/controllers/authController';
+<%_ } else { -%>
+import { AuthController } from '@/interfaces/controllers/auth/authController';
+<%_ } -%>
+<%_ if (architecture === 'MVC') { -%>
+import { authMiddleware } from '@/middleware/authMiddleware';
+<%_ } else { -%>
+import { authMiddleware } from '@/infrastructure/webserver/middleware/authMiddleware';
+<%_ } -%>
+
+const router = Router();
+const authController = new AuthController();
+
+router.post('/login', (req, res, next) => authController.login(req, res, next));
+router.post('/refresh', (req, res, next) => authController.refresh(req, res, next));
+router.post('/logout', authMiddleware, (req, res, next) => authController.logout(req, res, next));
+
+export default router;

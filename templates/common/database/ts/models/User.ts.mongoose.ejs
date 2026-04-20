@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IUser extends Document {
     name: string;
     email: string;
+    <% if (auth.includes('JWT')) { %>password: string;<% } %>
     createdAt: Date;
     deletedAt?: Date | null;
 }
@@ -17,6 +18,12 @@ const UserSchema: Schema = new Schema({
         required: true,
         unique: true
     },
+    <% if (auth.includes('JWT')) { %>
+    password: {
+        type: String,
+        required: true
+    },
+    <% } %>
     createdAt: {
         type: Date,
         default: Date.now
@@ -26,5 +33,6 @@ const UserSchema: Schema = new Schema({
         default: null
     }
 });
+
 
 export default mongoose.model<IUser>('User', UserSchema);

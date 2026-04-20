@@ -1,0 +1,34 @@
+const User = require('../domain/models/User');
+<%_ if (auth.includes('JWT')) { _%>
+const bcrypt = require('bcryptjs');
+<%_ } _%>
+<%_ if (caching !== 'None') { _%>
+const cacheService = require('<% if (caching === "Redis") { %>../infrastructure/caching/redisClient<% } else { %>../infrastructure/caching/memoryCache<% } %>');
+const logger = require('../infrastructure/log/logger');
+<%_ } _%>
+
+class CreateUser {
+    constructor(userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    async execute(name, email, password) {
+        let finalPassword = password;
+        <%_ if (auth.includes('JWT')) { -%>
+        if (password) {
+            finalPassword = await bcrypt.hash(password, 10);
+        }<%_ } -%>
+        const user = new User(null, name, email, finalPassword);
+        const savedUser = await this.userRepository.save(user);
+        <%_ if (caching !== 'None') { -%>
+        try {
+            await cacheService.del('users:all');
+            logger.info('Invalidated users:all cache');
+        } catch (error) {
+            logger.error('Cache error (del):', error);
+        }<%_ } _%>
+        return savedUser;
+    }
+}
+
+module.exports = CreateUser;

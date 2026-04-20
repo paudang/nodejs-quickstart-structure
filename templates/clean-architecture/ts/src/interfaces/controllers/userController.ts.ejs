@@ -6,17 +6,18 @@ import { HTTP_STATUS } from '@/utils/httpCodes';
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 import CreateUser from '@/usecases/createUser';
 import GetAllUsers from '@/usecases/getAllUsers';
+import GetUserById from '@/usecases/getUserById';
 import UpdateUser from '@/usecases/updateUser';
 import DeleteUser from '@/usecases/deleteUser';
 import logger from '@/infrastructure/log/logger';
 <%_ if (communication === 'Kafka') { -%>
 import { kafkaService } from '@/infrastructure/messaging/kafkaClient';
 import { KAFKA_ACTIONS } from '@/utils/kafkaEvents';
-<%_ } -%>
-
+<%_ } %>
 export class UserController {
     private createUserUseCase: CreateUser;
     private getAllUsersUseCase: GetAllUsers;
+    private getUserByIdUseCase: GetUserById;
     private updateUserUseCase: UpdateUser;
     private deleteUserUseCase: DeleteUser;
 
@@ -24,27 +25,46 @@ export class UserController {
         const userRepository = new UserRepository();
         this.createUserUseCase = new CreateUser(userRepository);
         this.getAllUsersUseCase = new GetAllUsers(userRepository);
+        this.getUserByIdUseCase = new GetUserById(userRepository);
         this.updateUserUseCase = new UpdateUser(userRepository);
         this.deleteUserUseCase = new DeleteUser(userRepository);
     }
 
 <% if (communication === 'GraphQL') { -%>
-    async createUser(data: { name: string, email: string }) {
+    async createUser(data: { name: string, email: string, password?: string }) {
         try {
-            const { name, email } = data;
-            const user = await this.createUserUseCase.execute(name, email);
+            const { name, email, password } = data;
+            <% if (auth.includes('JWT')) { -%>
+            if (!password) {
+                throw new Error('Password is required');
+            }
+            <% } -%>
+            const user = await this.createUserUseCase.execute(name, email, password);
 <%_ if (communication === 'Kafka') { -%>
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const userId = (user as any).id || (user as any)._id;
+            const rawUserForKafka = user as unknown as { id?: string | number; _id?: string | number; email: string };
+            const userId = rawUserForKafka.id || rawUserForKafka._id;
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: KAFKA_ACTIONS.USER_CREATED,
-                payload: { id: userId, email: user.email }
+                payload: { id: userId, email: rawUserForKafka.email }
             }), userId?.toString() || '');
 <%_ } -%>
-            return user;
+            const rawUser = user as unknown as { toJSON?: () => Record<string, unknown> };
+            return typeof rawUser.toJSON === 'function' ? rawUser.toJSON() : (user as unknown as Record<string, unknown>);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : 'Unknown error';
             logger.error(`${ERROR_MESSAGES.CREATE_USER_ERROR}:`, message);
+            throw error;
+        }
+    }
+
+    async getUserById(id: string) {
+        try {
+            const user = await this.getUserByIdUseCase.execute(id);
+            if (!user) throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+            return user;
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            logger.error(`${ERROR_MESSAGES.FETCH_USER_ERROR}:`, message);
             throw error;
         }
     }
@@ -98,20 +118,42 @@ export class UserController {
 <% } else { -%>
     async createUser(req: Request, res: Response, next: NextFunction) {
         try {
-            const { name, email } = req.body || {};
-            const user = await this.createUserUseCase.execute(name, email);
+            const { name, email, password } = req.body || {};
+<% if (auth.includes('JWT')) { -%>
+            if (!password) {
+                return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Password is required' });
+            }
+<% } -%>
+            const user = await this.createUserUseCase.execute(name, email, password);
 <%_ if (communication === 'Kafka') { -%>
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const userId = (user as any).id || (user as any)._id;
+            const rawUserForKafka = user as unknown as { id?: string | number; _id?: string | number; email: string };
+            const userId = rawUserForKafka.id || rawUserForKafka._id;
             await kafkaService.sendMessage('user-topic', JSON.stringify({
                 action: KAFKA_ACTIONS.USER_CREATED,
-                payload: { id: userId, email: user.email }
+                payload: { id: userId, email: rawUserForKafka.email }
             }), userId?.toString() || '');
 <%_ } -%>
-            res.status(HTTP_STATUS.CREATED).json(user);
+            const rawUser = user as unknown as { toJSON?: () => Record<string, unknown> };
+            const userJson = typeof rawUser.toJSON === 'function' ? rawUser.toJSON() : (user as unknown as Record<string, unknown>);
+            res.status(HTTP_STATUS.CREATED).json(userJson);
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : 'Unknown error';
             logger.error(`${ERROR_MESSAGES.CREATE_USER_ERROR}:`, message);
+            next(error);
+        }
+    }
+
+    async getUserById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const user = await this.getUserByIdUseCase.execute(id);
+            if (!user) {
+                return res.status(HTTP_STATUS.NOT_FOUND).json({ error: ERROR_MESSAGES.USER_NOT_FOUND });
+            }
+            res.json(user);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            logger.error(`${ERROR_MESSAGES.FETCH_USER_ERROR}:`, message);
             next(error);
         }
     }

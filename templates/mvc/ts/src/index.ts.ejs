@@ -12,6 +12,7 @@ import morgan from 'morgan';
 import { errorMiddleware } from '@/utils/errorMiddleware';
 import { setupGracefulShutdown } from '@/utils/gracefulShutdown';
 import healthRoutes from '@/routes/healthRoute';
+<%_ if (auth.includes('JWT')) { -%>import authRoutes from '@/routes/authRoutes';<%_ } -%>
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 import apiRoutes from '@/routes/api';
 import swaggerUi from 'swagger-ui-express';
@@ -52,6 +53,7 @@ const limiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 100 });
 app.use(limiter);
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
@@ -64,15 +66,25 @@ app.set('view engine', '<%= viewEngine.toLowerCase() %>');
 app.use(express.static(path.join(__dirname, '../public')));<%_ } %>
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 app.use('/api', apiRoutes);
-<%_ } -%><% if (viewEngine && viewEngine !== 'None') { -%>
+<%_ } -%><%_ if (auth.includes('JWT')) { -%>
+app.use('/api/auth', authRoutes);
+<%_ } -%>
+
+<% if (viewEngine && viewEngine !== 'None') { -%>
 app.get('/', (req: Request, res: Response) => {
   res.render('index', { 
-    projectName: 'NodeJS Service',
+    projectName: '<%= projectName %>',
     architecture: 'MVC',
     database: '<%= database %>',
-    communication: '<%= communication %>'
+    communication: '<%= communication %>',
+    auth: <%- JSON.stringify(auth) %>
   });
 });
+
+<%_ if (auth.includes('JWT')) { %>
+app.get('/login', (req: Request, res: Response) => res.render('login', { projectName: '<%= projectName %>' }));
+app.get('/signup', (req: Request, res: Response) => res.render('signup', { projectName: '<%= projectName %>' }));
+<% } -%>
 <% } -%>
 app.use('/health', healthRoutes);
 

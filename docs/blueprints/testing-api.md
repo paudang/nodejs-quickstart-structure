@@ -95,7 +95,13 @@ When using **Kafka**, the project follows a non-blocking, event-driven pattern:
 
 ---
 
+---
+
 ### Verification Steps:
 1.  **Produce Event**: POST to `http://localhost:3000/api/users`.
 2.  **Verify Logs**: Look for `[Kafka] Producer: Sent USER_CREATED event`.
 3.  **Confirm Execution**: Look for `[Kafka] Consumer: Received USER_CREATED` and email simulation.
+
+## 🔑 Next Steps
+
+If you have authentication enabled, check out the [Authentication & JWT Blueprint](/blueprints/authentication) to learn how to secure your endpoints and authenticate your requests.

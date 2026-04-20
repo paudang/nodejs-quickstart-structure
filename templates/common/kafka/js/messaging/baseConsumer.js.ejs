@@ -22,7 +22,7 @@ class BaseConsumer {
     }
   }
 
-  async handle(data) {
+  async handle(_data) {
     throw new Error("Method 'handle()' must be implemented");
   }
 }

@@ -4,16 +4,45 @@ import UserModel from '@/infrastructure/database/models/User';
 export class UserRepository {
     async save(user: UserEntity): Promise<UserEntity> {
 <%_ if (database === 'MongoDB') { -%>
-        const newUser = await UserModel.create({ name: user.name, email: user.email });
+        const newUser = await UserModel.create({ 
+            name: user.name, 
+            email: user.email, 
+            <% if (auth.includes('JWT')) { %>password: user.password<% } %> 
+        });
         return { id: newUser._id.toString(), name: newUser.name, email: newUser.email };
 <%_ } else if (database === 'None') { -%>
-        const newUser = await UserModel.create({ name: user.name, email: user.email });
+        const newUser = await UserModel.create({ 
+            name: user.name, 
+            email: user.email,
+            <% if (auth.includes('JWT')) { %>password: user.password<% } %>
+        });
         return { id: newUser.id, name: newUser.name, email: newUser.email };
 <%_ } else { -%>
-        const newUser = await UserModel.create({ name: user.name, email: user.email });
+        const newUser = await UserModel.create({ 
+            name: user.name, 
+            email: user.email,
+            <% if (auth.includes('JWT')) { %>password: user.password<% } %>
+        });
         return { id: newUser.id, name: newUser.name, email: newUser.email };
 <%_ } -%>
     }
+
+    async findById(id: number | string): Promise<UserEntity | null> {
+<%_ if (database === 'MongoDB') { -%>
+        const user = await UserModel.findById(id);
+        if (!user) return null;
+        return { id: user._id.toString(), name: user.name, email: user.email };
+<%_ } else if (database === 'None') { -%>
+        const user = await UserModel.findByPk(id);
+        if (!user) return null;
+        return { id: user.id, name: user.name, email: user.email };
+<%_ } else { -%>
+        const user = await UserModel.findByPk(id);
+        if (!user) return null;
+        return { id: user.id, name: user.name, email: user.email };
+<%_ } -%>
+    }
+
 
     async getUsers(): Promise<UserEntity[]> {
 <%_ if (database === 'MongoDB') { -%>

@@ -3,6 +3,9 @@ export interface User {
   id: string;
   name: string;
   email: string;
+<% if (auth.includes('JWT')) { -%>
+  password?: string;
+<% } -%>
 }
 
 export default class UserModel {
@@ -10,6 +13,12 @@ export default class UserModel {
 
   static async find() {
     return this.mockData;
+  }
+
+  static async findOne(query: Partial<User>) {
+    return this.mockData.find((u) => {
+      return Object.entries(query).every(([key, value]) => (u as unknown as Record<string, unknown>)[key] === value);
+    });
   }
 
   static async findAll() {
@@ -52,6 +61,7 @@ class User extends Model {
   public id!: number;
   public name!: string;
   public email!: string;
+  <% if (auth.includes('JWT')) { %>public password!: string;<% } %>
 }
 
 User.init(
@@ -70,6 +80,12 @@ User.init(
       allowNull: false,
       unique: true,
     },
+    <% if (auth.includes('JWT')) { %>
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    <% } %>
     deletedAt: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -82,6 +98,7 @@ User.init(
     paranoid: true,
   }
 );
+
 
 export default User;
 <% } -%>

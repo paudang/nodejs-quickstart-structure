@@ -1,13 +1,20 @@
+<% if (auth.includes('JWT')) { %>const JwtService = require('../../infrastructure/auth/jwtService');<% } %>
 const UserRepository = require('../../infrastructure/repositories/UserRepository');
 
 const gqlContext = async ({ req }) => {
-  const token = req.headers.authorization || '';
-  const userRepository = new UserRepository();
-  
-  return { 
-    token, 
-    userRepository 
+  const context = {
+    userRepository: new UserRepository()
   };
+  <% if (auth.includes('JWT')) { %>
+  const authHeader = req.headers.authorization || '';
+  if (authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    const user = JwtService.verifyToken(token);
+    if (user) {
+      context.user = user;
+    }
+  }<% } %>
+  return context;
 };
 
 module.exports = { gqlContext };

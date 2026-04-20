@@ -24,16 +24,22 @@ module.exports = {
       DB_USER: "root",
       DB_PASSWORD: "root",
       DB_NAME: "<%= dbName %>",
-      DB_PORT: 3306
+      DB_PORT: 3306,
 <%_ } else if (database === 'PostgreSQL') { -%>
       DB_USER: "postgres",
       DB_PASSWORD: "root",
       DB_NAME: "<%= dbName %>",
-      DB_PORT: 5432
+      DB_PORT: 5432,
 <%_ } else if (database === 'MongoDB') { -%>
       DB_NAME: "<%= dbName %>",
-      DB_PORT: 27017
+      DB_PORT: 27017,
 <%_ } -%>
+<%_ } -%>
+<%_ if (auth.includes('JWT')) { -%>
+      JWT_SECRET: "your_jwt_secret_here",
+      JWT_REFRESH_SECRET: "your_jwt_refresh_secret_here",
+      JWT_EXPIRES_IN: "1h",
+      JWT_REFRESH_EXPIRES_IN: "7d",
 <%_ } -%>
     }
   }]

@@ -6,12 +6,18 @@ class UserModel {
     return this.mockData;
   }
 
+  static async findOne(query) {
+    return this.mockData.find((u) => {
+      return Object.entries(query).every(([key, value]) => u[key] === value);
+    });
+  }
+
   static async findAll() {
     return this.mockData;
   }
 
   static async create(data) {
-    const { id, ...rest } = data;
+    const { id: _, ...rest } = data;
     const newUser = { id: String(this.mockData.length + 1), ...rest };
     this.mockData.push(newUser);
     return newUser;
@@ -62,6 +68,12 @@ User.init(
       allowNull: false,
       unique: true,
     },
+    <% if (auth.includes('JWT')) { %>
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    <% } %>
     deletedAt: {
       type: DataTypes.DATE,
       allowNull: true,
@@ -74,6 +86,7 @@ User.init(
     paranoid: true,
   }
 );
+
 
 module.exports = User;
 <% } -%>

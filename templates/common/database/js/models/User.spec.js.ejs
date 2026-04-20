@@ -73,15 +73,27 @@ describe('User Model', () => {
         expect(await User.find()).toBeDefined();
         expect(await User.findAll()).toBeDefined();
         
+        // Test findOne
+        const oneUser = await User.findOne({ email: data.email });
+        expect(oneUser.email).toBe(data.email);
+        
         const found = await User.findByPk(user.id);
         expect(found.id).toBe(user.id);
         
         const updated = await User.update(user.id, { name: 'New Name' });
         expect(updated.name).toBe('New Name');
         
+        // Test update non-existent
+        const nonExistentUpdate = await User.update('999', { name: 'Fail' });
+        expect(nonExistentUpdate).toBeUndefined();
+
         const deleted = await User.destroy(user.id);
         expect(deleted).toBe(true);
         expect(await User.findByPk(user.id)).toBeUndefined();
+
+        // Test destroy non-existent
+        const notDeleted = await User.destroy('999');
+        expect(notDeleted).toBe(false);
         <% } else { %>
         User.create.mockResolvedValue({ id: 1, ...data });
         User.findAll.mockResolvedValue([{ id: 1, ...data }]);

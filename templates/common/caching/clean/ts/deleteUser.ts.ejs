@@ -14,7 +14,8 @@ export default class DeleteUser {
 
         try {
             await cacheService.del('users:all');
-            logger.info('Invalidated users:all cache');
+            await cacheService.del(`user:${id}`);
+            logger.info(`Invalidated cache for user:${id} and all users`);
         } catch (error) {
             logger.error('Cache error (del):', error);
         }

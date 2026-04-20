@@ -90,6 +90,14 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 - **Reason**: Your environment doesn't support BuildKit.
 - **Solution**: Set `DOCKER_BUILDKIT=0` in your environment (Jenkinsfile or bitbucket-pipelines.yml).
 
+### Bitbucket Pipelines: `--mounts is not allowed`
+- **Error**: `Error response from daemon: authorization denied by plugin pipelines: --mounts is not allowed`
+- **Reason**: Bitbucket Pipelines Cloud prohibits host volume mounts (bind mounts) for security. If your `docker-compose.yml` uses `- .:/app` for internal migration services or code sync, Bitbucket's security plugin will block the build.
+- **Solution**:
+    1.  **CI-Specific Compose**: Create a `docker-compose.ci.yml` that removes all `volumes` sections and removes the dedicated migration service container.
+    2.  **Run Migrations on Host**: In your pipeline script, run the migration command directly (e.g., `npm run migrate`) once the database container is online. This uses the code already present in the CI runner instead of mounting it from the host.
+    3.  **Support CI Overrides**: Update your orchestrator (e.g., `scripts/run-e2e.js`) to detect the CI environment and use the `-f docker-compose.ci.yml` flag if it exists.
+
 ### GitLab/Jenkins: `Healthcheck Timeout`
 - **Error**: `Timed out waiting for: http://127.0.0.1:3001/health`
 - **Reason**: 

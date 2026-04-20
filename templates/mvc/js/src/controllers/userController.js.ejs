@@ -13,7 +13,7 @@ const cacheService = require('../config/memoryCache');
 const { sendMessage } = require('../services/kafkaService');
 const { KAFKA_ACTIONS } = require('../utils/kafkaEvents');
 <%_ } -%>
-
+<% if (auth.includes('JWT')) { %>const bcrypt = require('bcryptjs');<% } %>
 <% if (communication === 'GraphQL') { -%>
 const getUsers = async () => {
   try {
@@ -41,8 +41,19 @@ const getUsers = async () => {
 
 const createUser = async (data) => {
   try {
-    const { name, email } = data;
+    const { name, email<% if (auth.includes('JWT')) { %>, password<% } %> } = data;
+    <% if (auth.includes('JWT')) { %>
+    let user;
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user = await User.create({ name, email, password: hashedPassword });
+    } else {
+      user = await User.create({ name, email });
+    }
+    <% } else { %>
     const user = await User.create({ name, email });
+    <% } %>
+
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
     await cacheService.del('users:all');
 <%_ } -%>
@@ -52,7 +63,9 @@ const createUser = async (data) => {
       payload: { id: user.id || user._id, email: user.email }
     }), (user.id || user._id).toString());
 <%_ } -%>
-    return user;
+    const userObj = user.toJSON ? user.toJSON() : { ...user };
+    delete userObj.password;
+    return userObj;
   } catch (error) {
     logger.error(`${ERROR_MESSAGES.CREATE_USER_ERROR}:`, error);
     throw error;
@@ -148,8 +161,17 @@ const getUsers = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
   try {
-    const { name, email } = req.body || {};
+    const { name, email, password } = req.body || {};
+    <% if (auth.includes('JWT')) { %>
+    if (!password) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Password is required' });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({ name, email, password: hashedPassword });
+    <% } else { %>
     const user = await User.create({ name, email });
+    <% } %>
+    
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
     await cacheService.del('users:all');
 <%_ } -%>
@@ -159,7 +181,9 @@ const createUser = async (req, res, next) => {
       payload: { id: user.id || user._id, email: user.email }
     }), (user.id || user._id).toString());
 <%_ } -%>
-    res.status(HTTP_STATUS.CREATED).json(user);
+    const userObj = user.toJSON ? user.toJSON() : { ...user };
+    delete userObj.password;
+    res.status(HTTP_STATUS.CREATED).json(userObj);
   } catch (error) {
     logger.error(`${ERROR_MESSAGES.CREATE_USER_ERROR}:`, error);
     next(error);

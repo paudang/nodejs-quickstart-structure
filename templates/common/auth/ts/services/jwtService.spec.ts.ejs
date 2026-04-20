@@ -1,0 +1,89 @@
+<% if (architecture === 'Clean Architecture') { -%>
+import { JwtService } from '@/infrastructure/auth/jwtService';
+<% } else { -%>
+import { JwtService } from '@/services/jwtService';
+<% } -%>
+import jwt from 'jsonwebtoken';
+
+jest.mock('jsonwebtoken');
+jest.mock('@/config/env', () => ({
+  env: {
+    JWT_SECRET: 'test-secret',
+    JWT_REFRESH_SECRET: 'test-refresh-secret',
+    JWT_EXPIRES_IN: '15m'
+  }
+}));
+
+describe('JwtService', () => {
+  const secret = 'test-secret';
+  const refreshSecret = 'test-refresh-secret';
+  const payload = { id: 1, email: 'test@example.com' };
+  const token = 'mock-token';
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe('generateToken', () => {
+    it('should generate a token with standard expiration and jti', () => {
+      (jwt.sign as jest.Mock).mockReturnValue(token);
+
+      const result = JwtService.generateToken(payload);
+
+      expect(jwt.sign).toHaveBeenCalledWith(
+        expect.objectContaining({ ...payload, jti: expect.any(String) }),
+        secret,
+        { expiresIn: '15m' }
+      );
+      expect(result).toBe(token);
+    });
+  });
+
+  describe('generateRefreshToken', () => {
+    it('should generate a refresh token with refresh secret and jti', () => {
+      (jwt.sign as jest.Mock).mockReturnValue(token);
+
+      const result = JwtService.generateRefreshToken(payload);
+
+      expect(jwt.sign).toHaveBeenCalledWith(
+        expect.objectContaining({ ...payload, jti: expect.any(String) }),
+        refreshSecret,
+        { expiresIn: '7d' }
+      );
+      expect(result).toBe(token);
+    });
+  });
+
+  describe('verifyToken', () => {
+    it('should return decoded payload for a valid token', () => {
+      (jwt.verify as jest.Mock).mockReturnValue(payload);
+
+      const result = JwtService.verifyToken(token);
+
+      expect(jwt.verify).toHaveBeenCalledWith(token, secret);
+      expect(result).toEqual(payload);
+    });
+  });
+
+  describe('verifyRefreshToken', () => {
+    it('should return decoded payload for a valid refresh token', () => {
+      (jwt.verify as jest.Mock).mockReturnValue(payload);
+
+      const result = JwtService.verifyRefreshToken(token);
+
+      expect(jwt.verify).toHaveBeenCalledWith(token, refreshSecret);
+      expect(result).toEqual(payload);
+    });
+  });
+
+  describe('decodeToken', () => {
+    it('should return decoded payload without verification', () => {
+      (jwt.decode as jest.Mock).mockReturnValue(payload);
+
+      const result = JwtService.decodeToken(token);
+
+      expect(jwt.decode).toHaveBeenCalledWith(token);
+      expect(result).toEqual(payload);
+    });
+  });
+});

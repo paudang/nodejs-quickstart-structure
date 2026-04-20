@@ -6,12 +6,35 @@ class UserRepository {
     const newUser = await UserModel.create(user);
     return newUser;
 <%_ } else { -%>
-    const newUser = await UserModel.create({ name: user.name, email: user.email });
-<%_ if (database === 'MongoDB') { -%>
+    const newUser = await UserModel.create({ 
+      name: user.name, 
+      email: user.email,
+      <% if (auth.includes('JWT')) { %>password: user.password<% } %>
+    });
+<%_ if (auth.includes('JWT')) { -%>
+    // Ensure password is not returned in the save result
+    const result = { ...user, id: newUser.id || newUser._id.toString() };
+    delete result.password;
+    return result;
+<%_ } else if (database === 'MongoDB') { -%>
     return { ...user, id: newUser._id.toString() };
 <%_ } else { -%>
     return { ...user, id: newUser.id };
 <%_ } -%>
+<%_ } -%>
+  }
+
+  async findById(id) {
+<%_ if (database === 'None') { -%>
+    return await UserModel.findByPk(id);
+<%_ } else if (database === 'MongoDB') { -%>
+    const user = await UserModel.findById(id);
+    if (!user) return null;
+    return { id: user._id.toString(), name: user.name, email: user.email };
+<%_ } else { -%>
+    const user = await UserModel.findByPk(id);
+    if (!user) return null;
+    return { id: user.id || 0, name: user.name, email: user.email };
 <%_ } -%>
   }
 

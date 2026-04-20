@@ -54,7 +54,11 @@
 <% } -%>
 <% if (viewEngine === 'Pug') { %>    "pug": "^3.0.2",
 <% } -%>
+<% if (auth.includes('JWT')) { %>    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+<% } -%>
     "cors": "^2.8.5",
+
     "helmet": "^7.1.0",
     "hpp": "^0.2.3",
     "express-rate-limit": "^7.1.5",
@@ -85,7 +89,10 @@
 <% } -%>
     "@types/morgan": "^1.9.9",
     "rimraf": "^6.0.1"<% if ((viewEngine && viewEngine !== 'None') || communication === 'REST APIs' || communication === 'Kafka') { %>,
-    "cpx2": "^8.0.0"<% } %><% } %>,
+    "cpx2": "^8.0.0"<% } %><% if (auth.includes('JWT')) { %>,
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/bcryptjs": "^2.4.6"<% } %><% } %>,
+
     "eslint": "^10.1.0",
     "@eslint/js": "^9.20.0",
     "globals": "^15.14.0",

@@ -14,6 +14,9 @@ jest.mock('@/controllers/userController', () => ({
   updateUser: (...args) => mockUpdateUser(...args),
   deleteUser: (...args) => mockDeleteUser(...args)
 }));
+<%_ if (auth.includes('JWT')) { _%>
+jest.mock('@/middleware/authMiddleware', () => (req, res, next) => next());
+<%_ } _%>
 
 describe('ApiRoutes', () => {
     let app;

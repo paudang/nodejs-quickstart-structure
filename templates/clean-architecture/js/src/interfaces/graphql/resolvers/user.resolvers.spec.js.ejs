@@ -13,40 +13,62 @@ jest.mock('@/interfaces/controllers/userController', () => {
 });
 
 describe('User Resolvers', () => {
+  const mockContext = { 
+    <% if (auth.includes('JWT')) { %>user: { id: 'admin', email: 'admin@test.com' }<% } %>
+  };
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   describe('Query.getAllUsers', () => {
-    it('should return all users', async () => {
-      const result = await userResolvers.Query.getAllUsers();
+    it('should return all users when authorized', async () => {
+      const result = await userResolvers.Query.getAllUsers(null, null, mockContext);
       expect(result).toEqual([{ id: '1', name: 'John Doe', email: 'john@example.com' }]);
       expect(mockGetUsers).toHaveBeenCalledTimes(1);
     });
+
+    <% if (auth.includes('JWT')) { %>
+    it('should throw error when unauthorized', async () => {
+      await expect(userResolvers.Query.getAllUsers(null, null, {})).rejects.toThrow('Unauthorized');
+    });
+    <% } %>
   });
 
   describe('Mutation.createUser', () => {
-    it('should create and return a new user', async () => {
-      const result = await userResolvers.Mutation.createUser(null, { name: 'Jane', email: 'jane@example.com' });
+    it('should create and return a new user (Public)', async () => {
+      const payload = { name: 'Jane', email: 'jane@example.com'<% if (auth.some(a => a !=='None')) { %>, password: 'password123'<% } %> };
+      const result = await userResolvers.Mutation.createUser(null, payload);
       expect(result).toEqual({ id: '1', name: 'Jane', email: 'jane@example.com' });
-      expect(mockCreateUser).toHaveBeenCalledWith({ name: 'Jane', email: 'jane@example.com' });
-      expect(mockCreateUser).toHaveBeenCalledTimes(1);
+      expect(mockCreateUser).toHaveBeenCalledWith(payload);
     });
   });
 
   describe('Mutation.updateUser', () => {
-    it('should update and return the user', async () => {
+    it('should update and return the user when authorized', async () => {
       const payload = { name: 'Updated' };
-      const result = await userResolvers.Mutation.updateUser(null, { id: '1', ...payload });
+      const result = await userResolvers.Mutation.updateUser(null, { id: '1', ...payload }, mockContext);
       expect(result).toMatchObject(payload);
     });
+
+    <% if (auth.includes('JWT')) { %>
+    it('should throw error when unauthorized', async () => {
+      await expect(userResolvers.Mutation.updateUser(null, { id: '1', name: 'N' }, {})).rejects.toThrow('Unauthorized');
+    });
+    <% } %>
   });
 
   describe('Mutation.deleteUser', () => {
-    it('should delete and return true', async () => {
-      const result = await userResolvers.Mutation.deleteUser(null, { id: '1' });
+    it('should delete and return true when authorized', async () => {
+      const result = await userResolvers.Mutation.deleteUser(null, { id: '1' }, mockContext);
       expect(result).toBe(true);
     });
+
+    <% if (auth.includes('JWT')) { %>
+    it('should throw error when unauthorized', async () => {
+      await expect(userResolvers.Mutation.deleteUser(null, { id: '1' }, {})).rejects.toThrow('Unauthorized');
+    });
+    <% } %>
   });
 <%_ if (database === 'MongoDB') { -%>
   describe('User.id', () => {

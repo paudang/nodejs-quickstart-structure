@@ -4,6 +4,8 @@ const cors = require('cors');
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>const apiRoutes = require('./routes/api');<%_ } %>
 const healthRoutes = require('./routes/healthRoute');
 <%_ if (communication === 'Kafka') { -%>const { connectKafka, sendMessage } = require('./services/kafkaService');<%_ } -%>
+<%_ if (auth.includes('JWT')) { -%>const authRoutes = require('./routes/authRoutes');<%_ } -%>
+
 <%_ if (communication === 'GraphQL') { -%>
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@as-integrations/express4');
@@ -27,6 +29,7 @@ const { errorMiddleware } = require('./utils/errorMiddleware');
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
 
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
@@ -40,15 +43,25 @@ app.set('view engine', '<%= viewEngine.toLowerCase() %>');
 app.use(express.static(path.join(__dirname, '../public')));<%_ } %>
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 app.use('/api', apiRoutes);
-<%_ } -%><% if (viewEngine && viewEngine !== 'None') { -%>
+<%_ } -%><%_ if (auth.includes('JWT')) { -%>
+app.use('/api/auth', authRoutes);
+<%_ } -%>
+
+<% if (viewEngine && viewEngine !== 'None') { -%>
 app.get('/', (req, res) => {
   res.render('index', { 
-    projectName: 'NodeJS Service',
+    projectName: '<%= projectName %>',
     architecture: 'MVC',
     database: '<%= database %>',
-    communication: '<%= communication %>'
+    communication: '<%= communication %>',
+    auth: <%- JSON.stringify(auth) %>
   });
 });
+
+<% if (auth.includes('JWT')) { %>
+app.get('/login', (req, res) => res.render('login', { projectName: '<%= projectName %>' }));
+app.get('/signup', (req, res) => res.render('signup', { projectName: '<%= projectName %>' }));
+<% } %>
 <% } -%>
 app.use('/health', healthRoutes);
 

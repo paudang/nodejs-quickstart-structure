@@ -15,52 +15,39 @@
 
 ---
 
-A powerful CLI tool to scaffold production-ready Node.js microservices with built-in best practices. Choose between **MVC** or **Clean Architecture**, **JavaScript** or **TypeScript**, and your preferred tech stack in seconds.
-
-🎯 **[Try the Next-Gen Web UI Configurator!](https://paudang.github.io/nodejs-quickstart-structure/)**
-*Generate your exact architecture in the browser with real-time folder simulation.*
-
-![Demo](docs/demo.gif)
-
----
-
-## 🆕 What's New in v2.0.0
-
-The v2.0.0 release is a major leap forward, turning the generator into a **Community Standard** for Node.js development:
-
-- **Next-Gen Web UI Configurator**: A modern, browser-based visual project simulator. Click your stack and copy the generated zero-prompt CLI command instantly! [Try it here](https://paudang.github.io/nodejs-quickstart-structure/).
-- **🦾 AI-Native Foundation**: Built-in `.cursorrules` and Agent skills optimized for **Cursor** & AI coding assistants.
-- **🏗️ Enterprise Clean Architecture**: High-fidelity structure for professional Microservices (TS/JS).
-- **🛡️ Hardened Security**: Integrated Snyk & SonarCloud logic in the core templates.
-- **⚡ Zero-Prompt Workflow**: Generate projects with a single CLI command—no more answering prompts manually.
-
----
+A powerful ecosystem to scaffold production-ready Node.js microservices with built-in best practices. Choose between **MVC** or **Clean Architecture**, **JavaScript** or **TypeScript**, and your preferred tech stack in seconds.
 
 ## 📌 Table of Contents
 
-- [🚀 Quick Start](#-quick-start)
+- [🚀 Quick Start](#-choose-your-journey)
+- [🆕 What's New](#-whats-new-in-v21-the-authentication-release)
 - [✨ Key Features](#-key-features)
 - [🛡️ Professional Standards](#-professional-standards)
-- [🧩 2,640+ Project Combinations](#-2640-project-combinations)
+- [🧩 5,280+ Project Combinations](#-5280-project-combinations)
 - [⚙️ Configuration Options](#-configuration-options)
 - [🏗️ Generated Project Structure](#-generated-project-structure)
 - [📖 Documentation](#-documentation)
 - [🗺️ Support & Roadmap](#️-roadmap--support)
 
+## 🚀 Choose Your Journey
+ 
+| **Path A: Next-Gen Web UI** (Recommended ⭐️) | **Path B: Interactive CLI** |
+| :--- | :--- |
+| <a href="https://paudang.github.io/nodejs-quickstart-structure/#configurator"><img src="docs/public/v2-preview.png" width="100%" alt="UI Preview"></a> | <img src="docs/demo.gif" width="100%" alt="CLI Demo"> |
+| [Try Visual Configurator →](https://paudang.github.io/nodejs-quickstart-structure/#configurator) | [See CLI Commands ↓](#-path-b-interactive-cli) |
+| ✨ **Visual Preview**: Real-time folder simulation. | ⚡ **Fast & Direct**: Quickly scaffold in terminal. |
+| 🛠️ **Zero-Prompt**: Paste a tailored command. | 🦾 **AI-Ready**: Generates `.cursorrules`. |
+
 ---
 
-## 🚀 Quick Start
-
-Generate your professional Node.js project in seconds without installing anything globally:
+### 🦾 Path B: Interactive CLI
+**Scaffold your project directly from your terminal in seconds.**
 
 ```bash
 npx nodejs-quickstart-structure@latest init
 ```
 
-### Installation (Optional)
-
-If you prefer to install it globally:
-
+*Or install globally:*
 ```bash
 npm install -g nodejs-quickstart-structure
 # Then run:
@@ -68,6 +55,20 @@ nodejs-quickstart init
 ```
 
 ---
+
+## 🆕 What's New in v2.1 (The Authentication Release)
+ 
+ The v2.1.0 release is a major leap forward, turning the generator into a **Community Standard**:
+ 
+- **🔐 Pluggable JWT Authentication**: Production-ready access & refresh token patterns with automatic PM2/Environment configuration.
+- **🦾 AI-Native Foundation**: Built-in `.cursorrules` optimized for **Cursor** & AI agents—projects are "Born to be Autonomously Coded."
+- **🖼️ Next-Gen Web UI**: A browser-based visual project simulator with real-time folder previews.
+- **🏗️ Enterprise Clean Architecture**: High-fidelity structure for professional Microservices (TS/JS).
+- **🛡️ Hardened Security**: Integrated Snyk & SonarCloud logic in core templates.
+- **⚡ Zero-Prompt Workflow**: Generate projects with a single CLI command.
+
+---
+
 
 ## ✨ Key Features
 
@@ -77,6 +78,7 @@ nodejs-quickstart init
 - **Database Ready**: Pre-configured for **MySQL**, **PostgreSQL**, or **MongoDB**.
 - **Communication Patterns**: Supports **REST**, **GraphQL** (Apollo), and **Kafka** (Event-driven).
 - **Multi-layer Caching**: Integrated **Redis** or built-in **Memory Cache**.
+- **Pluggable Authentication**: Built-in **JWT** support (Refresh/Access tokens).
 - **AI-Native Optimized**: specifically designed for **Cursor** and AI agents, including built-in `.cursorrules` and Agent Skill prompts. 🚀
 
 ---
@@ -94,15 +96,15 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 
 ---
 
-## 🧩 2,640+ Project Combinations
+## 🧩 5,280+ Project Combinations
 
 The CLI supports a massive number of configurations to fit your exact needs:
 
-- **240 Core Combinations**:
-  - **MVC Architecture**: 180 variants (Languages × View Engines × Databases × Communication Patterns × Caching)
-  - **Clean Architecture**: 60 variants (Languages × Databases × Communication Patterns × Caching)
-- **2,640+ Total Scenarios**:
-  - Every combination can be generated across 3 CI/CD providers.
+- **480 Core Combinations**:
+  - **MVC Architecture**: 360 variants (Languages × View Engines × Databases × Communication Patterns × Caching × Auth)
+  - **Clean Architecture**: 120 variants (Languages × Databases × Communication Patterns × Caching × Auth)
+- **5,280+ Total Scenarios**:
+  - Every combination can be generated across 5 CI/CD providers.
   - Optional **Enterprise-Grade Security Hardening** doubles the scenarios.
   - Every single scenario is verified to be compatible with our **80% Coverage Threshold** policy.
 
@@ -118,8 +120,9 @@ The CLI will guide you through:
 5. **Database**: `MySQL` | `PostgreSQL` | `MongoDB`
 6. **Communication**: `REST` | `GraphQL` | `Kafka`
 7. **Caching**: `None` | `Redis` | `Memory Cache`
-8. **CI/CD**: `GitHub Actions` | `Jenkins` | `GitLab CI` | `CircleCI` | `Bitbucket Pipelines`
-9. **Security**: (Optional) Snyk & SonarCloud Hardening
+8. **Auth**: `None` | `JWT`
+9. **CI/CD**: `GitHub Actions` | `Jenkins` | `GitLab CI` | `CircleCI` | `Bitbucket Pipelines`
+10. **Security**: (Optional) Snyk & SonarCloud Hardening
 
 ---
 
@@ -147,7 +150,7 @@ Depending on your choices, the structure adapts. Here is a **TypeScript + Clean 
 
 ## 📖 Documentation
 
-For full guides, architecture deep-dives, and feature references, visit our **[Official Documentation Site](https://paudang.github.io/nodejs-quickstart-structure/)**.
+For full guides, architecture deep-dives, and feature references, visit our **[Official Documentation Site](https://paudang.github.io/nodejs-quickstart-structure/guide/getting-started.html)**.
 
 ---
 

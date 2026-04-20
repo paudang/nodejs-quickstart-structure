@@ -1,0 +1,25 @@
+import { User } from '@/domain/user';
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+<%_ if (caching !== 'None') { _%>
+import cacheService from '<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>';
+import logger from '@/infrastructure/log/logger';
+<%_ } _%>
+
+export default class UpdateUser {
+    constructor(private userRepository: UserRepository) {}
+
+    async execute(id: number | string, data: Partial<User>) {
+        const user = await this.userRepository.update(id, data);
+        <%_ if (caching !== 'None') { -%>
+        if (user) {
+            try {
+                await cacheService.del('users:all');
+                await cacheService.del(`user:${id}`);
+            } catch (error) {
+                logger.warn('Failed to clear cache after user update:', error);
+            }
+        }<%_ } -%>
+        
+        return user;
+    }
+}

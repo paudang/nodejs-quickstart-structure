@@ -1,5 +1,9 @@
+<% if (communication !== 'GraphQL') { -%>
 const HTTP_STATUS = require('@/utils/httpCodes');
+<% } -%>
+<% if (communication === 'GraphQL') { -%>
 const ERROR_MESSAGES = require('@/utils/errorMessages');
+<% } -%>
 <% if (communication !== 'GraphQL') { -%>
 // Express-only imports would go here
 <% } -%>
@@ -40,6 +44,11 @@ jest.mock('@/config/memoryCache', () => ({
 }));
 <%_ } -%>
 jest.mock('@/utils/logger');
+<%_ if (auth.includes('JWT')) { _%>
+jest.mock('bcryptjs', () => ({
+    hash: jest.fn().mockResolvedValue('hashed_password')
+}));
+<%_ } _%>
 <%_ if (communication === 'Kafka') { -%>
 jest.mock('@/services/kafkaService', () => {
     const mockSendMessage = jest.fn().mockResolvedValue(undefined);
@@ -166,7 +175,7 @@ describe('UserController', () => {
     describe('createUser', () => {
         it('should successfully create a new user (Happy Path)', async () => {
             // Arrange
-            const payload = { name: 'Alice', email: 'alice@example.com' };
+            const payload = { name: 'Alice', email: 'alice@example.com', password: 'password123' };
 <% if (communication === 'GraphQL') { -%>
             const dataArg = payload;
 <% } else { -%>
@@ -185,20 +194,26 @@ describe('UserController', () => {
             const result = await createUser(dataArg);
 
             // Assert
-<%_ if (database === 'None') { -%>
+            expect(result.password).toBeUndefined();
             expect(result.name).toBe(payload.name);
             expect(result.email).toBe(payload.email);
-<%_ } else { -%>
-            expect(result).toEqual(expectedUser);
-            expect(User.create).toHaveBeenCalledWith(payload);
-<%_ } -%>
+            
+            expect(User.create).toHaveBeenCalledWith({
+                name: payload.name,
+                email: payload.email
+                <%_ if (auth.includes('JWT')) { _%>, password: 'hashed_password'<%_ } _%>
+            });
 <% } else { -%>
             await createUser(mockRequest, mockResponse, mockNext);
 
             // Assert
             expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.CREATED);
-            expect(mockResponse.json).toHaveBeenCalledWith(expectedUser);
-            expect(User.create).toHaveBeenCalledWith(payload);
+            expect(mockResponse.json).toHaveBeenCalledWith(expect.not.objectContaining({ password: expect.anything() }));
+            expect(User.create).toHaveBeenCalledWith({
+                name: payload.name,
+                email: payload.email
+                <%_ if (auth.includes('JWT')) { _%>, password: 'hashed_password'<%_ } _%>
+            });
 <%_ } -%>
 <%_ if (caching === 'Redis' || caching === 'Memory Cache') { -%>
             expect(cacheService.del).toHaveBeenCalledWith('users:all');
@@ -211,7 +226,7 @@ describe('UserController', () => {
         it('should handle errors when creation fails (Error Handling)', async () => {
             // Arrange
             const error = new Error('Creation Error');
-            const payload = { name: 'Bob', email: 'bob@example.com' };
+            const payload = { name: 'Bob', email: 'bob@example.com', password: 'password123' };
 <% if (communication === 'GraphQL') { -%>
             const dataArg = payload;
 <% } else { -%>
@@ -232,7 +247,7 @@ describe('UserController', () => {
 <%_ if (communication === 'Kafka') { -%>
         it('should successfully create a new user with _id for Kafka (Happy Path)', async () => {
             // Arrange
-            const payload = { name: 'Bob', email: 'bob@example.com' };
+            const payload = { name: 'Bob', email: 'bob@example.com', password: 'password123' };
 <% if (communication === 'GraphQL') { -%>
             const dataArg = payload;
 <% } else { -%>
@@ -446,9 +461,9 @@ describe('UserController', () => {
             const error = new Error('Database Error');
             User.create.mockRejectedValue(error);
 <% if (communication === 'GraphQL') { -%>
-            await expect(createUser({ name: 'Alice', email: 'alice@example.com' })).rejects.toThrow(error);
+            await expect(createUser({ name: 'Alice', email: 'alice@example.com'<% if (auth.includes('JWT')) { %>, password: 'password123'<% } %> })).rejects.toThrow(error);
 <% } else { -%>
-            mockRequest.body = { name: 'Alice', email: 'alice@example.com' };
+            mockRequest.body = { name: 'Alice', email: 'alice@example.com', password: 'password123' };
             await createUser(mockRequest, mockResponse, mockNext);
             expect(mockNext).toHaveBeenCalledWith(error);
 <% } -%>

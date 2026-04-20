@@ -1,0 +1,21 @@
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+<%_ if (caching !== 'None') { _%>
+import cacheService from '<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>';
+<%_ } _%>
+
+export default class GetAllUsers {
+    constructor(private userRepository: UserRepository) {}
+
+    async execute() {
+        <%_ if (caching !== 'None') { -%>
+        const cachedUsers = await cacheService.get('users:all');
+        if (cachedUsers) return cachedUsers;
+        <%_ } -%>
+        const users = await this.userRepository.getUsers();
+        <%_ if (caching !== 'None') { -%>
+        await cacheService.set('users:all', users, 3600); // Cache for 1 hour
+        <%_ } -%>
+
+        return users;
+    }
+}

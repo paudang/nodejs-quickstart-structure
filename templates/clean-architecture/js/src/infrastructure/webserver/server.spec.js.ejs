@@ -1,0 +1,49 @@
+const startServer = require('@/infrastructure/webserver/server');
+const express = require('express');
+const logger = require('@/infrastructure/log/logger');
+
+jest.mock('express', () => {
+    const mRouter = {
+        get: jest.fn(),
+        post: jest.fn(),
+        patch: jest.fn(),
+        delete: jest.fn(),
+        use: jest.fn(),
+    };
+    const mApp = {
+        use: jest.fn(),
+        listen: jest.fn((port, cb) => {
+            if (cb) cb();
+            return { close: jest.fn() };
+        }),
+    };
+    const mExpress = jest.fn(() => mApp);
+    mExpress.Router = jest.fn(() => mRouter);
+    mExpress.json = jest.fn(() => (req, res, next) => next());
+    mExpress.static = jest.fn(() => (req, res, next) => next());
+    mExpress.urlencoded = jest.fn(() => (req, res, next) => next());
+    return mExpress;
+});
+
+jest.mock('@/infrastructure/log/logger', () => ({
+    info: jest.fn(),
+    error: jest.fn(),
+}));
+
+jest.mock('@/utils/gracefulShutdown', () => jest.fn());
+
+// Mock standard middlewares as pass-through
+jest.mock('cors', () => () => (req, res, next) => next());
+jest.mock('helmet', () => () => (req, res, next) => next());
+jest.mock('hpp', () => () => (req, res, next) => next());
+jest.mock('express-rate-limit', () => () => (req, res, next) => next());
+jest.mock('morgan', () => () => (req, res, next) => next());
+
+describe('Server initialization', () => {
+    it('should start the server successfully', async () => {
+        await expect(startServer()).resolves.not.toThrow();
+        const app = express();
+        expect(app.listen).toHaveBeenCalled();
+        expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('Server running on port'));
+    });
+});

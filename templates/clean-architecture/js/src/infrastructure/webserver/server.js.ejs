@@ -10,6 +10,8 @@ const apiRoutes = require('../../interfaces/routes/api');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./swagger');
 <%_ } -%>
+<%_ if (auth.includes('JWT')) { -%>const authRoutes = require('../../interfaces/routes/authRoutes');<%_ } -%>
+
 <%_ if (communication === 'GraphQL') { -%>
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@as-integrations/express4');
@@ -33,6 +35,7 @@ const startServer = async () => {
     <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
     app.use('/api', apiRoutes);
     <%_ } -%>
+    <%_ if (auth.includes('JWT')) { -%>app.use('/api/auth', authRoutes);<%_ } -%>
     <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
     <%_ } -%>

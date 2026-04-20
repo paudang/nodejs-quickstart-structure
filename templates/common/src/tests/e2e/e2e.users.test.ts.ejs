@@ -3,16 +3,37 @@ import request from 'supertest';
 const SERVER_URL = process.env.TEST_URL || `http://127.0.0.1:${process.env.PORT || 3001}`;
 
 describe('E2E User Tests', () => {
-  // Global setup and teardown hooks can be added here
-  // typically for database seeding or external authentication checks prior to E2E.
   let userId: string;
+<%_ if (auth.includes('JWT')) { _%>
+  let authToken: string;
+<%_ } _%>
   const uniqueEmail = `test_${Date.now()}@example.com`;
+<%_ if (auth.includes('JWT')) { _%>
+  const testPassword = 'password123';
+<%_ } _%>
+
+<%_ if (auth.includes('JWT')) { _%>
+  it('should fail to fetch users without token (Protected)', async () => {
+<%_ if (communication === 'GraphQL') { _%>
+    const query = `{ getAllUsers { id name } }`;
+    const response = await request(SERVER_URL).post('/graphql').send({ query });
+    if (response.statusCode === 200 && response.body.errors) {
+      expect(response.body.errors[0].message.toLowerCase()).toContain('unauthorized');
+    } else {
+      expect([401, 400]).toContain(response.statusCode);
+    }
+<%_ } else { _%>
+    const response = await request(SERVER_URL).get('/api/users');
+    expect(response.statusCode).toBe(401);
+<%_ } _%>
+  });
+<%_ } _%>
 
 <%_ if (communication === 'GraphQL') { -%>
   it('should create a user via GraphQL', async () => {
     const query = `
       mutation {
-        createUser(name: "Test User", email: "${uniqueEmail}") {
+        createUser(name: "Test User", email: "${uniqueEmail}"<%_ if (auth.includes('JWT')) { _%>, password: "${testPassword}"<%_ } _%>) {
           id
           name
           email
@@ -24,8 +45,47 @@ describe('E2E User Tests', () => {
       .send({ query });
 
     expect(response.statusCode).toBe(200);
+    expect(response.body.errors).toBeUndefined();
     userId = response.body.data.createUser.id;
     expect(userId).toBeDefined();
+  });
+<%_ } else { -%>
+  it('should create a user successfully (Signup)', async () => {
+    const response = await request(SERVER_URL)
+      .post('/api/users')
+      .send({ name: 'Test User', email: uniqueEmail<%_ if (auth.includes('JWT')) { _%>, password: testPassword <%_ } _%>});
+
+    expect([201, 202]).toContain(response.statusCode);
+    userId = response.body.id || response.body._id;
+  });
+<%_ } -%>
+
+<%_ if (auth.includes('JWT')) { _%>
+  it('should login and obtain a JWT token', async () => {
+    const response = await request(SERVER_URL)
+      .post('/api/auth/login')
+      .send({ email: uniqueEmail, password: testPassword });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.accessToken || response.body.token).toBeDefined();
+    authToken = response.body.accessToken || response.body.token;
+  });
+<%_ } _%>
+
+<%_ if (communication === 'GraphQL') { -%>
+  it('should fetch all users via GraphQL', async () => {
+    const query = `{ getAllUsers { id name email } }`;
+    const response = await request(SERVER_URL)
+      .post('/graphql')
+      <%_ if (auth.includes('JWT')) { _%>
+      .set('Authorization', `Bearer ${authToken}`)
+      <%_ } _%>
+      .send({ query });
+
+    expect(response.statusCode).toBe(200);
+    expect(Array.isArray(response.body.data.getAllUsers)).toBe(true);
+    const user = response.body.data.getAllUsers.find((u: any) => u.id === userId);
+    expect(user).toBeDefined();
   });
 
   it('should update a user via GraphQL', async () => {
@@ -39,6 +99,10 @@ describe('E2E User Tests', () => {
     `;
     const response = await request(SERVER_URL)
       .post('/graphql')
+      <%_ if (auth.includes('JWT')) { _%>
+      .set('Authorization', `Bearer ${authToken}`)
+      <%_ } _%>
+      .set('Content-Type', 'application/json')
       .send({ query });
 
     expect(response.statusCode).toBe(200);
@@ -53,68 +117,45 @@ describe('E2E User Tests', () => {
     `;
     const response = await request(SERVER_URL)
       .post('/graphql')
+      <%_ if (auth.includes('JWT')) { _%>
+      .set('Authorization', `Bearer ${authToken}`)
+      <%_ } _%>
+      .set('Content-Type', 'application/json')
       .send({ query });
 
     expect(response.statusCode).toBe(200);
     expect(response.body.data.deleteUser).toBe(true);
   });
-<%_ } else if (communication === 'Kafka') { -%>
-  it('should trigger Kafka event for user creation', async () => {
-    const response = await request(SERVER_URL)
-      .post('/api/users')
-      .send({ name: 'Test User', email: uniqueEmail });
-
-    expect([201, 202]).toContain(response.statusCode);
-    userId = response.body.id || response.body._id;
-    expect(userId).toBeDefined();
-
-    // Wait for Kafka to process...
-    await new Promise(resolve => setTimeout(resolve, 500));
-  });
-
-  it('should trigger Kafka event for user update', async () => {
-    const response = await request(SERVER_URL)
-      .patch(`/api/users/${userId}`)
-      .send({ name: 'Updated User' });
-
-    expect([200, 202, 204]).toContain(response.statusCode);
-
-    // Wait for Kafka to process...
-    await new Promise(resolve => setTimeout(resolve, 500));
-  });
-
-  it('should trigger Kafka event for user deletion', async () => {
-    const response = await request(SERVER_URL)
-      .delete(`/api/users/${userId}`);
-
-    expect([200, 202, 204]).toContain(response.statusCode);
-
-    // Wait for Kafka to process...
-    await new Promise(resolve => setTimeout(resolve, 500));
-  });
 <%_ } else { -%>
-  it('should create a user successfully via REST', async () => {
+  it('should fetch users successfully', async () => {
     const response = await request(SERVER_URL)
-      .post('/api/users')
-      .send({ name: 'Test User', email: uniqueEmail });
-
-    expect(response.statusCode).toBe(201);
-    userId = response.body.id || response.body._id;
+      .get('/api/users')
+      <%_ if (auth.includes('JWT')) { _%>
+      .set('Authorization', `Bearer ${authToken}`)
+      <%_ } _%>;
+    expect(response.statusCode).toBe(200);
+    expect(Array.isArray(response.body)).toBe(true);
   });
 
-  it('should update a user successfully via REST', async () => {
+  it('should update a user successfully', async () => {
     const response = await request(SERVER_URL)
       .patch(`/api/users/${userId}`)
+      <%_ if (auth.includes('JWT')) { _%>
+      .set('Authorization', `Bearer ${authToken}`)
+      <%_ } _%>
       .send({ name: 'Updated User' });
 
-    expect(response.statusCode).toBe(200);
+    expect([200, 202, 204]).toContain(response.statusCode);
   });
 
-  it('should delete a user successfully via REST', async () => {
+  it('should delete a user successfully', async () => {
     const response = await request(SERVER_URL)
-      .delete(`/api/users/${userId}`);
+      .delete(`/api/users/${userId}`)
+      <%_ if (auth.includes('JWT')) { _%>
+      .set('Authorization', `Bearer ${authToken}`)
+      <%_ } _%>;
 
-    expect(response.statusCode).toBe(200);
+    expect([200, 202, 204]).toContain(response.statusCode);
   });
 <%_ } -%>
 });

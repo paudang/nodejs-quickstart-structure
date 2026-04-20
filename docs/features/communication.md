@@ -26,3 +26,13 @@ High-performance messaging for asynchronous microservices.
 -   **Pattern**: Uses a **Singleton Kafka Service** for resilience and performance.
 -   **BaseConsumer**: Standardized abstract class for creating custom consumers with built-in error handling.
 -   **Worker-only Mode**: If only Kafka is selected, the generator removes unnecessary HTTP routes, creating a pure worker service.
+
+## Authentication & Authorization
+
+Across all communication protocols, security is handled via a **Pluggable JWT System**.
+
+- **REST**: Middleware based authorization (`authMiddleware.ts`).
+- **GraphQL**: context-based authorization and guarded resolvers.
+- **Tokens**: Supports secure **Access/Refresh Token Rotation** and **Blacklisting** via Redis/Memory Cache.
+
+*For a deep dive into the security implementation, see the [Authentication Blueprint](/blueprints/authentication).*

@@ -4,48 +4,282 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= projectName %></title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --bg-dark: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        /* Animated Background Blobs */
+        .background-blobs {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            filter: blur(100px);
+        }
+
+        .blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 25s infinite alternate;
+        }
+
+        .blob-1 {
+            background: radial-gradient(circle, #6366f1 0%, transparent 70%);
+            top: -200px;
+            left: -100px;
+        }
+
+        .blob-2 {
+            background: radial-gradient(circle, #ec4899 0%, transparent 70%);
+            bottom: -200px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(150px, 80px) scale(1.3); }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            z-index: 1;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 32px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 64px;
+            margin-bottom: 24px;
+            display: inline-block;
+            animation: bounce 3s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            background: #4f46e5;
+            box-shadow: 0 15px 25px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--primary);
+        }
+
+        .feature-card h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            color: var(--success);
+            padding: 8px 16px;
+            border-radius: 99px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 32px;
+        }
+
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            h1 { font-size: 32px; }
+            .hero-card { padding: 40px 20px; }
+        }
+    </style>
 </head>
 <body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
     <div class="container">
-        <header class="header">
+        <div class="hero-card">
             <div class="logo">🚀</div>
             <h1>Welcome to <%= projectName %></h1>
-            <p class="subtitle">A production-ready Node.js microservice starter.</p>
-        </header>
+            <p class="subtitle">Your enterprise-grade Node.js microservice is live and ready for production.</p>
 
-        <div class="card-grid">
-            <div class="card">
+            <div class="btn-group">
+                <% if (typeof auth !== 'undefined' && auth.includes('JWT')) { %>
+                    <a href="/login" class="btn btn-primary">Sign In</a>
+                    <a href="/signup" class="btn btn-secondary">Create Account</a>
+                <% } %>
+                <a href="<%= communication === 'GraphQL' ? '/graphql' : '/api-docs' %>" class="btn btn-secondary">
+                    <span>Explore Docs</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </a>
+            </div>
+
+            <% if (communication === 'Kafka') { %>
+                <div class="status-badge">
+                    <span class="dot"></span>
+                    🔄 Kafka Connected
+                </div>
+            <% } else { %>
+                <div class="status-badge">
+                    ✅ API Service Active
+                </div>
+            <% } %>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
                 <h3>Architecture</h3>
                 <p><%= architecture %></p>
             </div>
-            <div class="card">
-                <h3>Database</h3>
-                <p><%= database %></p>
+            <div class="feature-card">
+                <h3>Core Stack</h3>
+                <p><%= database %> & <%= communication %></p>
             </div>
-            <div class="card">
-                <h3>Communication</h3>
-                <p><%= communication %></p>
-            </div>
-        </div>
-
-        <% if (communication === 'Kafka') { %>
-        <div class="status-card">
-            <div class="status-icon">🔄</div>
-            <div class="status-content">
-                <h3>Kafka Connected</h3>
-                <p>Connection to broker established successfully.</p>
+            <div class="feature-card">
+                <h3>Environment</h3>
+                <p>Node.js & Docker Ready</p>
             </div>
         </div>
-        <% } else { %>
-        <div class="status-card">
-            <div class="status-icon">✅</div>
-            <div class="status-content">
-                <h3>API Active</h3>
-                <p>REST API is running and ready to accept requests.</p>
-            </div>
-        </div>
-        <% } %>
 
         <footer>
             <p>Generated with ❤️ by Node.js Quickstart Generator</p>

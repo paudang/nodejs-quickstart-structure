@@ -1,24 +1,34 @@
 import { UserController } from '@/controllers/userController';
+import { MyContext } from '@/graphql/context';
 
 const userController = new UserController();
 
 export const userResolvers = {
   Query: {
-    getAllUsers: async () => {
+    getAllUsers: async (_: unknown, __: unknown, <% if (auth.includes('JWT')) { %>context<% } else { %>_context<% } %>: MyContext) => {
+      <%_ if (auth.includes('JWT')) { -%>
+      if (!context.user) throw new Error('Unauthorized');
+      <%_ } -%>
       const users = await userController.getUsers();
       return users;
     }
   },
   Mutation: {
-    createUser: async (_: unknown, { name, email }: { name: string, email: string }) => {
-      const user = await userController.createUser({ name, email });
+    createUser: async (_: unknown, { name, email<% if (auth.some(a => a !=='None')) { %>, password<% } %> }: { name: string, email: string<% if (auth.some(a => a !=='None')) { %>, password: string<% } %> }) => {
+      const user = await userController.createUser({ name, email<% if (auth.some(a => a !=='None')) { %>, password<% } %> });
       return user;
     },
-    updateUser: async (_: unknown, { id, name, email }: { id: string, name?: string, email?: string }) => {
+    updateUser: async (_: unknown, { id, name, email }: { id: string, name?: string, email?: string }, <% if (auth.includes('JWT')) { %>context<% } else { %>_context<% } %>: MyContext) => {
+      <%_ if (auth.includes('JWT')) { -%>
+      if (!context.user) throw new Error('Unauthorized');
+      <%_ } -%>
       const user = await userController.updateUser(id, { name, email });
       return user;
     },
-    deleteUser: async (_: unknown, { id }: { id: string }) => {
+    deleteUser: async (_: unknown, { id }: { id: string }, <% if (auth.includes('JWT')) { %>context<% } else { %>_context<% } %>: MyContext) => {
+      <%_ if (auth.includes('JWT')) { -%>
+      if (!context.user) throw new Error('Unauthorized');
+      <%_ } -%>
       const result = await userController.deleteUser(id);
       return result;
     }

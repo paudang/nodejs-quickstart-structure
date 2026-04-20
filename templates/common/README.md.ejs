@@ -29,6 +29,7 @@ This project follows a strict **7-Step Production-Ready Process** to ensure qual
 
 -   **Architecture**: <%= architecture %> (<% if (architecture === 'Clean Architecture') { %>Domain, UseCases, Infrastructure<% } else { %>MVC Pattern<% } %>).
 -   **Database**: <%= database %> <% if (database !== 'None') { %>(via <%= database === 'MongoDB' ? 'Mongoose' : 'Sequelize' %>)<% } %>.
+<% if (auth.includes('JWT')) { %>-   **Authentication**: JWT-based Auth (Sign Up, Login, Protected Routes).<% } %>
 -   **Security**: Helmet, CORS, Rate Limiting, HPP, Snyk SCA.
 -   **Quality**: 80%+ Test Coverage, Eslint, Prettier, Husky.
 -   **DevOps**: Multi-stage Docker, CI/CD ready (GitHub/GitLab/Jenkins/Bitbucket/CircleCI).
@@ -95,6 +96,21 @@ Microservices communication handled via **Kafka**.
 API is exposed via **GraphQL**.
 The Apollo Sandbox UI for API exploration and documentation is available natively, fully embedded for offline development:
 - **URL**: `http://localhost:3000/graphql` (Dynamic based on PORT)
+
+<%_ if (auth.includes('JWT')) { _%>
+### 🔐 Authorization
+To access protected resolvers (Query: `getAllUsers`, Mutations: `updateUser`, `deleteUser`), you must provide a valid JWT token in the headers.
+
+**How to authenticate:**
+1. Use the REST login endpoint: `POST /api/auth/login` (with your email and password).
+2. Copy the `accessToken` from the response.
+3. In the Apollo Sandbox "HTTP Headers" tab (bottom section), add:
+```json
+{
+  "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE"
+}
+```<%_ } _%>
+
 If you are opening `http://localhost:3000/graphql` in your browser, you can directly run the following in the Apollo Sandbox UI:
 
 **Query to get all users:**
@@ -111,7 +127,7 @@ query GetAllUsers {
 **Mutation to create a user:**
 ```graphql
 mutation CreateUser {
-  createUser(name: "John Doe", email: "john@example.com") {
+  createUser(name: "John Doe", email: "john@example.com"<%_ if (auth.includes('JWT')) { _%>, password: "yourpassword123"<%_ } _%>) {
     id
     name
     email
@@ -119,7 +135,7 @@ mutation CreateUser {
 }
 ```
 
-**Mutation to update a user:**
+**Mutation to update a user (Protected):**
 ```graphql
 mutation UpdateUser {
   updateUser(id: "1", name: "John Updated") {
@@ -130,7 +146,7 @@ mutation UpdateUser {
 }
 ```
 
-**Mutation to delete a user:**
+**Mutation to delete a user (Protected):**
 ```graphql
 mutation DeleteUser {
   deleteUser(id: "1")
@@ -143,32 +159,61 @@ A Swagger UI for API documentation is available at:
 
 ### 🛣️ User Endpoints:
 - `GET /api/users`: List all users.
+- `GET /api/users/:id`: Get a user by ID.
 - `POST /api/users`: Create a new user.
 - `PATCH /api/users/:id`: Partially update a user.
 - `DELETE /api/users/:id`: Delete a user (Soft Delete).
-<%_ } -%>
-
+<%_ if (auth.includes('JWT')) { %>
+### 🔐 Auth Endpoints:
+- `POST /api/auth/login`: Exchange credentials for a short-lived `accessToken` and a long-lived `refreshToken`.
+- `POST /api/auth/refresh`: Submit a `refreshToken` to receive a new pair of tokens. (Includes theft-detection logic).
+- `POST /api/auth/logout`: Revoke (blacklist) the active `accessToken` and delete the `refreshToken`.
+- `POST /api/users`: Acts as Sign Up when password is provided.
+  *Note: To access protected user endpoints (GET/PATCH/DELETE), include `Authorization: Bearer <your_accessToken>` in the headers.*
+<% } -%>
+<% } -%>
 <% if (communication === 'Kafka') { -%>
 ## 📡 Testing Kafka Asynchronous Flow
 This project demonstrates a production-ready Kafka flow:
-1. **Producer**: When a user is created via the API, a `USER_CREATED` event is sent to `user-topic`.
-2. **Consumer**: `WelcomeEmailConsumer` listens to `user-topic` and simulates sending an email.
+1. **Producer**: When a user is created, updated, or deleted via the API, a corresponding event (`USER_CREATED`, `USER_UPDATED`, `USER_DELETED`) is sent to `user-topic`.
+2. **Consumer**: `WelcomeEmailConsumer` listens to `user-topic` and simulates processing (e.g., sending an email on creation).
 
 ### How to verify:
 1. Ensure infrastructure is running: `docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> kafka<% } %>`
 2. Start the app: `npm run dev`
-3. Trigger an event by creating a user (via Postman or curl):
-   ```bash
-   curl -X POST http://localhost:3000/api/users \
-     -H "Content-Type: application/json" \
-     -d '{"name": "Kafka Tester", "email": "kafka@example.com"}'
-   ```
+3. Trigger internal events:
+ 
+**Create User (Sign Up - Public):**
+```bash
+curl -X POST http://localhost:3000/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Kafka Tester", "email": "kafka@example.com"<%_ if (auth.includes('JWT')) { _%>, "password": "password123"<%_ } _%>}'
+```
+
+<%_ if (auth.includes('JWT')) { _%>
+**Update User (Protected - Requires Auth):**
+1. Login to get token: `POST /api/auth/login`
+2. Update user with token:
+```bash
+curl -X PATCH http://localhost:3000/api/users/1 \
+  -H "Authorization: Bearer <YOUR_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Updated Name"}'
+```
+<%_ } else { _%>
+**Update User:**
+```bash
+curl -X PATCH http://localhost:3000/api/users/1 \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Updated Name"}'
+```
+<%_ } _%>
 4. Observe the logs:
-   ```text
-   [Kafka] Producer: Sent USER_CREATED event for 'kafka@example.com'
-   [Kafka] Consumer: Received USER_CREATED. 
-   [Kafka] Consumer: 📧 Sending welcome email to 'kafka@example.com'... Done!
-   ```
+```text
+[Kafka] Producer: Sent USER_CREATED event for 'kafka@example.com'
+[Kafka] Consumer: Received USER_CREATED. 
+[Kafka] Consumer: 📧 Sending welcome email to 'kafka@example.com'... Done!
+```
 
 ### 🛠️ Kafka Troubleshooting
 If the connection or events are failing:
