@@ -1,6 +1,6 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
  
-## [2.1.0] - 2026-04-17
+## [2.1.0] - 2026-04-20
 
 ### Added
 - **Pluggable JWT Authentication**: Introduced a robust, production-ready authentication system.
