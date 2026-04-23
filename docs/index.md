@@ -7,10 +7,10 @@ hero:
   tagline: "Scaffold MVC or Clean Architecture with JWT Auth, Kafka, GraphQL, and more."
   actions:
     - theme: brand
-      text: 🚀 Quickstart
+      text:  Quickstart
       link: "#configurator"
     - theme: alt
-      text: 📖 Documentation
+      text:  Documentation
       link: /guide/getting-started
   
 features:
@@ -20,11 +20,11 @@ features:
     details: Pre-configured .cursorrules and Agent Skill prompts to boost your productivity with AI tools.
   - title: Production Standards
     details: Built-in E2E tests, graceful shutdown, health checks, and security headers.
-  - title: "Enterprise DevSecOps 🛡️"
+  - title: "Enterprise DevSecOps "
     details: Hardened with Snyk & SonarCloud, plus multi-stage Docker and Flyway migrations out of the box.
-  - title: "Community Insights 📈"
+  - title: "Community Insights "
     details: 4,000+ Downloads on npm and 1,500+ Git Clones in the last 14 days (Deep architectural research).
-  - title: "Next Gen: Web UI (Live Now) 🔥"
+  - title: "Next Gen: Web UI (Live Now) "
     details: Try our browser-based generator featuring real-time visualization and unified configuration below.
 ---
 
@@ -32,7 +32,7 @@ features:
 </script>
 
 <div id="configurator" style="padding: 40px 0;">
-  <h2 style="text-align: center; margin-bottom: 20px; border: none;">⚡ Configure Your Project</h2>
+  <h2 style="text-align: center; margin-bottom: 20px; border: none;"> Configure Your Project</h2>
   <GeneratorApp />
 </div>
 

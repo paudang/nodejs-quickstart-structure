@@ -13,6 +13,6 @@ Whether you are building a small API or a large-scale event-driven system, this 
 -   **Modern Stack**: Features like **Kafka KRaft Mode**, **Apollo Server v4**, and **Zod** environment validation are standard.
 -   **AI-Native**: Specifically optimized for AI-assisted development with **Cursor** and other LLM-based agents.
 
-## 🗺️ Product Roadmap
+##  Product Roadmap
 
 We are constantly improving! You can follow our active development and upcoming features on our **[Public Trello Board](https://trello.com/b/TPTo8ylF/nodejs-quickstart-structure-product)**.

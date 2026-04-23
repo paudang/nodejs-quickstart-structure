@@ -4,7 +4,7 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 
 ---
 
-## 💻 Environment & Setup
+##  Environment & Setup
 
 ### `nodejs-quickstart: command not found`
 - **Reason**: The CLI is not installed globally or your PATH is missing.
@@ -20,7 +20,7 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 
 ---
 
-## 🛡️ Security & Quality (Snyk/Sonar)
+##  Security & Quality (Snyk/Sonar)
 
 ### `403 Forbidden` or `Unauthorized` (Snyk)
 -   **Reason**: Missing or invalid `SNYK_TOKEN` in your environment.
@@ -47,7 +47,7 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 
 ---
 
-## 🐶 Husky & Git Hooks
+##  Husky & Git Hooks
 
 ### Hooks not running after generation
 - **Reason**: `npm install` was run before `git init`.
@@ -55,7 +55,7 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 
 ---
 
-## 🐳 Docker & Infrastructure
+##  Docker & Infrastructure
 
 ### `port is already allocated` (e.g., 9093)
 - **Reason**: Another container or local service is using the port.
@@ -71,7 +71,7 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 
 ---
 
-## 🚀 CI/CD & Automation
+##  CI/CD & Automation
 
 ### Jenkins: `Invalid tool type "nodejs"`
 - **Reason**: The **NodeJS Plugin** is missing or Jenkins hasn't been restarted.
@@ -128,7 +128,7 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 
 ---
 
-## 🛠️ Generator Issues
+##  Generator Issues
 
 ### Templates not rendering correctly
 - **Reason**: Editing `.yml` files instead of the `.yml.ejs` templates.

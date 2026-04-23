@@ -2,13 +2,13 @@
 
 This blueprint provides a detailed guide on how the pluggable JWT authentication system works and how to set it up in your generated microservice.
 
-## 🔐 Overview
+##  Overview
 
 When you choose **JWT** as your authentication provider, the generator scaffolds a robust, production-ready authentication flow. This includes user registration, secure login with bcrypt password hashing, and token-based authorization using JSON Web Tokens (JWT).
 
 ---
 
-## ⚙️ Configuration
+##  Configuration
 
 Authentication behavior is controlled via environment variables. Ensure these are set in your `.env` file:
 
@@ -22,7 +22,7 @@ JWT_EXPIRES_IN=1d
 
 ---
 
-## 🚀 Authentication Flow
+##  Authentication Flow
 
 ### 1. User Registration (Sign Up)
 To create a new account, use the user creation endpoint. This is handled by the `UserController`. The system automatically hashes the password using `bcrypt` before saving it to the database.
@@ -75,7 +75,7 @@ Content-Type: application/json
 
 ---
 
-## 🛡️ Protecting Routes
+##  Protecting Routes
 
 To restrict access to specific routes, use the provided `authMiddleware`.
 
@@ -108,7 +108,7 @@ router.get('/:id', authMiddleware, (req, res) => userController.getUserById(req,
 
 ---
 
-## 🔑 Accessing User Information
+##  Accessing User Information
 
 Once a request passes through the `authMiddleware`, the decoded user payload is attached to the request object as `req.user`.
 
@@ -133,7 +133,7 @@ async getUserById(req: Request, res: Response, next: NextFunction) {
 
 ---
 
-## 🧪 Testing with JWT
+##  Testing with JWT
 
 When making requests to protected endpoints, include the token in the `Authorization` header:
 
@@ -148,7 +148,7 @@ Authorization: Bearer <your_jwt_token_here>
 
 ---
 
-## 🏗️ Integrated Flow: JWT + Kafka
+##  Integrated Flow: JWT + Kafka
 
 When both **JWT Authentication** and **Kafka Communication** are enabled, the registration process follows a powerful integrated pattern:
 
@@ -163,7 +163,7 @@ This ensures your authentication flow is both secure and event-driven out of the
 
 ---
 
-## 📂 Architecture & File Locations
+##  Architecture & File Locations
 
 | File | MVC Location | Clean Architecture Location |
 | :--- | :--- | :--- |
@@ -174,7 +174,7 @@ This ensures your authentication flow is both secure and event-driven out of the
 
 ---
 
-## 🔒 Advanced Security
+##  Advanced Security
 
 Our JWT implementation goes beyond basic tokens by providing **Refresh Token Rotation** and **Redis-based Token Revocation (Blacklisting)** for enterprise-grade security.
 

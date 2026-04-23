@@ -8,7 +8,7 @@ Before starting, ensure you have the following installed:
 - **Docker & Docker Compose** (for infrastructure like Databases, Redis, and Kafka)
 :::
 
-## 🚀 The 7-Step Development Flow
+##  The 7-Step Development Flow
 
 To ensure your microservice is production-ready, follow this standard sequence:
 
@@ -24,7 +24,7 @@ To ensure your microservice is production-ready, follow this standard sequence:
 
 ---
 
-## 🛠️ Detailed Setup
+##  Detailed Setup
 
 ### 1. Environment Configuration
 Copy the example environment file and adjust values:

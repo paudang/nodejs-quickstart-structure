@@ -2,7 +2,7 @@
 
 This project allows you to scaffold Node.js microservices with enterprise-grade security hardening out of the box. This feature is designed to meet the rigorous security standards of top-tier tech companies.
 
-## 🛡️ Features Included
+##  Features Included
 
 When you select "Yes" for Enterprise Security Hardening during project initialization, the following tools and configurations are added:
 
@@ -30,7 +30,7 @@ When you select "Yes" for Enterprise Security Hardening during project initializ
 ---
 To fully activate these features in your generated project, follow these detailed steps to obtain your authentication tokens and configure your CI/CD environment.
 
-### 🛡️ 1. Snyk Integration (SCA)
+###  1. Snyk Integration (SCA)
 
 Snyk monitors your dependencies for known vulnerabilities. To set it up:
 
@@ -46,7 +46,7 @@ Snyk monitors your dependencies for known vulnerabilities. To set it up:
     - Name: `SNYK_TOKEN`
     - Value: (Paste your token here).
 
-### 🔍 2. SonarCloud Integration (SAST)
+###  2. SonarCloud Integration (SAST)
 
 SonarCloud performs deep static analysis and tracks code quality.
 
@@ -78,7 +78,7 @@ SonarCloud performs deep static analysis and tracks code quality.
 > [!TIP]
 > Most users should use `https://sonarcloud.io` as it is the official free cloud service for open-source and small projects!
 
-### 🐳 3. Snyk Container Scanning
+###  3. Snyk Container Scanning
 
 In addition to dependency scanning, the generator includes **Container Security** audits to check your `Dockerfile` and base image.
 
@@ -90,7 +90,7 @@ In addition to dependency scanning, the generator includes **Container Security*
     snyk container test my-app --file=Dockerfile --severity-threshold=high
     ```
 
-### ⚡ 4. Husky & Lint-Staged
+###  4. Husky & Lint-Staged
 > [!IMPORTANT]
 > You **must** run `git init` **before** running `npm install` for Husky to set up the hooks correctly.
 

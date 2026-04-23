@@ -8,7 +8,7 @@ When generating your project, select your preferred provider in the **"Select CI
 
 ---
 
-## 🛠️ Common Prerequisites
+##  Common Prerequisites
 
 Before configuring any platform, ensure you have:
 1.  **Git Initialized**: Run `git init` in your project root.
@@ -17,7 +17,7 @@ Before configuring any platform, ensure you have:
 
 ---
 
-## 1. GitHub Actions 🐙
+## 1. GitHub Actions 
 
 GitHub Actions is integrated directly into your repository.
 
@@ -34,7 +34,7 @@ GitHub Actions is integrated directly into your repository.
 
 ---
 
-## 2. GitLab CI 🦊
+## 2. GitLab CI 
 
 GitLab CI uses a single `.gitlab-ci.yml` file to manage the pipeline lifecycle.
 
@@ -51,7 +51,7 @@ GitLab CI uses a single `.gitlab-ci.yml` file to manage the pipeline lifecycle.
 
 ---
 
-## 3. Jenkins 🏗️
+## 3. Jenkins 
 
 Jenkins is a self-hosted automation server. For Node.js projects, we recommend running Jenkins in a Docker container for a predictable build environment.
 
@@ -116,7 +116,7 @@ View the **Console Output** for each build stage defined in your project's `Jenk
 
 ---
 
-## 4. CircleCI 🎡
+## 4. CircleCI 
 
 CircleCI uses an optimized workflow with Orbs and machine executors.
 
@@ -131,7 +131,7 @@ CircleCI uses an optimized workflow with Orbs and machine executors.
 
 ---
 
-## 5. Bitbucket Pipelines 🟦
+## 5. Bitbucket Pipelines 
 
 Bitbucket Pipelines is built directly into the Bitbucket cloud experience.
 
@@ -146,7 +146,7 @@ Bitbucket Pipelines is built directly into the Bitbucket cloud experience.
 
 ---
 
-## 📊 Comparison Table
+##  Comparison Table
 
 | Feature | GitHub Actions | GitLab CI | Jenkins | CircleCI | Bitbucket |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -158,7 +158,7 @@ Bitbucket Pipelines is built directly into the Bitbucket cloud experience.
 
 ---
 
-## 🛠️ Still Having Issues?
+##  Still Having Issues?
 
 CI/CD environments are complex and often vary by project. We have compiled a central **[Troubleshooting & FAQ Guide](../guide/troubleshooting)** to help you solve common errors, including:
 

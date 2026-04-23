@@ -1,4 +1,4 @@
-# V2 Browser Generator 🚀
+# V2 Browser Generator 
 
 We are excited to announce the next generation of **Node.js Quickstart Structure**: a unified web interface for project scaffolding.
 

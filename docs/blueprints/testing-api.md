@@ -2,7 +2,7 @@
 
 This blueprint covers the standardized methods for testing your application and interacting with its communication layers (REST, GraphQL, and Kafka).
 
-## 🧪 Quality & Standards
+##  Quality & Standards
 
 Your generated project includes pre-configured tools for automated testing and code quality.
 
@@ -28,7 +28,7 @@ npm run test:coverage
 
 ---
 
-## 📡 API Interaction
+##  API Interaction
 
 Depending on your configuration, your microservice provides interactive documentation for exploring and testing endpoints. Choose your setup below:
 
@@ -80,11 +80,11 @@ curl -X POST http://localhost:3000/api/users \
 # 4. Observe the application logs:
 [Kafka] Producer: Sent USER_CREATED event for 'kafka@example.com'
 [Kafka] Consumer: Received USER_CREATED. 
-[Kafka] Consumer: 📧 Sending welcome email to 'kafka@example.com'... Done!
+[Kafka] Consumer:  Sending welcome email to 'kafka@example.com'... Done!
 ```
 :::
 
-## 📡 Kafka Asynchronous Flow
+##  Kafka Asynchronous Flow
 
 When using **Kafka**, the project follows a non-blocking, event-driven pattern:
 
@@ -102,6 +102,6 @@ When using **Kafka**, the project follows a non-blocking, event-driven pattern:
 2.  **Verify Logs**: Look for `[Kafka] Producer: Sent USER_CREATED event`.
 3.  **Confirm Execution**: Look for `[Kafka] Consumer: Received USER_CREATED` and email simulation.
 
-## 🔑 Next Steps
+##  Next Steps
 
 If you have authentication enabled, check out the [Authentication & JWT Blueprint](/blueprints/authentication) to learn how to secure your endpoints and authenticate your requests.

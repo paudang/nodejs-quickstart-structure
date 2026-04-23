@@ -2,14 +2,14 @@
 
 This guide outlines the professional deployment workflows for your generated project, covering containerized environments with Docker and direct process management via PM2.
 
-### 🎯 Choose Your Deployment Mode
+###  Choose Your Deployment Mode
 
 | Mode | Strategy | Best For | Why? |
 | :--- | :--- | :--- | :--- |
-| **🐳 Docker** | Containerization | CI/CD, Cloud, Multi-Cloud | Environment consistency. |
-| **🚀 PM2** | Process Management | VPS, Dedicated Servers | Lowest overhead, native speed. |
+| ** Docker** | Containerization | CI/CD, Cloud, Multi-Cloud | Environment consistency. |
+| ** PM2** | Process Management | VPS, Dedicated Servers | Lowest overhead, native speed. |
 
-## 🐳 Docker Deployment
+##  Docker Deployment
 
 The project includes a **Multi-Stage Dockerfile** optimized for production images.
 
@@ -67,7 +67,7 @@ docker run -p 3000:3000 your-app-name
 
 ---
 
-## 🚀 PM2 Deployment (VPS/EC2)
+##  PM2 Deployment (VPS/EC2)
 
 The project is pre-configured for direct deployment to a VPS/EC2 instance using **PM2** (via `ecosystem.config.js`).
 

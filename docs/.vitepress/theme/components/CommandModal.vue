@@ -1,7 +1,7 @@
 <template>
   <div class="modal-overlay" v-if="showModal" @click.self="closeModal">
     <div class="modal-content">
-      <h3 class="modal-title">Ready for Launch 🚀</h3>
+      <h3 class="modal-title">Ready for Launch</h3>
       <p style="margin-bottom: 12px; color: var(--vp-c-text-2);">Generate your new microservice by running this command in your terminal:</p>
       
       <div class="command-box">
@@ -15,7 +15,7 @@
             <strong style="color: var(--vp-c-brand-1);">Support the Mission!</strong><br/>
             If this tool saved you 4+ hours of work, please 
             <a href="https://github.com/paudang/nodejs-quickstart-structure" target="_blank" style="text-decoration: underline; font-weight: bold;">Give us a Star</a> 
-            to help us grow! 🚀
+            to help us grow!
           </div>
         </div>
       </div>

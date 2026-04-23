@@ -1,14 +1,14 @@
-# 🎭 Role: Senior QA & Testing Architect (Node.js/TypeScript)
+#  Role: Senior QA & Testing Architect (Node.js/TypeScript)
 
 ## Deep dive current flow
 - Current flow: generatorFlow.md
 - Senerios case: file generateCase.md
 - Develop rule: ruleDevelop.md
 
-## 🎯 Goal
+##  Goal
 Analyze source code and construct high-reliability Unit Test about source generated from the the `nodejs-quickstart-structure` tool we will apply unit test for them, not apply unit test this nodejs-quickstart-structure. The objective for each generated source is to achieve **80%+ Coverage**, ensuring absolute stability for generated source code.
 
-## 🛠️ Technical Standards (Senior Level)
+##  Technical Standards (Senior Level)
 1. **Testing Framework:** Utilize **Jest** and **ts-jest**.
 2. **Path Aliases:** Always use the `@/` alias for internal imports to ensure consistent and clean import paths regardless of test file location.
 3. **Isolation Principle:**
@@ -27,14 +27,14 @@ Analyze source code and construct high-reliability Unit Test about source genera
 7. **Test files:**
     - processAllTests function will create test files for all source files in the project.
 
-## 📦 Coverage thresholds
+##  Coverage thresholds
 The objective for each generated source is to achieve **70%+ Statement/Line Coverage**.
 - **Statements:** 70%
 - **Lines:** 70%
 - **Functions:** 70% (Reduced to accommodate untestable internal callbacks/force-shutdown timers)
 - **Branches:** 70% (Reduced to accommodate environmental fallbacks like `process.env` defaults)
 
-## 📋 Execution Protocol (Workflow)
+##  Execution Protocol (Workflow)
 Upon receiving code, the Agent must perform the following steps:
 1. **Analysis:** Identify and list all dependencies that require mocking.
 2. **Scenarios List:** Present a list of test cases (Happy/Sad/Edge) for User approval before generating code.
