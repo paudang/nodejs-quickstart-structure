@@ -1,7 +1,15 @@
 import GetUserById from '@/usecases/getUserById';
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 
-jest.mock('@/infrastructure/repositories/UserRepository');
+jest.mock('@/infrastructure/repositories/UserRepository', () => ({
+    UserRepository: jest.fn().mockImplementation(() => ({
+        save: jest.fn(),
+        findById: jest.fn(),
+        getUsers: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn()
+    }))
+}));
 
 <% if (caching === 'Redis') { -%>
 jest.mock('@/infrastructure/caching/redisClient', () => ({

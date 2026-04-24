@@ -12,12 +12,26 @@ import UpdateUser from '@/usecases/updateUser';
 import DeleteUser from '@/usecases/deleteUser';
 
 // Mock dependencies
-jest.mock('@/infrastructure/repositories/UserRepository');
+jest.mock('@/infrastructure/repositories/UserRepository', () => ({
+    UserRepository: jest.fn().mockImplementation(() => ({
+        save: jest.fn(),
+        findById: jest.fn(),
+        getUsers: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn()
+    }))
+}));
 jest.mock('@/usecases/createUser');
 jest.mock('@/usecases/getAllUsers');
 jest.mock('@/usecases/updateUser');
 jest.mock('@/usecases/deleteUser');
-jest.mock('@/infrastructure/log/logger');
+jest.mock('@/usecases/getUserById');
+jest.mock('@/infrastructure/log/logger', () => ({
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn()
+}));
 <%_ if (communication === 'Kafka') { -%>
 jest.mock('@/infrastructure/messaging/kafkaClient', () => ({
     kafkaService: {
@@ -45,7 +59,7 @@ describe('UserController (Clean Architecture)', () => {
 
     beforeEach(() => {
         // Clear all mocks
-        jest.resetAllMocks();
+        jest.clearAllMocks();
 
         userController = new UserController();
 

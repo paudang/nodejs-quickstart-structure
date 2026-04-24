@@ -1,7 +1,17 @@
 const UserRepository = require('@/infrastructure/repositories/UserRepository');
 const UserModel = require('@/infrastructure/database/models/User');
 
-jest.mock('@/infrastructure/database/models/User');
+jest.mock('@/infrastructure/database/models/User', () => ({
+    create: jest.fn(),
+    findAll: jest.fn(),
+    findByPk: jest.fn(),
+    update: jest.fn(),
+    destroy: jest.fn(),
+    find: jest.fn(),
+    findById: jest.fn(),
+    findByIdAndUpdate: jest.fn(),
+    findByIdAndDelete: jest.fn(),
+}));
 
 describe('UserRepository', () => {
     let userRepository;

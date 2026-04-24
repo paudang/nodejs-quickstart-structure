@@ -1,9 +1,27 @@
 import { Request } from 'express';
-<% if (auth.includes('JWT')) { %>import { JwtService } from '@/infrastructure/auth/jwtService';
-jest.mock('@/infrastructure/auth/jwtService');<% } %>
+<% if (auth.includes('JWT')) { %>
+import { JwtService } from '@/infrastructure/auth/jwtService';
+jest.mock('@/infrastructure/auth/jwtService', () => ({
+    JwtService: {
+        generateToken: jest.fn(),
+        verifyToken: jest.fn(),
+        generateRefreshToken: jest.fn(),
+        verifyRefreshToken: jest.fn(),
+        decodeToken: jest.fn(),
+    }
+}));
+<% } %>
 import { gqlContext } from '@/interfaces/graphql/context';
 
-jest.mock('@/infrastructure/repositories/UserRepository');
+jest.mock('@/infrastructure/repositories/UserRepository', () => ({
+    UserRepository: jest.fn().mockImplementation(() => ({
+        save: jest.fn(),
+        findById: jest.fn(),
+        getUsers: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn()
+    }))
+}));
 
 describe('GraphQL Context', () => {
     afterEach(() => {

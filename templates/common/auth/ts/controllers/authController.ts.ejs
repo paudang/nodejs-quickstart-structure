@@ -93,7 +93,7 @@ export class AuthController {
       
       activeTokens.push(newRefreshJti!);
       await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
-      <% } else { -%>
+      <% } else { %>
       let activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       
       if (!activeTokens.includes(incomingJti)) {
@@ -130,13 +130,15 @@ export class AuthController {
       
       if (decodedAccess && decodedAccess.jti && decodedAccess.exp) {
         const remainingTime = Math.max(0, decodedAccess.exp - Math.floor(Date.now() / 1000));
-        <%_ if (caching !== 'None') { -%>
+<%_ if (caching !== 'None') { -%>
         if (remainingTime > 0) {
             await cacheService.set(`blacklist:${decodedAccess.jti}`, true, remainingTime);
-        }<%_ } else { -%>
+        }
+<% } else { %>
         if (remainingTime > 0) {
             JwtService.blacklistedTokens.set(decodedAccess.jti, Date.now() + remainingTime * 1000);
-        }<%_ } -%>
+        }
+<%_ } -%>
       }
 
       const { refreshToken } = req.body;
@@ -149,7 +151,7 @@ export class AuthController {
            let activeTokens = await cacheService.get<string[]>(cacheKey) || [];
            activeTokens = activeTokens.filter(t => t !== decodedRefresh.jti);
            await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
-           <%_ } else { -%>
+           <% } else { %>
            let activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
            activeTokens = activeTokens.filter(t => t !== decodedRefresh.jti);
            JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
