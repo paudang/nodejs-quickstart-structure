@@ -45,16 +45,16 @@ class AuthController {
       const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
       const accessToken = JwtService.generateToken({ id: userId, email: user.email, sid: refreshJti });
 
-      <% if (caching !== 'None') { %>
+<%_ if (caching !== 'None') { -%>
       const cacheKey = `refresh_tokens:${userId}`;
       const activeTokens = await cacheService.get(cacheKey) || [];
       activeTokens.push(refreshJti);
       await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
-      <% } else { -%>
+<% } else { %>
       const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       activeTokens.push(refreshJti);
       JwtService.activeRefreshTokens.set(userId, activeTokens);
-      <% } %>
+<%_ } -%>
 
       res.json({ token: accessToken, accessToken, refreshToken });
     } catch (error) {
@@ -78,7 +78,7 @@ class AuthController {
       const userId = String(decoded.id);
       const incomingJti = decoded.jti;
 
-      <% if (caching !== 'None') { %>
+<%_ if (caching !== 'None') { -%>
       const cacheKey = `refresh_tokens:${userId}`;
       let activeTokens = await cacheService.get(cacheKey) || [];
       
@@ -95,7 +95,7 @@ class AuthController {
       
       activeTokens.push(newRefreshJti);
       await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
-      <% } else { -%>
+<% } else { %>
       let activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       
       if (!activeTokens.includes(incomingJti)) {
@@ -111,7 +111,7 @@ class AuthController {
       
       activeTokens.push(newRefreshJti);
       JwtService.activeRefreshTokens.set(userId, activeTokens);
-      <% } %>
+<%_ } -%>
       res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
     } catch (error) {
       logger.error('Refresh token error:', error);
@@ -131,13 +131,15 @@ class AuthController {
       
       if (decodedAccess && decodedAccess.jti && decodedAccess.exp) {
         const remainingTime = Math.max(0, decodedAccess.exp - Math.floor(Date.now() / 1000));
-        <%_ if (caching !== 'None') { -%>
+<%_ if (caching !== 'None') { -%>
         if (remainingTime > 0) {
             await cacheService.set(`blacklist:${decodedAccess.jti}`, true, remainingTime);
-        }<%_ } else { -%>
+        }
+<% } else { %>
         if (remainingTime > 0) {
             JwtService.blacklistedTokens.set(decodedAccess.jti, Date.now() + remainingTime * 1000);
-        }<%_ } -%>
+        }
+<%_ } -%>
       }
 
       const { refreshToken } = req.body;
