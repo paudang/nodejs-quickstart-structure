@@ -2,7 +2,18 @@ import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 import UserModel from '@/infrastructure/database/models/User';
 
 // Mock DB Model Database Layer
-jest.mock('@/infrastructure/database/models/User');
+jest.mock('@/infrastructure/database/models/User', () => {
+  return {
+    __esModule: true,
+    default: {
+      create: jest.fn(),
+      findAll: jest.fn(),
+      findByPk: jest.fn(),
+      update: jest.fn(),
+      destroy: jest.fn(),
+    }
+  };
+});
 
 describe('UserRepository', () => {
     let userRepository: UserRepository;

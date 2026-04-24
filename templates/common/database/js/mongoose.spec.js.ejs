@@ -5,6 +5,8 @@ jest.mock('mongoose', () => ({
 const mockLogger = {
     info: jest.fn(),
     error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
 };
 
 jest.mock('<% if (architecture === "MVC") { %>@/utils/logger<% } else { %>@/infrastructure/log/logger<% } %>', () => mockLogger);
