@@ -1,0 +1,78 @@
+<% if (architecture === 'MVC') { -%>
+import logger from '@/utils/logger';
+<% } else { -%>
+import logger from '@/infrastructure/log/logger';
+<% } -%>
+import axios from 'axios';
+
+export class SocialAuthService {
+<% if (socialAuth.includes('Google')) { -%>
+  static async getGoogleProfile(code: string, redirectUri: string) {
+    try {
+      const tokenResponse = await axios.post('https://oauth2.googleapis.com/token', {
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: redirectUri,
+        grant_type: 'authorization_code',
+      });
+
+      const { access_token } = tokenResponse.data;
+
+      const profileResponse = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
+
+      return {
+        id: profileResponse.data.id,
+        email: profileResponse.data.email,
+        name: profileResponse.data.name,
+        picture: profileResponse.data.picture
+      };
+    } catch (error: any) {
+      logger.error('Google OAuth error:', error.response?.data || error.message);
+      throw new Error('Failed to authenticate with Google');
+    }
+  }
+<% } -%>
+
+<% if (socialAuth.includes('GitHub')) { -%>
+  static async getGithubProfile(code: string) {
+    try {
+      const tokenResponse = await axios.post(
+        'https://github.com/login/oauth/access_token',
+        {
+          client_id: process.env.GITHUB_CLIENT_ID,
+          client_secret: process.env.GITHUB_CLIENT_SECRET,
+          code,
+        },
+        { headers: { Accept: 'application/json' } }
+      );
+
+      const { access_token } = tokenResponse.data;
+      if (!access_token) {
+        throw new Error('No access token returned from GitHub');
+      }
+
+      const profileResponse = await axios.get('https://api.github.com/user', {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
+
+      const emailsResponse = await axios.get('https://api.github.com/user/emails', {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
+
+      const primaryEmail = emailsResponse.data.find((e: any) => e.primary)?.email || emailsResponse.data[0]?.email;
+
+      return {
+        id: profileResponse.data.id.toString(),
+        email: primaryEmail,
+        name: profileResponse.data.name || profileResponse.data.login,
+      };
+    } catch (error: any) {
+      logger.error('GitHub OAuth error:', error.response?.data || error.message);
+      throw new Error('Failed to authenticate with GitHub');
+    }
+  }
+<% } -%>
+}
