@@ -11,6 +11,10 @@ jest.mock('@/infrastructure/database/models/User', () => {
       findByPk: jest.fn(),
       update: jest.fn(),
       destroy: jest.fn(),
+      find: jest.fn(),
+      findById: jest.fn(),
+      findByIdAndUpdate: jest.fn(),
+      findByIdAndDelete: jest.fn(),
     }
   };
 });
