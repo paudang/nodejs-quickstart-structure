@@ -12,6 +12,7 @@ const databases = ['MySQL', 'PostgreSQL', 'MongoDB', 'None'];
 const communications = ['REST APIs', 'GraphQL', 'Kafka'];
 const cachings = ['None', 'Redis', 'Memory Cache'];
 const auths = ['None', 'JWT'];
+const socialAuths = ['None', 'Google,GitHub'];
 
 let mvcCases = [];
 let cleanArchCases = [];
@@ -23,9 +24,12 @@ for (const lang of languages) {
         for (const db of databases) {
             for (const comm of communications) {
                 for (const auth of auths) {
-                    const applicableCachings = db !== 'None' ? cachings : ['None'];
-                    for (const cache of applicableCachings) {
-                        mvcCases.push(`| ${counter++} | ${lang} | MVC | ${view} | ${db} | ${comm} | ${cache} | ${auth} |`);
+                    const applicableSocials = auth === 'JWT' ? socialAuths : ['None'];
+                    for (const social of applicableSocials) {
+                        const applicableCachings = db !== 'None' ? cachings : ['None'];
+                        for (const cache of applicableCachings) {
+                            mvcCases.push(`| ${counter++} | ${lang} | MVC | ${view} | ${db} | ${comm} | ${cache} | ${auth} | ${social} |`);
+                        }
                     }
                 }
             }
@@ -39,9 +43,12 @@ for (const lang of languages) {
     for (const db of databases) {
         for (const comm of communications) {
             for (const auth of auths) {
-                const applicableCachings = db !== 'None' ? cachings : ['None'];
-                for (const cache of applicableCachings) {
-                    cleanArchCases.push(`| ${counter++} | ${lang} | Clean Architecture | N/A | ${db} | ${comm} | ${cache} | ${auth} |`);
+                const applicableSocials = auth === 'JWT' ? socialAuths : ['None'];
+                for (const social of applicableSocials) {
+                    const applicableCachings = db !== 'None' ? cachings : ['None'];
+                    for (const cache of applicableCachings) {
+                        cleanArchCases.push(`| ${counter++} | ${lang} | Clean Architecture | N/A | ${db} | ${comm} | ${cache} | ${auth} | ${social} |`);
+                    }
                 }
             }
         }
@@ -73,16 +80,16 @@ This document lists the **${counter - 1} possible project combinations** support
 
 ## 1. MVC Architecture (${mvcCases.length} Cases)
 
-| # | Language | Architecture | View Engine | Database | Communication | Caching | Auth |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| # | Language | Architecture | View Engine | Database | Communication | Caching | Auth | Social Auth |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 
 ${mvcCases.join('\n')}
 
 ## 2. Clean Architecture (${cleanArchCases.length} Cases)
 *Note: Clean Architecture does not use server-side view engines (EJS/Pug).*
 
-| # | Language | Architecture | View Engine | Database | Communication | Caching | Auth |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| # | Language | Architecture | View Engine | Database | Communication | Caching | Auth | Social Auth |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 
 ${cleanArchCases.join('\n')}
 `;

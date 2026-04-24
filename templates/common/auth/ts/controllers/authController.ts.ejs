@@ -3,6 +3,9 @@ import bcrypt from 'bcryptjs';
 <% if (architecture === 'MVC') { -%>
 import User from '@/models/User';
 import { JwtService } from '@/services/jwtService';
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+import { SocialAuthService } from '@/services/socialAuthService';
+<% } -%>
 import logger from '@/utils/logger';
 <% if (caching !== 'None') { -%>
 import cacheService from '<% if (caching === "Redis") { %>@/config/redisClient<% } else { %>@/config/memoryCache<% } %>';
@@ -10,6 +13,9 @@ import cacheService from '<% if (caching === "Redis") { %>@/config/redisClient<%
 <% } else { -%>
 import User from '@/infrastructure/database/models/User';
 import { JwtService } from '@/infrastructure/auth/jwtService';
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+import { SocialAuthService } from '@/infrastructure/auth/socialAuthService';
+<% } -%>
 import logger from '@/infrastructure/log/logger';
 <% if (caching !== 'None') { -%>
 import cacheService from '<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>';
@@ -162,4 +168,68 @@ export class AuthController {
       next(error);
     }
   }
+
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+  async socialExchange(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { code, provider, redirectUri } = req.body;
+      if (!code || !provider) {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'Code and provider are required' });
+      }
+
+      let profile;
+<% if (socialAuth.includes('Google')) { -%>
+      if (provider === 'Google') {
+        profile = await SocialAuthService.getGoogleProfile(code, redirectUri);
+      }
+<% } -%>
+<% if (socialAuth.includes('GitHub')) { -%>
+      if (provider === 'GitHub') {
+        profile = await SocialAuthService.getGithubProfile(code);
+      }
+<% } -%>
+
+      if (!profile || !profile.email) {
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Failed to retrieve profile from provider' });
+      }
+
+      <%_ if (database === 'MongoDB' || database === 'None') { -%>
+      let user = await User.findOne({ email: profile.email });
+      <%_ } else { -%>
+      let user = await User.findOne({ where: { email: profile.email } });
+      <%_ } -%>
+
+      if (!user) {
+        // Create new user without password
+        <%_ if (database === 'MongoDB' || database === 'None') { -%>
+        user = await User.create({ email: profile.email, name: profile.name, password: null });
+        <%_ } else { -%>
+        user = (await User.create({ email: profile.email, name: profile.name, password: '' })) as any;
+        <%_ } -%>
+      }
+
+      const userId = String(user.id || ((user as unknown) as { _id?: string | number })._id);
+      
+      const refreshToken = JwtService.generateRefreshToken({ id: userId, email: user.email });
+      const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
+      const accessToken = JwtService.generateToken({ id: userId, email: user.email, sid: refreshJti });
+      
+      // Store refresh token
+      <%_ if (caching !== 'None') { -%>
+      const cacheKey = `refresh_tokens:${userId}`;
+      const activeTokens = await cacheService.get<string[]>(cacheKey) || [];
+      activeTokens.push(refreshJti!);
+      await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
+      <%_ } else { -%>
+      const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
+      activeTokens.push(refreshJti!);
+      JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
+
+      res.json({ token: accessToken, accessToken, refreshToken });
+    } catch (error) {
+      logger.error('Social exchange error:', error);
+      next(error);
+    }
+  }
+<% } -%>
 }

@@ -18,6 +18,7 @@ const DATABASES = ['None', 'MySQL', 'PostgreSQL', 'MongoDB'];
 const COMMUNICATIONS = ['REST APIs', 'GraphQL', 'Kafka'];
 const CI_PROVIDERS = ['None', 'GitHub Actions', 'Jenkins', 'GitLab CI', 'CircleCI', 'Bitbucket Pipelines'];
 const AUTH_MODES = ['None', 'JWT'];
+const SOCIAL_AUTH_MODES = ['None', 'Google,GitHub'];
 
 const combinations = [];
 
@@ -34,19 +35,23 @@ LANGUAGES.forEach(lang => {
                             const securityOptions = ci !== 'None' ? [true, false] : [false];
                             securityOptions.forEach(sec => {
                                 AUTH_MODES.forEach(auth => {
-                                    combinations.push({
-                                        projectName: `t5280_${Math.random().toString(36).substring(2, 8)}`,
-                                        language: lang,
-                                        architecture: arch,
-                                        viewEngine: view,
-                                        database: db,
-                                        dbName: db !== 'None' ? 'testdb' : undefined,
-                                        communication: comm,
-                                        caching: cache,
-                                        ciProvider: ci,
-                                        includeSecurity: sec,
-                                        auth: auth,
-                                        advancedOptions: auth !== 'None'
+                                    const socialAuthOptions = auth === 'JWT' ? SOCIAL_AUTH_MODES : ['None'];
+                                    socialAuthOptions.forEach(socialAuth => {
+                                        combinations.push({
+                                            projectName: `t5280_${Math.random().toString(36).substring(2, 8)}`,
+                                            language: lang,
+                                            architecture: arch,
+                                            viewEngine: view,
+                                            database: db,
+                                            dbName: db !== 'None' ? 'testdb' : undefined,
+                                            communication: comm,
+                                            caching: cache,
+                                            ciProvider: ci,
+                                            includeSecurity: sec,
+                                            auth: auth,
+                                            socialAuth: socialAuth,
+                                            advancedOptions: auth !== 'None'
+                                        });
                                     });
                                 });
                             });
@@ -120,6 +125,10 @@ async function runTest(config, index) {
 
         if (config.auth) {
             args.push('--auth', config.auth);
+        }
+
+        if (config.socialAuth && config.socialAuth !== 'None') {
+            args.push('--social-auth', config.socialAuth);
         }
 
         if (config.advancedOptions) {

@@ -93,7 +93,7 @@ const cliCommand = computed(() => {
 
   const isAdvanced = showAdvanced.value || form.auth !== 'None';
 
-  if (form.auth === 'JWT Authentication (Ready)') {
+  if (form.auth === 'JWT Authentication') {
     cmd += ` --auth JWT`;
   } else if (isAdvanced) {
     cmd += ` --auth None`;

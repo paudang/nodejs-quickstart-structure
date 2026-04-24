@@ -2,6 +2,9 @@ const bcrypt = require('bcryptjs');
 <% if (architecture === 'MVC') { -%>
 const User = require('../models/User');
 const JwtService = require('../services/jwtService');
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+const SocialAuthService = require('../services/socialAuthService');
+<% } -%>
 <% if (caching !== 'None') { -%>
 const cacheService = require('<% if (caching === "Redis") { %>../config/redisClient<% } else { %>../config/memoryCache<% } %>');
 <% } -%>
@@ -9,6 +12,9 @@ const logger = require('../utils/logger');
 <% } else { -%>
 const User = require('../../../infrastructure/database/models/User');
 const JwtService = require('../../../infrastructure/auth/jwtService');
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+const SocialAuthService = require('../../../infrastructure/auth/socialAuthService');
+<% } -%>
 <% if (caching !== 'None') { -%>
 const cacheService = require('<% if (caching === "Redis") { %>../../../infrastructure/caching/redisClient<% } else { %>../../../infrastructure/caching/memoryCache<% } %>');
 <% } -%>
@@ -21,6 +27,9 @@ class AuthController {
     this.login = this.login.bind(this);
     this.refresh = this.refresh.bind(this);
     this.logout = this.logout.bind(this);
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+    this.socialExchange = this.socialExchange.bind(this);
+<% } -%>
   }
 
   async login(req, res, next) {
@@ -163,6 +172,70 @@ class AuthController {
       next(error);
     }
   }
+
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+  async socialExchange(req, res, next) {
+    try {
+      const { code, provider, redirectUri } = req.body;
+      if (!code || !provider) {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'Code and provider are required' });
+      }
+
+      let profile;
+<% if (socialAuth.includes('Google')) { -%>
+      if (provider === 'Google') {
+        profile = await SocialAuthService.getGoogleProfile(code, redirectUri);
+      }
+<% } -%>
+<% if (socialAuth.includes('GitHub')) { -%>
+      if (provider === 'GitHub') {
+        profile = await SocialAuthService.getGithubProfile(code);
+      }
+<% } -%>
+
+      if (!profile || !profile.email) {
+        return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Failed to retrieve profile from provider' });
+      }
+
+      <%_ if (database === 'MongoDB' || database === 'None') { -%>
+      let user = await User.findOne({ email: profile.email });
+      <%_ } else { -%>
+      let user = await User.findOne({ where: { email: profile.email } });
+      <%_ } -%>
+
+      if (!user) {
+        // Create new user without password
+        <%_ if (database === 'MongoDB' || database === 'None') { -%>
+        user = await User.create({ email: profile.email, name: profile.name, password: null });
+        <%_ } else { -%>
+        user = await User.create({ email: profile.email, name: profile.name, password: '' });
+        <%_ } -%>
+      }
+
+      const userId = String(user.id || user._id);
+      
+      const refreshToken = JwtService.generateRefreshToken({ id: userId, email: user.email });
+      const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
+      const accessToken = JwtService.generateToken({ id: userId, email: user.email, sid: refreshJti });
+      
+      // Store refresh token
+      <%_ if (caching !== 'None') { -%>
+      const cacheKey = `refresh_tokens:${userId}`;
+      const activeTokens = await cacheService.get(cacheKey) || [];
+      activeTokens.push(refreshJti);
+      await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
+      <%_ } else { -%>
+      const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
+      activeTokens.push(refreshJti);
+      JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
+
+      res.json({ token: accessToken, accessToken, refreshToken });
+    } catch (error) {
+      logger.error('Social exchange error:', error);
+      next(error);
+    }
+  }
+<% } -%>
 }
 
 module.exports = AuthController;

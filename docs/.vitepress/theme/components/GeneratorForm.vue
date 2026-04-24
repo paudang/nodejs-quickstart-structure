@@ -108,8 +108,8 @@
           <label class="form-label">Authentication</label>
           <select class="form-control" v-model="form.auth">
             <option value="None">None</option>
-            <option value="JWT Authentication (Ready)">JWT Authentication (Ready)</option>
-            <option value="OAuth2 - Google/GitHub (Coming Soon)" disabled>OAuth2 - Google/GitHub (Coming Soon)</option>
+            <option value="JWT Authentication">JWT Authentication</option>
+            <option value="OAuth2 - Google/GitHub - JWT">OAuth2 - Google/GitHub - JWT</option>
           </select>
         </div>
       </div>
