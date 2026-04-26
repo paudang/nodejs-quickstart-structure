@@ -29,7 +29,8 @@
     "braces": "^3.0.3",
     "picomatch": "^4.0.4",
     "lodash": "^4.17.23",
-    "debounce": "^1.2.1"
+    "debounce": "^1.2.1",
+    "uuid": "^14.0.0"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -60,7 +61,6 @@
 <% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { %>    "axios": "^1.6.5",
 <% } -%>
     "cors": "^2.8.5",
-
     "helmet": "^7.1.0",
     "hpp": "^0.2.3",
     "express-rate-limit": "^7.1.5",
@@ -94,7 +94,6 @@
     "cpx2": "^8.0.0"<% } %><% if (auth.includes('JWT')) { %>,
     "@types/jsonwebtoken": "^9.0.6",
     "@types/bcryptjs": "^2.4.6"<% } %><% } %>,
-
     "eslint": "^10.1.0",
     "@eslint/js": "^9.20.0",
     "globals": "^15.14.0",
@@ -117,6 +116,9 @@
     "tsc-alias": "^1.8.10",
     "@types/supertest": "^6.0.2"<% } else { %>,
     "jest": "^29.7.0",
+    "babel-jest": "^29.7.0",
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
     "wait-on": "^7.2.0",
     "supertest": "^7.1.3"<% } %>
   },

@@ -9,6 +9,8 @@ jest.mock('node-cache', () => {
 jest.mock('<%- loggerPath %>', () => ({
     info: jest.fn(),
     error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
 }));
 
 describe('Memory Cache Client', () => {

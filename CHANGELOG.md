@@ -1,6 +1,17 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
  
+## [2.1.1] - 2026-04-24
+
+### Fixed
+- **Template Security Hardening**: Resolved missing buffer bounds check vulnerability in `uuid` (GHSA-w5hq-g745-h8pq) by adding `"uuid": "^14.0.0"` to template `overrides`.
+- **Template Formatting**: Fixed an issue in `package.json.ejs` causing unexpected empty lines between generated dependencies.
+- **Unit Test Stability**: Resolved persistent `SyntaxError` and `TypeError` in Jest unit tests across all architecture permutations by implementing ESM-compatible transformation patterns for `uuid` and standardizing on `jest.clearAllMocks()` with factory mocks.
+
+### Changed
+- **Documentation Refinement**: Remade `README.md` and removed emojis for a cleaner, more professional, text-only presentation across the VitePress-based site.
+
 ## [2.1.0] - 2026-04-20
+
 
 ### Added
 - **Pluggable JWT Authentication**: Introduced a robust, production-ready authentication system.

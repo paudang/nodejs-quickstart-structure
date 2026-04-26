@@ -4,7 +4,15 @@ import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 import cacheService from '<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>';
 <%_ } -%>
 
-jest.mock('@/infrastructure/repositories/UserRepository');
+jest.mock('@/infrastructure/repositories/UserRepository', () => ({
+    UserRepository: jest.fn().mockImplementation(() => ({
+        save: jest.fn(),
+        findById: jest.fn(),
+        getUsers: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn()
+    }))
+}));
 <%_ if (caching !== 'None') { -%>
 jest.mock('<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>', () => ({
     get: jest.fn(),

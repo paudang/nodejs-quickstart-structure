@@ -738,6 +738,11 @@
         <span class="tree-comment"># Pre-commit formatting and linting rules</span>
       </div>
       <div class="tree-item" style="--depth: 1">
+        <svg class="tree-item-icon icon-file-json" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+        .prettierrc
+        <span class="tree-comment"># Code style preferences</span>
+      </div>
+      <div class="tree-item" style="--depth: 1">
         <svg class="tree-item-icon icon-file-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         README.md
       </div>
@@ -755,6 +760,12 @@
       <div class="tree-item" style="--depth: 1">
         <svg class="tree-item-icon icon-file-js" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         eslint.config.mjs
+        <span class="tree-comment"># Enforces code quality and style.</span>
+      </div>
+      <div class="tree-item" style="--depth: 1" v-if="form.language === 'JavaScript'">
+        <svg class="tree-item-icon icon-file-js" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+        babel.config.js
+        <span class="tree-comment"># Transpiles modern JavaScript for Node</span>
       </div>
       <div class="tree-item" style="--depth: 1">
         <svg class="tree-item-icon icon-file-js" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
