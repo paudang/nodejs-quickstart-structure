@@ -70,6 +70,31 @@ describe('E2E User Tests', () => {
     expect(response.body.accessToken || response.body.token).toBeDefined();
     authToken = response.body.accessToken || response.body.token;
   });
+
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+  it('should fail social exchange with invalid code', async () => {
+    const response = await request(SERVER_URL)
+      .post('/api/auth/social-exchange')
+      .send({ code: 'invalid_code', provider: 'Google' });
+
+    expect([401, 500]).toContain(response.statusCode);
+  });
+
+  <% if (communication === 'GraphQL') { %>
+  it('should fail social login via GraphQL with invalid code', async () => {
+    const query = `
+      mutation {
+        socialLogin(code: "invalid_code", provider: "Google") {
+          accessToken
+        }
+      }
+    `;
+    const response = await request(SERVER_URL).post('/graphql').send({ query });
+    expect(response.body.errors).toBeDefined();
+    expect(response.body.errors[0].message).toContain('Social authentication failed');
+  });
+  <% } %>
+<% } %>
 <%_ } _%>
 
 <%_ if (communication === 'GraphQL') { -%>

@@ -169,7 +169,35 @@ A Swagger UI for API documentation is available at:
 - `POST /api/auth/refresh`: Submit a `refreshToken` to receive a new pair of tokens. (Includes theft-detection logic).
 - `POST /api/auth/logout`: Revoke (blacklist) the active `accessToken` and delete the `refreshToken`.
 - `POST /api/users`: Acts as Sign Up when password is provided.
+<%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { _%>
+- `POST /api/auth/social-exchange`: Exchange a social `code` (from Google/GitHub) for JWT tokens.
+<%_ if (socialAuth.includes('Google')) { _%>
+- `GET /api/auth/google`: (MVC) Redirect to Google login page.
+- `GET /api/auth/google/callback`: (MVC) Handle Google redirect and login user.
+<%_ } _%>
+<%_ if (socialAuth.includes('GitHub')) { _%>
+- `GET /api/auth/github`: (MVC) Redirect to GitHub login page.
+- `GET /api/auth/github/callback`: (MVC) Handle GitHub redirect and login user.
+<%_ } _%>
+<%_ } _%>
   *Note: To access protected user endpoints (GET/PATCH/DELETE), include `Authorization: Bearer <your_accessToken>` in the headers.*
+<% } -%>
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+### 🔐 Social Authentication Setup
+To use social login, you must configure the following in your `.env`:
+
+#### <% if (socialAuth.includes('Google')) { %>1. Google Integration<% } %>
+1. Go to [Google Cloud Console](https://console.cloud.google.com/).
+2. Create/Select a project and go to **APIs & Services > Credentials**.
+3. Create an **OAuth client ID** for a **Web application**.
+4. Add Redirect URI: `http://localhost:3000/api/auth/google/callback`.
+5. Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_CALLBACK_URL` in `.env`.
+
+#### <% if (socialAuth.includes('GitHub')) { %>2. GitHub Integration<% } %>
+1. Go to [GitHub Developer Settings](https://github.com/settings/developers).
+2. Register a **New OAuth App**.
+3. Set Callback URL: `http://localhost:3000/api/auth/github/callback`.
+4. Set `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `GITHUB_CALLBACK_URL` in `.env`.
 <% } -%>
 <% } -%>
 <% if (communication === 'Kafka') { -%>

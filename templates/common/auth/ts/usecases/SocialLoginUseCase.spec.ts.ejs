@@ -1,0 +1,53 @@
+jest.mock('@/infrastructure/auth/jwtService');
+jest.mock('@/infrastructure/database/models/User', () => ({
+  findOne: jest.fn(),
+  create: jest.fn(),
+}));
+
+import { SocialLoginUseCase } from '@/domain/usecases/auth/SocialLoginUseCase';
+import { JwtService } from '@/infrastructure/auth/jwtService';
+import User from '@/infrastructure/database/models/User';
+
+describe('SocialLoginUseCase', () => {
+  let useCase: SocialLoginUseCase;
+  let mockProvider: any;
+
+  beforeEach(() => {
+    mockProvider = {
+      name: 'Google',
+      getProfile: jest.fn(),
+    };
+    useCase = new SocialLoginUseCase(mockProvider);
+    jest.clearAllMocks();
+  });
+
+  it('should find existing user and generate tokens', async () => {
+    const mockProfile = { id: 'google-123', email: 'test@test.com', name: 'Test User' };
+    const mockUser = { id: '1', email: 'test@test.com', save: jest.fn(), googleId: null };
+    
+    mockProvider.getProfile.mockResolvedValue(mockProfile);
+    (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+    (JwtService.generateToken as jest.Mock).mockReturnValue('access-token');
+    (JwtService.generateRefreshToken as jest.Mock).mockReturnValue('refresh-token');
+
+    const result = await useCase.execute('test-code');
+
+    expect(User.findOne).toHaveBeenCalled();
+    expect(result.accessToken).toBe('access-token');
+  });
+
+  it('should create new user if not exists', async () => {
+    const mockProfile = { id: 'google-456', email: 'new@test.com', name: 'New User' };
+    const mockUser = { id: '2', email: 'new@test.com' };
+    
+    mockProvider.getProfile.mockResolvedValue(mockProfile);
+    (User.findOne as jest.Mock).mockResolvedValue(null);
+    (User.create as jest.Mock).mockResolvedValue(mockUser);
+    (JwtService.generateToken as jest.Mock).mockReturnValue('access-token');
+    (JwtService.generateRefreshToken as jest.Mock).mockReturnValue('refresh-token');
+
+    await useCase.execute('test-code');
+
+    expect(User.create).toHaveBeenCalled();
+  });
+});

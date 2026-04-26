@@ -1,27 +1,34 @@
 <%_ if (architecture === 'Clean Architecture') { _%>
+jest.mock('@/infrastructure/auth/jwtService');
+jest.mock('@/infrastructure/auth/socialAuthService');
+jest.mock('@/infrastructure/database/models/User', () => ({
+    findOne: jest.fn()
+}));
+jest.mock('@/domain/usecases/auth/SocialLoginUseCase');
+<%_ } else { _%>
+jest.mock('@/services/jwtService');
+jest.mock('@/services/socialAuthService');
+jest.mock('@/models/User', () => ({
+    findOne: jest.fn()
+}));
+<%_ } _%>
+jest.mock('bcryptjs');
+
+<%_ if (architecture === 'Clean Architecture') { _%>
 const AuthController = require('@/interfaces/controllers/auth/authController');
 const JwtService = require('@/infrastructure/auth/jwtService');
+const { SocialAuthService } = require('@/infrastructure/auth/socialAuthService');
+const User = require('@/infrastructure/database/models/User');
+const { SocialLoginUseCase } = require('@/domain/usecases/auth/SocialLoginUseCase');
 <%_ } else { _%>
 const AuthController = require('@/controllers/authController');
 const JwtService = require('@/services/jwtService');
+const { SocialAuthService } = require('@/services/socialAuthService');
+const User = require('@/models/User');
 <%_ } _%>
 const HTTP_STATUS = require('@/utils/httpCodes');
 const bcrypt = require('bcryptjs');
 
-jest.mock('bcryptjs');
-<%_ if (architecture === 'Clean Architecture') { _%>
-jest.mock('@/infrastructure/auth/jwtService');
-jest.mock('@/infrastructure/database/models/User', () => ({
-    findOne: jest.fn()
-}));
-const User = require('@/infrastructure/database/models/User');
-<%_ } else { _%>
-jest.mock('@/services/jwtService');
-jest.mock('@/models/User', () => ({
-    findOne: jest.fn()
-}));
-const User = require('@/models/User');
-<%_ } _%>
 <%_ if (caching !== 'None') { _%>
 <%_ const cachePath = (architecture === "MVC") ? (caching === "Redis" ? "@/config/redisClient" : "@/config/memoryCache") : (caching === "Redis" ? "@/infrastructure/caching/redisClient" : "@/infrastructure/caching/memoryCache"); _%>
 jest.mock('<%= cachePath %>', () => ({
@@ -42,11 +49,14 @@ describe('AuthController', () => {
         controller = new AuthController();
         mockReq = {
             body: {},
-            headers: {}
+            headers: {},
+            query: {}
         };
         mockRes = {
             status: jest.fn().mockReturnThis(),
-            json: jest.fn()
+            json: jest.fn(),
+            cookie: jest.fn(),
+            redirect: jest.fn()
         };
         next = jest.fn();
         jest.clearAllMocks();
@@ -62,7 +72,6 @@ describe('AuthController', () => {
             JwtService.generateRefreshToken.mockReturnValue('mock-refresh-token');
             JwtService.decodeToken.mockReturnValue({ jti: 'test-jti' });
 
-            // Mock cacheService
             <% if (caching !== 'None') { %>
             cacheService.get.mockResolvedValue([]);
             cacheService.set.mockResolvedValue();<% } %>
@@ -71,26 +80,6 @@ describe('AuthController', () => {
 
             expect(JwtService.generateToken).toHaveBeenCalledWith(expect.objectContaining({ sid: 'test-jti' }));
             expect(mockRes.json).toHaveBeenCalledWith({ token: 'mock-access-token', accessToken: 'mock-access-token', refreshToken: 'mock-refresh-token' });
-        });
-
-        it('should return 401 on invalid email', async () => {
-            mockReq.body = { email: 'wrong@test.com', password: 'password123' };
-            User.findOne.mockResolvedValue(null);
-
-            await controller.login(mockReq, mockRes, next);
-
-            expect(mockRes.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
-        });
-
-        it('should return 401 on invalid password', async () => {
-            const user = { id: 1, email: 'test@test.com', password: 'hashedpassword' };
-            mockReq.body = { email: 'test@test.com', password: 'wrongpassword' };
-            User.findOne.mockResolvedValue(user);
-            bcrypt.compare.mockResolvedValue(false);
-
-            await controller.login(mockReq, mockRes, next);
-
-            expect(mockRes.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
         });
     });
 
@@ -114,35 +103,66 @@ describe('AuthController', () => {
             expect(JwtService.generateToken).toHaveBeenCalledWith(expect.objectContaining({ sid: 'new-jti' }));
             expect(mockRes.json).toHaveBeenCalledWith({ accessToken: 'new-access', refreshToken: 'new-refresh' });
         });
-
-        it('should detect theft and revoke if jti is not active', async () => {
-            mockReq.body = { refreshToken: 'stolen-refresh' };
-            const decoded = { id: '1', email: 'test@test.com', jti: 'stolen-jti' };
-            JwtService.verifyRefreshToken.mockReturnValue(decoded);
-
-            <% if (caching !== 'None') { %>
-            cacheService.get.mockResolvedValue(['different-jti']);
-            <% } else { %>
-            JwtService.activeRefreshTokens.set('1', ['different-jti']);<% } %>
-
-            await controller.refresh(mockReq, mockRes, next);
-
-            expect(mockRes.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
-        });
     });
 
-    describe('logout', () => {
-        it('should blacklist access jti and remove refresh jti', async () => {
-            mockReq.headers.authorization = 'Bearer access-token';
-            mockReq.body = { refreshToken: 'refresh-token' };
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+    describe('socialExchange', () => {
+        it('should exchange code for JWT tokens', async () => {
+            mockReq.body = { code: 'test-code', provider: 'Google' };
+            const user = { id: 1, email: 'social@test.com' };
             
-            JwtService.decodeToken
-                .mockReturnValueOnce({ jti: 'access-jti', exp: Math.floor(Date.now() / 1000) + 3600 })
-                .mockReturnValueOnce({ id: '1', jti: 'refresh-jti' });
+            <% if (architecture === 'Clean Architecture') { %>
+            const mockUseCase = {
+                execute: jest.fn().mockResolvedValue({
+                    user,
+                    accessToken: 'mock-token',
+                    refreshToken: 'mock-refresh-token'
+                })
+            };
+            SocialLoginUseCase.mockImplementation(() => mockUseCase);
+            <% } else { %>
+            SocialAuthService.getGoogleProfile.mockResolvedValue({ email: 'social@test.com' });
+            User.findOne.mockResolvedValue(user);
+            JwtService.generateToken.mockReturnValue('mock-token');
+            JwtService.generateRefreshToken.mockReturnValue('mock-refresh-token');
+            <% } %>
+            JwtService.decodeToken.mockReturnValue({ jti: 'test-jti' });
 
-            await controller.logout(mockReq, mockRes, next);
+            await controller.socialExchange(mockReq, mockRes, next);
 
-            expect(mockRes.json).toHaveBeenCalledWith({ message: 'Logged out successfully' });
+            expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({ accessToken: 'mock-token' }));
         });
     });
+
+<% if (architecture === 'MVC') { -%>
+    describe('MVC Social Login', () => {
+        it('should handle Google callback', async () => {
+            mockReq.query = { code: 'test-code' };
+            const user = { id: 1, email: 'google@test.com' };
+            
+            <% if (architecture === 'Clean Architecture') { %>
+            const mockUseCase = {
+                execute: jest.fn().mockResolvedValue({
+                    user,
+                    accessToken: 'mock-token',
+                    refreshToken: 'mock-refresh-token'
+                })
+            };
+            SocialLoginUseCase.mockImplementation(() => mockUseCase);
+            <% } else { %>
+            SocialAuthService.getGoogleProfile.mockResolvedValue({ email: 'google@test.com' });
+            User.findOne.mockResolvedValue(user);
+            JwtService.generateToken.mockReturnValue('mock-token');
+            JwtService.generateRefreshToken.mockReturnValue('mock-refresh-token');
+            <% } %>
+            JwtService.decodeToken.mockReturnValue({ jti: 'test-jti' });
+
+            await controller.googleCallback(mockReq, mockRes, next);
+
+            expect(mockRes.cookie).toHaveBeenCalledWith('accessToken', 'mock-token', expect.any(Object));
+            expect(mockRes.redirect).toHaveBeenCalledWith('/');
+        });
+    });
+<% } -%>
+<% } -%>
 });

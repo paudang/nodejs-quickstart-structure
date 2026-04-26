@@ -1,0 +1,59 @@
+const JwtService = require('<% if (architecture === "MVC") { %>../services/jwtService<% } else { %>../../../infrastructure/auth/jwtService<% } %>');
+const User = require('<% if (architecture === "MVC") { %>../models/User<% } else { %>../../../infrastructure/database/models/User<% } %>');
+
+class SocialLoginUseCase {
+  constructor(provider) {
+    this.provider = provider;
+  }
+
+  async execute(code, redirectUri) {
+    const profile = await this.provider.getProfile(code, redirectUri);
+    
+    // 1. Find or create user
+    <% if (database === 'MongoDB' || database === 'None') { %>
+    let user = await User.findOne({ email: profile.email });
+    <% } else { %>
+    let user = await User.findOne({ where: { email: profile.email } });
+    <% } %>
+
+    if (!user) {
+      user = await User.create({
+        email: profile.email,
+        name: profile.name,
+        password: null, // Social login users don't have passwords
+        <% if (socialAuth.includes('Google')) { %>
+        googleId: this.provider.name === 'Google' ? profile.id : null,
+        <% } %>
+        <% if (socialAuth.includes('GitHub')) { %>
+        githubId: this.provider.name === 'GitHub' ? profile.id : null,
+        <% } %>
+      });
+    } else {
+      // Link social ID if not already linked
+      let updated = false;
+      <% if (socialAuth.includes('Google')) { %>
+      if (this.provider.name === 'Google' && !user.googleId) {
+        user.googleId = profile.id;
+        updated = true;
+      }
+      <% } %>
+      <% if (socialAuth.includes('GitHub')) { %>
+      if (this.provider.name === 'GitHub' && !user.githubId) {
+        user.githubId = profile.id;
+        updated = true;
+      }
+      <% } %>
+      if (updated) await user.save();
+    }
+
+    // 2. Generate tokens (jti is handled inside JwtService)
+    const userId = String(user.id || user._id);
+    const payload = { id: userId, email: user.email };
+    const accessToken = JwtService.generateToken(payload);
+    const refreshToken = JwtService.generateRefreshToken(payload);
+
+    return { user, accessToken, refreshToken };
+  }
+}
+
+module.exports = { SocialLoginUseCase };

@@ -4,7 +4,13 @@ export interface User {
   name: string;
   email: string;
 <% if (auth.includes('JWT')) { -%>
-  password?: string;
+  password?: string | null;
+<% } -%>
+<% if (socialAuth && socialAuth.includes('Google')) { -%>
+  googleId?: string | null;
+<% } -%>
+<% if (socialAuth && socialAuth.includes('GitHub')) { -%>
+  githubId?: string | null;
 <% } -%>
 }
 
@@ -61,7 +67,9 @@ class User extends Model {
   public id!: number;
   public name!: string;
   public email!: string;
-  <% if (auth.includes('JWT')) { %>public password!: string;<% } %>
+  <% if (auth.includes('JWT')) { %>public password?: string | null;<% } %>
+  <% if (socialAuth && socialAuth.includes('Google')) { %>public googleId?: string | null;<% } %>
+  <% if (socialAuth && socialAuth.includes('GitHub')) { %>public githubId?: string | null;<% } %>
 }
 
 User.init(
@@ -83,7 +91,21 @@ User.init(
     <% if (auth.includes('JWT')) { %>
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
+    },
+    <% } %>
+    <% if (socialAuth && socialAuth.includes('Google')) { %>
+    googleId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
+    <% } %>
+    <% if (socialAuth && socialAuth.includes('GitHub')) { %>
+    githubId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
     },
     <% } %>
     deletedAt: {

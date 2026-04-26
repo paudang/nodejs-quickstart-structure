@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const JwtService = require('../services/jwtService');
 <% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
-const SocialAuthService = require('../services/socialAuthService');
+const { SocialAuthService } = require('../services/socialAuthService');
 <% } -%>
 <% if (caching !== 'None') { -%>
 const cacheService = require('<% if (caching === "Redis") { %>../config/redisClient<% } else { %>../config/memoryCache<% } %>');
@@ -13,7 +13,8 @@ const logger = require('../utils/logger');
 const User = require('../../../infrastructure/database/models/User');
 const JwtService = require('../../../infrastructure/auth/jwtService');
 <% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
-const SocialAuthService = require('../../../infrastructure/auth/socialAuthService');
+const { SocialLoginUseCase } = require('../../../domain/usecases/auth/SocialLoginUseCase');
+const { GoogleProvider, GitHubProvider } = require('../../../infrastructure/auth/socialAuthService');
 <% } -%>
 <% if (caching !== 'None') { -%>
 const cacheService = require('<% if (caching === "Redis") { %>../../../infrastructure/caching/redisClient<% } else { %>../../../infrastructure/caching/memoryCache<% } %>');
@@ -29,6 +30,16 @@ class AuthController {
     this.logout = this.logout.bind(this);
 <% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
     this.socialExchange = this.socialExchange.bind(this);
+<% if (architecture === 'MVC') { -%>
+<% if (socialAuth.includes('Google')) { -%>
+    this.googleLogin = this.googleLogin.bind(this);
+    this.googleCallback = this.googleCallback.bind(this);
+<% } -%>
+<% if (socialAuth.includes('GitHub')) { -%>
+    this.githubLogin = this.githubLogin.bind(this);
+    this.githubCallback = this.githubCallback.bind(this);
+<% } -%>
+<% } -%>
 <% } -%>
   }
 
@@ -210,7 +221,7 @@ class AuthController {
         <%_ if (database === 'MongoDB' || database === 'None') { -%>
         user = await User.create({ email: profile.email, name: profile.name, password: null });
         <%_ } else { -%>
-        user = await User.create({ email: profile.email, name: profile.name, password: '' });
+        user = await User.create({ email: profile.email, name: profile.name, password: null });
         <%_ } -%>
       }
 
@@ -237,6 +248,131 @@ class AuthController {
       next(error);
     }
   }
+<% } -%>
+
+<% if (architecture === 'MVC') { -%>
+<% if (socialAuth.includes('Google')) { -%>
+  async googleLogin(req, res) {
+    const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+    const options = {
+      redirect_uri: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/callback',
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      access_type: 'offline',
+      response_type: 'code',
+      prompt: 'consent',
+      scope: [
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email',
+      ].join(' '),
+      state: 'google'
+    };
+    const qs = new URLSearchParams(options);
+    res.redirect(`${rootUrl}?${qs.toString()}`);
+  }
+
+  async googleCallback(req, res, next) {
+    try {
+      const { code } = req.query;
+      const redirectUri = process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/callback';
+      const profile = await SocialAuthService.getGoogleProfile(code, redirectUri);
+      
+      <%_ if (database === 'MongoDB' || database === 'None') { -%>
+      let user = await User.findOne({ email: profile.email });
+      <%_ } else { -%>
+      let user = await User.findOne({ where: { email: profile.email } });
+      <%_ } -%>
+
+      if (!user) {
+        <%_ if (database === 'MongoDB' || database === 'None') { -%>
+        user = await User.create({ email: profile.email, name: profile.name, password: null });
+        <%_ } else { -%>
+        user = await User.create({ email: profile.email, name: profile.name, password: null });
+        <%_ } -%>
+      }
+
+      const userId = String(user.id || user._id);
+      const refreshToken = JwtService.generateRefreshToken({ id: userId, email: user.email });
+      const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
+      const accessToken = JwtService.generateToken({ id: userId, email: user.email, sid: refreshJti });
+
+      // Store refresh token
+      <%_ if (caching !== 'None') { -%>
+      const cacheKey = `refresh_tokens:${userId}`;
+      const activeTokens = await cacheService.get(cacheKey) || [];
+      activeTokens.push(refreshJti);
+      await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
+      <%_ } else { -%>
+      const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
+      activeTokens.push(refreshJti);
+      JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
+
+      res.cookie('accessToken', accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+      res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+      res.redirect('/');
+    } catch (error) {
+      logger.error('Google callback error:', error);
+      res.redirect('/login?error=social_auth_failed');
+    }
+  }
+<% } -%>
+
+<% if (socialAuth.includes('GitHub')) { -%>
+  async githubLogin(req, res) {
+    const rootUrl = 'https://github.com/login/oauth/authorize';
+    const options = {
+      client_id: process.env.GITHUB_CLIENT_ID,
+      redirect_uri: process.env.GITHUB_CALLBACK_URL || 'http://localhost:3000/api/auth/github/callback',
+      scope: 'user:email',
+      state: 'github'
+    };
+    const qs = new URLSearchParams(options);
+    res.redirect(`${rootUrl}?${qs.toString()}`);
+  }
+
+  async githubCallback(req, res, next) {
+    try {
+      const { code } = req.query;
+      const profile = await SocialAuthService.getGithubProfile(code);
+      
+      <%_ if (database === 'MongoDB' || database === 'None') { -%>
+      let user = await User.findOne({ email: profile.email });
+      <%_ } else { -%>
+      let user = await User.findOne({ where: { email: profile.email } });
+      <%_ } -%>
+
+      if (!user) {
+        <%_ if (database === 'MongoDB' || database === 'None') { -%>
+        user = await User.create({ email: profile.email, name: profile.name, password: null });
+        <%_ } else { -%>
+        user = await User.create({ email: profile.email, name: profile.name, password: null });
+        <%_ } -%>
+      }
+
+      const userId = String(user.id || user._id);
+      const refreshToken = JwtService.generateRefreshToken({ id: userId, email: user.email });
+      const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
+      const accessToken = JwtService.generateToken({ id: userId, email: user.email, sid: refreshJti });
+
+      // Store refresh token
+      <%_ if (caching !== 'None') { -%>
+      const cacheKey = `refresh_tokens:${userId}`;
+      const activeTokens = await cacheService.get(cacheKey) || [];
+      activeTokens.push(refreshJti);
+      await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
+      <%_ } else { -%>
+      const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
+      activeTokens.push(refreshJti);
+      JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
+
+      res.cookie('accessToken', accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+      res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+      res.redirect('/');
+    } catch (error) {
+      logger.error('GitHub callback error:', error);
+      res.redirect('/login?error=social_auth_failed');
+    }
+  }
+<% } -%>
 <% } -%>
 }
 

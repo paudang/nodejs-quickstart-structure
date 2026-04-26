@@ -1,0 +1,57 @@
+import { ISocialProvider } from '@/infrastructure/auth/socialAuthService';
+import { JwtService } from '@/infrastructure/auth/jwtService';
+<% if (database === 'MongoDB') { -%>
+import User from '@/infrastructure/database/models/User';
+<% } else { -%>
+import User from '@/infrastructure/database/models/User';
+<% } -%>
+
+export class SocialLoginUseCase {
+  constructor(private provider: ISocialProvider) {}
+
+  async execute(code: string, redirectUri?: string) {
+    const profile = await this.provider.getProfile(code, redirectUri);
+    
+    // 1. Find or create user
+    let user = await User.findOne({ 
+      where: { email: profile.email } 
+    });
+
+    if (!user) {
+      user = await User.create({
+        email: profile.email,
+        name: profile.name,
+        password: null, // Social login users don't have passwords
+        <% if (socialAuth.includes('Google')) { -%>
+        googleId: this.provider.name === 'Google' ? profile.id : null,
+        <% } -%>
+        <% if (socialAuth.includes('GitHub')) { -%>
+        githubId: this.provider.name === 'GitHub' ? profile.id : null,
+        <% } -%>
+      });
+    } else {
+      // Link social ID if not already linked
+      let updated = false;
+      <% if (socialAuth.includes('Google')) { -%>
+      if (this.provider.name === 'Google' && !user.googleId) {
+        user.googleId = profile.id;
+        updated = true;
+      }
+      <% } -%>
+      <% if (socialAuth.includes('GitHub')) { -%>
+      if (this.provider.name === 'GitHub' && !user.githubId) {
+        user.githubId = profile.id;
+        updated = true;
+      }
+      <% } -%>
+      if (updated) await user.save();
+    }
+
+    // 2. Generate tokens (jti is handled inside JwtService)
+    const payload = { id: user.id, email: user.email };
+    const accessToken = JwtService.generateToken(payload);
+    const refreshToken = JwtService.generateRefreshToken(payload);
+
+    return { user, accessToken, refreshToken };
+  }
+}

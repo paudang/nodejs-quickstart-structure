@@ -13,7 +13,21 @@ const UserSchema = new mongoose.Schema({
     <% if (auth.includes('JWT')) { %>
     password: {
         type: String,
-        required: true
+        required: false
+    },
+    <% } %>
+    <% if (socialAuth && socialAuth.includes('Google')) { %>
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
+    <% } %>
+    <% if (socialAuth && socialAuth.includes('GitHub')) { %>
+    githubId: {
+        type: String,
+        unique: true,
+        sparse: true
     },
     <% } %>
     createdAt: {

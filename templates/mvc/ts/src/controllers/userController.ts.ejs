@@ -17,6 +17,7 @@ import bcrypt from 'bcryptjs';
 <%_ } -%>
 
 export class UserController {
+    static model = User;
 <% if (communication === 'GraphQL') { -%>
     async getUsers() {
         try {

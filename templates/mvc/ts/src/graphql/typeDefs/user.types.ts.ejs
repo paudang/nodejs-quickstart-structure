@@ -13,5 +13,20 @@ export const userTypes = `#graphql
     createUser(name: String!, email: String!<%_ if (auth.some(a => a !=='None')) { _%>, password: String!<%_ } _%>): User
     updateUser(id: ID!, name: String, email: String): User
     deleteUser(id: ID!): Boolean
+    <%_ if (auth.includes('JWT')) { -%>
+    login(email: String!, password: String!): AuthPayload
+    <%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+    socialLogin(code: String!, provider: String!, redirectUri: String): AuthPayload
+    <%_ } -%>
+    <%_ } -%>
   }
+
+  <%_ if (auth.includes('JWT')) { -%>
+  type AuthPayload {
+    token: String!
+    accessToken: String!
+    refreshToken: String!
+    user: User!
+  }
+  <%_ } -%>
 `;

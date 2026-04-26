@@ -31,7 +31,48 @@ export const userResolvers = {
       <%_ } -%>
       const result = await userController.deleteUser(id);
       return result;
+    },
+    <%_ if (auth.includes('JWT')) { -%>
+    login: async (_: unknown, { email, password }: any) => {
+      const user = await UserController.model.findOne({ <% if (database === 'MongoDB' || database === 'None') { %>email<% } else { %>where: { email }<% } %> });
+      if (!user) throw new Error('Invalid credentials');
+      
+      const bcrypt = await import('bcryptjs');
+      const isMatch = await bcrypt.compare(password, user.password!);
+      if (!isMatch) throw new Error('Invalid credentials');
+
+      const { JwtService } = await import('@/services/jwtService');
+      const userId = String(user.id || (user as any)._id);
+      const refreshToken = JwtService.generateRefreshToken({ id: userId, email: user.email });
+      const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
+      const accessToken = JwtService.generateToken({ id: userId, email: user.email, sid: refreshJti });
+
+      return { token: accessToken, accessToken, refreshToken, user };
+    },
+    <%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+    socialLogin: async (_: unknown, { code, provider, redirectUri }: any) => {
+      const { SocialAuthService } = await import('@/services/socialAuthService');
+      let profile;
+      if (provider === 'Google') profile = await SocialAuthService.getGoogleProfile(code, redirectUri);
+      if (provider === 'GitHub') profile = await SocialAuthService.getGithubProfile(code);
+
+      if (!profile || !profile.email) throw new Error('Social authentication failed');
+
+      let user = await UserController.model.findOne({ <% if (database === 'MongoDB' || database === 'None') { %>email: profile.email<% } else { %>where: { email: profile.email }<% } %> });
+      if (!user) {
+        user = await UserController.model.create({ email: profile.email, name: profile.name, password: null });
+      }
+
+      const { JwtService } = await import('@/services/jwtService');
+      const userId = String(user.id || (user as any)._id);
+      const refreshToken = JwtService.generateRefreshToken({ id: userId, email: user.email });
+      const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
+      const accessToken = JwtService.generateToken({ id: userId, email: user.email, sid: refreshJti });
+
+      return { token: accessToken, accessToken, refreshToken, user };
     }
+    <%_ } -%>
+    <%_ } -%>
   }<%_ if (database === 'MongoDB') { -%>,
   User: {
     id: (parent: { id?: string; _id?: unknown }) => parent.id || parent._id
