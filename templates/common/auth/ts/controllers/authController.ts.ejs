@@ -183,6 +183,10 @@ export class AuthController {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'Code and provider are required' });
       }
 
+      if (!['Google', 'GitHub'].includes(provider)) {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'Invalid social provider' });
+      }
+
       <% if (architecture === 'Clean Architecture') { -%>
       let useCase;
       const userRepository = new UserRepository();
@@ -235,39 +239,47 @@ export class AuthController {
         return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Failed to retrieve profile from provider' });
       }
 
-      <% if (database === 'MongoDB' || database === 'None') { -%>
+      <%_ if (database === 'MongoDB' || database === 'None') { -%>
       let user = await User.findOne({ email: profile.email });
-      <% } else { -%>
+      <%_ } else { -%>
       let user = await User.findOne({ where: { email: profile.email } });
-      <% } -%>
+      <%_ } -%>
 
       if (!user) {
-        // Create new user without password
-        <% if (database === 'MongoDB' || database === 'None') { -%>
-        user = await User.create({ email: profile.email, name: profile.name, password: null });
-        <% if (socialAuth.includes('Google')) { -%>
-        if (provider === 'Google') (user as any).googleId = profile.id;
-        <% } -%>
-        <% if (socialAuth.includes('GitHub')) { -%>
-        if (provider === 'GitHub') (user as any).githubId = profile.id;
-        <% } -%>
-        await (user as any).save();
-        <% } else { -%>
-        user = (await User.create({ 
+        <%_ if (database === 'MongoDB' || database === 'None') { -%>
+        user = await User.create({ 
           email: profile.email, 
           name: profile.name, 
           password: null,
-          <%_ if (socialAuth.includes('Google')) { %> googleId: provider === 'Google' ? profile.id : null, <% } %>
-          <%_ if (socialAuth.includes('GitHub')) { %> githubId: provider === 'GitHub' ? profile.id : null, <% } %>
-        })) as any;
-        <%_ } -%>
+          <%_ if (socialAuth.includes('Google')) { _%>
+          googleId: provider === 'Google' ? profile.id : null,
+          <%_ } _%>
+          <%_ if (socialAuth.includes('GitHub')) { _%>
+          githubId: provider === 'GitHub' ? profile.id : null,
+          <%_ } _%>
+        });
+        await (user as unknown as { save: () => Promise<void> }).save();
+        <%_ } else { _%>
+        user = await User.create({
+          email: profile.email,
+          name: profile.name,
+          password: null,
+          <%_ if (socialAuth.includes('Google')) { _%>
+          googleId: provider === 'Google' ? profile.id : null,
+          <%_ } _%>
+          <%_ if (socialAuth.includes('GitHub')) { _%>
+          githubId: provider === 'GitHub' ? profile.id : null,
+          <%_ } _%>
+        }) as unknown as User;
+        <%_ } _%>
       }
-
-      const userId = String(user.id || ((user as unknown) as { _id?: string | number })._id);
       
-      const refreshToken = JwtService.generateRefreshToken({ id: userId, email: user.email });
+      const activeUser = user!; 
+      const userId = String(activeUser.id || ((activeUser as unknown) as { _id?: string | number })._id);
+      
+      const refreshToken = JwtService.generateRefreshToken({ id: userId, email: activeUser.email });
       const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
-      const accessToken = JwtService.generateToken({ id: userId, email: user.email, sid: refreshJti });
+      const accessToken = JwtService.generateToken({ id: userId, email: activeUser.email, sid: refreshJti });
       
       // Store refresh token
       <%_ if (caching !== 'None') { -%>
@@ -278,7 +290,8 @@ export class AuthController {
       <%_ } else { -%>
       const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       activeTokens.push(refreshJti!);
-      JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
+      JwtService.activeRefreshTokens.set(userId, activeTokens);
+      <%_ } _%>
 
       res.json({ token: accessToken, accessToken, refreshToken });
       <%_ } _%>
@@ -344,16 +357,27 @@ export class AuthController {
 
       if (!user) {
         <%_ if (database === 'MongoDB' || database === 'None') { -%>
-        user = await User.create({ email: profile.email, name: profile.name, password: null });
+        user = await User.create({ 
+          email: profile.email, 
+          name: profile.name, 
+          password: null,
+          googleId: profile.id
+        });
         <%_ } else { -%>
-        user = (await User.create({ email: profile.email, name: profile.name, password: null })) as any;
+        user = await User.create({ 
+          email: profile.email, 
+          name: profile.name, 
+          password: null,
+          googleId: profile.id
+        }) as unknown as User;
         <%_ } -%>
       }
 
-      const userId = String(user.id || ((user as unknown) as { _id?: string | number })._id);
-      const refreshToken = JwtService.generateRefreshToken({ id: userId, email: user.email });
+      const activeUser = user!;
+      const userId = String(activeUser.id || ((activeUser as unknown) as { _id?: string | number })._id);
+      const refreshToken = JwtService.generateRefreshToken({ id: userId, email: activeUser.email });
       const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
-      const accessToken = JwtService.generateToken({ id: userId, email: user.email, sid: refreshJti });
+      const accessToken = JwtService.generateToken({ id: userId, email: activeUser.email, sid: refreshJti });
 
       // Store refresh token
       <%_ if (caching !== 'None') { _%>
@@ -364,7 +388,8 @@ export class AuthController {
       <%_ } else { _%>
       const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       activeTokens.push(refreshJti!);
-      JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
+      JwtService.activeRefreshTokens.set(userId, activeTokens);
+      <%_ } _%>
 
       res.cookie('accessToken', accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
       res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
@@ -426,16 +451,27 @@ export class AuthController {
 
       if (!user) {
         <%_ if (database === 'MongoDB' || database === 'None') { -%>
-        user = await User.create({ email: profile.email, name: profile.name, password: null });
+        user = await User.create({ 
+          email: profile.email, 
+          name: profile.name, 
+          password: null,
+          githubId: profile.id
+        });
         <%_ } else { -%>
-        user = (await User.create({ email: profile.email, name: profile.name, password: null })) as any;
-        <%_ } -%>
+        user = await User.create({ 
+          email: profile.email, 
+          name: profile.name, 
+          password: null,
+          githubId: profile.id
+        }) as unknown as User;
+        <%_ } _%>
       }
 
-      const userId = String(user.id || ((user as unknown) as { _id?: string | number })._id);
-      const refreshToken = JwtService.generateRefreshToken({ id: userId, email: user.email });
+      const activeUser = user!;
+      const userId = String(activeUser.id || ((activeUser as unknown) as { _id?: string | number })._id);
+      const refreshToken = JwtService.generateRefreshToken({ id: userId, email: activeUser.email });
       const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
-      const accessToken = JwtService.generateToken({ id: userId, email: user.email, sid: refreshJti });
+      const accessToken = JwtService.generateToken({ id: userId, email: activeUser.email, sid: refreshJti });
 
       // Store refresh token
       <%_ if (caching !== 'None') { -%>
@@ -446,7 +482,8 @@ export class AuthController {
       <%_ } else { -%>
       const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       activeTokens.push(refreshJti!);
-      JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
+      JwtService.activeRefreshTokens.set(userId, activeTokens);
+      <%_ } _%>
 
       res.cookie('accessToken', accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
       res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });

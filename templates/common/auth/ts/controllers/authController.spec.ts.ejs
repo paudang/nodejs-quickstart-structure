@@ -1,3 +1,4 @@
+<%_ if (architecture === 'Clean Architecture') { _%>
 jest.mock('@/infrastructure/auth/jwtService');
 <% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
 jest.mock('@/infrastructure/auth/socialAuthService');
@@ -7,6 +8,16 @@ jest.mock('@/infrastructure/database/models/User', () => ({
   findOne: jest.fn(),
   create: jest.fn(),
 }));
+<%_ } else { _%>
+jest.mock('@/services/jwtService');
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+jest.mock('@/services/socialAuthService');
+<% } -%>
+jest.mock('@/models/User', () => ({
+  findOne: jest.fn(),
+  create: jest.fn(),
+}));
+<%_ } _%>
 
 import { AuthController } from '<%= (architecture === "MVC") ? "@/controllers/authController" : "@/interfaces/controllers/auth/authController" %>';
 import { JwtService } from '<%= (architecture === "MVC") ? "@/services/jwtService" : "@/infrastructure/auth/jwtService" %>';

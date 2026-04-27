@@ -271,7 +271,7 @@
         <div v-show="expanded.routes_mvc">
            <div class="tree-item" style="--depth: 3">
               <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-              userRoutes.{{ ext }}
+              healthRoute.{{ ext }}
            </div>
            <div class="tree-item" style="--depth: 3" v-if="form.auth !== 'None'">
               <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
@@ -537,7 +537,7 @@
           <div v-show="expanded.routes_clean">
              <div class="tree-item" style="--depth: 4">
                 <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                userRoutes.{{ ext }}
+                healthRoute.{{ ext }}
              </div>
              <div class="tree-item" style="--depth: 4" v-if="form.auth !== 'None'">
                 <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>

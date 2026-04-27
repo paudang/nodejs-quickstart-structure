@@ -128,6 +128,25 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 
 ---
 
+## Authentication & API
+
+### Swagger: `Failed to fetch` on `/auth/google` or `/auth/github`
+- **Problem**: Clicking "Execute" returns "Failed to fetch" and a CORS error.
+- **Reason**: Browser security (CORS) prevents the Swagger UI from following a redirect (`302`) to an external domain (like Google/GitHub) inside an AJAX request.
+- **Solution**: 
+  - **Manual Test**: Copy the URL `http://localhost:3000/auth/google` directly into your browser's address bar. It will work perfectly.
+  - **API Test**: Use the `POST /auth/social/exchange` endpoint in Swagger. This is a JSON API and does not have redirect issues.
+
+### Swagger: `500 Internal Server Error` on `/auth/social/exchange`
+- **Problem**: Receiving a 500 error with "Failed to authenticate" when sending a code to Swagger.
+- **Reason**: OAuth2 codes are single-use and URL-encoded by the browser.
+- **Solution**: 
+  1. **Get a FRESH code**: Visit the login URL in your browser again to get a new code (they expire after one use!).
+  2. **URL Decode**: If the code in your address bar contains `%2F`, you must replace it with a literal `/` before pasting it into Swagger (e.g., `4%2F0Af...` becomes `4/0Af...`).
+  3. **Match Redirect URI**: Ensure the `redirectUri` in your JSON body exactly matches the one registered in your Google/GitHub console.
+
+---
+
 ##  Generator Issues
 
 ### Templates not rendering correctly

@@ -1,4 +1,4 @@
-jest.mock('@/infrastructure/auth/jwtService');
+jest.mock('<%= (architecture === "MVC") ? "@/services/jwtService" : "@/infrastructure/auth/jwtService" %>');
 <%_ if (architecture === 'Clean Architecture') { _%>
 jest.mock('@/infrastructure/repositories/UserRepository', () => ({
   UserRepository: jest.fn().mockImplementation(() => ({
@@ -9,16 +9,16 @@ jest.mock('@/infrastructure/repositories/UserRepository', () => ({
 }));
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 <%_ } else { _%>
-jest.mock('@/infrastructure/database/models/User', () => ({
+jest.mock('<%= (architecture === "MVC") ? "@/models/User" : "@/infrastructure/database/models/User" %>', () => ({
   findOne: jest.fn(),
   create: jest.fn(),
   update: jest.fn(),
 }));
-import User from '@/infrastructure/database/models/User';
+import User from '<%= (architecture === "MVC") ? "@/models/User" : "@/infrastructure/database/models/User" %>';
 <%_ } _%>
 
 import { SocialLoginUseCase } from '@/usecases/auth/socialLoginUseCase';
-import { JwtService } from '@/infrastructure/auth/jwtService';
+import { JwtService } from '<%= (architecture === "MVC") ? "@/services/jwtService" : "@/infrastructure/auth/jwtService" %>';
 
 describe('SocialLoginUseCase', () => {
   let useCase: SocialLoginUseCase;

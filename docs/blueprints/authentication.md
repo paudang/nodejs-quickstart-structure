@@ -20,11 +20,12 @@ JWT_REFRESH_EXPIRES_IN=7d                 # Refresh token TTL (long-lived)
 # Social Login (Optional)
 GOOGLE_CLIENT_ID=your_id
 GOOGLE_CLIENT_SECRET=your_secret
-GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
+# Use /auth for MVC projects, /api/auth for others
+GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback 
 
 GITHUB_CLIENT_ID=your_id
 GITHUB_CLIENT_SECRET=your_secret
-GITHUB_CALLBACK_URL=http://localhost:3000/api/auth/github/callback
+GITHUB_CALLBACK_URL=http://localhost:3000/auth/github/callback
 ```
 
 ---
@@ -98,18 +99,18 @@ sequenceDiagram
     Note over U, DB: Step 1: User Initiation
     U->>C: Click "Login with Google/GitHub"
 
-    alt API / SPA Flow
+    alt API / SPA Flow (Headless)
         C->>P: 2a. Redirect to Provider
         P->>U: 3a. Request permissions
         U->>P: 4a. Grants access
         P->>C: 5a. Redirect to App with "code"
-        C->>S: 6a. POST /api/auth/social-exchange { code }
-    else MVC Flow
-        C->>S: 2b. GET /api/auth/google
+        C->>S: 6a. POST /api/auth/social/exchange { code }
+    else MVC Flow (Server-Side Rendered)
+        C->>S: 2b. GET /auth/google
         S->>P: 3b. Redirect to Provider
         P->>U: 4b. Request permissions
         U->>P: 5b. Grants access
-        P->>S: 6b. Redirect to /api/auth/google/callback?code=...
+        P->>S: 6b. Redirect to /auth/google/callback?code=...
     end
 
     Note over S, P: Step 2: Server-Side Exchange
@@ -125,8 +126,8 @@ sequenceDiagram
     
     alt API / SPA Flow
         S->>C: 12a. Return JSON { accessToken, refreshToken, user }
-    else MVC Flow
-        S->>C: 12b. Set HttpOnly Cookies & Redirect to "/"
+    else MVC Flow (Server-Side Rendered)
+        S->>C: 12b. Set HttpOnly Cookies (accessToken & refreshToken) & Redirect to "/"
     end
 ```
 
@@ -136,11 +137,45 @@ sequenceDiagram
 
 | Provider | Setup Location | Required Redirect URI |
 | :--- | :--- | :--- |
-| **Google** | [Google Cloud Console](https://console.cloud.google.com/) | `http://localhost:3000/api/auth/google/callback` |
-| **GitHub** | [GitHub Developer Settings](https://github.com/settings/developers) | `http://localhost:3000/api/auth/github/callback` |
+| **Google** | [Google Cloud Console](https://console.cloud.google.com/) | `http://localhost:3000/[auth\|api/auth]/google/callback` |
+| **GitHub** | [GitHub Developer Settings](https://github.com/settings/developers) | `http://localhost:3000/[auth\|api/auth]/github/callback` |
 
-> [!IMPORTANT]
-> For **MVC** architectures, the server handles the redirects automatically. For **API/GraphQL** architectures, the client (React/Vue/Mobile) should handle the initial redirect and send the `code` to the server.
+> [!TIP]
+> **Swagger Testing**: The "Execute" button in Swagger UI will return "Failed to fetch" for routes that `res.redirect()` to Google/GitHub. This is expected browser behavior. To test these routes, paste `http://localhost:3000/[auth|api/auth]/google` directly into your browser's address bar.
+
+### How to Test the Exchange Flow Manually
+
+Testing the `POST /auth/social/exchange` endpoint (for Mobile/SPAs) requires a real, one-time authorization code.
+
+1.  **Construct the Auth URL**:
+    *   **Google**: `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=YOUR_CLIENT_ID&scope=email%20profile&redirect_uri=http://localhost:3000/[auth|api/auth]/google/callback`
+    *   **GitHub**: `https://github.com/login/oauth/authorize?client_id=YOUR_CLIENT_ID&scope=user:email&redirect_uri=http://localhost:3000/[auth|api/auth]/github/callback`
+2.  **Capture the Code (The "Stop Server" Trick)**:
+    > [!IMPORTANT]
+    > Authorization codes are **single-use**. If your server is running, it will automatically catch the redirect and "consume" the code immediately, making it invalid for Swagger testing.
+    >
+    > **To capture it manually**:
+    > 1. **Stop your server** (Ctrl+C).
+    > 2. Click the Auth URL in your browser and log in.
+    > 3. Your browser will say "Site can't be reached" (this is good!).
+    > 4. Copy the code from the address bar (e.g., `code=4/0Af...`).
+    > 5. **Start your server** (`npm run dev`) and proceed to Step 3.
+
+3.  **Exchange in Swagger**:
+    *   **URL Decoding**: If your code contains `%2F`, replace it with `/`.
+    *   **JSON Body**: Paste the code into `POST /auth/social/exchange`.
+    *   **Redirect URI**: Ensure the `redirectUri` matches the one used in Step 1.
+    ```json
+    {
+      "code": "YOUR_COPIED_CODE",
+      "provider": "Google",
+      "redirectUri": "http://localhost:3000/[auth|api/auth]/google/callback"
+    }
+    ```
+    *   **Execute**: You will receive your JWT tokens in the response body.
+
+> [!CAUTION]
+> **Single Use**: Authorization codes are single-use. If you use it once in Swagger (or if your browser hits the callback route first), the code will become invalid. You must generate a new code for every test.
 
 ---
 

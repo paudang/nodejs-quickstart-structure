@@ -247,19 +247,36 @@ class AuthController {
         return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Failed to retrieve profile from provider' });
       }
 
-      <% if (database === 'MongoDB' || database === 'None') { -%>
+      <%_ if (database === 'MongoDB' || database === 'None') { _%>
       let user = await User.findOne({ email: profile.email });
-      <% } else { -%>
+      <%_ } else { _%>
       let user = await User.findOne({ where: { email: profile.email } });
-      <% } -%>
+      <%_ } _%>
 
       if (!user) {
         // Create new user without password
-        <% if (database === 'MongoDB' || database === 'None') { -%>
+        <%_ if (database === 'MongoDB' || database === 'None') { _%>
         user = await User.create({ email: profile.email, name: profile.name, password: null });
-        <% } else { -%>
-        user = await User.create({ email: profile.email, name: profile.name, password: null });
-        <% } -%>
+        <%_ if (socialAuth.includes('Google')) { _%>
+        if (provider === 'Google') user.googleId = profile.id;
+        <%_ } _%>
+        <%_ if (socialAuth.includes('GitHub')) { _%>
+        if (provider === 'GitHub') user.githubId = profile.id;
+        <%_ } _%>
+        await user.save();
+        <%_ } else { _%>
+        user = await User.create({ 
+          email: profile.email, 
+          name: profile.name, 
+          password: null,
+          <%_ if (socialAuth.includes('Google')) { _%>
+          googleId: provider === 'Google' ? profile.id : null,
+          <%_ } _%>
+          <%_ if (socialAuth.includes('GitHub')) { _%>
+          githubId: provider === 'GitHub' ? profile.id : null,
+          <%_ } _%>
+        });
+        <%_ } _%>
       }
 
       const userId = String(user.id || user._id);
@@ -277,7 +294,8 @@ class AuthController {
       <%_ } else { -%>
       const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       activeTokens.push(refreshJti);
-      JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
+      JwtService.activeRefreshTokens.set(userId, activeTokens);
+      <%_ } _%>
 
       res.json({ token: accessToken, accessToken, refreshToken });
       <%_ } _%>
@@ -343,7 +361,12 @@ class AuthController {
       <%_ } -%>
 
       if (!user) {
-        user = await User.create({ email: profile.email, name: profile.name, password: null });
+        user = await User.create({ 
+          email: profile.email, 
+          name: profile.name, 
+          password: null,
+          googleId: profile.id
+        });
       }
 
       const userId = String(user.id || user._id);
@@ -360,7 +383,8 @@ class AuthController {
       <%_ } else { _%>
       const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       activeTokens.push(refreshJti);
-      JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
+      JwtService.activeRefreshTokens.set(userId, activeTokens);
+      <%_ } _%>
 
       res.cookie('accessToken', accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
       res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
@@ -421,7 +445,12 @@ class AuthController {
       <%_ } -%>
 
       if (!user) {
-        user = await User.create({ email: profile.email, name: profile.name, password: null });
+        user = await User.create({ 
+          email: profile.email, 
+          name: profile.name, 
+          password: null,
+          githubId: profile.id
+        });
       }
 
       const userId = String(user.id || user._id);
@@ -438,7 +467,8 @@ class AuthController {
       <%_ } else { -%>
       const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       activeTokens.push(refreshJti);
-      JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
+      JwtService.activeRefreshTokens.set(userId, activeTokens);
+      <%_ } _%>
 
       res.cookie('accessToken', accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
       res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
