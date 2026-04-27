@@ -17,7 +17,7 @@ jest.mock('@/infrastructure/database/models/User', () => ({
 const User = require('@/infrastructure/database/models/User');
 <% } -%>
 
-const { SocialLoginUseCase } = require('@/domain/usecases/auth/SocialLoginUseCase');
+const { SocialLoginUseCase } = require('@/usecases/auth/socialLoginUseCase');
 const JwtService = require('@/infrastructure/auth/jwtService');
 
 describe('SocialLoginUseCase', () => {

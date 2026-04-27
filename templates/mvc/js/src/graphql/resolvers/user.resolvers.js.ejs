@@ -20,8 +20,6 @@ const userResolvers = {
     deleteUser: async (_, { id }, <% if (auth.includes('JWT')) { %>{ user: authUser }<% } else { %>_context<% } %>) => {
       <% if (auth.includes('JWT')) { %>if (!authUser) throw new Error('Unauthorized');<% } %>
       return await userController.deleteUser(id);
-    },
-      return await userController.deleteUser(id);
     }
   }<%_ if (database === 'MongoDB') { -%>
 ,

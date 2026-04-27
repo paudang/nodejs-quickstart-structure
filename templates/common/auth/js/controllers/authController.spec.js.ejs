@@ -4,7 +4,7 @@ jest.mock('@/infrastructure/auth/socialAuthService');
 jest.mock('@/infrastructure/database/models/User', () => ({
     findOne: jest.fn()
 }));
-jest.mock('@/domain/usecases/auth/SocialLoginUseCase');
+jest.mock('@/usecases/auth/socialLoginUseCase');
 <%_ } else { _%>
 jest.mock('@/services/jwtService');
 jest.mock('@/services/socialAuthService');
@@ -19,7 +19,7 @@ const AuthController = require('@/interfaces/controllers/auth/authController');
 const JwtService = require('@/infrastructure/auth/jwtService');
 const { SocialAuthService } = require('@/infrastructure/auth/socialAuthService');
 const User = require('@/infrastructure/database/models/User');
-const { SocialLoginUseCase } = require('@/domain/usecases/auth/SocialLoginUseCase');
+const { SocialLoginUseCase } = require('@/usecases/auth/socialLoginUseCase');
 <%_ } else { _%>
 const AuthController = require('@/controllers/authController');
 const JwtService = require('@/services/jwtService');

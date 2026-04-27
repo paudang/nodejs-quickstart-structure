@@ -1,7 +1,7 @@
 jest.mock('@/infrastructure/auth/jwtService');
 <% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
 jest.mock('@/infrastructure/auth/socialAuthService');
-jest.mock('@/domain/usecases/auth/SocialLoginUseCase');
+jest.mock('@/usecases/auth/socialLoginUseCase');
 <% } -%>
 jest.mock('@/infrastructure/database/models/User', () => ({
   findOne: jest.fn(),
@@ -15,7 +15,7 @@ import { HTTP_STATUS } from '@/utils/httpCodes';
 import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
 <% if (architecture === 'Clean Architecture' && socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { %>
-import { SocialLoginUseCase } from '@/domain/usecases/auth/SocialLoginUseCase';
+import { SocialLoginUseCase } from '@/usecases/auth/socialLoginUseCase';
 <% } %>
 
 <%_ if (caching !== 'None') { _%>

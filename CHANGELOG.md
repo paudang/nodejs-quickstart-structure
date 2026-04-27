@@ -1,6 +1,20 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
  
-## [2.1.1] - 2026-04-24
+## [2.2.0] - 2026-04-27
+
+### Added
+- **Social Login Support**: Integrated Google and GitHub authentication into the Clean Architecture and MVC templates.
+- **Expanded Validation Matrix**: Scaled the mathematical validation matrix to **7,920+ unique project scenarios**, ensuring 100% template rendering accuracy across all permutations.
+
+### Changed
+- **Clean Architecture Restructuring**: Moved use cases from `src/domain/usecases` to `src/usecases` (Application Layer) to strictly follow architectural boundaries.
+- **Improved EJS Alignment**: Optimized all templates with whitespace-slurping tags (`<%_`, `_%>`) to eliminate redundant blank lines in generated code.
+- **Environment Validation**: Added social authentication credentials to Zod-based environment schemas.
+
+### Fixed
+- **GraphQL Resolver Syntax**: Fixed redundant code generation in `user.resolvers.ts` and `user.resolvers.js` that caused syntax errors in specific configurations.
+- **Import Path Standardization**: Corrected relative import paths and aliases across core authentication components.
+
 
 ### Fixed
 - **Template Security Hardening**: Resolved missing buffer bounds check vulnerability in `uuid` (GHSA-w5hq-g745-h8pq) by adding `"uuid": "^14.0.0"` to template `overrides`.

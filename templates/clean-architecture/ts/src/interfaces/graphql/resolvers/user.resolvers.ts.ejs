@@ -25,19 +25,15 @@ export const userResolvers = {
       const user = await userController.updateUser(id, { name, email });
       return user;
     },
-    deleteUser: async (_: unknown, { id }: { id: string }, <% if (auth.includes('JWT')) { %>context<% } else { %>_context<% } %>: MyContext) => {
-      <%_ if (auth.includes('JWT')) { -%>
+    deleteUser: async (_: unknown, { id }: { id: string }, <%_ if (auth.includes('JWT')) { _%>context<%_ } else { _%>_context<%_ } _%>: MyContext) => {
+      <%_ if (auth.includes('JWT')) { _%>
       if (!context.user) throw new Error('Unauthorized');
-      <% } %>
-      const result = await userController.deleteUser(id);
-      return result;
-    },
+      <%_ } _%>
       const result = await userController.deleteUser(id);
       return result;
     }
-  }<%_ if (database === 'MongoDB') { -%>
-,
+  }<%_ if (database === 'MongoDB') { _%>,
   User: {
     id: (parent: { id?: string; _id?: unknown }) => parent.id || parent._id
-  }<%_ } %>
+  }<%_ } _%>
 };

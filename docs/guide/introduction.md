@@ -7,7 +7,7 @@ Whether you are building a small API or a large-scale event-driven system, this 
 ## Why use this generator?
 
 -   **Scalability**: Choose between **MVC** for simpler projects or **Clean Architecture** for complex domain-driven services.
--   **Flexibility**: Supports over **5,280+ unique project scenarios** (covering various Architectures, Languages, Databases, Communication patterns, Caching, Auth, CI/CD, and Security configurations).
+-   **Flexibility**: Supports over **7,920+ unique project scenarios** (covering various Architectures, Languages, Databases, Communication patterns, Caching, Auth, CI/CD, and Security configurations).
 -   **Pluggable Authentication**: Built-in **JWT** support with Access/Refresh token rotation and secure logout/blacklisting.
 -   **Quality First**: Every project is born with **Jest** testing, **ESLint/Prettier** linting, and **80%+ unit test coverage** gates enforced out of the box.
 -   **Modern Stack**: Features like **Kafka KRaft Mode**, **Apollo Server v4**, and **Zod** environment validation are standard.

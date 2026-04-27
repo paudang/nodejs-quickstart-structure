@@ -1,10 +1,10 @@
 const JwtService = require('<% if (architecture === "MVC") { %>../services/jwtService<% } else { %>../../../infrastructure/auth/jwtService<% } %>');
-<% if (architecture === 'Clean Architecture') { -%>
+<%_ if (architecture === 'Clean Architecture') { _%>
 const { UserRepository } = require('../../../infrastructure/repositories/userRepository');
 const { User } = require('../../../domain/user');
-<% } else { -%>
+<%_ } else { _%>
 const User = require('<% if (architecture === "MVC") { %>../models/User<% } else { %>../../../infrastructure/database/models/User<% } %>');
-<% } -%>
+<%_ } _%>
 
 class SocialLoginUseCase {
   constructor(provider<% if (architecture === 'Clean Architecture') { %>, userRepository<% } %>) {
@@ -25,29 +25,29 @@ class SocialLoginUseCase {
         profile.name,
         profile.email,
         null,
-        <% if (socialAuth.includes('Google')) { -%>
+        <%_ if (socialAuth.includes('Google')) { _%>
         this.provider.name === 'Google' ? profile.id : null,
-        <% } -%>
-        <% if (socialAuth.includes('GitHub')) { -%>
+        <%_ } _%>
+        <%_ if (socialAuth.includes('GitHub')) { _%>
         this.provider.name === 'GitHub' ? profile.id : null,
-        <% } -%>
+        <%_ } _%>
       );
       user = await this.userRepository.save(user);
     } else {
       // Link social ID if not already linked
       let updated = false;
-      <% if (socialAuth.includes('Google')) { -%>
+      <%_ if (socialAuth.includes('Google')) { _%>
       if (this.provider.name === 'Google' && !user.googleId) {
         user.googleId = profile.id;
         updated = true;
       }
-      <% } -%>
-      <% if (socialAuth.includes('GitHub')) { -%>
+      <%_ } _%>
+      <%_ if (socialAuth.includes('GitHub')) { _%>
       if (this.provider.name === 'GitHub' && !user.githubId) {
         user.githubId = profile.id;
         updated = true;
       }
-      <% } -%>
+      <%_ } _%>
       if (updated) {
         await this.userRepository.update(user.id, user);
       }
@@ -64,28 +64,28 @@ class SocialLoginUseCase {
         email: profile.email,
         name: profile.name,
         password: null, // Social login users don't have passwords
-        <% if (socialAuth.includes('Google')) { %>
+        <%_ if (socialAuth.includes('Google')) { _%>
         googleId: this.provider.name === 'Google' ? profile.id : null,
-        <% } %>
-        <% if (socialAuth.includes('GitHub')) { %>
+        <%_ } _%>
+        <%_ if (socialAuth.includes('GitHub')) { _%>
         githubId: this.provider.name === 'GitHub' ? profile.id : null,
-        <% } %>
+        <%_ } _%>
       });
     } else {
       // Link social ID if not already linked
       let updated = false;
-      <% if (socialAuth.includes('Google')) { %>
+      <%_ if (socialAuth.includes('Google')) { _%>
       if (this.provider.name === 'Google' && !user.googleId) {
         user.googleId = profile.id;
         updated = true;
       }
-      <% } %>
-      <% if (socialAuth.includes('GitHub')) { %>
+      <%_ } _%>
+      <%_ if (socialAuth.includes('GitHub')) { _%>
       if (this.provider.name === 'GitHub' && !user.githubId) {
         user.githubId = profile.id;
         updated = true;
       }
-      <% } %>
+      <%_ } _%>
       if (updated) {
         <%_ if (database === 'MongoDB') { _%>
         await user.save();

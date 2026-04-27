@@ -176,7 +176,7 @@ Authorization: Bearer <accessToken>
 | :--- | :--- | :--- | :--- |
 | **JwtService** | Token logic & Blacklist checks. | `src/services/jwtService.ts` | `src/infrastructure/auth/jwtService.ts` |
 | **SocialAuthService** | OAuth2 profile exchange providers. | `src/services/socialAuthService.ts` | `src/infrastructure/auth/socialAuthService.ts` |
-| **SocialLoginUseCase** | Business logic for social auth. | N/A (in Controller) | `src/domain/usecases/auth/SocialLoginUseCase.ts` |
+| **SocialLoginUseCase** | Business logic for social auth. | N/A (in Controller) | `src/usecases/auth/socialLoginUseCase.ts` |
 | **AuthMiddleware** | JWT & Blacklist interception. | `src/middleware/authMiddleware.ts` | `src/infrastructure/webserver/middleware/authMiddleware.ts` |
 | **AuthController** | Request orchestration. | `src/controllers/authController.ts` | `src/interfaces/controllers/auth/authController.ts` |
 
@@ -184,7 +184,7 @@ Authorization: Bearer <accessToken>
 
 For enterprise applications, the generator scaffolds the Auth module using strict architectural boundaries:
 - **Infrastructure Layer**: Implements the `ISocialProvider` interface for Google and GitHub. This follows the **Open/Closed Principle**, making it easy to add new providers (Facebook, Apple) without modifying existing logic.
-- **Domain Layer**: The `SocialLoginUseCase` encapsulates the core business logic, ensuring that authentication flow is independent of the web framework or external APIs.
+- **Application Layer**: The `socialLoginUseCase` encapsulates the core business logic, ensuring that authentication flow is independent of the web framework or external APIs.
 - **Security Persistence**: Even for social users, the system generates unique `jti` claims and tracks sessions in Redis, ensuring the "Nuclear Revoke" feature works across all authentication methods.
 
 ---

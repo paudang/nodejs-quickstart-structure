@@ -18,7 +18,7 @@ import logger from '@/infrastructure/log/logger';
 import cacheService from '<% if (caching === "Redis") { %>@/infrastructure/caching/redisClient<% } else { %>@/infrastructure/caching/memoryCache<% } %>';
 <% } -%>
 <% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
-import { SocialLoginUseCase } from '@/domain/usecases/auth/SocialLoginUseCase';
+import { SocialLoginUseCase } from '@/usecases/auth/socialLoginUseCase';
 import { GoogleProvider, GitHubProvider } from '@/infrastructure/auth/socialAuthService';
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 <% } -%>
@@ -50,15 +50,16 @@ export class AuthController {
       const accessToken = JwtService.generateToken({ id: userId, email: user.email, sid: refreshJti });
       
       // Store refresh token
-      <% if (caching !== 'None') { -%>
+      <%_ if (caching !== 'None') { _%>
       const cacheKey = `refresh_tokens:${userId}`;
       const activeTokens = await cacheService.get<string[]>(cacheKey) || [];
       activeTokens.push(refreshJti!);
       await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60); // 7 days
-      <% } else { -%>
+      <%_ } else { _%>
       const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       activeTokens.push(refreshJti!);
-      JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
+      JwtService.activeRefreshTokens.set(userId, activeTokens);
+      <%_ } _%>
 
       res.json({ token: accessToken, accessToken, refreshToken });
     } catch (error) {
@@ -82,7 +83,7 @@ export class AuthController {
       const userId = String(decoded.id);
       const incomingJti = decoded.jti;
 
-      <% if (caching !== 'None') { %>
+      <%_ if (caching !== 'None') { _%>
       const cacheKey = `refresh_tokens:${userId}`;
       let activeTokens = await cacheService.get<string[]>(cacheKey) || [];
       
@@ -101,7 +102,7 @@ export class AuthController {
       
       activeTokens.push(newRefreshJti!);
       await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
-      <% } else { %>
+      <%_ } else { _%>
       let activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       
       if (!activeTokens.includes(incomingJti)) {
@@ -118,7 +119,7 @@ export class AuthController {
       
       activeTokens.push(newRefreshJti!);
       JwtService.activeRefreshTokens.set(userId, activeTokens);
-      <% } %>
+      <%_ } _%>
       res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
     } catch (error) {
       logger.error('Refresh token error:', error);
@@ -154,15 +155,16 @@ export class AuthController {
         const decodedRefresh = JwtService.decodeToken(refreshToken);
         if (decodedRefresh && decodedRefresh.id && decodedRefresh.jti) {
            const userId = String(decodedRefresh.id);
-           <%_ if (caching !== 'None') { -%>
+           <%_ if (caching !== 'None') { _%>
            const cacheKey = `refresh_tokens:${userId}`;
            let activeTokens = await cacheService.get<string[]>(cacheKey) || [];
            activeTokens = activeTokens.filter(t => t !== decodedRefresh.jti);
            await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
-           <% } else { %>
+           <%_ } else { _%>
            let activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
            activeTokens = activeTokens.filter(t => t !== decodedRefresh.jti);
-           JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
+           JwtService.activeRefreshTokens.set(userId, activeTokens);
+           <%_ } _%>
         }
       }
 
@@ -184,12 +186,12 @@ export class AuthController {
       <% if (architecture === 'Clean Architecture') { -%>
       let useCase;
       const userRepository = new UserRepository();
-      <% if (socialAuth.includes('Google')) { -%>
+      <%_ if (socialAuth.includes('Google')) { _%>
       if (provider === 'Google') useCase = new SocialLoginUseCase(new GoogleProvider(), userRepository);
-      <% } -%>
-      <% if (socialAuth.includes('GitHub')) { -%>
+      <%_ } _%>
+      <%_ if (socialAuth.includes('GitHub')) { _%>
       if (provider === 'GitHub') useCase = new SocialLoginUseCase(new GitHubProvider(), userRepository);
-      <% } -%>
+      <%_ } _%>
 
       if (!useCase) {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'Invalid social provider' });
@@ -200,30 +202,30 @@ export class AuthController {
       const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
 
       // Store refresh token
-      <% if (caching !== 'None') { -%>
+      <%_ if (caching !== 'None') { _%>
       const cacheKey = `refresh_tokens:${userId}`;
       const activeTokens = await cacheService.get<string[]>(cacheKey) || [];
       activeTokens.push(refreshJti!);
       await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
-      <% } else { -%>
+      <%_ } else { _%>
       const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       activeTokens.push(refreshJti!);
       JwtService.activeRefreshTokens.set(userId, activeTokens);
-      <% } -%>
+      <%_ } _%>
 
       res.json({ token: accessToken, accessToken, refreshToken });
       <% } else { -%>
       let profile;
-<% if (socialAuth.includes('Google')) { -%>
+<%_ if (socialAuth.includes('Google')) { _%>
       if (provider === 'Google') {
         profile = await SocialAuthService.getGoogleProfile(code, redirectUri);
       }
-<% } -%>
-<% if (socialAuth.includes('GitHub')) { -%>
+<%_ } _%>
+<%_ if (socialAuth.includes('GitHub')) { _%>
       if (provider === 'GitHub') {
         profile = await SocialAuthService.getGithubProfile(code);
       }
-<% } -%>
+<%_ } _%>
 
       if (!profile) {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'Invalid social provider' });

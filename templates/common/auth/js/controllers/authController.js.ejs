@@ -1,27 +1,27 @@
 const bcrypt = require('bcryptjs');
-<% if (architecture === 'MVC') { -%>
+<%_ if (architecture === 'MVC') { _%>
 const User = require('../models/User');
 const JwtService = require('../services/jwtService');
-<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+<%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { _%>
 const { SocialAuthService } = require('../services/socialAuthService');
-<% } -%>
-<% if (caching !== 'None') { -%>
+<%_ } _%>
+<%_ if (caching !== 'None') { _%>
 const cacheService = require('<% if (caching === "Redis") { %>../config/redisClient<% } else { %>../config/memoryCache<% } %>');
-<% } -%>
+<%_ } _%>
 const logger = require('../utils/logger');
-<% } else { -%>
+<%_ } else { _%>
 const User = require('../../../infrastructure/database/models/User');
 const JwtService = require('../../../infrastructure/auth/jwtService');
-<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
-const { SocialLoginUseCase } = require('../../../domain/usecases/auth/SocialLoginUseCase');
+<%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { _%>
+const { SocialLoginUseCase } = require('../../../usecases/auth/socialLoginUseCase');
 const { GoogleProvider, GitHubProvider } = require('../../../infrastructure/auth/socialAuthService');
 const { UserRepository } = require('../../../infrastructure/repositories/userRepository');
-<% } -%>
-<% if (caching !== 'None') { -%>
+<%_ } _%>
+<%_ if (caching !== 'None') { _%>
 const cacheService = require('<% if (caching === "Redis") { %>../../../infrastructure/caching/redisClient<% } else { %>../../../infrastructure/caching/memoryCache<% } %>');
-<% } -%>
+<%_ } _%>
 const logger = require('../../../infrastructure/log/logger');
-<% } -%>
+<%_ } _%>
 const HTTP_STATUS = require('<% if (architecture === "MVC") { %>../utils/httpCodes<% } else { %>../../../utils/httpCodes<% } %>');
 
 class AuthController {
@@ -66,16 +66,16 @@ class AuthController {
       const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
       const accessToken = JwtService.generateToken({ id: userId, email: user.email, sid: refreshJti });
 
-<%_ if (caching !== 'None') { -%>
+<%_ if (caching !== 'None') { _%>
       const cacheKey = `refresh_tokens:${userId}`;
       const activeTokens = await cacheService.get(cacheKey) || [];
       activeTokens.push(refreshJti);
       await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
-<% } else { %>
+<%_ } else { _%>
       const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       activeTokens.push(refreshJti);
       JwtService.activeRefreshTokens.set(userId, activeTokens);
-<%_ } -%>
+<%_ } _%>
 
       res.json({ token: accessToken, accessToken, refreshToken });
     } catch (error) {
@@ -99,7 +99,7 @@ class AuthController {
       const userId = String(decoded.id);
       const incomingJti = decoded.jti;
 
-<%_ if (caching !== 'None') { -%>
+<%_ if (caching !== 'None') { _%>
       const cacheKey = `refresh_tokens:${userId}`;
       let activeTokens = await cacheService.get(cacheKey) || [];
       
@@ -116,7 +116,7 @@ class AuthController {
       
       activeTokens.push(newRefreshJti);
       await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
-<% } else { %>
+<%_ } else { _%>
       let activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       
       if (!activeTokens.includes(incomingJti)) {
@@ -132,7 +132,7 @@ class AuthController {
       
       activeTokens.push(newRefreshJti);
       JwtService.activeRefreshTokens.set(userId, activeTokens);
-<%_ } -%>
+<%_ } _%>
       res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
     } catch (error) {
       logger.error('Refresh token error:', error);

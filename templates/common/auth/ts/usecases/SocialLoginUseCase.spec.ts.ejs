@@ -1,5 +1,5 @@
 jest.mock('@/infrastructure/auth/jwtService');
-<% if (architecture === 'Clean Architecture') { -%>
+<%_ if (architecture === 'Clean Architecture') { _%>
 jest.mock('@/infrastructure/repositories/UserRepository', () => ({
   UserRepository: jest.fn().mockImplementation(() => ({
     findByEmail: jest.fn(),
@@ -8,16 +8,16 @@ jest.mock('@/infrastructure/repositories/UserRepository', () => ({
   })),
 }));
 import { UserRepository } from '@/infrastructure/repositories/UserRepository';
-<% } else { -%>
+<%_ } else { _%>
 jest.mock('@/infrastructure/database/models/User', () => ({
   findOne: jest.fn(),
   create: jest.fn(),
   update: jest.fn(),
 }));
 import User from '@/infrastructure/database/models/User';
-<% } -%>
+<%_ } _%>
 
-import { SocialLoginUseCase } from '@/domain/usecases/auth/SocialLoginUseCase';
+import { SocialLoginUseCase } from '@/usecases/auth/socialLoginUseCase';
 import { JwtService } from '@/infrastructure/auth/jwtService';
 
 describe('SocialLoginUseCase', () => {

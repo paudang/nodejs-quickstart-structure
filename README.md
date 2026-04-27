@@ -17,7 +17,7 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
 - [What's New](#whats-new-in-v21-the-authentication-release)
 - [Key Features](#key-features)
 - [Professional Standards](#professional-standards)
-- [5,280+ Project Combinations](#5280-project-combinations)
+- [7,920+ Project Combinations](#7920-project-combinations)
 - [Configuration Options](#configuration-options)
 - [Generated Project Structure](#generated-project-structure)
 - [Documentation](#documentation)
@@ -90,14 +90,14 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 
 ---
 
-## 5,280+ Project Combinations
+## 7,920+ Project Combinations
 
 The CLI supports a massive number of configurations to fit your exact needs:
 
-- **480 Core Combinations**:
-  - **MVC Architecture**: 360 variants (Languages × View Engines × Databases × Communication Patterns × Caching × Auth)
-  - **Clean Architecture**: 120 variants (Languages × Databases × Communication Patterns × Caching × Auth)
-- **5,280+ Total Scenarios**:
+- **720 Core Combinations**:
+  - **MVC Architecture**: 540 variants (Languages × View Engines × Databases × Communication Patterns × Caching × Auth)
+  - **Clean Architecture**: 180 variants (Languages × Databases × Communication Patterns × Caching × Auth)
+- **7,920+ Total Scenarios**:
   - Every combination can be generated across 5 CI/CD providers.
   - Optional **Enterprise-Grade Security Hardening** doubles the scenarios.
   - Every single scenario is verified to be compatible with our **80% Coverage Threshold** policy.

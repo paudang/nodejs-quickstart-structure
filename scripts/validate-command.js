@@ -186,7 +186,7 @@ async function start() {
 
     const timeTaken = ((Date.now() - startTime) / 1000).toFixed(1);
 
-    console.log(`\n${ANSI_CYAN}=== 5,280 Validation Summary ===${ANSI_RESET}`);
+    console.log(`\n${ANSI_CYAN}=== 7,920 Validation Summary ===${ANSI_RESET}`);
     console.log(`Execution Time: ${timeTaken}s`);
     console.log(`Total Variants Tested: ${passed + failed}`);
     console.log(`${ANSI_GREEN}Passed (Zero Templates Errors): ${passed}${ANSI_RESET}`);
@@ -197,7 +197,7 @@ async function start() {
         console.log(`${ANSI_RED}Check 5280_failures.log for EJS rendering traces.${ANSI_RESET}`);
         process.exit(1);
     } else {
-        console.log(`${ANSI_GREEN}✓ SUCCESS! All 5,280 UI-mapped combinations cleanly render templates!${ANSI_RESET}`);
+        console.log(`${ANSI_GREEN}✓ SUCCESS! All 7,920 UI-mapped combinations cleanly render templates!${ANSI_RESET}`);
     }
 
     await fs.remove(path.resolve(__dirname, '../temp_5280_workspace'));
