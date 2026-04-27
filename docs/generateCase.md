@@ -5,11 +5,11 @@ This document lists the **720 possible project combinations** supported by the `
 ## Summary
 - **CI Providers**: `None`, `GitHub Actions`, `Jenkins`, `GitLab CI`, `CircleCI`, `Bitbucket Pipelines`
 - **MVC Architecture**: 540 Combinations
-  - **With Database (324)**: 2 Lang × 3 View × 3 DB × 3 Comm × 2 Auth = 108 * 3 (Caching: None/Redis/Memory Cache) = 324
-  - **No Database (36)**: 2 Lang × 3 View × 1 DB × 3 Comm × 2 Auth = 36 * 1 (Caching: None) = 36
+  - **With Database (486)**: 2 Lang × 3 View × 3 DB × 3 Comm × 3 (Auth: None/JWT/Social) = 162 * 3 (Caching: None/Redis/Memory Cache) = 486
+  - **No Database (54)**: 2 Lang × 3 View × 1 DB × 3 Comm × 3 (Auth: None/JWT/Social) = 54 * 1 (Caching: None) = 54
 - **Clean Architecture**: 180 Combinations
-  - **With Database (108)**: 2 Lang × 1 View (None) × 3 DB × 3 Comm × 2 Auth = 36 * 3 (Caching: None/Redis/Memory Cache) = 108
-  - **No Database (12)**: 2 Lang × 1 View (None) × 1 DB × 3 Comm × 2 Auth = 12 * 1 (Caching: None) = 12
+  - **With Database (162)**: 2 Lang × 1 View (None) × 3 DB × 3 Comm × 3 (Auth: None/JWT/Social) = 54 * 3 (Caching: None/Redis/Memory Cache) = 162
+  - **No Database (18)**: 2 Lang × 1 View (None) × 1 DB × 3 Comm × 3 (Auth: None/JWT/Social) = 18 * 1 (Caching: None) = 18
 
 **Total Core Combinations: 720**
 

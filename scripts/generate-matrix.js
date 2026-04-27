@@ -6,7 +6,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const languages = ['JavaScript', 'TypeScript'];
-const archs = ['MVC', 'Clean Architecture'];
 const viewEngines = ['None', 'EJS', 'Pug'];
 const databases = ['MySQL', 'PostgreSQL', 'MongoDB', 'None'];
 const communications = ['REST APIs', 'GraphQL', 'Kafka'];
@@ -63,11 +62,11 @@ This document lists the **${counter - 1} possible project combinations** support
 ## Summary
 - **CI Providers**: \`None\`, \`GitHub Actions\`, \`Jenkins\`, \`GitLab CI\`, \`CircleCI\`, \`Bitbucket Pipelines\`
 - **MVC Architecture**: ${mvcCases.length} Combinations
-  - **With Database (324)**: 2 Lang × 3 View × 3 DB × 3 Comm × 2 Auth = 108 * 3 (Caching: None/Redis/Memory Cache) = 324
-  - **No Database (36)**: 2 Lang × 3 View × 1 DB × 3 Comm × 2 Auth = 36 * 1 (Caching: None) = 36
+  - **With Database (486)**: 2 Lang × 3 View × 3 DB × 3 Comm × 3 (Auth: None/JWT/Social) = 162 * 3 (Caching: None/Redis/Memory Cache) = 486
+  - **No Database (54)**: 2 Lang × 3 View × 1 DB × 3 Comm × 3 (Auth: None/JWT/Social) = 54 * 1 (Caching: None) = 54
 - **Clean Architecture**: ${cleanArchCases.length} Combinations
-  - **With Database (108)**: 2 Lang × 1 View (None) × 3 DB × 3 Comm × 2 Auth = 36 * 3 (Caching: None/Redis/Memory Cache) = 108
-  - **No Database (12)**: 2 Lang × 1 View (None) × 1 DB × 3 Comm × 2 Auth = 12 * 1 (Caching: None) = 12
+  - **With Database (162)**: 2 Lang × 1 View (None) × 3 DB × 3 Comm × 3 (Auth: None/JWT/Social) = 54 * 3 (Caching: None/Redis/Memory Cache) = 162
+  - **No Database (18)**: 2 Lang × 1 View (None) × 1 DB × 3 Comm × 3 (Auth: None/JWT/Social) = 18 * 1 (Caching: None) = 18
 
 **Total Core Combinations: ${counter - 1}**
 

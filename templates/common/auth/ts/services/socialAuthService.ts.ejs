@@ -3,7 +3,7 @@ import logger from '@/utils/logger';
 <% } else { -%>
 import logger from '@/infrastructure/log/logger';
 <% } -%>
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 <% if (architecture === 'Clean Architecture') { -%>
 export interface ISocialProfile {

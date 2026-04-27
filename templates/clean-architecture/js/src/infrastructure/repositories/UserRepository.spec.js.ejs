@@ -5,6 +5,7 @@ jest.mock('@/infrastructure/database/models/User', () => ({
     create: jest.fn(),
     findAll: jest.fn(),
     findByPk: jest.fn(),
+    findOne: jest.fn(),
     update: jest.fn(),
     destroy: jest.fn(),
     find: jest.fn(),
@@ -79,6 +80,25 @@ describe('UserRepository', () => {
             UserModel.findByPk.mockResolvedValue(null);
 <%_ } -%>
             const result = await userRepository.findById(id);
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('findByEmail', () => {
+        it('should find and return a user by email', async () => {
+            const email = 'test@example.com';
+            const mockDbRecord = { id: '1', name: 'TestUser', email: 'test@example.com' };
+            UserModel.findOne.mockResolvedValue(mockDbRecord);
+
+            const result = await userRepository.findByEmail(email);
+
+            expect(result.email).toBe(email);
+            expect(UserModel.findOne).toHaveBeenCalled();
+        });
+
+        it('should return null if email not found', async () => {
+            UserModel.findOne.mockResolvedValue(null);
+            const result = await userRepository.findByEmail('not@found.com');
             expect(result).toBeNull();
         });
     });

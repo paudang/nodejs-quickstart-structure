@@ -15,6 +15,7 @@ const JwtService = require('../../../infrastructure/auth/jwtService');
 <% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
 const { SocialLoginUseCase } = require('../../../domain/usecases/auth/SocialLoginUseCase');
 const { GoogleProvider, GitHubProvider } = require('../../../infrastructure/auth/socialAuthService');
+const { UserRepository } = require('../../../infrastructure/repositories/userRepository');
 <% } -%>
 <% if (caching !== 'None') { -%>
 const cacheService = require('<% if (caching === "Redis") { %>../../../infrastructure/caching/redisClient<% } else { %>../../../infrastructure/caching/memoryCache<% } %>');
@@ -194,6 +195,38 @@ class AuthController {
         return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'Code and provider are required' });
       }
 
+      <% if (architecture === 'Clean Architecture') { -%>
+      let useCase;
+      const userRepository = new UserRepository();
+      <% if (socialAuth.includes('Google')) { -%>
+      if (provider === 'Google') useCase = new SocialLoginUseCase(new GoogleProvider(), userRepository);
+      <% } -%>
+      <% if (socialAuth.includes('GitHub')) { -%>
+      if (provider === 'GitHub') useCase = new SocialLoginUseCase(new GitHubProvider(), userRepository);
+      <% } -%>
+
+      if (!useCase) {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'Invalid social provider' });
+      }
+
+      const { user, accessToken, refreshToken } = await useCase.execute(code, redirectUri);
+      const userId = String(user.id || user._id);
+      const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
+
+      // Store refresh token
+      <% if (caching !== 'None') { -%>
+      const cacheKey = `refresh_tokens:${userId}`;
+      const activeTokens = await cacheService.get(cacheKey) || [];
+      activeTokens.push(refreshJti);
+      await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
+      <% } else { -%>
+      const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
+      activeTokens.push(refreshJti);
+      JwtService.activeRefreshTokens.set(userId, activeTokens);
+      <% } -%>
+
+      res.json({ token: accessToken, accessToken, refreshToken });
+      <% } else { -%>
       let profile;
 <% if (socialAuth.includes('Google')) { -%>
       if (provider === 'Google') {
@@ -206,23 +239,27 @@ class AuthController {
       }
 <% } -%>
 
+      if (!profile) {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'Invalid social provider' });
+      }
+
       if (!profile || !profile.email) {
         return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Failed to retrieve profile from provider' });
       }
 
-      <%_ if (database === 'MongoDB' || database === 'None') { -%>
+      <% if (database === 'MongoDB' || database === 'None') { -%>
       let user = await User.findOne({ email: profile.email });
-      <%_ } else { -%>
+      <% } else { -%>
       let user = await User.findOne({ where: { email: profile.email } });
-      <%_ } -%>
+      <% } -%>
 
       if (!user) {
         // Create new user without password
-        <%_ if (database === 'MongoDB' || database === 'None') { -%>
+        <% if (database === 'MongoDB' || database === 'None') { -%>
         user = await User.create({ email: profile.email, name: profile.name, password: null });
-        <%_ } else { -%>
+        <% } else { -%>
         user = await User.create({ email: profile.email, name: profile.name, password: null });
-        <%_ } -%>
+        <% } -%>
       }
 
       const userId = String(user.id || user._id);
@@ -243,6 +280,7 @@ class AuthController {
       JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
 
       res.json({ token: accessToken, accessToken, refreshToken });
+      <%_ } _%>
     } catch (error) {
       logger.error('Social exchange error:', error);
       next(error);
@@ -250,7 +288,6 @@ class AuthController {
   }
 <% } -%>
 
-<% if (architecture === 'MVC') { -%>
 <% if (socialAuth.includes('Google')) { -%>
   async googleLogin(req, res) {
     const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
@@ -274,6 +311,29 @@ class AuthController {
     try {
       const { code } = req.query;
       const redirectUri = process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/callback';
+
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const useCase = new SocialLoginUseCase(new GoogleProvider(), new UserRepository());
+      const { user, accessToken, refreshToken } = await useCase.execute(code, redirectUri);
+      const userId = String(user.id || user._id);
+      const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
+
+      // Store refresh token
+      <%_ if (caching !== 'None') { _%>
+      const cacheKey = `refresh_tokens:${userId}`;
+      const activeTokens = await cacheService.get(cacheKey) || [];
+      activeTokens.push(refreshJti);
+      await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
+      <%_ } else { _%>
+      const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
+      activeTokens.push(refreshJti);
+      JwtService.activeRefreshTokens.set(userId, activeTokens);
+      <%_ } _%>
+
+      res.cookie('accessToken', accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+      res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+      res.redirect('/');
+      <%_ } else { _%>
       const profile = await SocialAuthService.getGoogleProfile(code, redirectUri);
       
       <%_ if (database === 'MongoDB' || database === 'None') { -%>
@@ -283,11 +343,7 @@ class AuthController {
       <%_ } -%>
 
       if (!user) {
-        <%_ if (database === 'MongoDB' || database === 'None') { -%>
         user = await User.create({ email: profile.email, name: profile.name, password: null });
-        <%_ } else { -%>
-        user = await User.create({ email: profile.email, name: profile.name, password: null });
-        <%_ } -%>
       }
 
       const userId = String(user.id || user._id);
@@ -301,7 +357,7 @@ class AuthController {
       const activeTokens = await cacheService.get(cacheKey) || [];
       activeTokens.push(refreshJti);
       await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
-      <%_ } else { -%>
+      <%_ } else { _%>
       const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       activeTokens.push(refreshJti);
       JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
@@ -309,6 +365,7 @@ class AuthController {
       res.cookie('accessToken', accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
       res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
       res.redirect('/');
+      <%_ } _%>
     } catch (error) {
       logger.error('Google callback error:', error);
       res.redirect('/login?error=social_auth_failed');
@@ -332,6 +389,29 @@ class AuthController {
   async githubCallback(req, res, next) {
     try {
       const { code } = req.query;
+
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const useCase = new SocialLoginUseCase(new GitHubProvider(), new UserRepository());
+      const { user, accessToken, refreshToken } = await useCase.execute(code);
+      const userId = String(user.id || user._id);
+      const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
+
+      // Store refresh token
+      <%_ if (caching !== 'None') { _%>
+      const cacheKey = `refresh_tokens:${userId}`;
+      const activeTokens = await cacheService.get(cacheKey) || [];
+      activeTokens.push(refreshJti);
+      await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
+      <%_ } else { _%>
+      const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
+      activeTokens.push(refreshJti);
+      JwtService.activeRefreshTokens.set(userId, activeTokens);
+      <%_ } _%>
+
+      res.cookie('accessToken', accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+      res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+      res.redirect('/');
+      <%_ } else { _%>
       const profile = await SocialAuthService.getGithubProfile(code);
       
       <%_ if (database === 'MongoDB' || database === 'None') { -%>
@@ -341,11 +421,7 @@ class AuthController {
       <%_ } -%>
 
       if (!user) {
-        <%_ if (database === 'MongoDB' || database === 'None') { -%>
         user = await User.create({ email: profile.email, name: profile.name, password: null });
-        <%_ } else { -%>
-        user = await User.create({ email: profile.email, name: profile.name, password: null });
-        <%_ } -%>
       }
 
       const userId = String(user.id || user._id);
@@ -367,6 +443,7 @@ class AuthController {
       res.cookie('accessToken', accessToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
       res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
       res.redirect('/');
+      <%_ } _%>
     } catch (error) {
       logger.error('GitHub callback error:', error);
       res.redirect('/login?error=social_auth_failed');

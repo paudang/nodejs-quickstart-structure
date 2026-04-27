@@ -1,38 +1,66 @@
 jest.mock('@/infrastructure/auth/jwtService');
+<% if (architecture === 'Clean Architecture') { -%>
+jest.mock('@/infrastructure/repositories/UserRepository', () => ({
+  UserRepository: jest.fn().mockImplementation(() => ({
+    findByEmail: jest.fn(),
+    save: jest.fn(),
+    update: jest.fn(),
+  })),
+}));
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+<% } else { -%>
 jest.mock('@/infrastructure/database/models/User', () => ({
   findOne: jest.fn(),
   create: jest.fn(),
+  update: jest.fn(),
 }));
+import User from '@/infrastructure/database/models/User';
+<% } -%>
 
 import { SocialLoginUseCase } from '@/domain/usecases/auth/SocialLoginUseCase';
 import { JwtService } from '@/infrastructure/auth/jwtService';
-import User from '@/infrastructure/database/models/User';
 
 describe('SocialLoginUseCase', () => {
   let useCase: SocialLoginUseCase;
   let mockProvider: any;
+  <%_ if (architecture === 'Clean Architecture') { _%>
+  let mockRepo: any;
+  <%_ } _%>
 
   beforeEach(() => {
     mockProvider = {
       name: 'Google',
       getProfile: jest.fn(),
     };
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    mockRepo = new UserRepository();
+    useCase = new SocialLoginUseCase(mockProvider, mockRepo);
+    <%_ } else { _%>
     useCase = new SocialLoginUseCase(mockProvider);
+    <%_ } _%>
     jest.clearAllMocks();
   });
 
   it('should find existing user and generate tokens', async () => {
     const mockProfile = { id: 'google-123', email: 'test@test.com', name: 'Test User' };
-    const mockUser = { id: '1', email: 'test@test.com', save: jest.fn(), googleId: null };
+    const mockUser = { id: '1', email: 'test@test.com', googleId: null };
     
     mockProvider.getProfile.mockResolvedValue(mockProfile);
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    mockRepo.findByEmail.mockResolvedValue(mockUser);
+    <%_ } else { _%>
     (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+    <%_ } _%>
     (JwtService.generateToken as jest.Mock).mockReturnValue('access-token');
     (JwtService.generateRefreshToken as jest.Mock).mockReturnValue('refresh-token');
 
     const result = await useCase.execute('test-code');
 
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    expect(mockRepo.findByEmail).toHaveBeenCalled();
+    <%_ } else { _%>
     expect(User.findOne).toHaveBeenCalled();
+    <%_ } _%>
     expect(result.accessToken).toBe('access-token');
   });
 
@@ -41,13 +69,49 @@ describe('SocialLoginUseCase', () => {
     const mockUser = { id: '2', email: 'new@test.com' };
     
     mockProvider.getProfile.mockResolvedValue(mockProfile);
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    mockRepo.findByEmail.mockResolvedValue(null);
+    mockRepo.save.mockResolvedValue(mockUser);
+    <%_ } else { _%>
     (User.findOne as jest.Mock).mockResolvedValue(null);
     (User.create as jest.Mock).mockResolvedValue(mockUser);
+    <%_ } _%>
     (JwtService.generateToken as jest.Mock).mockReturnValue('access-token');
     (JwtService.generateRefreshToken as jest.Mock).mockReturnValue('refresh-token');
 
     await useCase.execute('test-code');
 
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    expect(mockRepo.save).toHaveBeenCalled();
+    <%_ } else { _%>
     expect(User.create).toHaveBeenCalled();
+    <%_ } _%>
+  });
+
+  it('should link GitHub ID if existing user does not have it', async () => {
+    mockProvider.name = 'GitHub';
+    const mockProfile = { id: 'github-789', email: 'test@test.com', name: 'Test User' };
+    const mockUser = { id: '1', email: 'test@test.com', githubId: null };
+    
+    mockProvider.getProfile.mockResolvedValue(mockProfile);
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    mockRepo.findByEmail.mockResolvedValue(mockUser);
+    <%_ } else { _%>
+    (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+    <%_ } _%>
+    (JwtService.generateToken as jest.Mock).mockReturnValue('access-token');
+    (JwtService.generateRefreshToken as jest.Mock).mockReturnValue('refresh-token');
+
+    await useCase.execute('test-code');
+
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    expect(mockRepo.update).toHaveBeenCalledWith('1', expect.objectContaining({ githubId: 'github-789' }));
+    <%_ } else { _%>
+    <%_ if (database === 'MongoDB') { _%>
+    expect(mockUser.save || jest.fn()).toHaveBeenCalled();
+    <%_ } else { _%>
+    expect(User.update || jest.fn()).toHaveBeenCalled();
+    <%_ } _%>
+    <%_ } _%>
   });
 });

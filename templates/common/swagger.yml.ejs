@@ -140,6 +140,64 @@ paths:
                 properties:
                   message:
                     type: string
+<%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+  /api/auth/social/exchange:
+    post:
+      summary: Exchange social auth code for JWT tokens
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+                - provider
+              properties:
+                code:
+                  type: string
+                provider:
+                  type: string
+                  enum: [Google, GitHub]
+                redirectUri:
+                  type: string
+      responses:
+        '200':
+          description: Exchange successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+        '401':
+          description: Invalid social profile or code
+<%_ if (socialAuth.includes('Google')) { -%>
+  /api/auth/google:
+    get:
+      summary: Redirect to Google OAuth
+      tags:
+        - Auth
+      responses:
+        '302':
+          description: Redirect to Google
+<%_ } -%>
+<%_ if (socialAuth.includes('GitHub')) { -%>
+  /api/auth/github:
+    get:
+      summary: Redirect to GitHub OAuth
+      tags:
+        - Auth
+      responses:
+        '302':
+          description: Redirect to GitHub
+<%_ } -%>
+<%_ } -%>
 <%_ } -%>
   /api/users:
     get:

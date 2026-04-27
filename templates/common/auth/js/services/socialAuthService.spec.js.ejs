@@ -56,6 +56,33 @@ describe('SocialAuthService', () => {
       expect(profile.email).toBe('test@gmail.com');
       expect(profile.name).toBe('Test User');
     });
+
+    it('should throw error if token exchange fails', async () => {
+      axios.post.mockRejectedValue(new Error('Network error'));
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const { GoogleProvider } = require('@/infrastructure/auth/socialAuthService');
+      const provider = new GoogleProvider();
+      await expect(provider.getProfile('test_code', 'url')).rejects.toThrow('Failed to authenticate with Google');
+      <%_ } else { _%>
+      await expect(SocialAuthService.getGoogleProfile('test_code', 'url')).rejects.toThrow('Failed to authenticate with Google');
+      <%_ } _%>
+    });
+
+    it('should handle Axios errors', async () => {
+      const axiosError = new Error('Request failed');
+      axiosError.isAxiosError = true;
+      axiosError.response = { data: { message: 'OAuth Error' } };
+      axios.isAxiosError.mockReturnValue(true);
+      axios.post.mockRejectedValue(axiosError);
+
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const { GoogleProvider } = require('@/infrastructure/auth/socialAuthService');
+      const provider = new GoogleProvider();
+      await expect(provider.getProfile('test_code', 'url')).rejects.toThrow('Failed to authenticate with Google');
+      <%_ } else { _%>
+      await expect(SocialAuthService.getGoogleProfile('test_code', 'url')).rejects.toThrow('Failed to authenticate with Google');
+      <%_ } _%>
+    });
   });
 <% } -%>
 
@@ -88,6 +115,33 @@ describe('SocialAuthService', () => {
       expect(axios.get).toHaveBeenCalledTimes(2);
       expect(profile.email).toBe('github@test.com');
       expect(profile.id).toBe('456');
+    });
+
+    it('should throw error if token exchange fails', async () => {
+      axios.post.mockRejectedValue(new Error('Network error'));
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const { GitHubProvider } = require('@/infrastructure/auth/socialAuthService');
+      const provider = new GitHubProvider();
+      await expect(provider.getProfile('test_code')).rejects.toThrow('Failed to authenticate with GitHub');
+      <%_ } else { _%>
+      await expect(SocialAuthService.getGithubProfile('test_code')).rejects.toThrow('Failed to authenticate with GitHub');
+      <%_ } _%>
+    });
+
+    it('should handle Axios errors', async () => {
+      const axiosError = new Error('Request failed');
+      axiosError.isAxiosError = true;
+      axiosError.response = { data: { message: 'OAuth Error' } };
+      axios.isAxiosError.mockReturnValue(true);
+      axios.post.mockRejectedValue(axiosError);
+
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const { GitHubProvider } = require('@/infrastructure/auth/socialAuthService');
+      const provider = new GitHubProvider();
+      await expect(provider.getProfile('test_code')).rejects.toThrow('Failed to authenticate with GitHub');
+      <%_ } else { _%>
+      await expect(SocialAuthService.getGithubProfile('test_code')).rejects.toThrow('Failed to authenticate with GitHub');
+      <%_ } _%>
     });
   });
 <% } -%>

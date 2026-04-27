@@ -31,8 +31,12 @@ export const userResolvers = {
       <% } %>
       const result = await userController.deleteUser(id);
       return result;
+    },
+      const result = await userController.deleteUser(id);
+      return result;
     }
-  }<%_ if (database === 'MongoDB') { -%>,
+  }<%_ if (database === 'MongoDB') { -%>
+,
   User: {
     id: (parent: { id?: string; _id?: unknown }) => parent.id || parent._id
   }<%_ } %>

@@ -20,6 +20,7 @@ import cacheService from '<% if (caching === "Redis") { %>@/infrastructure/cachi
 <% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
 import { SocialLoginUseCase } from '@/domain/usecases/auth/SocialLoginUseCase';
 import { GoogleProvider, GitHubProvider } from '@/infrastructure/auth/socialAuthService';
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 <% } -%>
 <% } -%>
 import { HTTP_STATUS } from '@/utils/httpCodes';
@@ -182,11 +183,12 @@ export class AuthController {
 
       <% if (architecture === 'Clean Architecture') { -%>
       let useCase;
+      const userRepository = new UserRepository();
       <% if (socialAuth.includes('Google')) { -%>
-      if (provider === 'Google') useCase = new SocialLoginUseCase(new GoogleProvider());
+      if (provider === 'Google') useCase = new SocialLoginUseCase(new GoogleProvider(), userRepository);
       <% } -%>
       <% if (socialAuth.includes('GitHub')) { -%>
-      if (provider === 'GitHub') useCase = new SocialLoginUseCase(new GitHubProvider());
+      if (provider === 'GitHub') useCase = new SocialLoginUseCase(new GitHubProvider(), userRepository);
       <% } -%>
 
       if (!useCase) {
@@ -222,6 +224,10 @@ export class AuthController {
         profile = await SocialAuthService.getGithubProfile(code);
       }
 <% } -%>
+
+      if (!profile) {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'Invalid social provider' });
+      }
 
       if (!profile || !profile.email) {
         return res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: 'Failed to retrieve profile from provider' });
@@ -280,7 +286,6 @@ export class AuthController {
     }
   }
 
-<% if (architecture === 'MVC') { -%>
 <% if (socialAuth.includes('Google')) { -%>
   async googleLogin(req: Request, res: Response) {
     const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
@@ -306,7 +311,7 @@ export class AuthController {
       const redirectUri = process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/callback';
 
       <%_ if (architecture === 'Clean Architecture') { _%>
-      const useCase = new SocialLoginUseCase(new GoogleProvider());
+      const useCase = new SocialLoginUseCase(new GoogleProvider(), new UserRepository());
       const { user, accessToken, refreshToken } = await useCase.execute(code as string, redirectUri);
       const userId = String(user.id || ((user as unknown) as { _id?: string | number })._id);
       const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
@@ -349,12 +354,12 @@ export class AuthController {
       const accessToken = JwtService.generateToken({ id: userId, email: user.email, sid: refreshJti });
 
       // Store refresh token
-      <%_ if (caching !== 'None') { -%>
+      <%_ if (caching !== 'None') { _%>
       const cacheKey = `refresh_tokens:${userId}`;
       const activeTokens = await cacheService.get<string[]>(cacheKey) || [];
       activeTokens.push(refreshJti!);
       await cacheService.set(cacheKey, activeTokens, 7 * 24 * 60 * 60);
-      <%_ } else { -%>
+      <%_ } else { _%>
       const activeTokens = JwtService.activeRefreshTokens.get(userId) || [];
       activeTokens.push(refreshJti!);
       JwtService.activeRefreshTokens.set(userId, activeTokens);<% } %>
@@ -388,13 +393,13 @@ export class AuthController {
       const { code } = req.query;
 
       <%_ if (architecture === 'Clean Architecture') { _%>
-      const useCase = new SocialLoginUseCase(new GitHubProvider());
+      const useCase = new SocialLoginUseCase(new GitHubProvider(), new UserRepository());
       const { user, accessToken, refreshToken } = await useCase.execute(code as string);
       const userId = String(user.id || ((user as unknown) as { _id?: string | number })._id);
       const refreshJti = JwtService.decodeToken(refreshToken)?.jti;
 
       // Store refresh token
-      <%_ if (caching !== 'None') { -%>
+      <%_ if (caching !== 'None') { _%>
       const cacheKey = `refresh_tokens:${userId}`;
       const activeTokens = await cacheService.get<string[]>(cacheKey) || [];
       activeTokens.push(refreshJti!);
@@ -450,7 +455,6 @@ export class AuthController {
       res.redirect('/login?error=social_auth_failed');
     }
   }
-<% } -%>
 <% } -%>
 <% } -%>
 }

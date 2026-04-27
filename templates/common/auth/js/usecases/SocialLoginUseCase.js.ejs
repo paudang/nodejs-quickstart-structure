@@ -1,15 +1,58 @@
 const JwtService = require('<% if (architecture === "MVC") { %>../services/jwtService<% } else { %>../../../infrastructure/auth/jwtService<% } %>');
+<% if (architecture === 'Clean Architecture') { -%>
+const { UserRepository } = require('../../../infrastructure/repositories/userRepository');
+const { User } = require('../../../domain/user');
+<% } else { -%>
 const User = require('<% if (architecture === "MVC") { %>../models/User<% } else { %>../../../infrastructure/database/models/User<% } %>');
+<% } -%>
 
 class SocialLoginUseCase {
-  constructor(provider) {
+  constructor(provider<% if (architecture === 'Clean Architecture') { %>, userRepository<% } %>) {
     this.provider = provider;
+    <% if (architecture === 'Clean Architecture') { %>this.userRepository = userRepository;<% } %>
   }
 
   async execute(code, redirectUri) {
     const profile = await this.provider.getProfile(code, redirectUri);
     
     // 1. Find or create user
+    <% if (architecture === 'Clean Architecture') { -%>
+    let user = await this.userRepository.findByEmail(profile.email);
+
+    if (!user) {
+      user = new User(
+        null,
+        profile.name,
+        profile.email,
+        null,
+        <% if (socialAuth.includes('Google')) { -%>
+        this.provider.name === 'Google' ? profile.id : null,
+        <% } -%>
+        <% if (socialAuth.includes('GitHub')) { -%>
+        this.provider.name === 'GitHub' ? profile.id : null,
+        <% } -%>
+      );
+      user = await this.userRepository.save(user);
+    } else {
+      // Link social ID if not already linked
+      let updated = false;
+      <% if (socialAuth.includes('Google')) { -%>
+      if (this.provider.name === 'Google' && !user.googleId) {
+        user.googleId = profile.id;
+        updated = true;
+      }
+      <% } -%>
+      <% if (socialAuth.includes('GitHub')) { -%>
+      if (this.provider.name === 'GitHub' && !user.githubId) {
+        user.githubId = profile.id;
+        updated = true;
+      }
+      <% } -%>
+      if (updated) {
+        await this.userRepository.update(user.id, user);
+      }
+    }
+    <% } else { -%>
     <% if (database === 'MongoDB' || database === 'None') { %>
     let user = await User.findOne({ email: profile.email });
     <% } else { %>
@@ -43,8 +86,17 @@ class SocialLoginUseCase {
         updated = true;
       }
       <% } %>
-      if (updated) await user.save();
+      if (updated) {
+        <%_ if (database === 'MongoDB') { _%>
+        await user.save();
+        <%_ } else if (database === 'None') { _%>
+        await User.update(user.id, { googleId: user.googleId, githubId: user.githubId });
+        <%_ } else { _%>
+        await user.save();
+        <%_ } _%>
+      }
     }
+    <% } -%>
 
     // 2. Generate tokens (jti is handled inside JwtService)
     const userId = String(user.id || user._id);

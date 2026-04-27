@@ -432,7 +432,11 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         DB_PORT: (await getFreePort(usedPorts)).toString(),
         KAFKA_PORT: kafkaPort,
         KAFKA_EXTERNAL_PORT: kafkaPort,
-        REDIS_PORT: (await getFreePort(usedPorts)).toString()
+        REDIS_PORT: (await getFreePort(usedPorts)).toString(),
+        GOOGLE_CLIENT_ID: 'mock-google-client-id',
+        GOOGLE_CLIENT_SECRET: 'mock-google-client-secret',
+        GITHUB_CLIENT_ID: 'mock-github-client-id',
+        GITHUB_CLIENT_SECRET: 'mock-github-client-secret'
     };
 
     log(`>>> Starting Test ${index + 1}/${combinations.length}: ${config.projectName}`, ANSI_CYAN);

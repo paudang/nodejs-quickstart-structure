@@ -1,34 +1,41 @@
 import { ISocialProvider } from '@/infrastructure/auth/socialAuthService';
 import { JwtService } from '@/infrastructure/auth/jwtService';
-<% if (database === 'MongoDB') { -%>
-import User from '@/infrastructure/database/models/User';
+<% if (architecture === 'Clean Architecture') { -%>
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+import { User } from '@/domain/user';
 <% } else { -%>
 import User from '@/infrastructure/database/models/User';
 <% } -%>
 
 export class SocialLoginUseCase {
-  constructor(private provider: ISocialProvider) {}
+  constructor(
+    private provider: ISocialProvider,
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    private userRepository: UserRepository
+    <%_ } _%>
+  ) {}
 
   async execute(code: string, redirectUri?: string) {
     const profile = await this.provider.getProfile(code, redirectUri);
     
     // 1. Find or create user
-    let user = await User.findOne({ 
-      where: { email: profile.email } 
-    });
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    let user = await this.userRepository.findByEmail(profile.email);
 
     if (!user) {
-      user = await User.create({
-        email: profile.email,
-        name: profile.name,
-        password: null, // Social login users don't have passwords
+      user = new User(
+        null,
+        profile.name,
+        profile.email,
+        null,
         <% if (socialAuth.includes('Google')) { -%>
-        googleId: this.provider.name === 'Google' ? profile.id : null,
+        this.provider.name === 'Google' ? profile.id : null,
         <% } -%>
         <% if (socialAuth.includes('GitHub')) { -%>
-        githubId: this.provider.name === 'GitHub' ? profile.id : null,
+        this.provider.name === 'GitHub' ? profile.id : null,
         <% } -%>
-      });
+      );
+      user = await this.userRepository.save(user);
     } else {
       // Link social ID if not already linked
       let updated = false;
@@ -44,11 +51,60 @@ export class SocialLoginUseCase {
         updated = true;
       }
       <% } -%>
-      if (updated) await user.save();
+      if (updated) {
+        await this.userRepository.update(user.id!, user);
+      }
     }
+    <%_ } else { _%>
+    let user = await User.findOne({ 
+      <%_ if (database === 'MongoDB' || database === 'None') { _%>
+      email: profile.email
+      <%_ } else { _%>
+      where: { email: profile.email } 
+      <%_ } _%>
+    });
 
-    // 2. Generate tokens (jti is handled inside JwtService)
-    const payload = { id: user.id, email: user.email };
+    if (!user) {
+      user = await User.create({
+        email: profile.email,
+        name: profile.name,
+        password: null,
+        <% if (socialAuth.includes('Google')) { -%>
+        googleId: this.provider.name === 'Google' ? profile.id : null,
+        <% } -%>
+        <% if (socialAuth.includes('GitHub')) { -%>
+        githubId: this.provider.name === 'GitHub' ? profile.id : null,
+        <% } -%>
+      });
+    } else {
+      let updated = false;
+      <% if (socialAuth.includes('Google')) { -%>
+      if (this.provider.name === 'Google' && !user.googleId) {
+        user.googleId = profile.id;
+        updated = true;
+      }
+      <% } -%>
+      <% if (socialAuth.includes('GitHub')) { -%>
+      if (this.provider.name === 'GitHub' && !user.githubId) {
+        user.githubId = profile.id;
+        updated = true;
+      }
+      <% } -%>
+      if (updated) {
+        <%_ if (database === 'MongoDB') { _%>
+        await user.save();
+        <%_ } else if (database === 'None') { _%>
+        await User.update(user.id, { googleId: user.googleId, githubId: user.githubId });
+        <%_ } else { _%>
+        await user.save();
+        <%_ } _%>
+      }
+    }
+    <%_ } _%>
+
+    // 2. Generate tokens
+    const userId = user.id || (user as { _id?: { toString(): string } })._id?.toString();
+    const payload = { id: userId, email: user.email };
     const accessToken = JwtService.generateToken(payload);
     const refreshToken = JwtService.generateRefreshToken(payload);
 
