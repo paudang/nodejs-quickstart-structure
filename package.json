@@ -64,7 +64,8 @@
   },
   "overrides": {
     "esbuild": "^0.25.0",
-    "vite": "^6.4.2"
+    "vite": "^6.4.2",
+    "postcss": "^8.5.10"
   },
   "devDependencies": {
     "snyk": "^1.1303.2",

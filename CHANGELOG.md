@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Environment Validation**: Added social authentication credentials to Zod-based environment schemas.
 
 ### Fixed
+- **Template Security Hardening**: Resolved XSS vulnerability in `postcss` (GHSA-qx2v-qp2m-jg93) by implementing a targeted `override` to version `^8.5.10` in `package.json`.
 - **GraphQL Resolver Syntax**: Fixed redundant code generation in `user.resolvers.ts` and `user.resolvers.js` that caused syntax errors in specific configurations.
 - **Import Path Standardization**: Corrected relative import paths and aliases across core authentication components.
 
