@@ -1,5 +1,10 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
  
+## [2.1.2] - 2026-04-27
+
+### Changed
+- **Security Hardening**: Updated `postcss` to `^8.5.10` in project overrides to resolve potential security vulnerabilities and improve build stability.
+
 ## [2.1.1] - 2026-04-24
 
 ### Fixed
