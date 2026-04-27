@@ -15,7 +15,7 @@ hero:
   
 features:
   - title: 7,920+ Combinations
-    details: Language (TS/JS), Architecture (MVC/Clean), Auth (JWT), Communication (REST/GraphQL/Kafka), and CI/CD/Security.
+    details: Language (TS/JS), Architecture (MVC/Clean), Auth, Communication (REST/GraphQL/Kafka), and CI/CD/Security.
   - title: AI-Native Ready
     details: Pre-configured .cursorrules and Agent Skill prompts to boost your productivity with AI tools.
   - title: Production Standards
