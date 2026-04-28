@@ -1,6 +1,6 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
- 
-## [2.2.0] - 2026-04-27
+
+## [2.2.0] - 2026-04-28
 
 ### Added
 - **Social Login Support**: Integrated Google and GitHub authentication into the Clean Architecture and MVC templates.
@@ -10,12 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Clean Architecture Restructuring**: Moved use cases from `src/domain/usecases` to `src/usecases` (Application Layer) to strictly follow architectural boundaries.
 - **Improved EJS Alignment**: Optimized all templates with whitespace-slurping tags (`<%_`, `_%>`) to eliminate redundant blank lines in generated code.
 - **Environment Validation**: Added social authentication credentials to Zod-based environment schemas.
+ 
+## [2.1.2] - 2026-04-27
 
-### Fixed
-- **Template Security Hardening**: Resolved XSS vulnerability in `postcss` (GHSA-qx2v-qp2m-jg93) by implementing a targeted `override` to version `^8.5.10` in `package.json`.
-- **GraphQL Resolver Syntax**: Fixed redundant code generation in `user.resolvers.ts` and `user.resolvers.js` that caused syntax errors in specific configurations.
-- **Import Path Standardization**: Corrected relative import paths and aliases across core authentication components.
+### Changed
+- **Security Hardening**: Updated `postcss` to `^8.5.10` in project overrides to resolve potential security vulnerabilities and improve build stability.
 
+## [2.1.1] - 2026-04-24
 
 ### Fixed
 - **Template Security Hardening**: Resolved missing buffer bounds check vulnerability in `uuid` (GHSA-w5hq-g745-h8pq) by adding `"uuid": "^14.0.0"` to template `overrides`.
