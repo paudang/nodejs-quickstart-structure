@@ -1,9 +1,9 @@
-const JwtService = require('<% if (architecture === "MVC") { %>../services/jwtService<% } else { %>../../../infrastructure/auth/jwtService<% } %>');
+const JwtService = require('<% if (architecture === "MVC") { %>../services/jwtService<% } else { %>../../infrastructure/auth/jwtService<% } %>');
 <%_ if (architecture === 'Clean Architecture') { _%>
-const { UserRepository } = require('../../../infrastructure/repositories/userRepository');
-const { User } = require('../../../domain/user');
+const { UserRepository } = require('../../infrastructure/repositories/UserRepository');
+const { User } = require('../../domain/user');
 <%_ } else { _%>
-const User = require('<% if (architecture === "MVC") { %>../models/User<% } else { %>../../../infrastructure/database/models/User<% } %>');
+const User = require('<% if (architecture === "MVC") { %>../models/User<% } else { %>../../infrastructure/database/models/User<% } %>');
 <%_ } _%>
 
 class SocialLoginUseCase {

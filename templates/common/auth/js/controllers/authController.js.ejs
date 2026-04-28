@@ -15,7 +15,7 @@ const JwtService = require('../../../infrastructure/auth/jwtService');
 <%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { _%>
 const { SocialLoginUseCase } = require('../../../usecases/auth/socialLoginUseCase');
 const { GoogleProvider, GitHubProvider } = require('../../../infrastructure/auth/socialAuthService');
-const { UserRepository } = require('../../../infrastructure/repositories/userRepository');
+const { UserRepository } = require('../../../infrastructure/repositories/UserRepository');
 <%_ } _%>
 <%_ if (caching !== 'None') { _%>
 const cacheService = require('<% if (caching === "Redis") { %>../../../infrastructure/caching/redisClient<% } else { %>../../../infrastructure/caching/memoryCache<% } %>');

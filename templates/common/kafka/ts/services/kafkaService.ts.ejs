@@ -81,7 +81,7 @@ export class KafkaService {
         try {
             const parsed = JSON.parse(message);
             logger.info(`[Kafka] Producer: Sent ${parsed.action} event for '${parsed.payload?.email || 'unknown'}'`);
-        } catch {
+        } catch (error) {
             logger.info(`[Kafka] Producer: Sent message to ${topic}`);
         }
     }
