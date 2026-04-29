@@ -1,13 +1,13 @@
 jest.mock('@/infrastructure/auth/jwtService');
 <% if (architecture === 'Clean Architecture') { -%>
-jest.mock('@/infrastructure/repositories/UserRepository', () => ({
-  UserRepository: jest.fn().mockImplementation(() => ({
+jest.mock('@/infrastructure/repositories/UserRepository', () => {
+  return jest.fn().mockImplementation(() => ({
     findByEmail: jest.fn(),
     save: jest.fn(),
     update: jest.fn(),
-  })),
-}));
-const { UserRepository } = require('@/infrastructure/repositories/UserRepository');
+  }));
+});
+const UserRepository = require('@/infrastructure/repositories/UserRepository');
 <% } else { -%>
 jest.mock('@/infrastructure/database/models/User', () => ({
   findOne: jest.fn(),
@@ -73,7 +73,7 @@ describe('SocialLoginUseCase', () => {
     mockRepo.findByEmail.mockResolvedValue(null);
     mockRepo.save.mockResolvedValue(mockUser);
     <%_ if (socialAuth.includes('Google')) { _%>
-    const { User } = require('@/domain/user');
+    const User = require('@/domain/models/User');
     <%_ } _%>
     <%_ } else { _%>
     User.findOne.mockResolvedValue(null);

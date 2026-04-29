@@ -494,10 +494,46 @@ export async function runTest(config, index, options = {}, sharedPorts) {
 
         // 2. Initialize Git
         await runCommand('git init', projectPath);
-
         // 3. Install Deps (triggers prepare -> husky install)
         log(`... Installing Dependencies ...`);
-        await runCommand('npm install --no-audit --no-fund --loglevel=error', projectPath);
+        
+        const baseHashKey = `${config.language}_${config.database}`;
+        const cacheModulesPath = path.join(testDir, `node_modules_base_${baseHashKey}`);
+        
+        let usedBaseCache = false;
+        try {
+            if (await fs.pathExists(cacheModulesPath)) {
+                log(`... Bootstrapping from Base Cache (${baseHashKey}) ...`);
+                await fs.copy(cacheModulesPath, path.join(projectPath, 'node_modules'));
+                usedBaseCache = true;
+            }
+        } catch(e) {
+            usedBaseCache = false;
+        }
+
+        // Always run npm install to align the copied base cache with the exact package.json
+        // Or to do a fresh install if no base cache existed.
+        const npmCmd = usedBaseCache 
+            ? 'npm install --no-audit --no-fund --prefer-offline --loglevel=error'
+            : 'npm install --no-audit --no-fund --loglevel=error';
+            
+        await runCommand(npmCmd, projectPath);
+
+        if (!usedBaseCache) {
+            let tempCachePath;
+            try {
+                // Save this fresh install as the Base Cache for this language+database combo
+                tempCachePath = `${cacheModulesPath}_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+                await fs.copy(path.join(projectPath, 'node_modules'), tempCachePath);
+                await fs.rename(tempCachePath, cacheModulesPath);
+                log(`... Base Cache Created (${baseHashKey}) ...`);
+            } catch(e) {
+                // If rename fails or already exists, cleanup
+                if (tempCachePath) {
+                    try { await fs.remove(tempCachePath); } catch(err) {}
+                }
+            }
+        }
 
         // 3a. Verify Git Hooks (Husky)
         log(`... Verifying Git Hooks (Husky/Lint-Staged) ...`);

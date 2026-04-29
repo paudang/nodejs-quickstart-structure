@@ -1,7 +1,7 @@
 const JwtService = require('<% if (architecture === "MVC") { %>../services/jwtService<% } else { %>../../infrastructure/auth/jwtService<% } %>');
 <%_ if (architecture === 'Clean Architecture') { _%>
-const { UserRepository } = require('../../infrastructure/repositories/UserRepository');
-const { User } = require('../../domain/user');
+const UserRepository = require('../../infrastructure/repositories/UserRepository');
+const User = require('../../domain/models/User');
 <%_ } else { _%>
 const User = require('<% if (architecture === "MVC") { %>../models/User<% } else { %>../../infrastructure/database/models/User<% } %>');
 <%_ } _%>

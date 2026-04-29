@@ -1,13 +1,18 @@
 <%_ if (architecture === 'Clean Architecture') { _%>
 jest.mock('@/infrastructure/auth/jwtService');
+<%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { _%>
 jest.mock('@/infrastructure/auth/socialAuthService');
+jest.mock('@/usecases/auth/socialLoginUseCase');
+jest.mock('@/infrastructure/repositories/UserRepository');
+<%_ } _%>
 jest.mock('@/infrastructure/database/models/User', () => ({
     findOne: jest.fn()
 }));
-jest.mock('@/usecases/auth/socialLoginUseCase');
 <%_ } else { _%>
 jest.mock('@/services/jwtService');
+<%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { _%>
 jest.mock('@/services/socialAuthService');
+<%_ } _%>
 jest.mock('@/models/User', () => ({
     findOne: jest.fn()
 }));
@@ -17,13 +22,17 @@ jest.mock('bcryptjs');
 <%_ if (architecture === 'Clean Architecture') { _%>
 const AuthController = require('@/interfaces/controllers/auth/authController');
 const JwtService = require('@/infrastructure/auth/jwtService');
+<%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { _%>
 const { SocialAuthService } = require('@/infrastructure/auth/socialAuthService');
-const User = require('@/infrastructure/database/models/User');
 const { SocialLoginUseCase } = require('@/usecases/auth/socialLoginUseCase');
+<%_ } _%>
+const User = require('@/infrastructure/database/models/User');
 <%_ } else { _%>
 const AuthController = require('@/controllers/authController');
 const JwtService = require('@/services/jwtService');
+<%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { _%>
 const { SocialAuthService } = require('@/services/socialAuthService');
+<%_ } _%>
 const User = require('@/models/User');
 <%_ } _%>
 const HTTP_STATUS = require('@/utils/httpCodes');

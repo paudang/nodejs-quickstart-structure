@@ -119,7 +119,11 @@ describe('UserRepository', () => {
     describe('findByEmail', () => {
         it('should find and return a user by email', async () => {
             const email = 'test@example.com';
+<%_ if (database === 'MongoDB') { -%>
+            const mockDbRecord = { _id: { toString: () => '1' }, name: 'TestUser', email: 'test@example.com' };
+<%_ } else { -%>
             const mockDbRecord = { id: '1', name: 'TestUser', email: 'test@example.com' };
+<%_ } -%>
             (UserModel.findOne as jest.Mock).mockResolvedValue(mockDbRecord);
 
             const result = await userRepository.findByEmail(email);
