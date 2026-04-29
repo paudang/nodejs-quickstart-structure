@@ -44,7 +44,7 @@ app.use(express.static(path.join(__dirname, '../public')));<%_ } %>
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 app.use('/api', apiRoutes);
 <%_ } -%><%_ if (auth.includes('JWT')) { -%>
-app.use('<%= viewEngine !== "None" ? "/auth" : "/api/auth" %>', authRoutes);
+app.use('/api/auth', authRoutes);
 <%_ } -%>
 
 <% if (viewEngine && viewEngine !== 'None') { -%>

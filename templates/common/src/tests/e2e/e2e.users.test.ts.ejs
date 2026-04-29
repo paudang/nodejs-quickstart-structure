@@ -61,7 +61,7 @@ describe('E2E User Tests', () => {
 <%_ } -%>
 
 <%_ if (auth.includes('JWT')) { _%>
-<%_ const authPath = (architecture === "MVC" && viewEngine !== "None") ? "/auth" : "/api/auth"; _%>
+<%_ const authPath = "/api/auth"; _%>
   it('should login and obtain a JWT token', async () => {
     const response = await request(SERVER_URL)
       .post('<%= authPath %>/login')
