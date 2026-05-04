@@ -13,7 +13,7 @@ This project follows a strict **7-Step Production-Ready Process** to ensure qual
 
 ---
 
-## 🚀 7-Step Production-Ready Process
+## 7-Step Production-Ready Process
 
 1.  **Initialize Git**: `git init` (Required for Husky hooks and security gates).
 2.  **Install Dependencies**: `npm install`.
@@ -25,7 +25,7 @@ This project follows a strict **7-Step Production-Ready Process** to ensure qual
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 -   **Architecture**: <%= architecture %> (<% if (architecture === 'Clean Architecture') { %>Domain, UseCases, Infrastructure<% } else { %>MVC Pattern<% } %>).
 -   **Database**: <%= database %> <% if (database !== 'None') { %>(via <%= database === 'MongoDB' ? 'Mongoose' : 'Sequelize' %>)<% } %>.
@@ -157,20 +157,20 @@ API is exposed via **REST**.
 A Swagger UI for API documentation is available at:
 - **URL**: `http://localhost:3000/api-docs` (Dynamic based on PORT)
 
-### 🛣️ User Endpoints:
+### User Endpoints:
 - `GET /api/users`: List all users.
 - `GET /api/users/:id`: Get a user by ID.
 - `POST /api/users`: Create a new user.
 - `PATCH /api/users/:id`: Partially update a user.
 - `DELETE /api/users/:id`: Delete a user (Soft Delete).
 <%_ if (auth.includes('JWT')) { %>
-### 🔐 Auth Endpoints:
+### Auth Endpoints:
 - `POST /api/auth/login`: Exchange credentials for a short-lived `accessToken` and a long-lived `refreshToken`.
 - `POST /api/auth/refresh`: Submit a `refreshToken` to receive a new pair of tokens. (Includes theft-detection logic).
 - `POST /api/auth/logout`: Revoke (blacklist) the active `accessToken` and delete the `refreshToken`.
 - `POST /api/users`: Acts as Sign Up when password is provided.
 <%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { _%>
-### 🔐 Social Authentication Flows
+### Social Authentication Flows
 
 This project supports two distinct social authentication flows:
 
@@ -179,6 +179,7 @@ Standard OAuth2 flow using browser redirects.
 - **Start**: `GET <%= viewEngine !== "None" ? "/auth" : "/api/auth" %>/google` (or `/github`)
 - **Callback**: Handled automatically by the backend via `/google/callback`.
 - **Result**: User is logged in and redirected to home; `accessToken` and `refreshToken` are securely saved as **HttpOnly cookies** in the browser.
+- **Callback URL**: `http://localhost:3000/api/auth/google/callback` (Standardized for both MVC and Clean Architecture).
 
   > [!TIP]
   > **Testing in Swagger**: The "Execute" button in Swagger UI will show a "Failed to fetch" error for this route because browsers block redirects to external domains (like Google) inside AJAX requests. To test this, simply open `http://localhost:3000<%= viewEngine !== "None" ? "/auth" : "/api/auth" %>/google` directly in your browser tab.
@@ -194,8 +195,19 @@ A headless flow where the client provides the OAuth code.
   *Note: To access protected user endpoints (GET/PATCH/DELETE), include `Authorization: Bearer <your_accessToken>` in the headers.*
 <% } -%>
 <% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
-### 🔐 Social Authentication Setup
+### Social Authentication Setup
 To use social login, you must configure the following in your `.env`:
+
+#### Callback URL Configuration
+For the best practice standardized API structure, you **must** configure the Redirect URIs in your developer portals (Google/GitHub) as follows:
+
+| Provider | Redirect URI (Callback URL) |
+| :--- | :--- |
+| **Google** | `http://localhost:3000/api/auth/google/callback` |
+| **GitHub** | `http://localhost:3000/api/auth/github/callback` |
+
+> [!IMPORTANT]
+> This standardized path works for both **MVC** and **Clean Architecture** templates.
 
 #### <% if (socialAuth.includes('Google')) { %>1. Google Integration<% } %>
 1. Go to [Google Cloud Console](https://console.cloud.google.com/).
@@ -251,10 +263,10 @@ curl -X PATCH http://localhost:3000/api/users/1 \
 ```text
 [Kafka] Producer: Sent USER_CREATED event for 'kafka@example.com'
 [Kafka] Consumer: Received USER_CREATED. 
-[Kafka] Consumer: 📧 Sending welcome email to 'kafka@example.com'... Done!
+[Kafka] Consumer: Sending welcome email to 'kafka@example.com'... Done!
 ```
 
-### 🛠️ Kafka Troubleshooting
+### Kafka Troubleshooting
 If the connection or events are failing:
 1. **Check Docker**: Ensure Kafka container is running (`docker ps`).
 2. **Verify Broker**: `KAFKA_BROKER` in `.env` must match your host/port (standard: 9093).
@@ -263,24 +275,24 @@ If the connection or events are failing:
 <% } -%>
 
 <% if (caching === 'Redis') { -%>
-## ⚡ Caching
+## Caching
 This project uses **Redis** for caching.
 - **Client**: `ioredis`
 - **Connection**: Configured via `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` in `.env`.
 <% } else if (caching === 'Memory Cache') { -%>
-## ⚡ Caching
+## Caching
 This project uses **Memory Cache** for in-memory caching.
 - **Client**: `node-cache`
 <% } -%>
 
-## 📝 Logging
+## Logging
 This project uses **Winston** for structured logging.
 - **Development**: Logs are printed to the console.
 - **Production**: Logs are saved to files:
   - `error.log`: Only error level logs.
   - `combined.log`: All logs.
 
-## 🐳 Docker Deployment
+## Docker Deployment
 This project uses a **Multi-Stage Dockerfile** for optimized production images.
 
 <% if (database !== 'None' || caching === 'Redis' || communication === 'Kafka') { -%>
@@ -327,7 +339,7 @@ docker build -t <%= projectName %> .
 docker run -p 3000:3000 <%= projectName %>
 ```
 <% } -%>
-## 🚀 PM2 Deployment (VPS/EC2)
+## PM2 Deployment (VPS/EC2)
 This project is pre-configured for direct deployment to a VPS/EC2 instance using **PM2** (via `ecosystem.config.js`).
 1. Install dependencies
 ```bash
@@ -363,13 +375,13 @@ docker-compose down
 -   **Rate Limiting**: Protects against DDoS / Brute-force.
 -   **HPP**: Prevents HTTP Parameter Pollution attacks.
 <% if (includeSecurity) { %>
-### 🛡️ Enterprise Hardening (Big Tech Standard)
+### Enterprise Hardening (Big Tech Standard)
 -   **Snyk SCA**: Run `npm run snyk:test` for dependency scanning.
 -   **SonarCloud**: Automated SAST on every Push/PR.
 -   **Digital Guardians**: Recommended Gitleaks integration for secret protection.
 -   **Security Policy**: Standard `SECURITY.md` for vulnerability reporting.
 <% } %>
-## 🤖 AI-Native Development
+## AI-Native Development
 
 This project is "AI-Ready" out of the box. We have pre-configured industry-leading AI context files to bridge the gap between "Generated Code" and "AI-Assisted Development."
 
