@@ -90,6 +90,36 @@ describe('AuthController', () => {
             expect(JwtService.generateToken).toHaveBeenCalledWith(expect.objectContaining({ sid: 'test-jti' }));
             expect(mockRes.json).toHaveBeenCalledWith({ token: 'mock-access-token', accessToken: 'mock-access-token', refreshToken: 'mock-refresh-token' });
         });
+
+        it('should return 401 if user not found', async () => {
+            mockReq.body = { email: 'wrong@test.com', password: 'password123' };
+            User.findOne.mockResolvedValue(null);
+
+            await controller.login(mockReq, mockRes, next);
+
+            expect(mockRes.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
+        });
+
+        it('should return 401 if password invalid', async () => {
+            const user = { id: 1, email: 'test@test.com', password: 'hashedpassword' };
+            mockReq.body = { email: 'test@test.com', password: 'wrongpassword' };
+            User.findOne.mockResolvedValue(user);
+            bcrypt.compare.mockResolvedValue(false);
+
+            await controller.login(mockReq, mockRes, next);
+
+            expect(mockRes.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
+        });
+
+        it('should call next on error', async () => {
+            const error = new Error('Database error');
+            User.findOne.mockRejectedValue(error);
+            mockReq.body = { email: 'test@test.com', password: 'password123' };
+
+            await controller.login(mockReq, mockRes, next);
+
+            expect(next).toHaveBeenCalledWith(error);
+        });
     });
 
   describe('refresh', () => {
@@ -120,6 +150,30 @@ describe('AuthController', () => {
 
       expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({ accessToken: 'new-access-token' }));
     });
+
+    it('should return 401 if token theft detected', async () => {
+        mockReq.body = { refreshToken: 'stolen-token' };
+        const decoded = { id: '1', email: 'test@test.com', jti: 'stolen-jti' };
+        JwtService.verifyRefreshToken.mockReturnValue(decoded);
+        <% if (caching !== 'None') { %>
+        cacheService.get.mockResolvedValue(['other-jti']);
+        cacheService.del.mockResolvedValue();
+        <% } %>
+
+        await controller.refresh(mockReq, mockRes, next);
+
+        expect(mockRes.status).toHaveBeenCalledWith(HTTP_STATUS.UNAUTHORIZED);
+    });
+
+    it('should call next on refresh error', async () => {
+        const error = new Error('Redis error');
+        mockReq.body = { refreshToken: 'valid-token' };
+        JwtService.verifyRefreshToken.mockImplementation(() => { throw error; });
+
+        await controller.refresh(mockReq, mockRes, next);
+
+        expect(next).toHaveBeenCalledWith(error);
+    });
   });
 
   describe('logout', () => {
@@ -144,6 +198,26 @@ describe('AuthController', () => {
       await controller.logout(mockReq, mockRes, next);
 
       expect(mockRes.json).toHaveBeenCalledWith({ message: 'Logged out successfully' });
+    });
+
+    it('should handle logout even if no refresh token provided', async () => {
+        mockReq.headers = { authorization: 'Bearer valid-token' };
+        mockReq.body = {};
+        JwtService.decodeToken.mockReturnValue({ jti: 'access-jti', exp: Math.floor(Date.now() / 1000) + 3600 });
+
+        await controller.logout(mockReq, mockRes, next);
+
+        expect(mockRes.json).toHaveBeenCalledWith({ message: 'Logged out successfully' });
+    });
+
+    it('should call next on logout error', async () => {
+        const error = new Error('Logout error');
+        mockReq.headers = { authorization: 'Bearer valid-token' };
+        JwtService.decodeToken.mockImplementation(() => { throw error; });
+
+        await controller.logout(mockReq, mockRes, next);
+
+        expect(next).toHaveBeenCalledWith(error);
     });
   });
 

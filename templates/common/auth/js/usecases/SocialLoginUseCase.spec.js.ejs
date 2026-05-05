@@ -117,4 +117,30 @@ describe('SocialLoginUseCase', () => {
     <%_ } _%>
     <%_ } _%>
   });
+
+  it('should link Google ID if existing user does not have it', async () => {
+    mockProvider.name = 'Google';
+    const mockProfile = { id: 'google-789', email: 'test@test.com', name: 'Test User' };
+    const mockUser = { id: '1', email: 'test@test.com', googleId: null };
+    
+    mockProvider.getProfile.mockResolvedValue(mockProfile);
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    mockRepo.findByEmail.mockResolvedValue(mockUser);
+    <%_ } else { _%>
+    User.findOne.mockResolvedValue(mockUser);
+    <%_ } _%>
+    JwtService.generateToken.mockReturnValue('access-token');
+    JwtService.generateRefreshToken.mockReturnValue('refresh-token');
+
+    await useCase.execute('test-code');
+
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    expect(mockRepo.update).toHaveBeenCalledWith('1', expect.objectContaining({ googleId: 'google-789' }));
+    <%_ } _%>
+  });
+
+  it('should throw error if profile has no email', async () => {
+    mockProvider.getProfile.mockResolvedValue({ id: '123' }); // No email
+    await expect(useCase.execute('test-code')).rejects.toThrow('No email associated with this social account');
+  });
 });

@@ -176,17 +176,17 @@ This project supports two distinct social authentication flows:
 
 #### 1. The Redirection Flow (Best for MVC/Web)
 Standard OAuth2 flow using browser redirects.
-- **Start**: `GET <%= viewEngine !== "None" ? "/auth" : "/api/auth" %>/google` (or `/github`)
+- **Start**: `GET /api/auth/google` (or `/github`)
 - **Callback**: Handled automatically by the backend via `/google/callback`.
 - **Result**: User is logged in and redirected to home; `accessToken` and `refreshToken` are securely saved as **HttpOnly cookies** in the browser.
 - **Callback URL**: `http://localhost:3000/api/auth/google/callback` (Standardized for both MVC and Clean Architecture).
 
   > [!TIP]
-  > **Testing in Swagger**: The "Execute" button in Swagger UI will show a "Failed to fetch" error for this route because browsers block redirects to external domains (like Google) inside AJAX requests. To test this, simply open `http://localhost:3000<%= viewEngine !== "None" ? "/auth" : "/api/auth" %>/google` directly in your browser tab.
+  > **Testing in Swagger**: The "Execute" button in Swagger UI will show a "Failed to fetch" error for this route because browsers block redirects to external domains (like Google) inside AJAX requests. To test this, simply open `http://localhost:3000/api/auth/google` directly in your browser tab.
 
 #### 2. The Exchange Flow (Best for SPAs/Mobile Apps)
 A headless flow where the client provides the OAuth code.
-- **API**: `POST <%= viewEngine !== "None" ? "/auth" : "/api/auth" %>/social/exchange`
+- **API**: `POST /api/auth/social/exchange`
 - **Body**: `{ "code": "AUTH_CODE", "provider": "Google" }`
 - **Result**: Returns JWT tokens (`accessToken`, `refreshToken`) in the JSON response.
 
@@ -213,13 +213,13 @@ For the best practice standardized API structure, you **must** configure the Red
 1. Go to [Google Cloud Console](https://console.cloud.google.com/).
 2. Create/Select a project and go to **APIs & Services > Credentials**.
 3. Create an **OAuth client ID** for a **Web application**.
-4. Add Redirect URI: `http://localhost:3000<%= viewEngine !== "None" ? "/auth" : "/api/auth" %>/google/callback`.
+4. Add Redirect URI: `http://localhost:3000/api/auth/google/callback`.
 5. Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_CALLBACK_URL` in `.env`.
 
 #### <% if (socialAuth.includes('GitHub')) { %>2. GitHub Integration<% } %>
 1. Go to [GitHub Developer Settings](https://github.com/settings/developers).
 2. Register a **New OAuth App**.
-3. Set Callback URL: `http://localhost:3000<%= viewEngine !== "None" ? "/auth" : "/api/auth" %>/github/callback`.
+3. Set Callback URL: `http://localhost:3000/api/auth/github/callback`.
 4. Set `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `GITHUB_CALLBACK_URL` in `.env`.
 <% } -%>
 <% } -%>

@@ -50,7 +50,7 @@ tags:
   <%_ } -%>
 paths:
 <%_ if (auth.includes('JWT')) { -%>
-<%_ const authPath = (architecture === "MVC" && viewEngine !== "None") ? "/auth" : "/api/auth"; _%>
+<%_ const authPath = "/api/auth"; _%>
   <%= authPath %>/login:
     post:
       summary: Login and receive a JWT token

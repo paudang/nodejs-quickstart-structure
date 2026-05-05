@@ -99,4 +99,16 @@ describe('JwtService', () => {
             expect(result).toBeNull();
         });
     });
+
+    describe('fallback values', () => {
+        it('should use default values if env not set', () => {
+            delete process.env.JWT_SECRET;
+            delete process.env.JWT_REFRESH_SECRET;
+            delete process.env.JWT_EXPIRES_IN;
+            delete process.env.JWT_REFRESH_EXPIRES_IN;
+            
+            expect(JwtService.SECRET).toBeDefined();
+            expect(JwtService.REFRESH_SECRET).toBeDefined();
+        });
+    });
 });
