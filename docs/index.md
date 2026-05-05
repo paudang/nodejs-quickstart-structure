@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "Node.js Quickstart Generator"
   text: "Production-ready structure in seconds"
-  tagline: "Scaffold MVC or Clean Architecture with JWT Auth, Kafka, GraphQL, and more."
+  tagline: "Scaffold MVC or Clean Architecture with Authentication, Kafka, GraphQL, and more."
   actions:
     - theme: brand
       text:  Quickstart
