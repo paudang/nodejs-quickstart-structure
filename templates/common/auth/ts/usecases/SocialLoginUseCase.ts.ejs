@@ -17,7 +17,11 @@ export class SocialLoginUseCase {
 
   async execute(code: string, redirectUri?: string) {
     const profile = await this.provider.getProfile(code, redirectUri);
-    
+
+    if (!profile || !profile.email) {
+      throw new Error('No email associated with this social account');
+    }
+
     // 1. Find or create user
     <%_ if (architecture === 'Clean Architecture') { _%>
     let user = await this.userRepository.findByEmail(profile.email);

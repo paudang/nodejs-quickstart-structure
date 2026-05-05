@@ -23,7 +23,6 @@ jest.mock('bcryptjs');
 const AuthController = require('@/interfaces/controllers/auth/authController');
 const JwtService = require('@/infrastructure/auth/jwtService');
 <%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { _%>
-const { SocialAuthService } = require('@/infrastructure/auth/socialAuthService');
 const { SocialLoginUseCase } = require('@/usecases/auth/socialLoginUseCase');
 <%_ } _%>
 const User = require('@/infrastructure/database/models/User');

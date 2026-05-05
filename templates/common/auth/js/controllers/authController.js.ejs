@@ -31,7 +31,6 @@ class AuthController {
     this.logout = this.logout.bind(this);
 <% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
     this.socialExchange = this.socialExchange.bind(this);
-<% if (architecture === 'MVC') { -%>
 <% if (socialAuth.includes('Google')) { -%>
     this.googleLogin = this.googleLogin.bind(this);
     this.googleCallback = this.googleCallback.bind(this);
@@ -39,7 +38,6 @@ class AuthController {
 <% if (socialAuth.includes('GitHub')) { -%>
     this.githubLogin = this.githubLogin.bind(this);
     this.githubCallback = this.githubCallback.bind(this);
-<% } -%>
 <% } -%>
 <% } -%>
   }

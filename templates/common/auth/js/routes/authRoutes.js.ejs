@@ -14,7 +14,6 @@ router.post('/refresh', (req, res, next) => authController.refresh(req, res, nex
 router.post('/logout', authMiddleware, (req, res, next) => authController.logout(req, res, next));
 <%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { _%>
 router.post('/social/exchange', (req, res, next) => authController.socialExchange(req, res, next));
-<%_ if (architecture === 'MVC') { _%>
 <%_ if (socialAuth.includes('Google')) { _%>
 router.get('/google', (req, res) => authController.googleLogin(req, res));
 router.get('/google/callback', (req, res, next) => authController.googleCallback(req, res, next));
@@ -22,7 +21,6 @@ router.get('/google/callback', (req, res, next) => authController.googleCallback
 <%_ if (socialAuth.includes('GitHub')) { _%>
 router.get('/github', (req, res) => authController.githubLogin(req, res));
 router.get('/github/callback', (req, res, next) => authController.githubCallback(req, res, next));
-<%_ } _%>
 <%_ } _%>
 <%_ } _%>
 

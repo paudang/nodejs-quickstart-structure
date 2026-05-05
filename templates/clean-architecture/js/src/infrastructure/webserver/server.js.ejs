@@ -35,7 +35,9 @@ const startServer = async () => {
     <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
     app.use('/api', apiRoutes);
     <%_ } -%>
-    <%_ if (auth.includes('JWT')) { -%>app.use('/api/auth', authRoutes);<%_ } -%>
+    <%_ if (auth.includes('JWT')) { -%>
+    app.use('/api/auth', authRoutes);
+    <%_ } -%>
     <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
     <%_ } -%>

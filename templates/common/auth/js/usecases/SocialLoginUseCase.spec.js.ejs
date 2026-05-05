@@ -72,9 +72,6 @@ describe('SocialLoginUseCase', () => {
     <%_ if (architecture === 'Clean Architecture') { _%>
     mockRepo.findByEmail.mockResolvedValue(null);
     mockRepo.save.mockResolvedValue(mockUser);
-    <%_ if (socialAuth.includes('Google')) { _%>
-    const User = require('@/domain/models/User');
-    <%_ } _%>
     <%_ } else { _%>
     User.findOne.mockResolvedValue(null);
     User.create.mockResolvedValue(mockUser);
