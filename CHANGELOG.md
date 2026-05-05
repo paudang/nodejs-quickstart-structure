@@ -1,6 +1,6 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.2.0] - 2026-04-28
+## [2.2.0] - 2026-05-05
 
 ### Added
 - **Social Login Support**: Integrated Google and GitHub authentication into the Clean Architecture and MVC templates.

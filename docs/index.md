@@ -23,12 +23,43 @@ features:
   - title: "Enterprise DevSecOps "
     details: Hardened with Snyk & SonarCloud, plus multi-stage Docker and Flyway migrations out of the box.
   - title: "Community Insights "
-    details: 4,000+ Downloads on npm and 1,500+ Git Clones in the last 14 days (Deep architectural research).
+    details: "Real-time ecosystem impact: [Live Metrics] (Deep architectural research)."
   - title: "Next Gen: Web UI (Live Now) "
     details: Try our browser-based generator featuring real-time visualization and unified configuration below.
 ---
 
 <script setup>
+import { onMounted } from 'vue'
+
+onMounted(async () => {
+  // Find all feature cards
+  const features = document.querySelectorAll('.VPFeature')
+  const communityFeature = Array.from(features).find(f => f.querySelector('.title')?.textContent.includes('Community Insights'))
+  
+  if (communityFeature) {
+    const details = communityFeature.querySelector('.details')
+    
+    try {
+      // Fetch Stats
+      const [npmRes, gitRes] = await Promise.all([
+        fetch('https://api.npmjs.org/downloads/point/2020-01-01:2030-01-01/nodejs-quickstart-structure'),
+        fetch('https://raw.githubusercontent.com/paudang/nodejs-quickstart-structure/output/total_stats.json')
+      ])
+      
+      const npmData = await npmRes.json()
+      const gitData = await gitRes.json()
+      
+      const downloads = (npmData.downloads || 4856).toLocaleString()
+      const clones = (gitData.total_clones || 7107).toLocaleString()
+
+      if (details) {
+        details.innerHTML = `${downloads}+ Downloads on npm and ${clones}+ Git Clones (Deep architectural research).`
+      }
+    } catch (error) {
+      console.error('Failed to fetch live stats:', error)
+    }
+  }
+})
 </script>
 
 <div id="configurator" style="padding: 40px 0;">
