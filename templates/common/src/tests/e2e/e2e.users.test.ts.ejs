@@ -61,15 +61,27 @@ describe('E2E User Tests', () => {
 <%_ } -%>
 
 <%_ if (auth.includes('JWT')) { _%>
+<%_ const authPath = "/api/auth"; _%>
   it('should login and obtain a JWT token', async () => {
     const response = await request(SERVER_URL)
-      .post('/api/auth/login')
+      .post('<%= authPath %>/login')
       .send({ email: uniqueEmail, password: testPassword });
 
     expect(response.statusCode).toBe(200);
     expect(response.body.accessToken || response.body.token).toBeDefined();
     authToken = response.body.accessToken || response.body.token;
   });
+
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+  it('should fail social exchange with invalid code', async () => {
+    const response = await request(SERVER_URL)
+      .post('<%= authPath %>/social/exchange')
+      .send({ code: 'invalid_code', provider: 'Google' });
+
+    expect([401, 500]).toContain(response.statusCode);
+  });
+
+<% } %>
 <%_ } _%>
 
 <%_ if (communication === 'GraphQL') { -%>

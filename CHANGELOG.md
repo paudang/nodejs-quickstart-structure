@@ -1,4 +1,15 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.2.0] - 2026-05-05
+
+### Added
+- **Social Login Support**: Integrated Google and GitHub authentication into the Clean Architecture and MVC templates.
+- **Expanded Validation Matrix**: Scaled the mathematical validation matrix to **7,920+ unique project scenarios**, ensuring 100% template rendering accuracy across all permutations.
+
+### Changed
+- **Clean Architecture Restructuring**: Moved use cases from `src/domain/usecases` to `src/usecases` (Application Layer) to strictly follow architectural boundaries.
+- **Improved EJS Alignment**: Optimized all templates with whitespace-slurping tags (`<%_`, `_%>`) to eliminate redundant blank lines in generated code.
+- **Environment Validation**: Added social authentication credentials to Zod-based environment schemas.
  
 ## [2.1.2] - 2026-04-27
 

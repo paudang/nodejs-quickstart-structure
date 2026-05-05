@@ -38,6 +38,33 @@ class UserRepository {
 <%_ } -%>
   }
 
+  async findByEmail(email) {
+<%_ if (database === 'MongoDB') { -%>
+    const user = await UserModel.findOne({ email });
+    if (!user) return null;
+    return { 
+      id: user._id.toString(), 
+      name: user.name, 
+      email: user.email,
+      googleId: user.googleId,
+      githubId: user.githubId
+    };
+<%_ } else if (database === 'None') { -%>
+    return await UserModel.findOne({ email });
+<%_ } else { -%>
+    const user = await UserModel.findOne({ where: { email } });
+    if (!user) return null;
+    return { 
+      id: user.id, 
+      name: user.name, 
+      email: user.email,
+      googleId: user.googleId,
+      githubId: user.githubId
+    };
+<%_ } -%>
+  }
+
+
   async getUsers() {
 <%_ if (database === 'None') { -%>
     return await UserModel.find();

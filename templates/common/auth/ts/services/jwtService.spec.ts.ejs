@@ -63,6 +63,12 @@ describe('JwtService', () => {
       expect(jwt.verify).toHaveBeenCalledWith(token, secret);
       expect(result).toEqual(payload);
     });
+
+    it('should return null for an invalid token', () => {
+      (jwt.verify as jest.Mock).mockImplementation(() => { throw new Error('Invalid token'); });
+      const result = JwtService.verifyToken(token);
+      expect(result).toBeNull();
+    });
   });
 
   describe('verifyRefreshToken', () => {
@@ -74,6 +80,12 @@ describe('JwtService', () => {
       expect(jwt.verify).toHaveBeenCalledWith(token, refreshSecret);
       expect(result).toEqual(payload);
     });
+
+    it('should return null for an invalid refresh token', () => {
+      (jwt.verify as jest.Mock).mockImplementation(() => { throw new Error('Invalid token'); });
+      const result = JwtService.verifyRefreshToken(token);
+      expect(result).toBeNull();
+    });
   });
 
   describe('decodeToken', () => {
@@ -84,6 +96,12 @@ describe('JwtService', () => {
 
       expect(jwt.decode).toHaveBeenCalledWith(token);
       expect(result).toEqual(payload);
+    });
+
+    it('should return null if decode fails', () => {
+      (jwt.decode as jest.Mock).mockImplementation(() => { throw new Error('Decode failed'); });
+      const result = JwtService.decodeToken(token);
+      expect(result).toBeNull();
     });
   });
 });

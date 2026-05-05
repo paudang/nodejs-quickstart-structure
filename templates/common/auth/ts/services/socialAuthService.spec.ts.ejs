@@ -1,0 +1,187 @@
+import axios from 'axios';
+<% if (architecture === 'MVC') { -%>
+import { SocialAuthService } from '@/services/socialAuthService';
+<% } else { -%>
+import { GoogleProvider, GitHubProvider } from '@/infrastructure/auth/socialAuthService';
+<% } -%>
+
+jest.mock('axios');
+jest.mock('<% if (architecture === "MVC") { %>@/utils/logger<% } else { %>@/infrastructure/log/logger<% } %>', () => ({
+  error: jest.fn(),
+  info: jest.fn(),
+  warn: jest.fn(),
+}));
+
+// Mock environment variables for testing
+process.env.GOOGLE_CLIENT_ID = 'test-google-id';
+process.env.GOOGLE_CLIENT_SECRET = 'test-google-secret';
+process.env.GITHUB_CLIENT_ID = 'test-github-id';
+process.env.GITHUB_CLIENT_SECRET = 'test-github-secret';
+
+describe('SocialAuthService', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+<% if (socialAuth.includes('Google')) { -%>
+  describe('Google Provider', () => {
+    it('should exchange code for profile', async () => {
+      const mockTokenResponse = { data: { access_token: 'mock_access_token' } };
+      const mockProfileResponse = {
+        data: {
+          id: '123',
+          email: 'test@gmail.com',
+          name: 'Test User',
+          picture: 'http://pic.com/123.jpg'
+        }
+      };
+
+      (axios.post as jest.Mock).mockResolvedValue(mockTokenResponse);
+      (axios.get as jest.Mock).mockResolvedValue(mockProfileResponse);
+
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const provider = new GoogleProvider();
+      const profile = await provider.getProfile('test_code', 'http://localhost/callback');
+      <%_ } else { _%>
+      const profile = await SocialAuthService.getGoogleProfile('test_code', 'http://localhost/callback');
+      <%_ } _%>
+
+      expect(axios.post).toHaveBeenCalled();
+      expect(axios.get).toHaveBeenCalledWith('https://www.googleapis.com/oauth2/v2/userinfo', {
+        headers: { Authorization: 'Bearer mock_access_token' },
+      });
+      expect(profile.email).toBe('test@gmail.com');
+      expect(profile.name).toBe('Test User');
+    });
+
+    it('should throw error if token exchange fails', async () => {
+      (axios.post as jest.Mock).mockRejectedValue(new Error('Network error'));
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const provider = new GoogleProvider();
+      await expect(provider.getProfile('test_code', 'url')).rejects.toThrow('Failed to authenticate with Google');
+      <%_ } else { _%>
+      await expect(SocialAuthService.getGoogleProfile('test_code', 'url')).rejects.toThrow('Failed to authenticate with Google');
+      <%_ } _%>
+    });
+
+    it('should handle Axios errors', async () => {
+      const axiosError = new Error('Request failed');
+      (axiosError as any).isAxiosError = true;
+      (axiosError as any).response = { data: { message: 'OAuth Error' } };
+      (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(true);
+      (axios.post as jest.Mock).mockRejectedValue(axiosError);
+
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const provider = new GoogleProvider();
+      await expect(provider.getProfile('test_code', 'url')).rejects.toThrow('Failed to authenticate with Google');
+      <%_ } else { _%>
+      await expect(SocialAuthService.getGoogleProfile('test_code', 'url')).rejects.toThrow('Failed to authenticate with Google');
+      <%_ } _%>
+    });
+
+    it('should handle invalid_grant hint in Google', async () => {
+      const axiosError = new Error('Request failed');
+      (axiosError as any).isAxiosError = true;
+      (axiosError as any).response = { data: { error: 'invalid_grant' } };
+      (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(true);
+      (axios.post as jest.Mock).mockRejectedValue(axiosError);
+
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const provider = new GoogleProvider();
+      await expect(provider.getProfile('test_code', 'url')).rejects.toThrow('Failed to authenticate with Google');
+      <%_ } else { _%>
+      await expect(SocialAuthService.getGoogleProfile('test_code', 'url')).rejects.toThrow('Failed to authenticate with Google');
+      <%_ } _%>
+    });
+
+    it('should handle non-Axios errors', async () => {
+      (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(false);
+      (axios.post as jest.Mock).mockRejectedValue(new Error('Unexpected error'));
+
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const provider = new GoogleProvider();
+      await expect(provider.getProfile('test_code', 'url')).rejects.toThrow('Failed to authenticate with Google');
+      <%_ } else { _%>
+      await expect(SocialAuthService.getGoogleProfile('test_code', 'url')).rejects.toThrow('Failed to authenticate with Google');
+      <%_ } _%>
+    });
+  });
+<% } -%>
+
+<% if (socialAuth.includes('GitHub')) { -%>
+  describe('GitHub Provider', () => {
+    it('should exchange code for profile', async () => {
+      const mockTokenResponse = { data: { access_token: 'mock_access_token' } };
+      const mockProfileResponse = {
+        data: { id: 456, login: 'testuser', name: 'Test Github User' }
+      };
+      const mockEmailsResponse = {
+        data: [{ email: 'github@test.com', primary: true }]
+      };
+
+      (axios.post as jest.Mock).mockResolvedValue(mockTokenResponse);
+      (axios.get as jest.Mock)
+        .mockResolvedValueOnce(mockProfileResponse)
+        .mockResolvedValueOnce(mockEmailsResponse);
+
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const provider = new GitHubProvider();
+      const profile = await provider.getProfile('test_code');
+      <%_ } else { _%>
+      const profile = await SocialAuthService.getGithubProfile('test_code');
+      <%_ } _%>
+
+      expect(axios.post).toHaveBeenCalled();
+      expect(profile.email).toBe('github@test.com');
+      expect(profile.id).toBe('456');
+    });
+
+    it('should throw error if token exchange fails', async () => {
+      (axios.post as jest.Mock).mockRejectedValue(new Error('Network error'));
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const provider = new GitHubProvider();
+      await expect(provider.getProfile('test_code')).rejects.toThrow('Failed to authenticate with GitHub');
+      <%_ } else { _%>
+      await expect(SocialAuthService.getGithubProfile('test_code')).rejects.toThrow('Failed to authenticate with GitHub');
+      <%_ } _%>
+    });
+
+    it('should handle Axios errors', async () => {
+      const axiosError = new Error('Request failed');
+      (axiosError as any).isAxiosError = true;
+      (axiosError as any).response = { data: { message: 'OAuth Error' } };
+      (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(true);
+      (axios.post as jest.Mock).mockRejectedValue(axiosError);
+
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const provider = new GitHubProvider();
+      await expect(provider.getProfile('test_code')).rejects.toThrow('Failed to authenticate with GitHub');
+      <%_ } else { _%>
+      await expect(SocialAuthService.getGithubProfile('test_code')).rejects.toThrow('Failed to authenticate with GitHub');
+      <%_ } _%>
+    });
+
+    it('should throw error if access_token is missing from GitHub', async () => {
+      (axios.post as jest.Mock).mockResolvedValue({ data: {} });
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const provider = new GitHubProvider();
+      await expect(provider.getProfile('test_code')).rejects.toThrow('Failed to authenticate with GitHub');
+      <%_ } else { _%>
+      await expect(SocialAuthService.getGithubProfile('test_code')).rejects.toThrow('Failed to authenticate with GitHub');
+      <%_ } _%>
+    });
+
+    it('should handle non-Axios errors in GitHub', async () => {
+      (axios.isAxiosError as unknown as jest.Mock).mockReturnValue(false);
+      (axios.post as jest.Mock).mockRejectedValue(new Error('Unexpected error'));
+
+      <%_ if (architecture === 'Clean Architecture') { _%>
+      const provider = new GitHubProvider();
+      await expect(provider.getProfile('test_code')).rejects.toThrow('Failed to authenticate with GitHub');
+      <%_ } else { _%>
+      await expect(SocialAuthService.getGithubProfile('test_code')).rejects.toThrow('Failed to authenticate with GitHub');
+      <%_ } _%>
+    });
+  });
+<% } -%>
+});

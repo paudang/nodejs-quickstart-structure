@@ -17,7 +17,7 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
 - [What's New](#whats-new-in-v21-the-authentication-release)
 - [Key Features](#key-features)
 - [Professional Standards](#professional-standards)
-- [5,280+ Project Combinations](#5280-project-combinations)
+- [7,920+ Project Combinations](#7920-project-combinations)
 - [Configuration Options](#configuration-options)
 - [Generated Project Structure](#generated-project-structure)
 - [Documentation](#documentation)
@@ -50,19 +50,14 @@ nodejs-quickstart init
 
 ---
 
-## What's New in v2.1 (The Authentication Release)
+## What's New in v2.2 (The Social Auth Release)
  
- The v2.1.0 release is a major leap forward, turning the generator into a **Community Standard**:
+ The v2.2.0 release brings enterprise-grade identity management to your microservices:
  
-- **Pluggable JWT Authentication**: Production-ready access & refresh token patterns with automatic PM2/Environment configuration.
-- **AI-Native Foundation**: Built-in `.cursorrules` optimized for **Cursor** & AI agents—projects are "Born to be Autonomously Coded."
-- **Next-Gen Web UI**: A browser-based visual project simulator with real-time folder previews.
-- **Enterprise Clean Architecture**: High-fidelity structure for professional Microservices (TS/JS).
-- **Hardened Security**: Integrated Snyk & SonarCloud logic in core templates.
-- **Zero-Prompt Workflow**: Generate projects with a single CLI command.
+- **OAuth2 Social Login**: Seamlessly integrate **Google** and **GitHub** authentication with automatic user provisioning and JWT session linking.
+- **Massive Matrix Expansion**: Now supporting **7,920+ unique project scenarios**, mathematically validated for template consistency.
 
 ---
-
 
 ## Key Features
 
@@ -72,7 +67,7 @@ nodejs-quickstart init
 - **Database Ready**: Pre-configured for **MySQL**, **PostgreSQL**, or **MongoDB**.
 - **Communication Patterns**: Supports **REST**, **GraphQL** (Apollo), and **Kafka** (Event-driven).
 - **Multi-layer Caching**: Integrated **Redis** or built-in **Memory Cache**.
-- **Pluggable Authentication**: Built-in **JWT** support (Refresh/Access tokens).
+- **Pluggable Authentication**: Built-in **JWT** and **OAuth2 (Google/GitHub)** support with Access/Refresh token rotation.
 - **AI-Native Optimized**: specifically designed for **Cursor** and AI agents, including built-in `.cursorrules` and Agent Skill prompts.
 
 ---
@@ -90,14 +85,14 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 
 ---
 
-## 5,280+ Project Combinations
+## 7,920+ Project Combinations
 
 The CLI supports a massive number of configurations to fit your exact needs:
 
-- **480 Core Combinations**:
-  - **MVC Architecture**: 360 variants (Languages × View Engines × Databases × Communication Patterns × Caching × Auth)
-  - **Clean Architecture**: 120 variants (Languages × Databases × Communication Patterns × Caching × Auth)
-- **5,280+ Total Scenarios**:
+- **720 Core Combinations**:
+  - **MVC Architecture**: 540 variants (Languages × View Engines × Databases × Communication Patterns × Caching × Auth)
+  - **Clean Architecture**: 180 variants (Languages × Databases × Communication Patterns × Caching × Auth)
+- **7,920+ Total Scenarios**:
   - Every combination can be generated across 5 CI/CD providers.
   - Optional **Enterprise-Grade Security Hardening** doubles the scenarios.
   - Every single scenario is verified to be compatible with our **80% Coverage Threshold** policy.
@@ -114,7 +109,7 @@ The CLI will guide you through:
 5. **Database**: `MySQL` | `PostgreSQL` | `MongoDB`
 6. **Communication**: `REST` | `GraphQL` | `Kafka`
 7. **Caching**: `None` | `Redis` | `Memory Cache`
-8. **Auth**: `None` | `JWT`
+8. **Auth**: `None` | `JWT` | `OAuth2 (Google/GitHub) + JWT`
 9. **CI/CD**: `GitHub Actions` | `Jenkins` | `GitLab CI` | `CircleCI` | `Bitbucket Pipelines`
 10. **Security**: (Optional) Snyk & SonarCloud Hardening
 

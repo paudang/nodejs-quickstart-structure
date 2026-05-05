@@ -34,6 +34,7 @@ program
     .option('--no-include-security', 'Exclude Enterprise Security Hardening')
     .option('--caching <type>', 'Caching Layer (None/Redis/Memory Cache)')
     .option('--auth <modes...>', 'Authentication Modes (None, JWT)')
+    .option('--social-auth <providers...>', 'Social Authentication Providers (None, Google, GitHub)')
     .option('--advanced-options', 'Enable Advanced Options')
     .option('--no-advanced-options', 'Disable Advanced Options')
     .action(async (options) => {

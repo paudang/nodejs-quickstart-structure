@@ -1,0 +1,14 @@
+export class User {
+    constructor(
+        public id: number | string | null,
+        public name: string,
+        public email: string,
+        public password?: string | null,
+        <%_ if (typeof socialAuth !== 'undefined' && socialAuth && socialAuth.includes('Google')) { _%>
+        public googleId?: string | null,
+        <%_ } _%>
+        <%_ if (typeof socialAuth !== 'undefined' && socialAuth && socialAuth.includes('GitHub')) { _%>
+        public githubId?: string | null,
+        <%_ } _%>
+    ) { }
+}

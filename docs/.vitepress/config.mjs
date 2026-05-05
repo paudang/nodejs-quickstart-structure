@@ -48,7 +48,7 @@ export default defineConfig({
           { text: 'Docker & PM2 Deployment', link: '/blueprints/docker-pm2' },
           { text: 'Testing & API Guide', link: '/blueprints/testing-api' },
           { text: 'CI/CD Setup Guide', link: '/blueprints/ci-cd-setup' },
-          { text: 'Authentication & JWT', link: '/blueprints/authentication' },
+          { text: 'Authentication', link: '/blueprints/authentication' },
         ]
       },
       {

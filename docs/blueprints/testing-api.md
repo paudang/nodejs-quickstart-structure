@@ -104,4 +104,4 @@ When using **Kafka**, the project follows a non-blocking, event-driven pattern:
 
 ##  Next Steps
 
-If you have authentication enabled, check out the [Authentication & JWT Blueprint](/blueprints/authentication) to learn how to secure your endpoints and authenticate your requests.
+If you have authentication enabled, check out the [Authentication](/blueprints/authentication) to learn how to secure your endpoints and authenticate your requests.

@@ -50,7 +50,8 @@ tags:
   <%_ } -%>
 paths:
 <%_ if (auth.includes('JWT')) { -%>
-  /api/auth/login:
+<%_ const authPath = "/api/auth"; _%>
+  <%= authPath %>/login:
     post:
       summary: Login and receive a JWT token
       tags:
@@ -85,7 +86,7 @@ paths:
                     type: string
         '401':
           description: Invalid credentials
-  /api/auth/refresh:
+  <%= authPath %>/refresh:
     post:
       summary: Refresh access token using a refresh token
       tags:
@@ -115,7 +116,7 @@ paths:
                     type: string
         '401':
           description: Invalid refresh token
-  /api/auth/logout:
+  <%= authPath %>/logout:
     post:
       summary: Logout and revoke refresh token
       tags:
@@ -140,6 +141,64 @@ paths:
                 properties:
                   message:
                     type: string
+<%_ if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
+  <%= authPath %>/social/exchange:
+    post:
+      summary: Exchange social auth code for JWT tokens
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+                - provider
+              properties:
+                code:
+                  type: string
+                provider:
+                  type: string
+                  enum: [Google, GitHub]
+                redirectUri:
+                  type: string
+      responses:
+        '200':
+          description: Exchange successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+        '401':
+          description: Invalid social profile or code
+<%_ if (socialAuth.includes('Google')) { -%>
+  <%= authPath %>/google:
+    get:
+      summary: Redirect to Google OAuth
+      tags:
+        - Auth
+      responses:
+        '302':
+          description: Redirect to Google
+<%_ } -%>
+<%_ if (socialAuth.includes('GitHub')) { -%>
+  <%= authPath %>/github:
+    get:
+      summary: Redirect to GitHub OAuth
+      tags:
+        - Auth
+      responses:
+        '302':
+          description: Redirect to GitHub
+<%_ } -%>
+<%_ } -%>
 <%_ } -%>
   /api/users:
     get:

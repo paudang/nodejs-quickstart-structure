@@ -67,13 +67,21 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-    },
-    <% if (auth.includes('JWT')) { %>
+    },<% if (auth.includes('JWT')) { %>
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
-    },
-    <% } %>
+      allowNull: true,
+    },<% } %><% if (socialAuth && socialAuth.includes('Google')) { %>
+    googleId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },<% } %><% if (socialAuth && socialAuth.includes('GitHub')) { %>
+    githubId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },<% } %>
     deletedAt: {
       type: DataTypes.DATE,
       allowNull: true,

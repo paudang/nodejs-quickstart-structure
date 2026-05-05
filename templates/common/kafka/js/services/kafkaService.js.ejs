@@ -34,7 +34,7 @@ const connectKafka = async (retries = 10) => {
                     await consumer.run({
                         eachMessage: async (payload) => welcomeConsumer.onMessage(payload),
                     });
-                } catch {
+                } catch (error) {
                     // Fallback or no consumers found
                     await consumer.subscribe({ topic: 'user-topic', fromBeginning: true });
                     await consumer.run({

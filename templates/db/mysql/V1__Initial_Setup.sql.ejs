@@ -2,7 +2,9 @@ CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    <% if (auth.includes('JWT')) { %>password VARCHAR(255) NOT NULL, <% } %>
+    <% if (auth.includes('JWT')) { %>password VARCHAR(255) NULL, <% } %>
+    <% if (socialAuth && socialAuth.includes('Google')) { %>google_id VARCHAR(255) NULL UNIQUE, <% } %>
+    <% if (socialAuth && socialAuth.includes('GitHub')) { %>github_id VARCHAR(255) NULL UNIQUE, <% } %>
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP NULL

@@ -1,0 +1,117 @@
+import { ISocialProvider } from '@/infrastructure/auth/socialAuthService';
+import { JwtService } from '@/infrastructure/auth/jwtService';
+<%_ if (architecture === 'Clean Architecture') { _%>
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+import { User } from '@/domain/user';
+<%_ } else { _%>
+import User from '@/infrastructure/database/models/User';
+<%_ } _%>
+
+export class SocialLoginUseCase {
+  constructor(
+    private provider: ISocialProvider,
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    private userRepository: UserRepository
+    <%_ } _%>
+  ) {}
+
+  async execute(code: string, redirectUri?: string) {
+    const profile = await this.provider.getProfile(code, redirectUri);
+
+    if (!profile || !profile.email) {
+      throw new Error('No email associated with this social account');
+    }
+
+    // 1. Find or create user
+    <%_ if (architecture === 'Clean Architecture') { _%>
+    let user = await this.userRepository.findByEmail(profile.email);
+
+    if (!user) {
+      user = new User(
+        null,
+        profile.name,
+        profile.email,
+        null,
+        <%_ if (socialAuth.includes('Google')) { _%>
+        this.provider.name === 'Google' ? profile.id : null,
+        <%_ } _%>
+        <%_ if (socialAuth.includes('GitHub')) { _%>
+        this.provider.name === 'GitHub' ? profile.id : null,
+        <%_ } _%>
+      );
+      user = await this.userRepository.save(user);
+    } else {
+      // Link social ID if not already linked
+      let updated = false;
+      <%_ if (socialAuth.includes('Google')) { _%>
+      if (this.provider.name === 'Google' && !user.googleId) {
+        user.googleId = profile.id;
+        updated = true;
+      }
+      <%_ } _%>
+      <%_ if (socialAuth.includes('GitHub')) { _%>
+      if (this.provider.name === 'GitHub' && !user.githubId) {
+        user.githubId = profile.id;
+        updated = true;
+      }
+      <%_ } _%>
+      if (updated) {
+        await this.userRepository.update(user.id!, user);
+      }
+    }
+    <%_ } else { _%>
+    let user = await User.findOne({ 
+      <%_ if (database === 'MongoDB' || database === 'None') { _%>
+      email: profile.email
+      <%_ } else { _%>
+      where: { email: profile.email } 
+      <%_ } _%>
+    });
+
+    if (!user) {
+      user = await User.create({
+        email: profile.email,
+        name: profile.name,
+        password: null,
+        <%_ if (socialAuth.includes('Google')) { _%>
+        googleId: this.provider.name === 'Google' ? profile.id : null,
+        <%_ } _%>
+        <%_ if (socialAuth.includes('GitHub')) { _%>
+        githubId: this.provider.name === 'GitHub' ? profile.id : null,
+        <%_ } _%>
+      });
+    } else {
+      let updated = false;
+      <%_ if (socialAuth.includes('Google')) { _%>
+      if (this.provider.name === 'Google' && !user.googleId) {
+        user.googleId = profile.id;
+        updated = true;
+      }
+      <%_ } _%>
+      <%_ if (socialAuth.includes('GitHub')) { _%>
+      if (this.provider.name === 'GitHub' && !user.githubId) {
+        user.githubId = profile.id;
+        updated = true;
+      }
+      <%_ } _%>
+      if (updated) {
+        <%_ if (database === 'MongoDB') { _%>
+        await user.save();
+        <%_ } else if (database === 'None') { _%>
+        await User.update(user.id, { googleId: user.googleId, githubId: user.githubId });
+        <%_ } else { _%>
+        await user.save();
+        <%_ } _%>
+      }
+    }
+    <%_ } _%>
+
+    // 2. Generate tokens
+    const userId = user.id || (user as { _id?: { toString(): string } })._id?.toString();
+    const payload = { id: userId, email: user.email };
+    const accessToken = JwtService.generateToken(payload);
+    const refreshToken = JwtService.generateRefreshToken(payload);
+
+    return { user, accessToken, refreshToken };
+  }
+}

@@ -25,7 +25,7 @@ const DATABASES = ['None','MySQL', 'PostgreSQL', 'MongoDB'];
 const COMMUNICATIONS = ['REST APIs', 'GraphQL', 'Kafka']; 
 const CACHING = ['None', 'Redis', 'Memory Cache'];
 const VIEW_ENGINES_MVC = ['EJS', 'Pug', 'None'];
-const AUTHS = ['None', 'JWT'];
+const AUTHS = ['None', 'JWT', 'Google - Github - JWT'];
 
 export const combinations = [];
 
@@ -37,7 +37,7 @@ LANGUAGES.forEach(lang => {
             const cachingOptions = db !== 'None' ? CACHING : ['None'];
 
             cachingOptions.forEach(cache => {
-                combinations.push({
+                const config = {
                     projectName: `test_clean_${lang}_${db}_${comm}_${cache}_${auth}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
                     language: lang,
                     architecture: 'Clean Architecture',
@@ -46,10 +46,19 @@ LANGUAGES.forEach(lang => {
                     dbName: db !== 'None' ? 'testdb' : undefined,
                     communication: comm,
                     caching: cache,
-                    auth: [auth],
                     ciProvider: 'GitHub Actions',
                     includeSecurity: true
-                });
+                };
+
+                if (auth === 'Google - Github - JWT') {
+                    config.auth = ['JWT'];
+                    config.socialAuth = ['Google', 'GitHub'];
+                } else {
+                    config.auth = [auth];
+                    config.socialAuth = ['None'];
+                }
+
+                combinations.push(config);
             });
         }
         });
@@ -65,7 +74,7 @@ LANGUAGES.forEach(lang => {
             for (const auth of AUTHS) {
                 const cachingOptions = db !== 'None' ? CACHING : ['None'];
                 cachingOptions.forEach(cache => {
-                    combinations.push({
+                    const config = {
                         projectName: `test_mvc_${lang}_${view}_${db}_${comm}_${cache}_${auth}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
                         language: lang,
                         architecture: 'MVC',
@@ -74,10 +83,19 @@ LANGUAGES.forEach(lang => {
                         dbName: db !== 'None' ? 'testdb' : undefined,
                         communication: comm,
                         caching: cache,
-                        auth: [auth],
                         ciProvider: 'GitHub Actions',
                         includeSecurity: true
-                    });
+                    };
+
+                    if (auth === 'Google - Github - JWT') {
+                        config.auth = ['JWT'];
+                        config.socialAuth = ['Google', 'GitHub'];
+                    } else {
+                        config.auth = [auth];
+                        config.socialAuth = ['None'];
+                    }
+
+                    combinations.push(config);
                 });
             }
             });
@@ -414,7 +432,11 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         DB_PORT: (await getFreePort(usedPorts)).toString(),
         KAFKA_PORT: kafkaPort,
         KAFKA_EXTERNAL_PORT: kafkaPort,
-        REDIS_PORT: (await getFreePort(usedPorts)).toString()
+        REDIS_PORT: (await getFreePort(usedPorts)).toString(),
+        GOOGLE_CLIENT_ID: 'mock-google-client-id',
+        GOOGLE_CLIENT_SECRET: 'mock-google-client-secret',
+        GITHUB_CLIENT_ID: 'mock-github-client-id',
+        GITHUB_CLIENT_SECRET: 'mock-github-client-secret'
     };
 
     log(`>>> Starting Test ${index + 1}/${combinations.length}: ${config.projectName}`, ANSI_CYAN);
@@ -461,16 +483,57 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             }
         }
 
+        if (config.socialAuth) {
+            const socialOptions = Array.isArray(config.socialAuth) ? config.socialAuth : config.socialAuth.split(',');
+            args.push('--social-auth', ...socialOptions);
+        }
+
         const command = `node ${cliPath} ${args.join(' ')}`;
         await runCommand(command, testDir);
         log(`✓ Project Generated (CLI)`);
 
         // 2. Initialize Git
         await runCommand('git init', projectPath);
-
         // 3. Install Deps (triggers prepare -> husky install)
         log(`... Installing Dependencies ...`);
-        await runCommand('npm install --no-audit --no-fund --loglevel=error', projectPath);
+        
+        const baseHashKey = `${config.language}_${config.database}`;
+        const cacheModulesPath = path.join(testDir, `node_modules_base_${baseHashKey}`);
+        
+        let usedBaseCache = false;
+        try {
+            if (await fs.pathExists(cacheModulesPath)) {
+                log(`... Bootstrapping from Base Cache (${baseHashKey}) ...`);
+                await fs.copy(cacheModulesPath, path.join(projectPath, 'node_modules'));
+                usedBaseCache = true;
+            }
+        } catch(e) {
+            usedBaseCache = false;
+        }
+
+        // Always run npm install to align the copied base cache with the exact package.json
+        // Or to do a fresh install if no base cache existed.
+        const npmCmd = usedBaseCache 
+            ? 'npm install --no-audit --no-fund --prefer-offline --loglevel=error'
+            : 'npm install --no-audit --no-fund --loglevel=error';
+            
+        await runCommand(npmCmd, projectPath);
+
+        if (!usedBaseCache) {
+            let tempCachePath;
+            try {
+                // Save this fresh install as the Base Cache for this language+database combo
+                tempCachePath = `${cacheModulesPath}_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+                await fs.copy(path.join(projectPath, 'node_modules'), tempCachePath);
+                await fs.rename(tempCachePath, cacheModulesPath);
+                log(`... Base Cache Created (${baseHashKey}) ...`);
+            } catch(e) {
+                // If rename fails or already exists, cleanup
+                if (tempCachePath) {
+                    try { await fs.remove(tempCachePath); } catch(err) {}
+                }
+            }
+        }
 
         // 3a. Verify Git Hooks (Husky)
         log(`... Verifying Git Hooks (Husky/Lint-Staged) ...`);

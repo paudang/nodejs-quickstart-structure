@@ -3,7 +3,7 @@
 > The #1 AI-Native Scaffolding Tool for Production-Ready Node.js Microservices.
 
 ## Project Vision
-To provide a 5,280+ scenario-verified foundation for modern developers, optimized for **Agentic Engineering** and **Clean Architecture**. This project bridges the gap between AI generation and Enterprise-grade engineering.
+To provide a 7,920+ scenario-verified foundation for modern developers, optimized for **Agentic Engineering** and **Clean Architecture**. This project bridges the gap between AI generation and Enterprise-grade engineering.
 
 ## Tech Stack
 - **Languages**: TypeScript (Recommended), JavaScript
@@ -20,11 +20,11 @@ To provide a 5,280+ scenario-verified foundation for modern developers, optimize
 - **Agent Skills**: Pre-built prompts in `/prompts` for system-level task orchestration.
 - **Zero-Prompt CLI**: One-command generation with flags (e.g., `npx nodejs-quickstart-structure@latest init -n my-app -l TypeScript -a CleanArchitecture`).
 
-## Project Structure (Standard)
-- `/src/application`: Business logic & use cases.
+## Project Structure (Clean Architecture)
+- `/src/usecases`: Application business rules & use cases.
 - `/src/domain`: Entities & repository interfaces.
-- `/src/infrastructure`: DB, services, and external integrations.
-- `/src/interfaces`: Routes, controllers, and GraphQL/Kafka resolvers.
+- `/src/infrastructure`: DB, services, and external integrations (Auth, Cache).
+- `/src/interfaces`: HTTP controllers, Express routes, GraphQL resolvers, and Kafka consumers.
 
 ## Social Proof
 - 🚀 **4,000+ Downloads**

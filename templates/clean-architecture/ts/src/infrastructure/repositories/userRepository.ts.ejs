@@ -3,87 +3,74 @@ import UserModel from '@/infrastructure/database/models/User';
 
 export class UserRepository {
     async save(user: UserEntity): Promise<UserEntity> {
+        const userData = {
+            name: user.name,
+            email: user.email,
+            <% if (auth.includes('JWT')) { %>password: user.password,<% } %>
+            <% if (typeof socialAuth !== 'undefined' && socialAuth && socialAuth.includes('Google')) { %>googleId: user.googleId,<% } %>
+            <% if (typeof socialAuth !== 'undefined' && socialAuth && socialAuth.includes('GitHub')) { %>githubId: user.githubId,<% } %>
+        };
+
 <%_ if (database === 'MongoDB') { -%>
-        const newUser = await UserModel.create({ 
-            name: user.name, 
-            email: user.email, 
-            <% if (auth.includes('JWT')) { %>password: user.password<% } %> 
-        });
-        return { id: newUser._id.toString(), name: newUser.name, email: newUser.email };
+        const newUser = await UserModel.create(userData);
+        return this.mapToEntity(newUser);
 <%_ } else if (database === 'None') { -%>
-        const newUser = await UserModel.create({ 
-            name: user.name, 
-            email: user.email,
-            <% if (auth.includes('JWT')) { %>password: user.password<% } %>
-        });
-        return { id: newUser.id, name: newUser.name, email: newUser.email };
+        const newUser = await UserModel.create(userData);
+        return this.mapToEntity(newUser);
 <%_ } else { -%>
-        const newUser = await UserModel.create({ 
-            name: user.name, 
-            email: user.email,
-            <% if (auth.includes('JWT')) { %>password: user.password<% } %>
-        });
-        return { id: newUser.id, name: newUser.name, email: newUser.email };
+        const newUser = await UserModel.create(userData);
+        return this.mapToEntity(newUser);
 <%_ } -%>
     }
 
     async findById(id: number | string): Promise<UserEntity | null> {
 <%_ if (database === 'MongoDB') { -%>
         const user = await UserModel.findById(id);
-        if (!user) return null;
-        return { id: user._id.toString(), name: user.name, email: user.email };
-<%_ } else if (database === 'None') { -%>
-        const user = await UserModel.findByPk(id);
-        if (!user) return null;
-        return { id: user.id, name: user.name, email: user.email };
 <%_ } else { -%>
         const user = await UserModel.findByPk(id);
-        if (!user) return null;
-        return { id: user.id, name: user.name, email: user.email };
 <%_ } -%>
+        if (!user) return null;
+        return this.mapToEntity(user);
     }
 
+    async findByEmail(email: string): Promise<UserEntity | null> {
+<%_ if (database === 'MongoDB') { -%>
+        const user = await UserModel.findOne({ email });
+<%_ } else if (database === 'None') { -%>
+        const user = await UserModel.findOne({ email });
+<%_ } else { -%>
+        const user = await UserModel.findOne({ where: { email } });
+<%_ } -%>
+        if (!user) return null;
+        return this.mapToEntity(user);
+    }
 
     async getUsers(): Promise<UserEntity[]> {
 <%_ if (database === 'MongoDB') { -%>
         const users = await UserModel.find();
-        return users.map(user => ({
-            id: user._id.toString(),
-            name: user.name,
-            email: user.email
-        }));
 <%_ } else if (database === 'None') { -%>
         const users = await UserModel.find();
-        return users.map(user => ({
-            id: user.id,
-            name: user.name,
-            email: user.email
-        }));
 <%_ } else { -%>
         const users = await UserModel.findAll();
-        return users.map(user => ({
-            id: user.id,
-            name: user.name,
-            email: user.email
-        }));
 <%_ } -%>
+        return users.map(user => this.mapToEntity(user));
     }
 
     async update(id: number | string, data: Partial<UserEntity>): Promise<UserEntity | null> {
 <%_ if (database === 'MongoDB') { -%>
         const user = await UserModel.findByIdAndUpdate(id, data, { new: true });
         if (!user) return null;
-        return { id: user._id.toString(), name: user.name, email: user.email };
+        return this.mapToEntity(user);
 <%_ } else if (database === 'None') { -%>
         const { id: _, ...updateData } = data;
-        const user = await UserModel.update(id, updateData as Parameters<typeof UserModel.update>[1]);
+        const user = await UserModel.update(id, updateData as Record<string, unknown>);
         if (!user) return null;
-        return { id: user.id, name: user.name, email: user.email };
+        return this.mapToEntity(user);
 <%_ } else { -%>
         const user = await UserModel.findByPk(id);
         if (!user) return null;
         await user.update(data);
-        return { id: user.id || 0, name: user.name, email: user.email };
+        return this.mapToEntity(user);
 <%_ } -%>
     }
 
@@ -99,5 +86,16 @@ export class UserRepository {
         await user.destroy();
         return true;
 <%_ } -%>
+    }
+
+    private mapToEntity(user: { id?: string | number; _id?: { toString(): string }; name: string; email: string; password?: string | null; googleId?: string | null; githubId?: string | null }): UserEntity {
+        return {
+            id: user.id || user._id?.toString(),
+            name: user.name,
+            email: user.email,
+            password: user.password,
+            <% if (typeof socialAuth !== 'undefined' && socialAuth && socialAuth.includes('Google')) { %>googleId: user.googleId,<% } %>
+            <% if (typeof socialAuth !== 'undefined' && socialAuth && socialAuth.includes('GitHub')) { %>githubId: user.githubId,<% } %>
+        } as UserEntity;
     }
 }

@@ -33,7 +33,7 @@ export class JwtService {
   static verifyToken(token: string): JwtPayload | null {
     try {
       return jwt.verify(token, this.SECRET) as JwtPayload;
-    } catch {
+    } catch (error) {
       return null;
     }
   }
@@ -41,7 +41,7 @@ export class JwtService {
   static verifyRefreshToken(token: string): JwtPayload | null {
     try {
       return jwt.verify(token, this.REFRESH_SECRET) as JwtPayload;
-    } catch {
+    } catch (error) {
       return null;
     }
   }
@@ -49,7 +49,7 @@ export class JwtService {
   static decodeToken(token: string): JwtPayload | null {
     try {
       return jwt.decode(token) as JwtPayload;
-    } catch {
+    } catch (error) {
       return null;
     }
   }

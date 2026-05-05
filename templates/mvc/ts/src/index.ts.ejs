@@ -66,7 +66,8 @@ app.set('view engine', '<%= viewEngine.toLowerCase() %>');
 app.use(express.static(path.join(__dirname, '../public')));<%_ } %>
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 app.use('/api', apiRoutes);
-<%_ } -%><%_ if (auth.includes('JWT')) { -%>
+<%_ } -%>
+<%_ if (auth.includes('JWT')) { -%>
 app.use('/api/auth', authRoutes);
 <%_ } -%>
 

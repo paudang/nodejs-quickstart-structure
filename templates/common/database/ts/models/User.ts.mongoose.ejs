@@ -3,7 +3,9 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IUser extends Document {
     name: string;
     email: string;
-    <% if (auth.includes('JWT')) { %>password: string;<% } %>
+    <% if (auth.includes('JWT')) { %>password?: string | null;<% } %>
+    <% if (socialAuth && socialAuth.includes('Google')) { %>googleId?: string | null;<% } %>
+    <% if (socialAuth && socialAuth.includes('GitHub')) { %>githubId?: string | null;<% } %>
     createdAt: Date;
     deletedAt?: Date | null;
 }
@@ -21,7 +23,21 @@ const UserSchema: Schema = new Schema({
     <% if (auth.includes('JWT')) { %>
     password: {
         type: String,
-        required: true
+        required: false
+    },
+    <% } %>
+    <% if (socialAuth && socialAuth.includes('Google')) { %>
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
+    <% } %>
+    <% if (socialAuth && socialAuth.includes('GitHub')) { %>
+    githubId: {
+        type: String,
+        unique: true,
+        sparse: true
     },
     <% } %>
     createdAt: {

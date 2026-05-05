@@ -93,12 +93,12 @@ const cliCommand = computed(() => {
 
   const isAdvanced = showAdvanced.value || form.auth !== 'None';
 
-  if (form.auth === 'JWT Authentication (Ready)') {
+  if (form.auth === 'JWT Authentication') {
     cmd += ` --auth JWT`;
-  } else if (isAdvanced) {
+  } else if (form.auth === 'OAuth2 - Google/GitHub - JWT') {
+    cmd += ` --auth JWT --social-auth Google GitHub`;
+  } else if (isAdvanced && form.auth === 'None') {
     cmd += ` --auth None`;
-  } else if (form.auth !== 'None') {
-    cmd += ` --auth "${form.auth}"`;
   }
 
   if (form.ciProvider !== 'None') {

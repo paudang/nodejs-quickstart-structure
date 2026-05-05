@@ -18,6 +18,7 @@ const DATABASES = ['None', 'MySQL', 'PostgreSQL', 'MongoDB'];
 const COMMUNICATIONS = ['REST APIs', 'GraphQL', 'Kafka'];
 const CI_PROVIDERS = ['None', 'GitHub Actions', 'Jenkins', 'GitLab CI', 'CircleCI', 'Bitbucket Pipelines'];
 const AUTH_MODES = ['None', 'JWT'];
+const SOCIAL_AUTH_MODES = ['None', 'Google,GitHub'];
 
 const combinations = [];
 
@@ -34,19 +35,23 @@ LANGUAGES.forEach(lang => {
                             const securityOptions = ci !== 'None' ? [true, false] : [false];
                             securityOptions.forEach(sec => {
                                 AUTH_MODES.forEach(auth => {
-                                    combinations.push({
-                                        projectName: `t5280_${Math.random().toString(36).substring(2, 8)}`,
-                                        language: lang,
-                                        architecture: arch,
-                                        viewEngine: view,
-                                        database: db,
-                                        dbName: db !== 'None' ? 'testdb' : undefined,
-                                        communication: comm,
-                                        caching: cache,
-                                        ciProvider: ci,
-                                        includeSecurity: sec,
-                                        auth: auth,
-                                        advancedOptions: auth !== 'None'
+                                    const socialAuthOptions = auth === 'JWT' ? SOCIAL_AUTH_MODES : ['None'];
+                                    socialAuthOptions.forEach(socialAuth => {
+                                        combinations.push({
+                                            projectName: `t5280_${Math.random().toString(36).substring(2, 8)}`,
+                                            language: lang,
+                                            architecture: arch,
+                                            viewEngine: view,
+                                            database: db,
+                                            dbName: db !== 'None' ? 'testdb' : undefined,
+                                            communication: comm,
+                                            caching: cache,
+                                            ciProvider: ci,
+                                            includeSecurity: sec,
+                                            auth: auth,
+                                            socialAuth: socialAuth,
+                                            advancedOptions: auth !== 'None'
+                                        });
                                     });
                                 });
                             });
@@ -122,6 +127,10 @@ async function runTest(config, index) {
             args.push('--auth', config.auth);
         }
 
+        if (config.socialAuth && config.socialAuth !== 'None') {
+            args.push('--social-auth', config.socialAuth);
+        }
+
         if (config.advancedOptions) {
             args.push('--advanced-options');
         } else {
@@ -177,7 +186,7 @@ async function start() {
 
     const timeTaken = ((Date.now() - startTime) / 1000).toFixed(1);
 
-    console.log(`\n${ANSI_CYAN}=== 5,280 Validation Summary ===${ANSI_RESET}`);
+    console.log(`\n${ANSI_CYAN}=== 7,920 Validation Summary ===${ANSI_RESET}`);
     console.log(`Execution Time: ${timeTaken}s`);
     console.log(`Total Variants Tested: ${passed + failed}`);
     console.log(`${ANSI_GREEN}Passed (Zero Templates Errors): ${passed}${ANSI_RESET}`);
@@ -188,7 +197,7 @@ async function start() {
         console.log(`${ANSI_RED}Check 5280_failures.log for EJS rendering traces.${ANSI_RESET}`);
         process.exit(1);
     } else {
-        console.log(`${ANSI_GREEN}✓ SUCCESS! All 5,280 UI-mapped combinations cleanly render templates!${ANSI_RESET}`);
+        console.log(`${ANSI_GREEN}✓ SUCCESS! All 7,920 UI-mapped combinations cleanly render templates!${ANSI_RESET}`);
     }
 
     await fs.remove(path.resolve(__dirname, '../temp_5280_workspace'));
