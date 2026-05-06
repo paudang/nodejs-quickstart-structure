@@ -87,49 +87,7 @@ The generator handles the complexity of OAuth2 by providing a seamless, integrat
 <details>
 <summary>View Technical Sequence Diagram (Advanced)</summary>
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant U as User
-    participant C as Client (App/Browser)
-    participant S as Your Server
-    participant P as Provider (Google/GitHub)
-    participant DB as Database
-
-    Note over U, DB: Step 1: User Initiation
-    U->>C: Click "Login with Google/GitHub"
-
-    alt API / SPA Flow (Headless)
-        C->>P: 2a. Redirect to Provider
-        P->>U: 3a. Request permissions
-        U->>P: 4a. Grants access
-        P->>C: 5a. Redirect to App with "code"
-        C->>S: 6a. POST /api/auth/social/exchange { code }
-    else MVC Flow (Server-Side Rendered)
-        C->>S: 2b. GET /auth/google
-        S->>P: 3b. Redirect to Provider
-        P->>U: 4b. Request permissions
-        U->>P: 5b. Grants access
-        P->>S: 6b. Redirect to /auth/google/callback?code=...
-    end
-
-    Note over S, P: Step 2: Server-Side Exchange
-    S->>P: 7. POST Exchange code for profile
-    P->>S: 8. Return profile (email, name, id)
-    
-    Note over S, DB: Step 3: User Persistence
-    S->>DB: 9. Find or Create User by Email
-    DB->>S: 10. User Object
-    
-    Note over S, C: Step 4: Token Issuance
-    S->>S: 11. Generate JWT Access & Refresh Tokens
-    
-    alt API / SPA Flow
-        S->>C: 12a. Return JSON { accessToken, refreshToken, user }
-    else MVC Flow (Server-Side Rendered)
-        S->>C: 12b. Set HttpOnly Cookies (accessToken & refreshToken) & Redirect to "/"
-    end
-```
+![Authentication Flow Diagram](/auth-flow-diagram-sequence.png)
 
 </details>
 
