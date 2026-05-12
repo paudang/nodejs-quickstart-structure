@@ -4,6 +4,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import rateLimit from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
 import logger from '@/infrastructure/log/logger';
 import morgan from 'morgan';
 import { errorMiddleware } from '@/utils/errorMiddleware';
@@ -50,6 +51,7 @@ app.use(cors({ origin: '*', methods: ['GET', 'POST', 'PUT', 'DELETE'] }));
 const limiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 100 });
 app.use(limiter);
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(morgan('combined', { stream: { write: (message) => logger.info(message.trim()) } }));
 

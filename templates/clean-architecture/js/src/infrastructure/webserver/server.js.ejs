@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const logger = require('../log/logger');
 const morgan = require('morgan');
 const { errorMiddleware } = require('./middleware/errorMiddleware');
@@ -30,6 +31,7 @@ const startServer = async () => {
     const app = express();
 
     app.use(cors());
+    app.use(cookieParser());
     app.use(express.json());
     app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
     <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>

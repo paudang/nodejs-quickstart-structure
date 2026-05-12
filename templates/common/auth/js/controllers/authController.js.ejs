@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 <%_ if (architecture === 'MVC') { _%>
 const User = require('../models/User');
 const JwtService = require('../services/jwtService');
@@ -307,6 +308,14 @@ class AuthController {
 <% if (socialAuth.includes('Google')) { -%>
   async googleLogin(req, res) {
     const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+    const state = crypto.randomBytes(16).toString('hex');
+    res.cookie('oauth_state', state, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 10 * 60 * 1000
+    });
+
     const options = {
       redirect_uri: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/callback',
       client_id: process.env.GOOGLE_CLIENT_ID,
@@ -317,7 +326,7 @@ class AuthController {
         'https://www.googleapis.com/auth/userinfo.profile',
         'https://www.googleapis.com/auth/userinfo.email',
       ].join(' '),
-      state: 'google'
+      state: state
     };
     const qs = new URLSearchParams(options);
     res.redirect(`${rootUrl}?${qs.toString()}`);
@@ -325,7 +334,14 @@ class AuthController {
 
   async googleCallback(req, res, next) {
     try {
-      const { code } = req.query;
+      const { code, state } = req.query;
+      const savedState = req.cookies?.oauth_state;
+      res.clearCookie('oauth_state');
+
+      if (!state || state !== savedState) {
+        return res.status(HTTP_STATUS.FORBIDDEN).json({ message: 'Invalid state parameter' });
+      }
+
       const redirectUri = process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/callback';
 
       <%_ if (architecture === 'Clean Architecture') { _%>
@@ -398,11 +414,19 @@ class AuthController {
 <% if (socialAuth.includes('GitHub')) { -%>
   async githubLogin(req, res) {
     const rootUrl = 'https://github.com/login/oauth/authorize';
+    const state = crypto.randomBytes(16).toString('hex');
+    res.cookie('oauth_state', state, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 10 * 60 * 1000
+    });
+
     const options = {
       client_id: process.env.GITHUB_CLIENT_ID,
       redirect_uri: process.env.GITHUB_CALLBACK_URL || 'http://localhost:3000/api/auth/github/callback',
       scope: 'user:email',
-      state: 'github'
+      state: state
     };
     const qs = new URLSearchParams(options);
     res.redirect(`${rootUrl}?${qs.toString()}`);
@@ -410,7 +434,13 @@ class AuthController {
 
   async githubCallback(req, res, next) {
     try {
-      const { code } = req.query;
+      const { code, state } = req.query;
+      const savedState = req.cookies?.oauth_state;
+      res.clearCookie('oauth_state');
+
+      if (!state || state !== savedState) {
+        return res.status(HTTP_STATUS.FORBIDDEN).json({ message: 'Invalid state parameter' });
+      }
 
       <%_ if (architecture === 'Clean Architecture') { _%>
       const useCase = new SocialLoginUseCase(new GitHubProvider(), new UserRepository());
