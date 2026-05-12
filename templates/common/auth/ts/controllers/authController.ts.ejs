@@ -189,7 +189,7 @@ export class AuthController {
       }
 
       <% if (architecture === 'Clean Architecture') { -%>
-      let useCase;
+      let useCase: SocialLoginUseCase | undefined;
       const userRepository = new UserRepository();
       <%_ if (socialAuth.includes('Google')) { _%>
       if (provider === 'Google') useCase = new SocialLoginUseCase(new GoogleProvider(), userRepository);
@@ -435,7 +435,7 @@ export class AuthController {
       scope: 'user:email',
       state: state
     };
-    const qs = new URLSearchParams(options as any);
+    const qs = new URLSearchParams(options);
     res.redirect(`${rootUrl}?${qs.toString()}`);
   }
 
