@@ -6,8 +6,8 @@ This guide outlines the professional deployment workflows for your generated pro
 
 | Mode | Strategy | Best For | Why? |
 | :--- | :--- | :--- | :--- |
-| ** Docker** | Containerization | CI/CD, Cloud, Multi-Cloud | Environment consistency. |
-| ** PM2** | Process Management | VPS, Dedicated Servers | Lowest overhead, native speed. |
+| Docker | Containerization | CI/CD, Cloud, Multi-Cloud | Environment consistency. |
+| PM2 | Process Management | VPS, Dedicated Servers | Lowest overhead, native speed. |
 
 ##  Docker Deployment
 
