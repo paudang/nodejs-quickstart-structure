@@ -58,12 +58,14 @@ describe('AuthController', () => {
         mockReq = {
             body: {},
             headers: {},
-            query: {}
+            query: {},
+            cookies: {}
         };
         mockRes = {
             status: jest.fn().mockReturnThis(),
             json: jest.fn(),
             cookie: jest.fn(),
+            clearCookie: jest.fn(),
             redirect: jest.fn()
         };
         next = jest.fn();
@@ -269,7 +271,8 @@ describe('AuthController', () => {
         });
 
         it('googleCallback should handle Google callback', async () => {
-            mockReq.query = { code: 'test-code' };
+            mockReq.query = { code: 'test-code', state: 'test-state' };
+            mockReq.cookies = { oauth_state: 'test-state' };
             const user = { id: 1, email: 'google@test.com' };
             
             <% if (architecture === 'Clean Architecture') { %>
@@ -294,6 +297,41 @@ describe('AuthController', () => {
             expect(mockRes.cookie).toHaveBeenCalledWith('accessToken', 'mock-token', expect.any(Object));
             expect(mockRes.redirect).toHaveBeenCalledWith('/');
         });
+
+        it('googleCallback should return 403 if state is invalid', async () => {
+            mockReq.query = { code: 'test-code', state: 'invalid-state' };
+            mockReq.cookies = { oauth_state: 'valid-state' };
+            await controller.googleCallback(mockReq, mockRes, next);
+            expect(mockRes.status).toHaveBeenCalledWith(HTTP_STATUS.FORBIDDEN);
+        });
+
+        it('googleCallback should create user if not exists (MVC)', async () => {
+            <% if (architecture === 'MVC') { %>
+            mockReq.query = { code: 'test-code', state: 'test-state' };
+            mockReq.cookies = { oauth_state: 'test-state' };
+            SocialAuthService.getGoogleProfile.mockResolvedValue({ email: 'new@google.com', id: 'google-id' });
+            User.findOne.mockResolvedValue(null);
+            User.create.mockResolvedValue({ id: '2', email: 'new@google.com' });
+            JwtService.generateToken.mockReturnValue('at');
+            JwtService.generateRefreshToken.mockReturnValue('rt');
+            JwtService.decodeToken.mockReturnValue({ jti: 'jti' });
+
+            await controller.googleCallback(mockReq, mockRes, next);
+            expect(User.create).toHaveBeenCalled();
+            <% } else { %>
+            expect(true).toBe(true);
+            <% } %>
+        });
+
+        it('googleCallback should redirect to login on error', async () => {
+            const error = new Error('Callback failed');
+            mockReq.query = { code: 'code', state: 'test-state' };
+            mockReq.cookies = { oauth_state: 'test-state' };
+            SocialAuthService.getGoogleProfile.mockRejectedValue(error);
+
+            await controller.googleCallback(mockReq, mockRes, next);
+            expect(mockRes.redirect).toHaveBeenCalledWith('/login?error=social_auth_failed');
+        });
         <% } %>
 
         <% if (socialAuth.includes('GitHub')) { %>
@@ -303,7 +341,8 @@ describe('AuthController', () => {
         });
 
         it('githubCallback should handle GitHub callback', async () => {
-            mockReq.query = { code: 'test-code' };
+            mockReq.query = { code: 'test-code', state: 'test-state' };
+            mockReq.cookies = { oauth_state: 'test-state' };
             const user = { id: 1, email: 'github@test.com' };
             
             <% if (architecture === 'Clean Architecture') { %>
@@ -327,6 +366,41 @@ describe('AuthController', () => {
 
             expect(mockRes.cookie).toHaveBeenCalledWith('accessToken', 'mock-token', expect.any(Object));
             expect(mockRes.redirect).toHaveBeenCalledWith('/');
+        });
+
+        it('githubCallback should return 403 if state is invalid', async () => {
+            mockReq.query = { code: 'test-code', state: 'invalid-state' };
+            mockReq.cookies = { oauth_state: 'valid-state' };
+            await controller.githubCallback(mockReq, mockRes, next);
+            expect(mockRes.status).toHaveBeenCalledWith(HTTP_STATUS.FORBIDDEN);
+        });
+
+        it('githubCallback should create user if not exists (MVC)', async () => {
+            <% if (architecture === 'MVC') { %>
+            mockReq.query = { code: 'test-code', state: 'test-state' };
+            mockReq.cookies = { oauth_state: 'test-state' };
+            SocialAuthService.getGithubProfile.mockResolvedValue({ email: 'new@github.com', id: 'github-id' });
+            User.findOne.mockResolvedValue(null);
+            User.create.mockResolvedValue({ id: '2', email: 'new@github.com' });
+            JwtService.generateToken.mockReturnValue('at');
+            JwtService.generateRefreshToken.mockReturnValue('rt');
+            JwtService.decodeToken.mockReturnValue({ jti: 'jti' });
+
+            await controller.githubCallback(mockReq, mockRes, next);
+            expect(User.create).toHaveBeenCalled();
+            <% } else { %>
+            expect(true).toBe(true);
+            <% } %>
+        });
+
+        it('githubCallback should redirect to login on error', async () => {
+            const error = new Error('Callback failed');
+            mockReq.query = { code: 'code', state: 'test-state' };
+            mockReq.cookies = { oauth_state: 'test-state' };
+            SocialAuthService.getGithubProfile.mockRejectedValue(error);
+
+            await controller.githubCallback(mockReq, mockRes, next);
+            expect(mockRes.redirect).toHaveBeenCalledWith('/login?error=social_auth_failed');
         });
         <% } %>
     });
