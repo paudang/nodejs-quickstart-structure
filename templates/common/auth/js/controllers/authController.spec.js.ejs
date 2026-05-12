@@ -327,7 +327,14 @@ describe('AuthController', () => {
             const error = new Error('Callback failed');
             mockReq.query = { code: 'code', state: 'test-state' };
             mockReq.cookies = { oauth_state: 'test-state' };
+            <% if (architecture === 'Clean Architecture') { %>
+            const mockUseCase = {
+                execute: jest.fn().mockRejectedValue(error)
+            };
+            SocialLoginUseCase.mockImplementation(() => mockUseCase);
+            <% } else { %>
             SocialAuthService.getGoogleProfile.mockRejectedValue(error);
+            <% } %>
 
             await controller.googleCallback(mockReq, mockRes, next);
             expect(mockRes.redirect).toHaveBeenCalledWith('/login?error=social_auth_failed');
@@ -397,7 +404,14 @@ describe('AuthController', () => {
             const error = new Error('Callback failed');
             mockReq.query = { code: 'code', state: 'test-state' };
             mockReq.cookies = { oauth_state: 'test-state' };
+            <% if (architecture === 'Clean Architecture') { %>
+            const mockUseCase = {
+                execute: jest.fn().mockRejectedValue(error)
+            };
+            SocialLoginUseCase.mockImplementation(() => mockUseCase);
+            <% } else { %>
             SocialAuthService.getGithubProfile.mockRejectedValue(error);
+            <% } %>
 
             await controller.githubCallback(mockReq, mockRes, next);
             expect(mockRes.redirect).toHaveBeenCalledWith('/login?error=social_auth_failed');

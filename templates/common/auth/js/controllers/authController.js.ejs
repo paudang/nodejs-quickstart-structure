@@ -332,7 +332,7 @@ class AuthController {
     res.redirect(`${rootUrl}?${qs.toString()}`);
   }
 
-  async googleCallback(req, res, next) {
+  async googleCallback(req, res, _next) {
     try {
       const { code, state } = req.query;
       const savedState = req.cookies?.oauth_state;
@@ -432,7 +432,7 @@ class AuthController {
     res.redirect(`${rootUrl}?${qs.toString()}`);
   }
 
-  async githubCallback(req, res, next) {
+  async githubCallback(req, res, _next) {
     try {
       const { code, state } = req.query;
       const savedState = req.cookies?.oauth_state;
