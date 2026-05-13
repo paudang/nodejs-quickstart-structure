@@ -1,4 +1,13 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+ 
+## [2.2.1] - 2026-05-12
+
+### Added
+- **Secure OAuth CSRF Protection**: Implemented robust state-validation using cryptographically secure random tokens and `HttpOnly` cookies to mitigate CSRF attacks in social authentication flows.
+- **Improved CLI Robustness**: Enhanced argument parsing to support comma-separated strings for variadic flags like `--social-auth` and `--auth`.
+
+### Fixed
+- **Architectural Parity & Type Safety**: Standardized `HTTP_STATUS.FORBIDDEN` across all templates and resolved TypeScript type inference issues (`never` type) in generated Clean Architecture controllers.
 
 ## [2.2.0] - 2026-05-05
 

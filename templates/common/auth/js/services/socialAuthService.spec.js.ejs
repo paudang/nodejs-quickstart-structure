@@ -2,8 +2,6 @@ const axios = require('axios');
 <% if (architecture === 'MVC') { -%>
 const { SocialAuthService } = require('@/services/socialAuthService');
 const logger = require('@/utils/logger');
-<% } else { -%>
-const logger = require('@/infrastructure/log/logger');
 <% } -%>
 
 jest.mock('axios');
