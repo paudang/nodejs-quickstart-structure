@@ -6,7 +6,8 @@ jest.mock('@/usecases/auth/socialLoginUseCase');
 jest.mock('@/infrastructure/repositories/UserRepository');
 <%_ } _%>
 jest.mock('@/infrastructure/database/models/User', () => ({
-    findOne: jest.fn()
+    findOne: jest.fn(),
+    create: jest.fn()
 }));
 <%_ } else { _%>
 jest.mock('@/services/jwtService');
@@ -14,7 +15,8 @@ jest.mock('@/services/jwtService');
 jest.mock('@/services/socialAuthService');
 <%_ } _%>
 jest.mock('@/models/User', () => ({
-    findOne: jest.fn()
+    findOne: jest.fn(),
+    create: jest.fn()
 }));
 <%_ } _%>
 jest.mock('bcryptjs');

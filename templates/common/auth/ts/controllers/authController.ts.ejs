@@ -27,6 +27,15 @@ import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 import { HTTP_STATUS } from '@/utils/httpCodes';
 
 export class AuthController {
+  private setOAuthStateCookie(res: Response, state: string) {
+    res.cookie('oauth_state', state, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 10 * 60 * 1000
+    });
+  }
+
   async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body;
@@ -306,12 +315,7 @@ export class AuthController {
   async googleLogin(req: Request, res: Response) {
     const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
     const state = crypto.randomBytes(16).toString('hex');
-    res.cookie('oauth_state', state, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 10 * 60 * 1000
-    });
+    this.setOAuthStateCookie(res, state);
 
     const options = {
       redirect_uri: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/callback',
@@ -422,12 +426,7 @@ export class AuthController {
   async githubLogin(req: Request, res: Response) {
     const rootUrl = 'https://github.com/login/oauth/authorize';
     const state = crypto.randomBytes(16).toString('hex');
-    res.cookie('oauth_state', state, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 10 * 60 * 1000
-    });
+    this.setOAuthStateCookie(res, state);
 
     const options = {
       client_id: process.env.GITHUB_CLIENT_ID!,
