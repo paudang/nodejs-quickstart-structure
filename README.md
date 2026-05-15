@@ -27,8 +27,8 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
  
 | **Path A: Next-Gen Web UI** (Recommended) | **Path B: Interactive CLI** |
 | :--- | :--- |
-| <a href="https://paudang.github.io/nodejs-quickstart-structure/#configurator"><img src="docs/public/v2-preview.png" width="100%" alt="UI Preview"></a> | <img src="docs/demo.gif" width="100%" alt="CLI Demo"> |
-| [Try Visual Configurator →](https://paudang.github.io/nodejs-quickstart-structure/#configurator) | [See CLI Commands ↓](#path-b-interactive-cli) |
+| <a href="https://nodejs-quickstart-generator.netlify.app/#configurator"><img src="docs/public/v2-preview.png" width="100%" alt="UI Preview"></a> | <img src="docs/demo.gif" width="100%" alt="CLI Demo"> |
+| [Try Visual Configurator →](https://nodejs-quickstart-generator.netlify.app/#configurator) | [See CLI Commands ↓](#path-b-interactive-cli) |
 | **Visual Preview**: Real-time folder simulation. | **Fast & Direct**: Quickly scaffold in terminal. |
 | **Zero-Prompt**: Paste a tailored command. | **AI-Ready**: Generates `.cursorrules`. |
 
@@ -139,7 +139,7 @@ Depending on your choices, the structure adapts. Here is a **TypeScript + Clean 
 
 ## Documentation
 
-For full guides, architecture deep-dives, and feature references, visit our **[Official Documentation Site](https://paudang.github.io/nodejs-quickstart-structure/guide/getting-started.html)**.
+For full guides, architecture deep-dives, and feature references, visit our **[Official Documentation Site](https://nodejs-quickstart-generator.netlify.app/guide/getting-started.html)**.
 
 ---
 
