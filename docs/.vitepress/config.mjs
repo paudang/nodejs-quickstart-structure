@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "Node.js Quickstart Generator",
   description: "The AI-Native Node.js scaffolding tool for production-ready microservices.",
-  base: '/nodejs-quickstart-structure/',
+  base: process.env.NODE_ENV === 'production' && !process.env.NETLIFY ? '/nodejs-quickstart-structure/' : '/',
   head: [
     ['meta', { property: 'og:image', content: 'https://paudang.github.io/nodejs-quickstart-structure/og-image.png' }],
     ['meta', { property: 'og:image:width', content: '1200' }],
