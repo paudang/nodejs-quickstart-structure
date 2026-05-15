@@ -5,19 +5,19 @@ export default defineConfig({
   description: "The AI-Native Node.js scaffolding tool for production-ready microservices.",
   base: process.env.NODE_ENV === 'production' && !process.env.NETLIFY ? '/nodejs-quickstart-structure/' : '/',
   head: [
-    ['meta', { property: 'og:image', content: 'https://paudang.github.io/nodejs-quickstart-structure/og-image.png' }],
+    ['meta', { property: 'og:image', content: 'https://nodejs-quickstart-generator.netlify.app/og-image.png' }],
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
     ['meta', { property: 'og:title', content: 'Node.js Quickstart Generator | nodejs-quickstart-structure' }],
     ['meta', { property: 'og:description', content: 'Scaffold production-ready Node.js microservices with Clean Architecture, Kafka, and GraphQL in seconds.' }],
     ['meta', { property: 'og:site_name', content: 'Node.js Quickstart Generator' }],
     ['meta', { property: 'og:locale', content: 'en_US' }],
-    ['meta', { property: 'og:url', content: 'https://paudang.github.io/nodejs-quickstart-structure/' }],
+    ['meta', { property: 'og:url', content: 'https://nodejs-quickstart-generator.netlify.app/' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'Node.js Quickstart Generator | AI-Native Scaffolding' }],
     ['meta', { name: 'twitter:description', content: 'The fastest way to build production-ready Node.js apps with built-in best practices.' }],
-    ['meta', { name: 'twitter:image', content: 'https://paudang.github.io/nodejs-quickstart-structure/og-image.png' }]
+    ['meta', { name: 'twitter:image', content: 'https://nodejs-quickstart-generator.netlify.app/og-image.png' }]
   ],
   themeConfig: {
     nav: [
