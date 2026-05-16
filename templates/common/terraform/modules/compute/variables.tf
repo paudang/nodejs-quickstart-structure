@@ -3,7 +3,10 @@ variable "environment"  { type = string }
 variable "vpc_id"       { type = string }
 variable "private_subnet_ids" { type = list(string) }
 variable "app_sg_id"          { type = string }
-variable "instance_count"     { type = number; default = 1 }
+variable "instance_count" {
+  type    = number
+  default = 1
+}
 variable "target_group_arn"   { type = string }
 
 variable "instance_type" {

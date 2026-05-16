@@ -3,7 +3,10 @@ variable "environment"  { type = string }
 variable "vpc_id"       { type = string }
 variable "isolated_subnet_ids" { type = list(string) }
 variable "app_sg_id"    { type = string }
-variable "multi_az"           { type = bool; default = false }
+variable "multi_az" {
+  type    = bool
+  default = false
+}
 
 variable "db_engine" {
   description = "Database engine (mysql, postgres)"

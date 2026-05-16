@@ -15,5 +15,5 @@ output "isolated_subnet_ids" {
 }
 
 output "nat_gateway_ip" {
-  value = aws_nat_gateway.main.public_ip
+  value = aws_nat_gateway.main[*].public_ip
 }

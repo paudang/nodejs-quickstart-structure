@@ -1,8 +1,9 @@
 # --- Network Layer ---
 module "vpc" {
-  source       = "./modules/vpc"
-  project_name = var.project_name
-  environment  = var.environment
+  source        = "./modules/vpc"
+  project_name  = var.project_name
+  environment   = var.environment
+  is_production = var.is_production
 }
 
 # --- Security Layer (WAF, ALB, SGs) ---

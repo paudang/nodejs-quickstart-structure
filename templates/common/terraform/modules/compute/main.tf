@@ -24,9 +24,18 @@ resource "aws_iam_instance_profile" "ssm_profile" {
 }
 
 # --- EC2 Instance ---
+data "aws_ami" "latest" {
+  most_recent = true
+  owners      = ["amazon"]
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*"]
+  }
+}
+
 resource "aws_instance" "app" {
   count                  = var.instance_count
-  ami                    = var.ami_id
+  ami                    = data.aws_ami.latest.id
   instance_type          = var.instance_type
   subnet_id              = var.private_subnet_ids[count.index % length(var.private_subnet_ids)]
   vpc_security_group_ids = [var.app_sg_id]
