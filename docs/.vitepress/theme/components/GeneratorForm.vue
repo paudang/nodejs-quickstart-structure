@@ -101,7 +101,7 @@
         style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; font-size: 0.9em; color: var(--vp-c-brand);"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :style="{ transform: showAdvanced ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        Advanced Options
+        Advanced Options (Authentication, Terraform, etc.)
       </div>
       <div v-show="showAdvanced" style="margin-top: 1rem;" class="form-grid">
         <div class="form-group" style="grid-column: 1 / -1;">
@@ -110,6 +110,15 @@
             <option value="None">None</option>
             <option value="JWT Authentication">JWT Authentication</option>
             <option value="OAuth2 - Google/GitHub - JWT">OAuth2 - Google/GitHub - JWT</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label">Infrastructure (IaC - Terraform)</label>
+          <select class="form-control" v-model="form.terraform">
+            <option value="None">None (No infrastructure files)</option>
+            <option value="Standard">Standard (Single EC2 - Cost Efficient)</option>
+            <option value="Production">Production (WAF + ALB + Private Subnets - High Availability)</option>
           </select>
         </div>
       </div>

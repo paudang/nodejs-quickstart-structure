@@ -22,6 +22,7 @@ temp_test_workspace
 temp_test_workspace_old
 temp_5280_workspace
 coverage/
+.terraform_test
 
 # Editor directories
 .vscode/
