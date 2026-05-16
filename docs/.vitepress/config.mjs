@@ -68,6 +68,12 @@ export default defineConfig({
         ]
       },
       {
+        text: 'Infrastructure',
+        items: [
+          { text: 'AWS (Terraform)', link: '/infrastructure/aws-terraform' },
+        ]
+      },
+      {
         text: 'Testing & DevOps',
         items: [
           { text: 'Testing (Unit & E2E)', link: '/guide/testing' },

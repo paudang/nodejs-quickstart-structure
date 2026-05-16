@@ -100,6 +100,45 @@
         </div>
       </template>
 
+      <!-- Terraform Infrastructure -->
+      <template v-if="form.terraform !== 'None'">
+        <div class="tree-item clickable" style="--depth: 1" @click="toggle('terraform')">
+          <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.terraform }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+          terraform
+          <span class="tree-comment"># Infrastructure as Code (AWS Modular)</span>
+        </div>
+        <div v-show="expanded.terraform">
+          <div class="tree-item clickable" style="--depth: 2" @click="toggle('tf_modules')">
+            <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.tf_modules }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+            modules
+            <span class="tree-comment"># Reusable infrastructure components</span>
+          </div>
+          <div v-show="expanded.tf_modules">
+             <div class="tree-item" style="--depth: 3" v-for="m in ['vpc', 'security', 'compute', 'database', 'cache']" :key="m">
+                <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+                {{ m }}
+             </div>
+          </div>
+          <div class="tree-item" style="--depth: 2">
+            <svg class="tree-item-icon" style="color: #623ce4;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            main.tf
+            <span class="tree-comment"># Root orchestration and module linking</span>
+          </div>
+          <div class="tree-item" style="--depth: 2">
+            <svg class="tree-item-icon" style="color: #623ce4;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            variables.tf
+            <span class="tree-comment"># Infrastructure input parameters</span>
+          </div>
+          <div class="tree-item" style="--depth: 2">
+            <svg class="tree-item-icon" style="color: #623ce4;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            outputs.tf
+            <span class="tree-comment"># Deployment results (URLs, IPs, Endpoints)</span>
+          </div>
+        </div>
+      </template>
+
       <!-- AI Prompts -->
       <div class="tree-item clickable" style="--depth: 1" @click="toggle('prompts')">
         <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.prompts }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -922,7 +961,9 @@ const expanded = reactive({
   unit_tests: true,
   services_test: true,
   repositories_clean: true,
-  circleci: true
+  circleci: true,
+  terraform: false,
+  tf_modules: false
 });
 
 const toggle = (folder) => {
