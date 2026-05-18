@@ -21,6 +21,7 @@ test_results.log
 temp_test_workspace
 temp_test_workspace_old
 temp_5280_workspace
+temp_23760_workspace
 coverage/
 .terraform_test
 

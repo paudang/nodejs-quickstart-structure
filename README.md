@@ -17,7 +17,7 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
 - [What's New](#whats-new-in-v21-the-authentication-release)
 - [Key Features](#key-features)
 - [Professional Standards](#professional-standards)
-- [7,920+ Project Combinations](#7920-project-combinations)
+- [23,760+ Project Combinations](#23760-project-combinations)
 - [Configuration Options](#configuration-options)
 - [Generated Project Structure](#generated-project-structure)
 - [Documentation](#documentation)
@@ -50,12 +50,12 @@ nodejs-quickstart init
 
 ---
 
-## What's New in v2.2 (The Social Auth Release)
+## What's New in v2.3 (The Infrastructure & Terraform Release)
  
- The v2.2.0 release brings enterprise-grade identity management to your microservices:
+ The v2.3.0 release brings professional-grade Infrastructure as Code (IaC) to your generated projects:
  
-- **OAuth2 Social Login**: Seamlessly integrate **Google** and **GitHub** authentication with automatic user provisioning and JWT session linking.
-- **Massive Matrix Expansion**: Now supporting **7,920+ unique project scenarios**, mathematically validated for template consistency.
+- **Terraform Infrastructure Integration (IaC)**: Support for modular, production-ready AWS Terraform scaffolding with Multi-AZ VPC network isolation, WAF, application load balancers, database layers, and ElastiCache.
+- **Massive Matrix Expansion**: Now supporting **23,760+ unique project scenarios**, mathematically validated for template consistency.
 
 ---
 
@@ -85,14 +85,14 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 
 ---
 
-## 7,920+ Project Combinations
+## 23,760+ Project Combinations
 
 The CLI supports a massive number of configurations to fit your exact needs:
 
-- **720 Core Combinations**:
-  - **MVC Architecture**: 540 variants (Languages × View Engines × Databases × Communication Patterns × Caching × Auth)
-  - **Clean Architecture**: 180 variants (Languages × Databases × Communication Patterns × Caching × Auth)
-- **7,920+ Total Scenarios**:
+- **2,160 Core Combinations**:
+  - **MVC Architecture**: 1,620 variants (Languages × View Engines × Databases × Communication Patterns × Caching × Auth × Infrastructure)
+  - **Clean Architecture**: 540 variants (Languages × Databases × Communication Patterns × Caching × Auth × Infrastructure)
+- **23,760+ Total Scenarios**:
   - Every combination can be generated across 5 CI/CD providers.
   - Optional **Enterprise-Grade Security Hardening** doubles the scenarios.
   - Every single scenario is verified to be compatible with our **80% Coverage Threshold** policy.
@@ -112,6 +112,7 @@ The CLI will guide you through:
 8. **Auth**: `None` | `JWT` | `OAuth2 (Google/GitHub) + JWT`
 9. **CI/CD**: `GitHub Actions` | `Jenkins` | `GitLab CI` | `CircleCI` | `Bitbucket Pipelines`
 10. **Security**: (Optional) Snyk & SonarCloud Hardening
+11. **Infrastructure**: (Optional IaC) `None` | `Standard` (Single EC2) | `Production` (WAF + ALB + Multi-AZ VPC)
 
 ---
 

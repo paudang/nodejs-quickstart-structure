@@ -1,5 +1,11 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
- 
+
+## [2.3.0] - 2026-05-18
+
+### Added
+- **Terraform Infrastructure Integration (IaC)**: Integrated modular, production-ready AWS Terraform templates with Multi-AZ VPC network isolation, WAF, ALB, RDS, and ElastiCache.
+- **Expanded Validation Matrix**: Scaled the mathematical validation matrix to **23,760+ unique project scenarios** (representing a 3x expansion), ensuring 100% template rendering accuracy across all permutations including the new Infrastructure options.
+
 ## [2.2.1] - 2026-05-12
 
 ### Added

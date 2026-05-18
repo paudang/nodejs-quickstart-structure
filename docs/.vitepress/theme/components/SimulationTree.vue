@@ -116,7 +116,7 @@
             <span class="tree-comment"># Reusable infrastructure components</span>
           </div>
           <div v-show="expanded.tf_modules">
-             <div class="tree-item" style="--depth: 3" v-for="m in ['vpc', 'security', 'compute', 'database', 'cache']" :key="m">
+             <div class="tree-item" style="--depth: 3" v-for="m in ['vpc', 'security', 'compute', 'database', 'cache'].filter(x => (x !== 'cache' || form.caching !== 'None') && (x !== 'database' || form.database !== 'None'))" :key="m">
                 <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
                 {{ m }}
              </div>
