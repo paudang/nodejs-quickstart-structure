@@ -118,6 +118,7 @@ provider "aws" {
   endpoints {
     ec2           = "http://localhost:4566"
     rds           = "http://localhost:4566"
+    elb           = "http://localhost:4566"
     elbv2         = "http://localhost:4566"
     wafv2         = "http://localhost:4566"
     iam           = "http://localhost:4566"
@@ -138,5 +139,28 @@ terraform plan
 terraform apply -auto-approve
 ```
 
+> [!IMPORTANT]
+> **Troubleshooting: AMI Lookup Failure in LocalStack**
+> If you get `data.aws_ami.latest: Search returned no results` during the plan or apply step, it is because LocalStack does not mock the standard `"amzn2-ami-hvm-*"` AMI by default.
+> 
+> To resolve this, open your `/terraform/modules/compute/main.tf` and change the AMI name filter to `"*"`:
+> ```hcl
+> filter {
+>   name   = "name"
+>   values = ["*"]
+> }
+> ```
+> > [!WARNING]
+> > **Real AWS Deployment**: The filter `"*"` matches *any* Amazon-owned image, which could result in a non-Linux or incompatible OS when deploying to real AWS. Before running `terraform apply` on a real AWS account, ensure you change the filter value back to `"amzn2-ami-hvm-*"` so that standard Amazon Linux 2 is selected and your user data script (which uses `yum` and `docker`) executes successfully.
+> 
+> For a step-by-step resolution, see the [Troubleshooting & FAQ Guide](../guide/troubleshooting.md#docker-infrastructure).
+
 ### 5. Verify Resources
-You can verify your local deployment by visiting the [LocalStack Web App](https://app.localstack.cloud/) or by checking the health endpoint: `http://localhost:4566/_localstack/health`.
+You can verify your local deployment by visiting the [LocalStack Web App](https://app.localstack.cloud/) or by checking the health endpoint to verify the status of currently running services:
+
+```bash
+curl http://localhost:4566/_localstack/health
+```
+
+This will return a JSON object listing all mock services and their status (e.g., `"ec2": "running"`, `"rds": "running"`). Make sure all the endpoints configured in your `localstack.tf` show as `"running"` or `"available"`.
+
