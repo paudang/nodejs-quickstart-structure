@@ -15,13 +15,15 @@ class CreateUser {
     }
 
     async execute(name, email, password) {
-        let finalPassword = password;
         <% if (auth.includes('JWT')) { -%>
+        let finalPassword = password;
         if (password) {
             finalPassword = await bcrypt.hash(password, 10);
         }
-        <% } -%>
         const user = new User(null, name, email, finalPassword);
+        <% } else { -%>
+        const user = new User(null, name, email, password);
+        <% } -%>
         const savedUser = await this.userRepository.save(user);
 
         try {

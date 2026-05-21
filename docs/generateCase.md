@@ -1,26 +1,46 @@
 # NodeJS Quickstart Generator - Test Cases
 
-This document lists the **720 possible project combinations** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases, communication patterns, caching, and authentication options.
+This document explains the mathematical verification matrix of the **23,760+ unique project scenarios** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases, communication patterns, caching, authentication options, CI/CD pipelines, security hardening, and Terraform infrastructure tiers.
 
-## Summary
-- **CI Providers**: `None`, `GitHub Actions`, `Jenkins`, `GitLab CI`, `CircleCI`, `Bitbucket Pipelines`
-- **MVC Architecture**: 540 Combinations
-  - **With Database (486)**: 2 Lang × 3 View × 3 DB × 3 Comm × 3 (Auth: None/JWT/Social) = 162 * 3 (Caching: None/Redis/Memory Cache) = 486
-  - **No Database (54)**: 2 Lang × 3 View × 1 DB × 3 Comm × 3 (Auth: None/JWT/Social) = 54 * 1 (Caching: None) = 54
-- **Clean Architecture**: 180 Combinations
-  - **With Database (162)**: 2 Lang × 1 View (None) × 3 DB × 3 Comm × 3 (Auth: None/JWT/Social) = 54 * 3 (Caching: None/Redis/Memory Cache) = 162
-  - **No Database (18)**: 2 Lang × 1 View (None) × 1 DB × 3 Comm × 3 (Auth: None/JWT/Social) = 18 * 1 (Caching: None) = 18
-
-**Total Core Combinations: 720**
-
-> **Note on CI/CD**: Each core combination can be generated with `None` (1 state) or any of the **5 CI Providers** in two states (with or without Enterprise Security Hardening).
-> 
-> **Total Validated Permutations**: 720 × (1 + 5 × 2) = **7920 Cases**
-
+## Summary of Matrix Dimensions
+- **Languages**: 2 (`JavaScript`, `TypeScript`)
+- **Architectures**: 2 (`MVC`, `Clean Architecture`)
+- **View Engines (MVC only)**: 3 (`None`, `EJS`, `Pug`)
+- **Databases**: 4 (`None`, `MySQL`, `PostgreSQL`, `MongoDB`)
+- **Communication Patterns**: 3 (`REST APIs`, `GraphQL`, `Kafka`)
+- **Caching Layers**: 3 (`None`, `Redis`, `Memory Cache`) *— Note: caching defaults to `None` if database is `None`*
+- **Authentication**: 3 (`None`, `JWT`, `OAuth2 Google/GitHub + JWT`)
+- **Infrastructure (IaC - Terraform)**: 3 (`None`, `Standard`, `Production`)
 
 ---
 
-## 1. MVC Architecture (540 Cases)
+## Mathematical Verification Matrix Breakdown
+
+### 1. Core Combinations (2,160 Core Combinations)
+Core combinations represent the variations of the generated application code itself across Languages, View Engines, Databases, Communication, Caching, Authentication, and Infrastructure:
+
+- **MVC Architecture**: 1,620 Combinations
+  - **With Database (1,458)**: 2 Lang × 3 View × 3 DB × 3 Comm × 3 Auth × 3 Caching × 3 Terraform = 1,458
+  - **No Database (162)**: 2 Lang × 3 View × 1 DB × 3 Comm × 3 Auth × 1 Caching (None) × 3 Terraform = 162
+- **Clean Architecture**: 540 Combinations
+  - **With Database (486)**: 2 Lang × 1 View (None) × 3 DB × 3 Comm × 3 Auth × 3 Caching × 3 Terraform = 486
+  - **No Database (54)**: 2 Lang × 1 View (None) × 1 DB × 3 Comm × 3 Auth × 1 Caching (None) × 3 Terraform = 54
+
+**Total Core Combinations: 2,160**
+
+---
+
+### 2. DevOps & Security Scenarios (23,760 Total Permutations)
+Each core combination can be deployed across multiple environments with conditional CI/CD configurations:
+- **CI/CD Providers**: `None` (1 state) or one of the **5 CI Providers** (`GitHub Actions`, `Jenkins`, `GitLab CI`, `CircleCI`, `Bitbucket Pipelines`) in two states (with or without **Enterprise Security Hardening**: Snyk, SonarQube).
+- **CI/CD Multiplier**: `1 + 5 × 2 = 11` states.
+
+> **Total Validated Scenarios**: 2,160 Core Combinations × 11 CI/CD States = **23,760 Cases**
+
+---
+
+## Base Application Configuration Reference (720 Base Combinations)
+To keep this document concise, the table below lists the **720 base application configurations** (without the Infrastructure and CI/CD dimension multipliers). Each base configuration in this table is validated across all 3 Infrastructure tiers (None, Standard, Production) and 11 DevOps states.
 
 | # | Language | Architecture | View Engine | Database | Communication | Caching | Auth | Social Auth |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |

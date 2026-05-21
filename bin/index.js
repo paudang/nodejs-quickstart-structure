@@ -15,7 +15,7 @@ const program = new Command();
 
 program
     .name('nodejs-quickstart')
-    .description('🚀 CLI to scaffold production-ready Node.js microservices.\n\nGenerates projects with:\n- MVC or Clean Architecture\n- REST, GraphQL or Kafka\n- MySQL, PostgreSQL, or MongoDB\n- Auth (None, JWT)\n- Docker, Flyway & Mongoose support')
+    .description('🚀 CLI to scaffold production-ready Node.js microservices.\n\nGenerates projects with:\n- MVC or Clean Architecture\n- REST, GraphQL or Kafka\n- MySQL, PostgreSQL, or MongoDB\n- Auth (None, JWT)\n- Terraform (Standard, Production)\n- Docker, Flyway & Mongoose support')
     .version(pkg.version, '-v, --version', 'Output the current version')
     .addHelpText('after', `\n${chalk.yellow('Example:')}\n  $ nodejs-quickstart init   ${chalk.gray('# Start the interactive setup')}\n`);
 
@@ -35,6 +35,7 @@ program
     .option('--caching <type>', 'Caching Layer (None/Redis/Memory Cache)')
     .option('--auth <modes...>', 'Authentication Modes (None, JWT)')
     .option('--social-auth <providers...>', 'Social Authentication Providers (None, Google, GitHub)')
+    .option('--terraform <tier>', 'Infrastructure Tier (None, Standard, Production)')
     .option('--advanced-options', 'Enable Advanced Options')
     .option('--no-advanced-options', 'Disable Advanced Options')
     .action(async (options) => {

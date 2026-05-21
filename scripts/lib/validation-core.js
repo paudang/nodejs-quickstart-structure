@@ -459,7 +459,8 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             '--database', config.database,
             ...(config.dbName ? ['--db-name', config.dbName] : []),
             '--communication', `"${config.communication}"`,
-            '--ci-provider', `"${config.ciProvider}"`
+            '--ci-provider', `"${config.ciProvider}"`,
+            '--terraform', '"None"'
         ];
 
         if (config.includeSecurity) {

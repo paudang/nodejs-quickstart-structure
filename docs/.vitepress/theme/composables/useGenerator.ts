@@ -12,7 +12,8 @@ const form = reactive({
   caching: 'None',
   ciProvider: 'GitHub Actions',
   includeSecurity: false,
-  auth: 'None'
+  auth: 'None',
+  terraform: 'None'
 });
 
 const errors = reactive({
@@ -99,6 +100,10 @@ const cliCommand = computed(() => {
     cmd += ` --auth JWT --social-auth Google GitHub`;
   } else if (isAdvanced && form.auth === 'None') {
     cmd += ` --auth None`;
+  }
+
+  if (form.terraform && form.terraform !== 'None') {
+    cmd += ` --terraform "${form.terraform}"`;
   }
 
   if (form.ciProvider !== 'None') {

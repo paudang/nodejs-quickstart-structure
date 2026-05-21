@@ -69,6 +69,74 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 - **Reason**: The user running the tool doesn't have permissions to the socket.
 - **Solution**: Run your CI container as `root` (e.g., `--user root` in docker run) or add the user to the `docker` group.
 
+### Terraform `aws_ami` Lookup Failure (LocalStack)
+- **Error**: `data.aws_ami.latest: Search returned no results` during `terraform plan` or `terraform apply` when deploying locally with LocalStack.
+- **Reason**: The default configuration searches for the latest Amazon Linux 2 AMI using the filter `"amzn2-ami-hvm-*"`. However, LocalStack running in local environments does not include or support standard Amazon Linux 2 AMIs by default, causing the search to fail.
+- **Solution**: 
+  1. Open `/terraform/modules/compute/main.tf` in your project.
+  2. Locate the `data "aws_ami" "latest"` block (around line 27).
+  3. Change the filter value from `"amzn2-ami-hvm-*"` to `"*"` to match any available mock AMI in LocalStack:
+     ```hcl
+     data "aws_ami" "latest" {
+       most_recent = true
+       owners      = ["amazon"]
+       filter {
+         name   = "name"
+         values = ["*"] # Changed from "amzn2-ami-hvm-*" for LocalStack compatibility
+       }
+     }
+     ```
+  4. Run `terraform apply` again.
+
+> [!WARNING]
+> **Real AWS Deployment**: The filter `"*"` matches *any* Amazon-owned image, which could result in a non-Linux or incompatible OS when deploying to real AWS. Before running `terraform apply` on a real AWS account, ensure you change the filter value back to `"amzn2-ami-hvm-*"` so that standard Amazon Linux 2 is selected and your user data script (which uses `yum` and `docker`) executes successfully.
+
+### Verifying LocalStack Service Status
+- **Problem**: You want to check which mock AWS services (EC2, RDS, IAM, etc.) are successfully running inside LocalStack, or diagnose connection issues.
+- **Solution**: 
+  1. Open your browser or run a `curl` request to the LocalStack health endpoint:
+     ```bash
+     curl http://localhost:4566/_localstack/health
+     ```
+  2. This will return a JSON response listing all simulated services and their active status:
+     ```json
+     {
+       "services": {
+         "ec2": "running",
+         "rds": "running",
+         "elasticache": "running",
+         "iam": "running",
+         "sts": "running",
+         "elbv2": "running",
+         "wafv2": "running"
+       },
+       "features": {
+         "initScripts": "initialized"
+       }
+     }
+     ```
+  3. Ensure that all the services you are attempting to deploy to show as `"running"` or `"available"`.
+
+### Terraform `is not a valid load balancer ARN` (LocalStack)
+- **Error**: `api error ValidationError: 'arn:aws:elasticloadbalancing:...' is not a valid load balancer ARN` when running `terraform plan`, `terraform apply`, or `terraform destroy` locally.
+- **Reason**: 
+  1. **Out-of-Sync State**: If LocalStack was restarted or recreated, its internal mock resources are gone, but your local `terraform.tfstate` file still references them. During state refresh, LocalStack returns a `ValidationError` (400) for the missing Load Balancer ARN instead of the standard AWS `LoadBalancerNotFound` error, causing Terraform to crash.
+  2. **Endpoint Mapping**: Both `elb` and `elbv2` endpoints need to be explicitly mapped to LocalStack in your `localstack.tf` or provider settings.
+- **Solutions**:
+  - **Quick Fix (Easiest)**: Since LocalStack is a local simulated environment, you can safely wipe your local Terraform state. Simply delete your `terraform.tfstate` and `terraform.tfstate.backup` files in your `/terraform` folder, then run `terraform init` and `terraform apply` to redeploy fresh resources.
+  - **State Repair (Targeted)**: If you want to keep your other resources and only skip the load balancer error during destroy/refresh, remove the problematic resource from your Terraform state file:
+    ```bash
+    terraform state rm module.security.aws_lb.main
+    ```
+    Then run `terraform destroy` or `terraform apply` again.
+  - **Verify `localstack.tf`**: Ensure both `elb` and `elbv2` are defined in your endpoints:
+    ```hcl
+    endpoints {
+      elb   = "http://localhost:4566"
+      elbv2 = "http://localhost:4566"
+    }
+    ```
+
 ---
 
 ##  CI/CD & Automation
