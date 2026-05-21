@@ -23,6 +23,7 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/getting-started' },
+      { text: 'Articles', link: '/guide/articles' },
       { text: 'Roadmap', link: 'https://trello.com/b/TPTo8ylF/nodejs-quickstart-structure-product' },
       { text: 'Changelog', link: 'https://github.com/paudang/nodejs-quickstart-structure/blob/main/CHANGELOG.md' }
     ],
@@ -81,6 +82,12 @@ export default defineConfig({
           { text: 'Deployment (Docker/PM2)', link: '/guide/deployment' },
           { text: 'Troubleshooting FAQ', link: '/guide/troubleshooting' },
         ]
+      },
+      {
+        text: 'Articles & Deep Dives',
+        items: [
+          { text: 'All Articles', link: '/guide/articles' }
+        ]
       }
     ],
 
@@ -90,7 +97,7 @@ export default defineConfig({
     ],
 
     footer: {
-      message: 'Released under the ISC License. <br> Built with  for the Node.js Ecosystem. <span class="footer-badges"> <a href="https://www.npmjs.com/package/nodejs-quickstart-structure" target="_blank"><img src="https://img.shields.io/npm/dt/nodejs-quickstart-structure?style=social" alt="NPM Downloads"></a> <a href="https://github.com/paudang/nodejs-quickstart-structure" target="_blank"><img src="https://img.shields.io/github/stars/paudang/nodejs-quickstart-structure?style=social" alt="GitHub Stars"></a> </span>',
+      message: 'Released under the ISC License. <br> Architected by Technical Writers on <a href="https://systemweakness.com/" target="_blank" style="color: var(--vp-c-brand); font-weight: 500;">System Weakness</a>. <span class="footer-badges" style="margin-left: 8px;"> <a href="https://www.npmjs.com/package/nodejs-quickstart-structure" target="_blank"><img src="https://img.shields.io/npm/dt/nodejs-quickstart-structure?style=social" alt="NPM Downloads"></a> <a href="https://github.com/paudang/nodejs-quickstart-structure" target="_blank"><img src="https://img.shields.io/github/stars/paudang/nodejs-quickstart-structure?style=social" alt="GitHub Stars"></a> </span>',
       copyright: 'Copyright © 2026-present Pau Dang'
     }
   }
