@@ -14,13 +14,15 @@ export default class CreateUser {
     constructor(private userRepository: UserRepository) {}
 
     async execute(name: string, email: string, password?: string) {
-        let finalPassword = password;
 <% if (auth.includes('JWT')) { -%>
+        let finalPassword = password;
         if (password) {
             finalPassword = await bcrypt.hash(password, 10);
         }
-<% } -%>
         const user = new User(null, name, email, finalPassword);
+<% } else { -%>
+        const user = new User(null, name, email, password);
+<% } -%>
         const savedUser = await this.userRepository.save(user);
 <% if (caching !== 'None') { -%>
         try {
