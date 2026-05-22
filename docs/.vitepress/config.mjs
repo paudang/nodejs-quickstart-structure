@@ -5,6 +5,7 @@ export default defineConfig({
   description: "The AI-Native Node.js scaffolding tool for production-ready microservices.",
   base: process.env.NODE_ENV === 'production' && !process.env.NETLIFY ? '/nodejs-quickstart-structure/' : '/',
   head: [
+    ['link', { rel: 'icon', href: '/favicon.png' }],
     ['meta', { property: 'og:image', content: 'https://nodejs-quickstart-generator.netlify.app/og-image.png' }],
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
