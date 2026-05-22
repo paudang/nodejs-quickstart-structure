@@ -19,6 +19,9 @@ You are an expert working on **<%= projectName %>**.
 <% if (auth.includes('JWT')) { -%>
 - **Authentication**: JWT (Access & Refresh Tokens)
 <% } -%>
+<% if (resilience && resilience.length > 0) { -%>
+- **Resilience**: <%= resilience.join(', ') %>
+<% } -%>
 
 ## High-Level Architecture
 <% if (architecture === 'Clean Architecture') { -%>

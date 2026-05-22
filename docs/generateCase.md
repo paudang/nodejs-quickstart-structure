@@ -1,6 +1,6 @@
 # NodeJS Quickstart Generator - Test Cases
 
-This document explains the mathematical verification matrix of the **23,760+ unique project scenarios** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases, communication patterns, caching, authentication options, CI/CD pipelines, security hardening, and Terraform infrastructure tiers.
+This document explains the mathematical verification matrix of the **190,080+ unique project scenarios** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases, communication patterns, caching, authentication options, CI/CD pipelines, security hardening, resilience patterns, and Terraform infrastructure tiers.
 
 ## Summary of Matrix Dimensions
 - **Languages**: 2 (`JavaScript`, `TypeScript`)
@@ -11,6 +11,7 @@ This document explains the mathematical verification matrix of the **23,760+ uni
 - **Caching Layers**: 3 (`None`, `Redis`, `Memory Cache`) *— Note: caching defaults to `None` if database is `None`*
 - **Authentication**: 3 (`None`, `JWT`, `OAuth2 Google/GitHub + JWT`)
 - **Infrastructure (IaC - Terraform)**: 3 (`None`, `Standard`, `Production`)
+- **Resilience Patterns**: 8 states (Combinations of `Timeout`, `Retry`, `CircuitBreaker`)
 
 ---
 
@@ -30,12 +31,14 @@ Core combinations represent the variations of the generated application code its
 
 ---
 
-### 2. DevOps & Security Scenarios (23,760 Total Permutations)
-Each core combination can be deployed across multiple environments with conditional CI/CD configurations:
+### 2. DevOps, Security & Resilience Scenarios (190,080 Total Permutations)
+Each core combination can be deployed across multiple environments with conditional CI/CD configurations and Application Resilience patterns:
 - **CI/CD Providers**: `None` (1 state) or one of the **5 CI Providers** (`GitHub Actions`, `Jenkins`, `GitLab CI`, `CircleCI`, `Bitbucket Pipelines`) in two states (with or without **Enterprise Security Hardening**: Snyk, SonarQube).
 - **CI/CD Multiplier**: `1 + 5 × 2 = 11` states.
+- **Resilience Patterns**: 3 optional features (`Timeout`, `Retry`, `CircuitBreaker`), which generate `2³ = 8` combination states.
+- **Combined Extended Multiplier**: 11 × 8 = 88 states.
 
-> **Total Validated Scenarios**: 2,160 Core Combinations × 11 CI/CD States = **23,760 Cases**
+> **Total Validated Scenarios**: 2,160 Core Combinations × 88 Extended States = **190,080 Cases**
 
 ---
 

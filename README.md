@@ -17,7 +17,7 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
 - [What's New](#whats-new-in-v21-the-authentication-release)
 - [Key Features](#key-features)
 - [Professional Standards](#professional-standards)
-- [23,760+ Project Combinations](#23760-project-combinations)
+- [190,080+ Project Combinations](#190080-project-combinations)
 - [Configuration Options](#configuration-options)
 - [Generated Project Structure](#generated-project-structure)
 - [Documentation](#documentation)
@@ -55,7 +55,7 @@ nodejs-quickstart init
  The v2.3.0 release brings professional-grade Infrastructure as Code (IaC) to your generated projects:
  
 - **Terraform Infrastructure Integration (IaC)**: Support for modular, production-ready AWS Terraform scaffolding with Multi-AZ VPC network isolation, WAF, application load balancers, database layers, and ElastiCache.
-- **Massive Matrix Expansion**: Now supporting **23,760+ unique project scenarios**, mathematically validated for template consistency.
+- **Massive Matrix Expansion**: Now supporting **190,080+ unique project scenarios**, mathematically validated for template consistency.
 
 ---
 
@@ -85,14 +85,14 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 
 ---
 
-## 23,760+ Project Combinations
+## 190,080+ Project Combinations
 
 The CLI supports a massive number of configurations to fit your exact needs:
 
 - **2,160 Core Combinations**:
   - **MVC Architecture**: 1,620 variants (Languages × View Engines × Databases × Communication Patterns × Caching × Auth × Infrastructure)
   - **Clean Architecture**: 540 variants (Languages × Databases × Communication Patterns × Caching × Auth × Infrastructure)
-- **23,760+ Total Scenarios**:
+- **190,080+ Total Scenarios**:
   - Every combination can be generated across 5 CI/CD providers.
   - Optional **Enterprise-Grade Security Hardening** doubles the scenarios.
   - Every single scenario is verified to be compatible with our **80% Coverage Threshold** policy.

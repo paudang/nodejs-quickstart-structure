@@ -59,7 +59,14 @@ When indexing or searching the workspace, ignore the following paths to prevent 
   - `routes`: Define endpoints routing to controllers.
 <% } -%>
 
-### 5. Security & Authentication
+### 5. Resilience & External Calls
+<% if (resilience && resilience.length > 0) { -%>
+- **Resilience Patterns**: You have `<%= resilience.join(', ') %>` enabled in `src/utils/resilience`. Always wrap unstable external API calls or database queries in these wrappers to prevent cascading failures.
+<% } else { -%>
+- **External Calls**: Always set a timeout when calling external APIs to prevent hanging requests.
+<% } -%>
+
+### 6. Security & Authentication
 <% if (auth.includes('JWT')) { -%>
 - **Protected Routes**: When adding new routes, consider if they need `authMiddleware`.
 - **User Identity**: Extract user info from `req.user` (populated by middleware).

@@ -101,7 +101,7 @@
         style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; font-size: 0.9em; color: var(--vp-c-brand);"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :style="{ transform: showAdvanced ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        Advanced Options (Authentication, Terraform, etc.)
+        Advanced Options (Authentication, Terraform, Resilience, etc.)
       </div>
       <div v-show="showAdvanced" style="margin-top: 1rem;" class="form-grid">
         <div class="form-group" style="grid-column: 1 / -1;">
@@ -120,6 +120,23 @@
             <option value="Standard">Standard (Single EC2 - Cost Efficient)</option>
             <option value="Production">Production (WAF + ALB + Private Subnets - High Availability)</option>
           </select>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label">Application Resilience</label>
+          <div class="checkbox-group" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9em;">
+              <input type="checkbox" value="Timeout" v-model="form.resilience" /> 
+              Timeout (Prevent resource hanging)
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9em;">
+              <input type="checkbox" value="Retry" v-model="form.resilience" /> 
+              Advanced Retry (Exponential Backoff)
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9em;">
+              <input type="checkbox" value="CircuitBreaker" v-model="form.resilience" /> 
+              Circuit Breaker (Isolate failing downstream)
+            </label>
+          </div>
         </div>
       </div>
     </div>

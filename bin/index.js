@@ -36,6 +36,7 @@ program
     .option('--auth <modes...>', 'Authentication Modes (None, JWT)')
     .option('--social-auth <providers...>', 'Social Authentication Providers (None, Google, GitHub)')
     .option('--terraform <tier>', 'Infrastructure Tier (None, Standard, Production)')
+    .option('--resilience <features...>', 'Application Resilience Features (Timeout, Retry, CircuitBreaker)')
     .option('--advanced-options', 'Enable Advanced Options')
     .option('--no-advanced-options', 'Disable Advanced Options')
     .action(async (options) => {
@@ -85,6 +86,8 @@ program
             console.log(chalk.white(`  If this tool saved you 4+ hours of architecture setup,`));
             console.log(chalk.white(`  please help us grow by giving us a ⭐ on GitHub!`));
             console.log(chalk.white(`\n  👉 ${chalk.underline.bold('https://github.com/paudang/nodejs-quickstart-structure')}`));
+            console.log(chalk.white(`\n  💡 If this saved you time, consider buying me a coffee:`));
+            console.log(chalk.white(`  ☕ ${chalk.underline.bold('https://ko-fi.com/paudang')}`));
             console.log(chalk.magenta('★'.repeat(50) + '\n'));
 
         } catch (error) {
