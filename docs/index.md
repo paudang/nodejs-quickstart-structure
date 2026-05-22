@@ -12,6 +12,9 @@ hero:
     - theme: alt
       text:  Documentation
       link: /guide/getting-started
+    - theme: sponsor
+      text: ☕ Sponsor
+      link: https://ko-fi.com/paudang
   
 features:
   - title: 23,760+ Combinations
