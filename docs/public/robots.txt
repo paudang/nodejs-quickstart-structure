@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nodejs-quickstart-generator.netlify.app/sitemap.xml
