@@ -4,6 +4,9 @@ export default defineConfig({
   title: "Node.js Quickstart Generator",
   description: "The AI-Native Node.js scaffolding tool for production-ready microservices.",
   base: process.env.NODE_ENV === 'production' && !process.env.NETLIFY ? '/nodejs-quickstart-structure/' : '/',
+  sitemap: {
+    hostname: 'https://nodejs-quickstart-generator.netlify.app'
+  }
   head: [
     ['link', { rel: 'icon', href: '/favicon.png' }],
     ['meta', { property: 'og:image', content: 'https://nodejs-quickstart-generator.netlify.app/og-image.png' }],
