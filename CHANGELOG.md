@@ -1,6 +1,6 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.4.0] - 2026-05-22
+## [2.4.0] - 2026-05-25
 
 ### Added
 - **Enterprise Application Resilience**: Introduced the "Holy Trinity" of resilience patterns to prevent cascading failures in distributed systems.
@@ -9,12 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Circuit Breaker**: "Big Tech" standard circuit breaker that fails fast, sheds load during outages, and isolates failing downstream services with strict concurrency guards during the `HALF_OPEN` recovery state.
 - **AI-Native Context Upgrade**: Upgraded the internal `.cursorrules` and Agent Skill Prompts (`add-feature.md`, `troubleshoot.md`) to dynamically inject Resilience awareness, empowering AI coding assistants to actively utilize `src/utils/resilience` when building new features.
 - **VitePress Resilience Documentation**: Added comprehensive, tabbed (TypeScript/JavaScript) guides explaining the architecture and usage of the new resilience features.
+- **Docker Zero-Warning Standard**: Updated all `Dockerfile` templates to enforce modern NPM installation practices (`--omit=dev`) and remove build-time cruft (npm/npx binaries, cache folders), ensuring production images are built with **zero warnings** and significantly reduced attack surfaces.
 
 ## [2.3.0] - 2026-05-21
 
 ### Added
 - **Terraform Infrastructure Integration (IaC)**: Integrated modular, production-ready AWS Terraform templates with Multi-AZ VPC network isolation, WAF, ALB, RDS, and ElastiCache.
-- **Expanded Validation Matrix**: Scaled the mathematical validation matrix to **190,080+ unique project scenarios** (representing an 8x expansion for Resilience patterns), ensuring 100% template rendering accuracy across all permutations including the new Infrastructure options.
+- **Expanded Validation Matrix**: Scaled the mathematical validation matrix to **23,760+ unique project scenarios** (representing an 8x expansion for Resilience patterns), ensuring 100% template rendering accuracy across all permutations including the new Infrastructure options.
 
 ## [2.2.1] - 2026-05-12
 

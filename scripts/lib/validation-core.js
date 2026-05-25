@@ -496,7 +496,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             args.push('--social-auth', ...socialOptions);
         }
 
-        if (config.resilience && config.resilience !== 'None') {
+        if (config.resilience) {
             args.push('--resilience', ...config.resilience.split(','));
         }
 

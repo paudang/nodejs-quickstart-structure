@@ -17,7 +17,7 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
 - [What's New](#whats-new-in-v21-the-authentication-release)
 - [Key Features](#key-features)
 - [Professional Standards](#professional-standards)
-- [190,080+ Project Combinations](#190080-project-combinations)
+- [190K Project Combinations](#190k-project-combinations)
 - [Configuration Options](#configuration-options)
 - [Generated Project Structure](#generated-project-structure)
 - [Documentation](#documentation)
@@ -50,12 +50,20 @@ nodejs-quickstart init
 
 ---
 
+## What's New in v2.4 (The Resilience & Security Release)
+
+The v2.4.0 release focuses on enterprise-grade stability, enhanced security patterns, and robust authentication mechanisms:
+
+- **Application Resilience**: Introduced fault-tolerance patterns including **Timeout**, **Retry**, and **Circuit Breaker** to handle transient failures in distributed systems.
+- **Security & Docker Standards**: Updated Dockerfiles to modern NPM standards (using `--omit=dev` for clean, zero-warning production builds).
+---
+
 ## What's New in v2.3 (The Infrastructure & Terraform Release)
  
  The v2.3.0 release brings professional-grade Infrastructure as Code (IaC) to your generated projects:
  
 - **Terraform Infrastructure Integration (IaC)**: Support for modular, production-ready AWS Terraform scaffolding with Multi-AZ VPC network isolation, WAF, application load balancers, database layers, and ElastiCache.
-- **Massive Matrix Expansion**: Now supporting **190,080+ unique project scenarios**, mathematically validated for template consistency.
+- **Massive Matrix Expansion**: Now supporting **190K+ unique project scenarios**, mathematically validated for template consistency.
 
 ---
 
@@ -85,7 +93,7 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 
 ---
 
-## 190,080+ Project Combinations
+## 190K Project Combinations
 
 The CLI supports a massive number of configurations to fit your exact needs:
 
@@ -112,7 +120,8 @@ The CLI will guide you through:
 8. **Auth**: `None` | `JWT` | `OAuth2 (Google/GitHub) + JWT`
 9. **CI/CD**: `GitHub Actions` | `Jenkins` | `GitLab CI` | `CircleCI` | `Bitbucket Pipelines`
 10. **Security**: (Optional) Snyk & SonarCloud Hardening
-11. **Infrastructure**: (Optional IaC) `None` | `Standard` (Single EC2) | `Production` (WAF + ALB + Multi-AZ VPC)
+11. **Resilience**: (Optional) `Timeout` | `Retry` | `Circuit Breaker`
+12. **Infrastructure**: (Optional IaC) `None` | `Standard` (Single EC2) | `Production` (WAF + ALB + Multi-AZ VPC)
 
 ---
 

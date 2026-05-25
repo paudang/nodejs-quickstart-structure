@@ -34,9 +34,12 @@ When you run the `init` command, you'll be prompted for:
 6.  **Database Name**: Specify your database name (if a database is selected).
 7.  **Communication**: Select **REST APIs**, **GraphQL**, or **Kafka**.
 8.  **Caching**: Add **Redis** or **Memory Cache**.
-9.  **Authentication**: Pluggable **JWT** and **(OAuth2 - Google/GitHub)** support (Access/Refresh tokens).
-10. **CI/CD**: Generate config for **GitHub Actions**, **GitLab**, or **Jenkins**.
-11. **Security Hardening**: Opt-in for enterprise-grade security tools like **Snyk** and **SonarQube** (if CI/CD is selected).
+9.  **CI/CD**: Generate config for **GitHub Actions**, **GitLab**, or **Jenkins**.
+10. **Security Hardening**: Opt-in for enterprise-grade security tools like **Snyk** and **SonarQube** (if CI/CD is selected).
+11. **Advanced Options**: Choose to unlock Authentication, Resilience, and Terraform.
+12. **Authentication**: Pluggable **JWT** and **(OAuth2 - Google/GitHub)** support.
+13. **Resilience**: Select from **Timeout**, **Retry**, and **Circuit Breaker** patterns.
+14. **Terraform (IaC)**: Scaffold AWS infrastructure files (**Standard** or **Production**).
 
 ## First Project Setup
 
