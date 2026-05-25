@@ -21,6 +21,11 @@ Following up on the OAuth integration debt, this piece explores the devastating 
 
 JSON Web Tokens (JWT) are often praised for being stateless, but this statelessness becomes a nightmare when you need to instantly revoke a compromised token. This article debunks the "stateless" myth in enterprise applications and explains why we implemented a Redis-backed blacklist and Refresh Token Rotation strategy.
 
+### [Why Your Default VPC is a Hacker’s Playground: Designing a Zero-Trust AWS Architecture](https://medium.com/system-weakness/why-your-default-vpc-is-a-hackers-playground-designing-a-zero-trust-aws-architecture-7551102193cd)
+**Published on**: System Weakness (Medium)
+
+Many teams rely on the default AWS VPC setup without realizing the inherent security flaws it introduces. This article explores the vulnerabilities of default VPC configurations and provides actionable strategies for designing a robust, Zero-Trust cloud architecture to secure your infrastructure against lateral movement and unauthorized access.
+
 ---
 
 *Got an article about Node.js architecture or security? Feel free to submit a PR to add it to this list!*
