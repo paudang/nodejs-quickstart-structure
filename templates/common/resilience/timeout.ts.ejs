@@ -1,0 +1,33 @@
+import logger from '<% if (architecture === "MVC") { %>@/utils/logger<% } else { %>@/infrastructure/log/logger<% } %>';
+
+/**
+ * Wraps a promise with a timeout.
+ * Prevents resources from hanging indefinitely when an external dependency is slow.
+ * 
+ * @example
+ * ```typescript
+ * const data = await withTimeout(fetchUserData(userId), 5000);
+ * ```
+ * 
+ * @param promise - The promise to wrap.
+ * @param ms - Timeout in milliseconds.
+ * @returns A new promise that rejects if the timeout is reached.
+ */
+export const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> => {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+            logger.warn(`[Timeout] Operation timed out after ${ms}ms`);
+            reject(new Error(`Operation timed out after ${ms}ms`));
+        }, ms);
+
+        promise
+            .then((value) => {
+                clearTimeout(timer);
+                resolve(value);
+            })
+            .catch((reason) => {
+                clearTimeout(timer);
+                reject(reason);
+            });
+    });
+};

@@ -1,0 +1,19 @@
+# Node.js Quickstart Generator - AI Agent Master Rules
+
+You are an advanced AI Agent helping to develop the `nodejs-quickstart-structure` CLI tool.
+This project is an AI-Native scaffolding tool. Consistency, precision, and adherence to the architecture are critical.
+
+## 🚨 MANDATORY INSTRUCTIONS 🚨
+Before executing ANY request to add a new feature, architecture option, or component to this CLI, you MUST:
+1. Read the feature development skill protocol: `prompts/skills/feature-development.md`
+2. Acknowledge the 6-step checklist to the user before generating any code.
+3. Ensure no steps are skipped (especially updating docs and templates).
+
+## Project Context
+- Entry point: `bin/index.js`
+- Core Logic: `lib/generator.js`
+- Prompts: `lib/prompts.js`
+- Target Templates: `templates/`
+- Documentation: `docs/` (VitePress)
+
+Follow these rules strictly to ensure zero broken code and zero missing UI updates.

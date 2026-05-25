@@ -1,6 +1,6 @@
 {
   "name": "nodejs-quickstart-structure",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "type": "module",
   "description": "The ultimate nodejs quickstart structure CLI to scaffold Node.js microservices with MVC or Clean Architecture",
   "main": "bin/index.js",
@@ -55,6 +55,7 @@
   },
   "homepage": "https://github.com/paudang/nodejs-quickstart-structure#readme",
   "license": "ISC",
+  "funding": "https://ko-fi.com/paudang",
   "dependencies": {
     "chalk": "^5.4.1",
     "commander": "^14.0.3",

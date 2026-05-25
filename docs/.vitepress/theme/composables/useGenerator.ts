@@ -13,7 +13,8 @@ const form = reactive({
   ciProvider: 'GitHub Actions',
   includeSecurity: false,
   auth: 'None',
-  terraform: 'None'
+  terraform: 'None',
+  resilience: [] as string[]
 });
 
 const errors = reactive({
@@ -104,6 +105,8 @@ const cliCommand = computed(() => {
 
   if (form.terraform && form.terraform !== 'None') {
     cmd += ` --terraform "${form.terraform}"`;
+  } else if (isAdvanced && form.terraform === 'None') {
+    cmd += ` --terraform None`;
   }
 
   if (form.ciProvider !== 'None') {
@@ -112,6 +115,12 @@ const cliCommand = computed(() => {
     } else {
       cmd += ` --no-include-security`;
     }
+  }
+
+  if (form.resilience && form.resilience.length > 0) {
+    cmd += ` --resilience ${form.resilience.join(' ')}`;
+  } else if (isAdvanced && form.resilience.length === 0) {
+    cmd += ` --resilience None`;
   }
 
   cmd += isAdvanced ? ' --advanced-options' : ' --no-advanced-options';

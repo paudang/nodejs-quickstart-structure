@@ -70,6 +70,7 @@ export default defineConfig({
           { text: 'Communication (REST/GraphQL/Kafka)', link: '/features/communication' },
           { text: 'Database & Migrations', link: '/features/database' },
           { text: 'Caching Strategy', link: '/features/caching' },
+          { text: 'Application Resilience', link: '/features/resilience' },
           { text: 'AI-Native Development', link: '/features/ai-native' },
         ]
       },

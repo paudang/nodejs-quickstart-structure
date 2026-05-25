@@ -26,6 +26,7 @@ const COMMUNICATIONS = ['REST APIs', 'GraphQL', 'Kafka'];
 const CACHING = ['None', 'Redis', 'Memory Cache'];
 const VIEW_ENGINES_MVC = ['EJS', 'Pug', 'None'];
 const AUTHS = ['None', 'JWT', 'Google - Github - JWT'];
+const RESILIENCE = ['None', 'Timeout,Retry,CircuitBreaker'];
 
 export const combinations = [];
 
@@ -37,28 +38,31 @@ LANGUAGES.forEach(lang => {
             const cachingOptions = db !== 'None' ? CACHING : ['None'];
 
             cachingOptions.forEach(cache => {
-                const config = {
-                    projectName: `test_clean_${lang}_${db}_${comm}_${cache}_${auth}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-                    language: lang,
-                    architecture: 'Clean Architecture',
-                    viewEngine: 'None', 
-                    database: db,
-                    dbName: db !== 'None' ? 'testdb' : undefined,
-                    communication: comm,
-                    caching: cache,
-                    ciProvider: 'GitHub Actions',
-                    includeSecurity: true
-                };
+                RESILIENCE.forEach(res => {
+                    const config = {
+                        projectName: `test_clean_${lang}_${db}_${comm}_${cache}_${auth}_${res === 'None' ? 'NoRes' : 'Res'}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                        language: lang,
+                        architecture: 'Clean Architecture',
+                        viewEngine: 'None', 
+                        database: db,
+                        dbName: db !== 'None' ? 'testdb' : undefined,
+                        communication: comm,
+                        caching: cache,
+                        ciProvider: 'GitHub Actions',
+                        includeSecurity: true,
+                        resilience: res
+                    };
 
-                if (auth === 'Google - Github - JWT') {
-                    config.auth = ['JWT'];
-                    config.socialAuth = ['Google', 'GitHub'];
-                } else {
-                    config.auth = [auth];
-                    config.socialAuth = ['None'];
-                }
+                    if (auth === 'Google - Github - JWT') {
+                        config.auth = ['JWT'];
+                        config.socialAuth = ['Google', 'GitHub'];
+                    } else {
+                        config.auth = [auth];
+                        config.socialAuth = ['None'];
+                    }
 
-                combinations.push(config);
+                    combinations.push(config);
+                });
             });
         }
         });
@@ -74,28 +78,31 @@ LANGUAGES.forEach(lang => {
             for (const auth of AUTHS) {
                 const cachingOptions = db !== 'None' ? CACHING : ['None'];
                 cachingOptions.forEach(cache => {
-                    const config = {
-                        projectName: `test_mvc_${lang}_${view}_${db}_${comm}_${cache}_${auth}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-                        language: lang,
-                        architecture: 'MVC',
-                        viewEngine: view,
-                        database: db,
-                        dbName: db !== 'None' ? 'testdb' : undefined,
-                        communication: comm,
-                        caching: cache,
-                        ciProvider: 'GitHub Actions',
-                        includeSecurity: true
-                    };
+                    RESILIENCE.forEach(res => {
+                        const config = {
+                            projectName: `test_mvc_${lang}_${view}_${db}_${comm}_${cache}_${auth}_${res === 'None' ? 'NoRes' : 'Res'}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                            language: lang,
+                            architecture: 'MVC',
+                            viewEngine: view,
+                            database: db,
+                            dbName: db !== 'None' ? 'testdb' : undefined,
+                            communication: comm,
+                            caching: cache,
+                            ciProvider: 'GitHub Actions',
+                            includeSecurity: true,
+                            resilience: res
+                        };
 
-                    if (auth === 'Google - Github - JWT') {
-                        config.auth = ['JWT'];
-                        config.socialAuth = ['Google', 'GitHub'];
-                    } else {
-                        config.auth = [auth];
-                        config.socialAuth = ['None'];
-                    }
+                        if (auth === 'Google - Github - JWT') {
+                            config.auth = ['JWT'];
+                            config.socialAuth = ['Google', 'GitHub'];
+                        } else {
+                            config.auth = [auth];
+                            config.socialAuth = ['None'];
+                        }
 
-                    combinations.push(config);
+                        combinations.push(config);
+                    });
                 });
             }
             });
@@ -487,6 +494,10 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         if (config.socialAuth) {
             const socialOptions = Array.isArray(config.socialAuth) ? config.socialAuth : config.socialAuth.split(',');
             args.push('--social-auth', ...socialOptions);
+        }
+
+        if (config.resilience) {
+            args.push('--resilience', ...config.resilience.split(','));
         }
 
         const command = `node ${cliPath} ${args.join(' ')}`;

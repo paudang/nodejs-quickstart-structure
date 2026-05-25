@@ -1,0 +1,35 @@
+const logger = require('<% if (architecture === "MVC") { %>../logger<% } else { %>../../infrastructure/log/logger<% } %>');
+
+/**
+ * Wraps a promise with a timeout.
+ * Prevents resources from hanging indefinitely when an external dependency is slow.
+ * 
+ * @example
+ * ```javascript
+ * const data = await withTimeout(fetchUserData(userId), 5000);
+ * ```
+ * 
+ * @param {Promise<any>} promise - The promise to wrap.
+ * @param {number} ms - Timeout in milliseconds.
+ * @returns {Promise<any>} A new promise that rejects if the timeout is reached.
+ */
+const withTimeout = (promise, ms) => {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+            logger.warn(`[Timeout] Operation timed out after ${ms}ms`);
+            reject(new Error(`Operation timed out after ${ms}ms`));
+        }, ms);
+
+        promise
+            .then((value) => {
+                clearTimeout(timer);
+                resolve(value);
+            })
+            .catch((reason) => {
+                clearTimeout(timer);
+                reject(reason);
+            });
+    });
+};
+
+module.exports = { withTimeout };

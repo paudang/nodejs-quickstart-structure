@@ -1,0 +1,57 @@
+const { CircuitBreaker } = require('@/utils/resilience/circuitBreaker');
+
+jest.mock('<% if (architecture === "MVC") { %>@/utils/logger<% } else { %>@/infrastructure/log/logger<% } %>', () => ({
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn()
+}));
+
+describe('CircuitBreaker Utility', () => {
+    beforeEach(() => {
+        jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
+    it('should execute operation when CLOSED', async () => {
+        const breaker = new CircuitBreaker(3, 5000);
+        const operation = jest.fn().mockResolvedValue('success');
+        
+        const result = await breaker.fire(operation);
+        expect(result).toBe('success');
+        expect(breaker.state).toBe('CLOSED');
+    });
+
+    it('should OPEN after failureThreshold is reached', async () => {
+        const breaker = new CircuitBreaker(2, 5000);
+        const operation = jest.fn().mockRejectedValue(new Error('fail'));
+        
+        await expect(breaker.fire(operation)).rejects.toThrow('fail');
+        await expect(breaker.fire(operation)).rejects.toThrow('fail');
+        
+        expect(breaker.state).toBe('OPEN');
+        
+        const nextOperation = jest.fn().mockResolvedValue('success');
+        await expect(breaker.fire(nextOperation)).rejects.toThrow('Circuit is OPEN');
+        expect(nextOperation).not.toHaveBeenCalled();
+    });
+
+    it('should transition to HALF_OPEN after resetTimeout', async () => {
+        const breaker = new CircuitBreaker(1, 5000);
+        const operation = jest.fn().mockRejectedValue(new Error('fail'));
+        
+        await expect(breaker.fire(operation)).rejects.toThrow('fail');
+        expect(breaker.state).toBe('OPEN');
+        
+        // Fast forward time
+        jest.advanceTimersByTime(5000);
+        
+        const successOperation = jest.fn().mockResolvedValue('success');
+        const result = await breaker.fire(successOperation);
+        
+        expect(result).toBe('success');
+        expect(breaker.state).toBe('CLOSED');
+    });
+});

@@ -40,7 +40,7 @@ LANGUAGES.forEach(lang => {
                                     socialAuthOptions.forEach(socialAuth => {
                                         TERRAFORM_TIERS.forEach(tf => {
                                             combinations.push({
-                                                projectName: `t23760_${Math.random().toString(36).substring(2, 8)}`,
+                                                projectName: `t190080_${Math.random().toString(36).substring(2, 8)}`,
                                                 language: lang,
                                                 architecture: arch,
                                                 viewEngine: view,
@@ -102,7 +102,7 @@ function pLimit(concurrency) {
 }
 
 async function runTest(config, index) {
-    const testDir = path.resolve(__dirname, '../temp_23760_workspace');
+    const testDir = path.resolve(__dirname, '../temp_190080_workspace');
     const projectPath = path.join(testDir, config.projectName);
 
     try {
@@ -162,7 +162,7 @@ async function runTest(config, index) {
 
 async function start() {
     console.log(`${ANSI_CYAN}>>> Preparing Exhaustive Matrix Verification for ${combinations.length} combinations...${ANSI_RESET}`);
-    await fs.remove(path.resolve(__dirname, '../temp_23760_workspace'));
+    await fs.remove(path.resolve(__dirname, '../temp_190080_workspace'));
 
     // 50 concurrency for generating IO file chunks locally without dragging the system down.
     const concurrency = parseInt(process.argv[2] || "5");
@@ -194,21 +194,21 @@ async function start() {
 
     const timeTaken = ((Date.now() - startTime) / 1000).toFixed(1);
 
-    console.log(`\n${ANSI_CYAN}=== 23,760 Validation Summary ===${ANSI_RESET}`);
+    console.log(`\n${ANSI_CYAN}=== 190,080 Validation Summary ===${ANSI_RESET}`);
     console.log(`Execution Time: ${timeTaken}s`);
     console.log(`Total Variants Tested: ${passed + failed}`);
     console.log(`${ANSI_GREEN}Passed (Zero Templates Errors): ${passed}${ANSI_RESET}`);
 
     if (failed > 0) {
         console.log(`${ANSI_RED}Failed Template Triggers: ${failed}${ANSI_RESET}`);
-        fs.writeFileSync('23760_failures.log', JSON.stringify(failures, null, 2));
-        console.log(`${ANSI_RED}Check 23760_failures.log for EJS rendering traces.${ANSI_RESET}`);
+        fs.writeFileSync('190080_failures.log', JSON.stringify(failures, null, 2));
+        console.log(`${ANSI_RED}Check 190080_failures.log for EJS rendering traces.${ANSI_RESET}`);
         process.exit(1);
     } else {
-        console.log(`${ANSI_GREEN}✓ SUCCESS! All 23,760 UI-mapped combinations cleanly render templates!${ANSI_RESET}`);
+        console.log(`${ANSI_GREEN}✓ SUCCESS! All 190,080 UI-mapped combinations cleanly render templates!${ANSI_RESET}`);
     }
 
-    await fs.remove(path.resolve(__dirname, '../temp_23760_workspace'));
+    await fs.remove(path.resolve(__dirname, '../temp_190080_workspace'));
 }
 
 start();

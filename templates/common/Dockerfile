@@ -44,7 +44,7 @@ RUN corepack enable && corepack prepare npm@11.6.4 --activate
 COPY package*.json ./
 
 # Install ONLY production dependencies
-RUN npm ci --only=production --ignore-scripts --no-audit --no-fund || npm ci --only=production --ignore-scripts --no-audit --no-fund || npm ci --only=production --ignore-scripts --no-audit --no-fund
+RUN npm ci --omit=dev --ignore-scripts --no-audit --no-fund || npm ci --omit=dev --ignore-scripts --no-audit --no-fund || npm ci --omit=dev --ignore-scripts --no-audit --no-fund
 
 # Remove npm and caches to achieve Zero-Vulnerability status in the final image
 RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx /root/.npm /root/.cache

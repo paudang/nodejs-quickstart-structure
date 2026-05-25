@@ -1,0 +1,76 @@
+import logger from '<% if (architecture === "MVC") { %>@/utils/logger<% } else { %>@/infrastructure/log/logger<% } %>';
+
+/**
+ * Circuit Breaker pattern to protect failing services from cascading failures.
+ * 
+ * @example
+ * ```typescript
+ * const cb = new CircuitBreaker(3, 5000); // Opens after 3 failures, resets in 5s
+ * const data = await cb.fire(() => fetchUserData(userId));
+ * ```
+ */
+export class CircuitBreaker {
+    private failureThreshold: number;
+    private resetTimeout: number;
+    private state: 'CLOSED' | 'OPEN' | 'HALF_OPEN';
+    private failureCount: number;
+    private nextAttempt: number;
+
+    constructor(failureThreshold: number = 3, resetTimeout: number = 5000) {
+        this.failureThreshold = failureThreshold;
+        this.resetTimeout = resetTimeout;
+        this.state = 'CLOSED';
+        this.failureCount = 0;
+        this.nextAttempt = Date.now();
+    }
+
+    async fire<T>(operation: () => Promise<T>): Promise<T> {
+        if (this.state === 'OPEN') {
+            if (this.nextAttempt <= Date.now()) {
+                this.state = 'HALF_OPEN';
+                logger.info('[CircuitBreaker] State changed from OPEN to HALF_OPEN. Testing service...');
+            } else {
+                logger.warn('[CircuitBreaker] Circuit is OPEN. Rejecting request to prevent cascading failure.');
+                throw new Error('Circuit is OPEN');
+            }
+        } else if (this.state === 'HALF_OPEN') {
+            // Prevent thundering herd on recovering service by rejecting concurrent requests during test phase
+            logger.warn('[CircuitBreaker] Circuit is HALF_OPEN. Rejecting concurrent requests until test resolves.');
+            throw new Error('Circuit is HALF_OPEN');
+        }
+
+        try {
+            const result = await operation();
+            this.onSuccess();
+            return result;
+        } catch (error) {
+            this.onFailure();
+            throw error;
+        }
+    }
+
+    private onSuccess(): void {
+        this.failureCount = 0;
+        if (this.state === 'HALF_OPEN') {
+            this.state = 'CLOSED';
+            logger.info('[CircuitBreaker] Service recovered. State changed from HALF_OPEN to CLOSED.');
+        }
+    }
+
+    private onFailure(): void {
+        this.failureCount += 1;
+        
+        if (this.state === 'HALF_OPEN') {
+            this.state = 'OPEN';
+            this.nextAttempt = Date.now() + this.resetTimeout;
+            logger.warn('[CircuitBreaker] Service test failed. State changed from HALF_OPEN to OPEN.');
+            return;
+        }
+
+        if (this.failureCount >= this.failureThreshold) {
+            this.state = 'OPEN';
+            this.nextAttempt = Date.now() + this.resetTimeout;
+            logger.error(`[CircuitBreaker] Failure threshold (${this.failureThreshold}) reached. Circuit changed from CLOSED to OPEN.`);
+        }
+    }
+}
