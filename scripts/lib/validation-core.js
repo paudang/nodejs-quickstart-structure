@@ -467,7 +467,8 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             ...(config.dbName ? ['--db-name', config.dbName] : []),
             '--communication', `"${config.communication}"`,
             '--ci-provider', `"${config.ciProvider}"`,
-            '--terraform', '"None"'
+            '--terraform', '"Standard"',
+            '--cloud-provider', '"AWS"'
         ];
 
         if (config.includeSecurity) {
@@ -484,11 +485,8 @@ export async function runTest(config, index, options = {}, sharedPorts) {
 
         if (config.auth) {
             args.push('--auth', ...config.auth);
-            if (config.auth.some(a => a !== 'None')) {
-                args.push('--advanced-options');
-            } else {
-                args.push('--no-advanced-options');
-            }
+            // Since we are forcing terraform to Standard, advanced-options must be enabled
+            args.push('--advanced-options');
         }
 
         if (config.socialAuth) {

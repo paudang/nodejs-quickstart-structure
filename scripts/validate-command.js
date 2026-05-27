@@ -20,6 +20,7 @@ const CI_PROVIDERS = ['None', 'GitHub Actions', 'Jenkins', 'GitLab CI', 'CircleC
 const AUTH_MODES = ['None', 'JWT'];
 const SOCIAL_AUTH_MODES = ['None', 'Google,GitHub'];
 const TERRAFORM_TIERS = ['None', 'Standard', 'Production'];
+const CLOUD_PROVIDERS = ['AWS', 'GCP', 'Azure'];
 
 const combinations = [];
 
@@ -39,21 +40,25 @@ LANGUAGES.forEach(lang => {
                                     const socialAuthOptions = auth === 'JWT' ? SOCIAL_AUTH_MODES : ['None'];
                                     socialAuthOptions.forEach(socialAuth => {
                                         TERRAFORM_TIERS.forEach(tf => {
-                                            combinations.push({
-                                                projectName: `t190080_${Math.random().toString(36).substring(2, 8)}`,
-                                                language: lang,
-                                                architecture: arch,
-                                                viewEngine: view,
-                                                database: db,
-                                                dbName: db !== 'None' ? 'testdb' : undefined,
-                                                communication: comm,
-                                                caching: cache,
-                                                ciProvider: ci,
-                                                includeSecurity: sec,
-                                                auth: auth,
-                                                socialAuth: socialAuth,
-                                                advancedOptions: auth !== 'None' || tf !== 'None',
-                                                terraform: tf
+                                            const cloudOptions = tf !== 'None' ? CLOUD_PROVIDERS : ['AWS'];
+                                            cloudOptions.forEach(cloud => {
+                                                combinations.push({
+                                                    projectName: `t190080_${Math.random().toString(36).substring(2, 8)}`,
+                                                    language: lang,
+                                                    architecture: arch,
+                                                    viewEngine: view,
+                                                    database: db,
+                                                    dbName: db !== 'None' ? 'testdb' : undefined,
+                                                    communication: comm,
+                                                    caching: cache,
+                                                    ciProvider: ci,
+                                                    includeSecurity: sec,
+                                                    auth: auth,
+                                                    socialAuth: socialAuth,
+                                                    advancedOptions: auth !== 'None' || tf !== 'None',
+                                                    terraform: tf,
+                                                    cloudProvider: cloud
+                                                });
                                             });
                                         });
                                     });
@@ -102,7 +107,7 @@ function pLimit(concurrency) {
 }
 
 async function runTest(config, index) {
-    const testDir = path.resolve(__dirname, '../temp_190080_workspace');
+    const testDir = path.resolve(__dirname, '../temp_command_workspace');
     const projectPath = path.join(testDir, config.projectName);
 
     try {
@@ -149,6 +154,12 @@ async function runTest(config, index) {
             args.push('--terraform', config.terraform);
         }
 
+        if (config.cloudProvider && config.terraform !== 'None') {
+            args.push('--cloud-provider', config.cloudProvider);
+        }
+
+        args.push('--resilience', 'None');
+
         const command = `node ${cliPath} ${args.join(' ')}`;
         await runCommand(command, testDir);
 
@@ -162,7 +173,7 @@ async function runTest(config, index) {
 
 async function start() {
     console.log(`${ANSI_CYAN}>>> Preparing Exhaustive Matrix Verification for ${combinations.length} combinations...${ANSI_RESET}`);
-    await fs.remove(path.resolve(__dirname, '../temp_190080_workspace'));
+    await fs.remove(path.resolve(__dirname, '../temp_command_workspace'));
 
     // 50 concurrency for generating IO file chunks locally without dragging the system down.
     const concurrency = parseInt(process.argv[2] || "5");
@@ -194,21 +205,21 @@ async function start() {
 
     const timeTaken = ((Date.now() - startTime) / 1000).toFixed(1);
 
-    console.log(`\n${ANSI_CYAN}=== 190,080 Validation Summary ===${ANSI_RESET}`);
+    console.log(`\n${ANSI_CYAN}=== Validation Summary ===${ANSI_RESET}`);
     console.log(`Execution Time: ${timeTaken}s`);
     console.log(`Total Variants Tested: ${passed + failed}`);
     console.log(`${ANSI_GREEN}Passed (Zero Templates Errors): ${passed}${ANSI_RESET}`);
 
     if (failed > 0) {
         console.log(`${ANSI_RED}Failed Template Triggers: ${failed}${ANSI_RESET}`);
-        fs.writeFileSync('190080_failures.log', JSON.stringify(failures, null, 2));
-        console.log(`${ANSI_RED}Check 190080_failures.log for EJS rendering traces.${ANSI_RESET}`);
+        fs.writeFileSync('failures.log', JSON.stringify(failures, null, 2));
+        console.log(`${ANSI_RED}Check failures.log for EJS rendering traces.${ANSI_RESET}`);
         process.exit(1);
     } else {
-        console.log(`${ANSI_GREEN}✓ SUCCESS! All 190,080 UI-mapped combinations cleanly render templates!${ANSI_RESET}`);
+        console.log(`${ANSI_GREEN}✓ SUCCESS! All ${combinations.length} UI-mapped combinations cleanly render templates!${ANSI_RESET}`);
     }
 
-    await fs.remove(path.resolve(__dirname, '../temp_190080_workspace'));
+    await fs.remove(path.resolve(__dirname, '../temp_command_workspace'));
 }
 
 start();

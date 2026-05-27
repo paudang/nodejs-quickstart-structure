@@ -17,7 +17,7 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
 - [What's New](#whats-new-in-v21-the-authentication-release)
 - [Key Features](#key-features)
 - [Professional Standards](#professional-standards)
-- [190K Project Combinations](#190k-project-combinations)
+- [443K Project Combinations](#190k-project-combinations)
 - [Configuration Options](#configuration-options)
 - [Generated Project Structure](#generated-project-structure)
 - [Documentation](#documentation)
@@ -63,7 +63,7 @@ The v2.4.0 release focuses on enterprise-grade stability, enhanced security patt
  The v2.3.0 release brings professional-grade Infrastructure as Code (IaC) to your generated projects:
  
 - **Terraform Infrastructure Integration (IaC)**: Support for modular, production-ready AWS Terraform scaffolding with Multi-AZ VPC network isolation, WAF, application load balancers, database layers, and ElastiCache.
-- **Massive Matrix Expansion**: Now supporting **190K+ unique project scenarios**, mathematically validated for template consistency.
+- **Massive Matrix Expansion**: Now supporting **443K+ unique project scenarios**, mathematically validated for template consistency.
 
 ---
 
@@ -93,14 +93,14 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 
 ---
 
-## 190K Project Combinations
+## 443K Project Combinations
 
 The CLI supports a massive number of configurations to fit your exact needs:
 
 - **2,160 Core Combinations**:
-  - **MVC Architecture**: 1,620 variants (Languages × View Engines × Databases × Communication Patterns × Caching × Auth × Infrastructure)
-  - **Clean Architecture**: 540 variants (Languages × Databases × Communication Patterns × Caching × Auth × Infrastructure)
-- **190,080+ Total Scenarios**:
+  - **MVC Architecture**: 3,780 variants (Languages × View Engines × Databases × Communication Patterns × Caching × Auth × Infrastructure)
+  - **Clean Architecture**: 1,260 variants (Languages × Databases × Communication Patterns × Caching × Auth × Infrastructure)
+- **443,520+ Total Scenarios**:
   - Every combination can be generated across 5 CI/CD providers.
   - Optional **Enterprise-Grade Security Hardening** doubles the scenarios.
   - Every single scenario is verified to be compatible with our **80% Coverage Threshold** policy.

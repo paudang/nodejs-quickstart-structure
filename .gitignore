@@ -19,9 +19,8 @@ test_ts_app/
 test_readme_app/
 test_results.log
 temp_test_workspace
-temp_test_workspace_old
-temp_5280_workspace
-temp_23760_workspace
+temp_command_workspace
+temp_190080_workspace
 coverage/
 .terraform_test
 

@@ -117,8 +117,17 @@
           <label class="form-label">Infrastructure (IaC - Terraform)</label>
           <select class="form-control" v-model="form.terraform">
             <option value="None">None (No infrastructure files)</option>
-            <option value="Standard">Standard (Single EC2 - Cost Efficient)</option>
-            <option value="Production">Production (WAF + ALB + Private Subnets - High Availability)</option>
+            <option value="Standard">Standard (Single VM - Cost Efficient)</option>
+            <option value="Production">Production (WAF + LB + Private Subnets - High Availability)</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;" v-if="form.terraform !== 'None'">
+          <label class="form-label">Cloud Provider (Terraform)</label>
+          <select class="form-control" v-model="form.cloudProvider">
+            <option value="AWS">AWS</option>
+            <option value="GCP">GCP</option>
+            <option value="Azure">Azure</option>
           </select>
         </div>
         <div class="form-group" style="grid-column: 1 / -1;">

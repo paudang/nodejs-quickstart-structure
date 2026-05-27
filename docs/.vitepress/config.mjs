@@ -44,7 +44,6 @@ export default defineConfig({
         items: [
           { text: 'Introduction', link: '/guide/introduction' },
           { text: 'Quick Start', link: '/guide/getting-started' },
-          { text: 'V2 Web Generator (Beta) ', link: '/guide/browser-generator' },
         ]
       },
       {
@@ -77,7 +76,7 @@ export default defineConfig({
       {
         text: 'Infrastructure',
         items: [
-          { text: 'AWS (Terraform)', link: '/infrastructure/aws-terraform' },
+          { text: 'Terraform (AWS/GCP/Azure)', link: '/infrastructure/terraform' },
         ]
       },
       {

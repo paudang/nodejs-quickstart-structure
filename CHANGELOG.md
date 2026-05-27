@@ -1,5 +1,14 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] - 2026-05-27
+
+### Added
+- **Multi-Cloud Terraform Scaffolding**: Expanded Terraform support beyond AWS to include fully native, production-ready modules for **Google Cloud (GCP)** and **Microsoft Azure**.
+  - **GCP**: Implemented VPCs, Cloud NAT, Compute Engine, and Cloud SQL using Google's best practices.
+  - **Azure**: Implemented VNets, NAT Gateways, Virtual Machines (with dynamic SSH key generation via `tls_private_key`), and Flexible Server.
+- **Unified Infrastructure Documentation**: Consolidated cloud-specific documentation into a single, cohesive `terraform.md` guide utilizing VitePress code groups for seamless multi-platform tutorials.
+- **Cloud-Agnostic Validation Core**: Updated `validation-core.js` to intelligently default Docker E2E testing to AWS to optimize CI pipeline speed while guaranteeing mathematical equivalence across cloud providers.
+
 ## [2.4.0] - 2026-05-25
 
 ### Added

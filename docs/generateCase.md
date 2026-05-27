@@ -1,6 +1,6 @@
 # NodeJS Quickstart Generator - Test Cases
 
-This document explains the mathematical verification matrix of the **190,080+ unique project scenarios** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases, communication patterns, caching, authentication options, CI/CD pipelines, security hardening, resilience patterns, and Terraform infrastructure tiers.
+This document explains the mathematical verification matrix of the **443,520+ unique project scenarios** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases, communication patterns, caching, authentication options, CI/CD pipelines, security hardening, resilience patterns, and Terraform infrastructure tiers.
 
 ## Summary of Matrix Dimensions
 - **Languages**: 2 (`JavaScript`, `TypeScript`)
@@ -10,35 +10,35 @@ This document explains the mathematical verification matrix of the **190,080+ un
 - **Communication Patterns**: 3 (`REST APIs`, `GraphQL`, `Kafka`)
 - **Caching Layers**: 3 (`None`, `Redis`, `Memory Cache`) *— Note: caching defaults to `None` if database is `None`*
 - **Authentication**: 3 (`None`, `JWT`, `OAuth2 Google/GitHub + JWT`)
-- **Infrastructure (IaC - Terraform)**: 3 (`None`, `Standard`, `Production`)
+- **Infrastructure (IaC - Terraform)**: 7 states (`None`, `Standard` (AWS, GCP, Azure), `Production` (AWS, GCP, Azure))
 - **Resilience Patterns**: 8 states (Combinations of `Timeout`, `Retry`, `CircuitBreaker`)
 
 ---
 
 ## Mathematical Verification Matrix Breakdown
 
-### 1. Core Combinations (2,160 Core Combinations)
+### 1. Core Combinations (5,040 Core Combinations)
 Core combinations represent the variations of the generated application code itself across Languages, View Engines, Databases, Communication, Caching, Authentication, and Infrastructure:
 
-- **MVC Architecture**: 1,620 Combinations
-  - **With Database (1,458)**: 2 Lang × 3 View × 3 DB × 3 Comm × 3 Auth × 3 Caching × 3 Terraform = 1,458
-  - **No Database (162)**: 2 Lang × 3 View × 1 DB × 3 Comm × 3 Auth × 1 Caching (None) × 3 Terraform = 162
-- **Clean Architecture**: 540 Combinations
-  - **With Database (486)**: 2 Lang × 1 View (None) × 3 DB × 3 Comm × 3 Auth × 3 Caching × 3 Terraform = 486
-  - **No Database (54)**: 2 Lang × 1 View (None) × 1 DB × 3 Comm × 3 Auth × 1 Caching (None) × 3 Terraform = 54
+- **MVC Architecture**: 3,780 Combinations
+  - **With Database (3,402)**: 2 Lang × 3 View × 3 DB × 3 Comm × 3 Auth × 3 Caching × 7 Terraform = 3,402
+  - **No Database (378)**: 2 Lang × 3 View × 1 DB × 3 Comm × 3 Auth × 1 Caching (None) × 7 Terraform = 378
+- **Clean Architecture**: 1,260 Combinations
+  - **With Database (1,134)**: 2 Lang × 1 View (None) × 3 DB × 3 Comm × 3 Auth × 3 Caching × 7 Terraform = 1,134
+  - **No Database (126)**: 2 Lang × 1 View (None) × 1 DB × 3 Comm × 3 Auth × 1 Caching (None) × 7 Terraform = 126
 
-**Total Core Combinations: 2,160**
+**Total Core Combinations: 5,040**
 
 ---
 
-### 2. DevOps, Security & Resilience Scenarios (190,080 Total Permutations)
+### 2. DevOps, Security & Resilience Scenarios (443,520 Total Permutations)
 Each core combination can be deployed across multiple environments with conditional CI/CD configurations and Application Resilience patterns:
 - **CI/CD Providers**: `None` (1 state) or one of the **5 CI Providers** (`GitHub Actions`, `Jenkins`, `GitLab CI`, `CircleCI`, `Bitbucket Pipelines`) in two states (with or without **Enterprise Security Hardening**: Snyk, SonarQube).
 - **CI/CD Multiplier**: `1 + 5 × 2 = 11` states.
 - **Resilience Patterns**: 3 optional features (`Timeout`, `Retry`, `CircuitBreaker`), which generate `2³ = 8` combination states.
 - **Combined Extended Multiplier**: 11 × 8 = 88 states.
 
-> **Total Validated Scenarios**: 2,160 Core Combinations × 88 Extended States = **190,080 Cases**
+> **Total Validated Scenarios**: 5,040 Core Combinations × 88 Extended States = **443,520 Cases**
 
 ---
 

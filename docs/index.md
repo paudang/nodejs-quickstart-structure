@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "Node.js Quickstart Generator"
   text: "Production-ready structure in seconds"
-  tagline: "Scaffold MVC or Clean Architecture with Authentication, Kafka, GraphQL, and more."
+  tagline: "Scaffold MVC or Clean Architecture with Auth, Kafka, GraphQL, and Multi-Cloud Terraform."
   actions:
     - theme: brand
       text:  Quickstart
@@ -17,18 +17,18 @@ hero:
       link: https://ko-fi.com/paudang
   
 features:
-  - title: 190k Combinations
+  - title: 443k Combinations
     details: Language (TS/JS), Architecture (MVC/Clean), Auth, Communication (REST/GraphQL/Kafka), CI/CD/Security, Resilience patterns and Terraform.
   - title: AI-Native Ready
     details: Pre-configured .cursorrules and Agent Skill prompts to boost your productivity with AI tools.
   - title: Production Standards
     details: Built-in E2E tests, graceful shutdown, health checks, and security headers.
-  - title: "Enterprise DevSecOps "
+  - title: "Enterprise DevSecOps"
     details: Hardened with Snyk & SonarCloud, plus multi-stage Docker and Flyway migrations out of the box.
-  - title: "Community Insights "
+  - title: "Community Insights"
     details: "Real-time ecosystem impact: [Live Metrics] (Deep architectural research)."
-  - title: "Next Gen: Web UI (Live Now) "
-    details: Try our browser-based generator featuring real-time visualization and unified configuration below.
+  - title: "Interactive Web Configurator"
+    details: Instantly design your architecture and generate commands using our real-time visual tool below.
 ---
 
 <script setup>

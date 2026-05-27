@@ -39,7 +39,7 @@ When you run the `init` command, you'll be prompted for:
 11. **Advanced Options**: Choose to unlock Authentication, Resilience, and Terraform.
 12. **Authentication**: Pluggable **JWT** and **(OAuth2 - Google/GitHub)** support.
 13. **Resilience**: Select from **Timeout**, **Retry**, and **Circuit Breaker** patterns.
-14. **Terraform (IaC)**: Scaffold AWS infrastructure files (**Standard** or **Production**).
+14. **Terraform (IaC)**: Scaffold AWS/GCP/Azure infrastructure files (**Standard** or **Production**).
 
 ## First Project Setup
 

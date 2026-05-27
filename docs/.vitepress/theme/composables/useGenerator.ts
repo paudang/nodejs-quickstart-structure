@@ -14,6 +14,7 @@ const form = reactive({
   includeSecurity: false,
   auth: 'None',
   terraform: 'None',
+  cloudProvider: 'AWS',
   resilience: [] as string[]
 });
 
@@ -105,6 +106,7 @@ const cliCommand = computed(() => {
 
   if (form.terraform && form.terraform !== 'None') {
     cmd += ` --terraform "${form.terraform}"`;
+    cmd += ` --cloud-provider "${form.cloudProvider}"`;
   } else if (isAdvanced && form.terraform === 'None') {
     cmd += ` --terraform None`;
   }
