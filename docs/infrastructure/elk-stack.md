@@ -33,7 +33,7 @@ This will spin up two containers:
 ### 2. Verify Elasticsearch Health
 
 You can check if Elasticsearch is running by visiting:
-[http://localhost:9200](http://localhost:9200)
+`http://localhost:9200`
 
 You should see a JSON response with the cluster name and version `8.14.0`.
 
@@ -78,7 +78,7 @@ logger.info('User successfully signed up', {
 ### 5. View Logs in Kibana
 
 Open Kibana in your browser:
-[http://localhost:5601](http://localhost:5601)
+`http://localhost:5601`
 
 To view the log you just sent, you need to configure Kibana to "see" your new index.
 
