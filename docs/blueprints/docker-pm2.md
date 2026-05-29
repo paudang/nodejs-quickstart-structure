@@ -63,6 +63,22 @@ docker build -t your-app-name .
 # Run Container
 docker run -p 3000:3000 your-app-name
 ```
+
+```bash [Full Stack + ELK (Optional)]
+# Ensure infrastructure and ELK are running
+docker-compose up -d db redis kafka
+docker-compose -f docker-compose.elk.yml up -d
+
+# Build Production Image
+docker build -t your-app-name .
+
+# Run Container (attached to the compose network)
+docker run -p 3000:3000 --network your-app-name_default \
+  -e DB_HOST=db \
+  -e REDIS_HOST=redis \
+  -e ELASTICSEARCH_URL=http://elasticsearch:9200 \
+  your-app-name
+```
 :::
 
 ---
@@ -81,6 +97,8 @@ The project is pre-configured for direct deployment to a VPS/EC2 instance using 
 2.  **Start Infrastructure (background services)**:
     ```bash
     docker-compose up -d db redis kafka
+    # Optional: Start ELK stack for centralized logging
+    docker-compose -f docker-compose.elk.yml up -d
     ```
 
 3.  **Wait 5-10s** for the database to fully initialize.
@@ -112,5 +130,7 @@ The project is pre-configured for direct deployment to a VPS/EC2 instance using 
 When shutting down, remember to stop the infrastructure:
 ```bash
 docker-compose down
+# Optional: Stop ELK stack
+docker-compose -f docker-compose.elk.yml down
 ```
 :::

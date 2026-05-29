@@ -14,10 +14,10 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
 ## Table of Contents
 
 - [Quick Start](#choose-your-journey)
-- [What's New](#whats-new-in-v21-the-authentication-release)
+- [What's New](#whats-new-in-v25-the-cloud--observability-release)
 - [Key Features](#key-features)
 - [Professional Standards](#professional-standards)
-- [443K Project Combinations](#190k-project-combinations)
+- [887K Project Combinations](#887k-project-combinations)
 - [Configuration Options](#configuration-options)
 - [Generated Project Structure](#generated-project-structure)
 - [Documentation](#documentation)
@@ -50,20 +50,13 @@ nodejs-quickstart init
 
 ---
 
-## What's New in v2.4 (The Resilience & Security Release)
+## What's New in v2.5 (The Cloud & Observability Release)
 
-The v2.4.0 release focuses on enterprise-grade stability, enhanced security patterns, and robust authentication mechanisms:
+The v2.5.0 release brings the boilerplate into the Big Tech era with enterprise cloud scaffolding and robust logging:
 
-- **Application Resilience**: Introduced fault-tolerance patterns including **Timeout**, **Retry**, and **Circuit Breaker** to handle transient failures in distributed systems.
-- **Security & Docker Standards**: Updated Dockerfiles to modern NPM standards (using `--omit=dev` for clean, zero-warning production builds).
----
-
-## What's New in v2.3 (The Infrastructure & Terraform Release)
- 
- The v2.3.0 release brings professional-grade Infrastructure as Code (IaC) to your generated projects:
- 
-- **Terraform Infrastructure Integration (IaC)**: Support for modular, production-ready AWS Terraform scaffolding with Multi-AZ VPC network isolation, WAF, application load balancers, database layers, and ElastiCache.
-- **Massive Matrix Expansion**: Now supporting **443K+ unique project scenarios**, mathematically validated for template consistency.
+- **Multi-Cloud Terraform**: Production-ready IaC templates for **GCP** (Cloud SQL, Compute Engine, VPC) and **Azure** (Flexible Server, Virtual Machines, VNet), joining our existing AWS support.
+- **ELK Native Winston Integration**: Swapped blocking streams for `winston-elasticsearch`, enabling asynchronous, batched log forwarding that doesn't block the Node.js event loop.
+- **Dynamic Boilerplate Trimming**: Intelligent dead code elimination (e.g., stripping unused OAuth controllers) based on your precise stack combinations.
 
 ---
 
@@ -93,14 +86,14 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 
 ---
 
-## 443K Project Combinations
+## 887K Project Combinations
 
 The CLI supports a massive number of configurations to fit your exact needs:
 
-- **2,160 Core Combinations**:
-  - **MVC Architecture**: 3,780 variants (Languages × View Engines × Databases × Communication Patterns × Caching × Auth × Infrastructure)
-  - **Clean Architecture**: 1,260 variants (Languages × Databases × Communication Patterns × Caching × Auth × Infrastructure)
-- **443,520+ Total Scenarios**:
+- **887,040+ Total Scenarios**:
+  - Languages (2) × Architectures (2) × Databases (4) × Comm Patterns (3) × Auth (3) × Caching (3) × Infrastructure Tiers (7) = **5,040 Core Combinations**
+  - **DevOps Multiplier**: CI/CD (11 states) × Resilience & Observability (16 states) = **176 Extended States**
+  - 5,040 × 176 = **887,040 Mathematically Verified Output States**:
   - Every combination can be generated across 5 CI/CD providers.
   - Optional **Enterprise-Grade Security Hardening** doubles the scenarios.
   - Every single scenario is verified to be compatible with our **80% Coverage Threshold** policy.
@@ -121,7 +114,8 @@ The CLI will guide you through:
 9. **CI/CD**: `GitHub Actions` | `Jenkins` | `GitLab CI` | `CircleCI` | `Bitbucket Pipelines`
 10. **Security**: (Optional) Snyk & SonarCloud Hardening
 11. **Resilience**: (Optional) `Timeout` | `Retry` | `Circuit Breaker`
-12. **Infrastructure**: (Optional IaC) `None` | `Standard` (Single EC2) | `Production` (WAF + ALB + Multi-AZ VPC)
+12. **Observability**: (Optional) Centralized Logging via `ELK Stack`
+13. **Cloud Infrastructure**: (Optional IaC) Terraform for `AWS` | `GCP` | `Azure` (`None` | `Standard` | `Production`)
 
 ---
 

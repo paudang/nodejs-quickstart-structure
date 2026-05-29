@@ -27,6 +27,7 @@ import { UserRepository } from '@/infrastructure/repositories/UserRepository';
 import { HTTP_STATUS } from '@/utils/httpCodes';
 
 export class AuthController {
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
   private setOAuthStateCookie(res: Response, state: string) {
     res.cookie('oauth_state', state, {
       httpOnly: true,
@@ -35,6 +36,7 @@ export class AuthController {
       maxAge: 10 * 60 * 1000
     });
   }
+<% } -%>
 
   async login(req: Request, res: Response, next: NextFunction) {
     try {

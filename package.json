@@ -1,6 +1,6 @@
 {
   "name": "nodejs-quickstart-structure",
-  "version": "2.4.1",
+  "version": "2.5.0",
   "type": "module",
   "description": "The ultimate nodejs quickstart structure CLI to scaffold Node.js microservices with MVC or Clean Architecture",
   "main": "bin/index.js",
@@ -8,7 +8,7 @@
     "nodejs-quickstart": "./bin/index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
     "test:e2e": "npm run test:e2e:windows",
     "test:e2e:windows": "node scripts/validate-windows.js",
     "test:e2e:linux": "node scripts/validate-linux.js",
@@ -69,6 +69,8 @@
     "postcss": "^8.5.10"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
+    "jest": "^30.4.2",
     "snyk": "^1.1303.2",
     "vitepress": "^1.6.4"
   },

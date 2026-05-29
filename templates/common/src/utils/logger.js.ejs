@@ -1,0 +1,55 @@
+import winston from 'winston';
+<% if (withELK) { %>import { ElasticsearchTransport } from 'winston-elasticsearch';
+<% } %>
+const { combine, timestamp, printf, colorize } = winston.format;
+
+const myFormat = printf(({ level, message, timestamp, stack }) => {
+    return `${timestamp} ${level}: ${stack || message}`;
+});
+
+const transports = [
+    new winston.transports.Console({
+        format: combine(
+            colorize(),
+            timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+            myFormat
+        )
+    })
+];
+
+<% if (withELK) { %>
+// ElasticSearch Integration (Automated Bulk Transport)
+const elasticUrl = process.env.ELASTICSEARCH_URL || 'http://localhost:9200';
+const esTransportOpts = {
+    level: 'info',
+    clientOpts: { 
+        node: elasticUrl,
+        requestTimeout: 5000,
+        maxRetries: 2
+    },
+    indexPrefix: 'my-app-logs',
+    indexSuffixPattern: 'YYYY.MM.DD'
+};
+const esTransport = new ElasticsearchTransport(esTransportOpts);
+esTransport.on('error', (err) => {
+    console.error('Elasticsearch Logger Error:', err.message);
+});
+transports.push(esTransport);
+<% } %>
+
+const logger = winston.createLogger({
+    level: process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'info' : 'debug'),
+    format: process.env.NODE_ENV === 'production'
+        ? winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.json()
+        )
+        : winston.format.combine(
+            winston.format.colorize(),
+            winston.format.timestamp(),
+            myFormat
+        ),
+    transports: transports
+});
+
+export default logger;

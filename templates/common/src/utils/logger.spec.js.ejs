@@ -1,0 +1,11 @@
+
+
+import logger from './logger<% if (language === 'TypeScript') { %>.<%= language === 'TypeScript' ? 'ts' : 'js' %><% } %>';
+
+describe('Logger Factory', () => {
+    it('should initialize gracefully', () => {
+        expect(logger).toBeDefined();
+        expect(typeof logger.info).toBe('function');
+        expect(typeof logger.error).toBe('function');
+    });
+});

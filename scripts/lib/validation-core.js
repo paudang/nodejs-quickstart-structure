@@ -61,6 +61,10 @@ LANGUAGES.forEach(lang => {
                         config.socialAuth = ['None'];
                     }
 
+                    if (lang === 'TypeScript' && db === 'PostgreSQL' && comm === 'REST APIs' && cache === 'Redis' && res === 'Timeout,Retry,CircuitBreaker') {
+                        config.withELK = true;
+                    }
+
                     combinations.push(config);
                 });
             });
@@ -99,6 +103,10 @@ LANGUAGES.forEach(lang => {
                         } else {
                             config.auth = [auth];
                             config.socialAuth = ['None'];
+                        }
+
+                        if (lang === 'JavaScript' && db === 'MongoDB' && comm === 'GraphQL' && cache === 'Redis' && res === 'None') {
+                            config.withELK = true;
                         }
 
                         combinations.push(config);
@@ -440,6 +448,8 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         KAFKA_PORT: kafkaPort,
         KAFKA_EXTERNAL_PORT: kafkaPort,
         REDIS_PORT: (await getFreePort(usedPorts)).toString(),
+        ELASTIC_PORT: (await getFreePort(usedPorts)).toString(),
+        KIBANA_PORT: (await getFreePort(usedPorts)).toString(),
         GOOGLE_CLIENT_ID: 'mock-google-client-id',
         GOOGLE_CLIENT_SECRET: 'mock-google-client-secret',
         GITHUB_CLIENT_ID: 'mock-github-client-id',
@@ -496,6 +506,14 @@ export async function runTest(config, index, options = {}, sharedPorts) {
 
         if (config.resilience) {
             args.push('--resilience', ...config.resilience.split(','));
+        }
+
+        if (config.withELK) {
+            args.push('--with-elk');
+            // Advanced options needed
+            if (!args.includes('--advanced-options')) {
+                args.push('--advanced-options');
+            }
         }
 
         const command = `node ${cliPath} ${args.join(' ')}`;
@@ -604,7 +622,10 @@ export async function runTest(config, index, options = {}, sharedPorts) {
 
         // 6. Docker Up
         log(`... Starting Docker ...`);
-        const composeCmd = 'docker compose'; 
+        let composeCmd = 'docker compose';
+        if (config.withELK) {
+            composeCmd += ' -f docker-compose.yml -f docker-compose.elk.yml';
+        } 
         try {
             await runCommand(`${composeCmd} down -v`, projectPath, TEST_ENV);
         } catch (e) {}
@@ -635,7 +656,11 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         log(`... Cleaning Up ...`);
         if (!skipDocker && isSuccess) {
             try {
-                await runCommand('docker compose down -v', projectPath, TEST_ENV);
+                let cleanupCmd = 'docker compose';
+                if (config.withELK) {
+                    cleanupCmd += ' -f docker-compose.yml -f docker-compose.elk.yml';
+                }
+                await runCommand(`${cleanupCmd} down -v`, projectPath, TEST_ENV);
             } catch (e) {}
         }
         

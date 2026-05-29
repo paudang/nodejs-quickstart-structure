@@ -77,6 +77,7 @@ export default defineConfig({
         text: 'Infrastructure',
         items: [
           { text: 'Terraform (AWS/GCP/Azure)', link: '/infrastructure/terraform' },
+          { text: 'Observability (ELK Stack)', link: '/infrastructure/elk-stack' },
         ]
       },
       {

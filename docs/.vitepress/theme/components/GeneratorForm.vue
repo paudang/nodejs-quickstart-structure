@@ -147,6 +147,16 @@
             </label>
           </div>
         </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label">Centralized Logging</label>
+          <div class="checkbox-group" style="margin-top: 0.5rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9em;">
+              <input type="checkbox" v-model="form.withELK" /> 
+              Enable ELK Stack (Elasticsearch & Kibana)
+            </label>
+          </div>
+        </div>
       </div>
     </div>
 

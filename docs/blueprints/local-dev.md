@@ -47,6 +47,20 @@ docker-compose up -d db redis kafka
 npm run dev
 ```
 
+```bash [Full Stack + ELK (Optional)]
+# Initialize repository
+git init && npm install
+
+# Start core infrastructure
+docker-compose up -d db redis kafka
+
+# Start ELK Stack (Centralized Logging)
+docker-compose -f docker-compose.elk.yml up -d
+
+# Start the application
+npm run dev
+```
+
 ```bash [REST + MongoDB]
 # Initialize repository
 git init && npm install

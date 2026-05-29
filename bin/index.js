@@ -38,6 +38,8 @@ program
     .option('--terraform <tier>', 'Infrastructure Tier (None, Standard, Production)')
     .option('--cloud-provider <provider>', 'Cloud Provider for Terraform (AWS, GCP, Azure)')
     .option('--resilience <features...>', 'Application Resilience Features (Timeout, Retry, CircuitBreaker)')
+    .option('--with-elk', 'Integrate ELK Stack for Centralized Logging')
+    .option('--no-with-elk', 'Disable ELK Stack')
     .option('--advanced-options', 'Enable Advanced Options')
     .option('--no-advanced-options', 'Disable Advanced Options')
     .action(async (options) => {

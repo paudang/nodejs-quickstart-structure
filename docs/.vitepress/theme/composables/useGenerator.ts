@@ -15,7 +15,8 @@ const form = reactive({
   auth: 'None',
   terraform: 'None',
   cloudProvider: 'AWS',
-  resilience: [] as string[]
+  resilience: [] as string[],
+  withELK: false
 });
 
 const errors = reactive({
@@ -123,6 +124,12 @@ const cliCommand = computed(() => {
     cmd += ` --resilience ${form.resilience.join(' ')}`;
   } else if (isAdvanced && form.resilience.length === 0) {
     cmd += ` --resilience None`;
+  }
+
+  if (isAdvanced && form.withELK) {
+    cmd += ` --with-elk`;
+  } else if (isAdvanced && !form.withELK) {
+    cmd += ` --no-with-elk`;
   }
 
   cmd += isAdvanced ? ' --advanced-options' : ' --no-advanced-options';

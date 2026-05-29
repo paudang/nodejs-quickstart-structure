@@ -1,0 +1,11 @@
+
+
+import logger from './logger';
+
+describe('Logger Factory', () => {
+    it('should initialize gracefully', () => {
+        expect(logger).toBeDefined();
+        expect(typeof logger.info).toBe('function');
+        expect(typeof logger.error).toBe('function');
+    });
+});

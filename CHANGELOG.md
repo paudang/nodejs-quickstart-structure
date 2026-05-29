@@ -1,13 +1,22 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.4.1] - 2026-05-27
+## [2.5.0] - 2026-05-29
 
 ### Added
 - **Multi-Cloud Terraform Scaffolding**: Expanded Terraform support beyond AWS to include fully native, production-ready modules for **Google Cloud (GCP)** and **Microsoft Azure**.
   - **GCP**: Implemented VPCs, Cloud NAT, Compute Engine, and Cloud SQL using Google's best practices.
   - **Azure**: Implemented VNets, NAT Gateways, Virtual Machines (with dynamic SSH key generation via `tls_private_key`), and Flexible Server.
 - **Unified Infrastructure Documentation**: Consolidated cloud-specific documentation into a single, cohesive `terraform.md` guide utilizing VitePress code groups for seamless multi-platform tutorials.
+- **ELK Native Winston Integration (Big Tech Standard)**: Replaced blocking manual streams with native `winston-elasticsearch` for automatic, background-batched log shipping to Elasticsearch without blocking the main event loop.
+
+### Changed
 - **Cloud-Agnostic Validation Core**: Updated `validation-core.js` to intelligently default Docker E2E testing to AWS to optimize CI pipeline speed while guaranteeing mathematical equivalence across cloud providers.
+- **Dynamic Auth Controllers**: Optimized `authController` templates to strip out unused OAuth state cookies (dead code) when social logins are excluded.
+
+### Fixed
+- **0-Vulnerability Baseline (NPM Overrides)**: Enforced strict dependency overrides in templates for `cookie` and `uuid` (fixing nested Snyk vulnerabilities from `elastic-apm-node` and `sequelize`), guaranteeing clean `npm audit` on fresh projects.
+- **Jest Mock Robustness**: Fixed a severe test pollution and syntax crash (`printf is not a function`) by correcting the `winston.format` mock execution order and adding missing formatters, restoring 100% stability to CI pipelines.
+- **Docker E2E Cleanup**: Fixed validation scripts to gracefully destroy ELK networks and volumes (`docker-compose.elk.yml down -v`) between E2E runs, eliminating hanging `EADDRINUSE` port lockups.
 
 ## [2.4.0] - 2026-05-25
 

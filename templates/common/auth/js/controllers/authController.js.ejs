@@ -41,9 +41,12 @@ class AuthController {
     this.githubCallback = this.githubCallback.bind(this);
 <% } -%>
 <% } -%>
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
     this.setOAuthStateCookie = this.setOAuthStateCookie.bind(this);
+<% } -%>
   }
 
+<% if (socialAuth && socialAuth.filter(a => a !== 'None').length > 0) { -%>
   setOAuthStateCookie(res, state) {
     res.cookie('oauth_state', state, {
       httpOnly: true,
@@ -52,6 +55,7 @@ class AuthController {
       maxAge: 10 * 60 * 1000
     });
   }
+<% } -%>
 
   async login(req, res, next) {
     try {
