@@ -70,14 +70,20 @@ program
             
             const needsInfrastructure = answers.database !== 'None' || answers.caching === 'Redis' || answers.communication === 'Kafka';
             
-            if (needsInfrastructure) {
+            if (needsInfrastructure || answers.withELK) {
                 let servicesToStart = '';
                 if (answers.database === 'MongoDB') servicesToStart += ' db';
                 else if (answers.database !== 'None') servicesToStart += ' db flyway';
                 if (answers.caching === 'Redis') servicesToStart += ' redis';
                 if (answers.communication === 'Kafka') servicesToStart += ' kafka';
                 
-                manualStartInstructions += `\n  docker-compose up -d${servicesToStart}  # Start infrastructure first\n  npm run dev`;
+                if (needsInfrastructure) {
+                    manualStartInstructions += `\n  docker-compose up -d${servicesToStart}  # Start infrastructure first`;
+                }
+                if (answers.withELK) {
+                    manualStartInstructions += `\n  docker-compose -f docker-compose.elk.yml up -d  # Start ELK Stack`;
+                }
+                manualStartInstructions += `\n  npm run dev`;
             } else {
                 manualStartInstructions += `\n  npm run dev`;
             }

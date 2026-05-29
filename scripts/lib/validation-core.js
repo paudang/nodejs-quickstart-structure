@@ -514,6 +514,8 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             if (!args.includes('--advanced-options')) {
                 args.push('--advanced-options');
             }
+        } else {
+            args.push('--no-with-elk');
         }
 
         const command = `node ${cliPath} ${args.join(' ')}`;
@@ -545,6 +547,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             ? 'npm install --no-audit --no-fund --prefer-offline --loglevel=error'
             : 'npm install --no-audit --no-fund --loglevel=error';
             
+        log(`... Running npm install (This can take 30-60s on Windows, please do NOT press Ctrl+C) ...`);
         await runCommand(npmCmd, projectPath);
 
         if (!usedBaseCache) {
