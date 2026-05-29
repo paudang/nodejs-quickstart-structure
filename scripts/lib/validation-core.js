@@ -35,7 +35,7 @@ LANGUAGES.forEach(lang => {
     DATABASES.forEach(db => {
         COMMUNICATIONS.forEach(comm => {
         for (const auth of AUTHS) {
-            const cachingOptions = db !== 'None' ? CACHING : ['None'];
+            const cachingOptions = CACHING;
 
             cachingOptions.forEach(cache => {
                 RESILIENCE.forEach(res => {
@@ -80,7 +80,7 @@ LANGUAGES.forEach(lang => {
         DATABASES.forEach(db => {
             COMMUNICATIONS.forEach(comm => {
             for (const auth of AUTHS) {
-                const cachingOptions = db !== 'None' ? CACHING : ['None'];
+                const cachingOptions = CACHING;
                 cachingOptions.forEach(cache => {
                     RESILIENCE.forEach(res => {
                         const config = {
@@ -477,6 +477,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             ...(config.dbName ? ['--db-name', config.dbName] : []),
             '--communication', `"${config.communication}"`,
             '--ci-provider', `"${config.ciProvider}"`,
+            '--advanced-options',
             '--terraform', '"Standard"',
             '--cloud-provider', '"AWS"'
         ];
@@ -495,8 +496,6 @@ export async function runTest(config, index, options = {}, sharedPorts) {
 
         if (config.auth) {
             args.push('--auth', ...config.auth);
-            // Since we are forcing terraform to Standard, advanced-options must be enabled
-            args.push('--advanced-options');
         }
 
         if (config.socialAuth) {
@@ -510,10 +509,6 @@ export async function runTest(config, index, options = {}, sharedPorts) {
 
         if (config.withELK) {
             args.push('--with-elk');
-            // Advanced options needed
-            if (!args.includes('--advanced-options')) {
-                args.push('--advanced-options');
-            }
         } else {
             args.push('--no-with-elk');
         }

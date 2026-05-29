@@ -44,6 +44,15 @@
       </div>
 
       <div class="form-group">
+        <label class="form-label">Communication</label>
+        <select class="form-control" v-model="form.communication">
+          <option>REST APIs</option>
+          <option>GraphQL</option>
+          <option>Kafka</option>
+        </select>
+      </div>
+
+      <div class="form-group">
         <label class="form-label">Database</label>
         <select class="form-control" v-model="form.database">
           <option>None</option>
@@ -60,20 +69,20 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Communication</label>
-        <select class="form-control" v-model="form.communication">
-          <option>REST APIs</option>
-          <option>GraphQL</option>
-          <option>Kafka</option>
-        </select>
-      </div>
-
-      <div class="form-group">
         <label class="form-label">Caching</label>
         <select class="form-control" v-model="form.caching">
           <option>None</option>
           <option>Redis</option>
           <option>Memory Cache</option>
+        </select>
+      </div>
+
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label class="form-label">Authentication</label>
+        <select class="form-control" v-model="form.auth">
+          <option value="None">None</option>
+          <option value="JWT Authentication">JWT Authentication</option>
+          <option value="OAuth2 - Google/GitHub - JWT">OAuth2 - Google/GitHub - JWT</option>
         </select>
       </div>
 
@@ -101,18 +110,9 @@
         style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; font-size: 0.9em; color: var(--vp-c-brand);"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :style="{ transform: showAdvanced ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        Advanced Options (Authentication, Terraform, Resilience, etc.)
+        Advanced Options (Terraform, Resilience, etc.)
       </div>
       <div v-show="showAdvanced" style="margin-top: 1rem;" class="form-grid">
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label class="form-label">Authentication</label>
-          <select class="form-control" v-model="form.auth">
-            <option value="None">None</option>
-            <option value="JWT Authentication">JWT Authentication</option>
-            <option value="OAuth2 - Google/GitHub - JWT">OAuth2 - Google/GitHub - JWT</option>
-          </select>
-        </div>
-
         <div class="form-group" style="grid-column: 1 / -1;">
           <label class="form-label">Infrastructure (IaC - Terraform)</label>
           <select class="form-control" v-model="form.terraform">

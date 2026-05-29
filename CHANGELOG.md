@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ELK Native Winston Integration (Big Tech Standard)**: Replaced blocking manual streams with native `winston-elasticsearch` for automatic, background-batched log shipping to Elasticsearch without blocking the main event loop.
 
 ### Changed
+- **System Design 6-Phase Flow**: Refactored the CLI prompts and Web Configurator (UI) layout to logically follow a 6-phase System Design architecture (Core -> Architecture -> Data -> Auth -> DevOps -> Advanced). Decoupled Authentication and Caching dependencies to unlock **1.06M+ mathematically verified project scenarios** (up from 887K).
 - **Cloud-Agnostic Validation Core**: Updated `validation-core.js` to intelligently default Docker E2E testing to AWS to optimize CI pipeline speed while guaranteeing mathematical equivalence across cloud providers.
 - **Dynamic Auth Controllers**: Optimized `authController` templates to strip out unused OAuth state cookies (dead code) when social logins are excluded.
 

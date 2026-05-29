@@ -17,7 +17,7 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
 - [What's New](#whats-new-in-v25-the-cloud--observability-release)
 - [Key Features](#key-features)
 - [Professional Standards](#professional-standards)
-- [887K Project Combinations](#887k-project-combinations)
+- [1.06M Project Combinations](#106m-project-combinations)
 - [Configuration Options](#configuration-options)
 - [Generated Project Structure](#generated-project-structure)
 - [Documentation](#documentation)
@@ -86,17 +86,15 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 
 ---
 
-## 887K Project Combinations
+## 1.06M+ Project Combinations
 
-The CLI supports a massive number of configurations to fit your exact needs:
+The CLI provides massive flexibility to fit your exact needs. Instead of a rigid boilerplate, it acts like architectural Lego blocks. 
 
-- **887,040+ Total Scenarios**:
-  - Languages (2) × Architectures (2) × Databases (4) × Comm Patterns (3) × Auth (3) × Caching (3) × Infrastructure Tiers (7) = **5,040 Core Combinations**
-  - **DevOps Multiplier**: CI/CD (11 states) × Resilience & Observability (16 states) = **176 Extended States**
-  - 5,040 × 176 = **887,040 Mathematically Verified Output States**:
-  - Every combination can be generated across 5 CI/CD providers.
-  - Optional **Enterprise-Grade Security Hardening** doubles the scenarios.
-  - Every single scenario is verified to be compatible with our **80% Coverage Threshold** policy.
+- **1,064,448+ Verified Scenarios**: Whether you choose `MongoDB + GraphQL + Redis` or `PostgreSQL + REST + No Cache`, the generated code compiles, runs, and passes tests out-of-the-box.
+- **Mix & Match**: Seamlessly combine your preferred Database, Caching, Auth, and Communication patterns.
+- **Enterprise-Ready**: Every combination guarantees compatibility with our **80% Test Coverage** policy, Docker builds, and CI/CD pipelines.
+
+> Curious about the math? Check out our [Mathematical Verification Matrix](docs/generateCase.md) for the full calculation.
 
 ---
 
@@ -107,15 +105,16 @@ The CLI will guide you through:
 2. **Language**: `JavaScript` | `TypeScript`
 3. **Architecture**: `MVC` | `Clean Architecture`
 4. **View Engine**: (MVC only) `None` | `EJS` | `Pug`
-5. **Database**: `MySQL` | `PostgreSQL` | `MongoDB`
-6. **Communication**: `REST` | `GraphQL` | `Kafka`
+5. **Communication**: `REST` | `GraphQL` | `Kafka`
+6. **Database**: `MySQL` | `PostgreSQL` | `MongoDB`
 7. **Caching**: `None` | `Redis` | `Memory Cache`
 8. **Auth**: `None` | `JWT` | `OAuth2 (Google/GitHub) + JWT`
 9. **CI/CD**: `GitHub Actions` | `Jenkins` | `GitLab CI` | `CircleCI` | `Bitbucket Pipelines`
 10. **Security**: (Optional) Snyk & SonarCloud Hardening
-11. **Resilience**: (Optional) `Timeout` | `Retry` | `Circuit Breaker`
-12. **Observability**: (Optional) Centralized Logging via `ELK Stack`
-13. **Cloud Infrastructure**: (Optional IaC) Terraform for `AWS` | `GCP` | `Azure` (`None` | `Standard` | `Production`)
+11. **Advanced Options**: `Yes` | `No`
+    - **Resilience**: (Optional) `Timeout` | `Retry` | `Circuit Breaker`
+    - **Cloud Infrastructure**: (Optional IaC) Terraform for `AWS` | `GCP` | `Azure` (`None` | `Standard` | `Production`)
+    - **Observability**: (Optional) Centralized Logging via `ELK Stack`
 
 ---
 

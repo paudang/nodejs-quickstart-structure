@@ -13,7 +13,7 @@ We built this generator to automate away the boilerplate, instantly providing yo
 ## Why use this generator?
 
 -   **Scalability**: Choose between **MVC** for simpler projects or **Clean Architecture** for complex domain-driven services.
--   **Flexibility**: Supports over **887k unique project scenarios** (covering various Architectures, Languages, Databases, Communication patterns, Caching, Auth, CI/CD, Security, Resilience, Observability, and Infrastructure configurations).
+-   **Flexibility**: Supports over **1.06M unique project scenarios** (covering various Architectures, Languages, Databases, Communication patterns, Caching, Auth, CI/CD, Security, Resilience, Observability, and Infrastructure configurations).
 -   **Pluggable Authentication**: Built-in **JWT** support with Access/Refresh token rotation and secure logout/blacklisting.
 -   **Quality First**: Every project is born with **Jest** testing, **ESLint/Prettier** linting, and **80%+ unit test coverage** gates enforced out of the box.
 -   **Modern Stack**: Features like **Kafka KRaft Mode**, **Apollo Server v4**, and **Zod** environment validation are standard.

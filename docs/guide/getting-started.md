@@ -30,14 +30,14 @@ When you run the `init` command, you'll be prompted for:
 2.  **Language**: Choose between **TypeScript** (Recommended) or **JavaScript**.
 3.  **Architecture**: Select **MVC** or **Clean Architecture**.
 4.  **View Engine**: If MVC is selected, pick **None**, **EJS**, or **Pug**.
-5.  **Database**: Pick **MySQL**, **PostgreSQL**, **MongoDB**, or **None**.
-6.  **Database Name**: Specify your database name (if a database is selected).
-7.  **Communication**: Select **REST APIs**, **GraphQL**, or **Kafka**.
+5.  **Communication**: Select **REST APIs**, **GraphQL**, or **Kafka**.
+6.  **Database**: Pick **MySQL**, **PostgreSQL**, **MongoDB**, or **None**.
+7.  **Database Name**: Specify your database name (if a database is selected).
 8.  **Caching**: Add **Redis** or **Memory Cache**.
-9.  **CI/CD**: Generate config for **GitHub Actions**, **GitLab**, or **Jenkins**.
-10. **Security Hardening**: Opt-in for enterprise-grade security tools like **Snyk** and **SonarQube** (if CI/CD is selected).
-11. **Advanced Options**: Choose to unlock Authentication, Resilience, Observability (ELK), and Terraform.
-12. **Authentication**: Pluggable **JWT** and **(OAuth2 - Google/GitHub)** support.
+9.  **Authentication**: Pluggable **JWT** and **(OAuth2 - Google/GitHub)** support.
+10. **CI/CD**: Generate config for **GitHub Actions**, **GitLab**, or **Jenkins**.
+11. **Security Hardening**: Opt-in for enterprise-grade security tools like **Snyk** and **SonarQube** (if CI/CD is selected).
+12. **Advanced Options**: Choose to unlock Resilience, Observability (ELK), and Terraform.
 13. **Resilience**: Select from **Timeout**, **Retry**, and **Circuit Breaker** patterns.
 14. **Terraform (IaC)**: Scaffold AWS/GCP/Azure infrastructure files (**Standard** or **Production**).
 15. **ELK Stack**: Optional **Elasticsearch & Kibana** integration for centralized logging.

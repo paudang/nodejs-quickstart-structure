@@ -1,6 +1,6 @@
 # NodeJS Quickstart Generator - Test Cases
 
-This document explains the mathematical verification matrix of the **887,040+ unique project scenarios** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases, communication patterns, caching, authentication options, CI/CD pipelines, security hardening, resilience patterns, observability (ELK), and Terraform infrastructure tiers.
+This document explains the mathematical verification matrix of the **1,064,448+ unique project scenarios** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases, communication patterns, caching, authentication options, CI/CD pipelines, security hardening, resilience patterns, observability (ELK), and Terraform infrastructure tiers.
 
 ## Summary of Matrix Dimensions
 - **Languages**: 2 (`JavaScript`, `TypeScript`)
@@ -17,7 +17,7 @@ This document explains the mathematical verification matrix of the **887,040+ un
 
 ## Mathematical Verification Matrix Breakdown
 
-### 1. Core Combinations (5,040 Core Combinations)
+### 1. Core Combinations (6,048 Core Combinations)
 Core combinations represent the variations of the generated application code itself across Languages, View Engines, Databases, Communication, Caching, Authentication, and Infrastructure:
 
 - **MVC Architecture**: 3,780 Combinations
@@ -27,18 +27,18 @@ Core combinations represent the variations of the generated application code its
   - **With Database (1,134)**: 2 Lang × 1 View (None) × 3 DB × 3 Comm × 3 Auth × 3 Caching × 7 Terraform = 1,134
   - **No Database (126)**: 2 Lang × 1 View (None) × 1 DB × 3 Comm × 3 Auth × 1 Caching (None) × 7 Terraform = 126
 
-**Total Core Combinations: 5,040**
+**Total Core Combinations: 6,048**
 
 ---
 
-### 2. DevOps, Security & Resilience Scenarios (887,040 Total Permutations)
+### 2. DevOps, Security & Resilience Scenarios (1,064,448 Total Permutations)
 Each core combination can be deployed across multiple environments with conditional CI/CD configurations and Application Resilience patterns:
 - **CI/CD Providers**: `None` (1 state) or one of the **5 CI Providers** (`GitHub Actions`, `Jenkins`, `GitLab CI`, `CircleCI`, `Bitbucket Pipelines`) in two states (with or without **Enterprise Security Hardening**: Snyk, SonarQube).
 - **CI/CD Multiplier**: `1 + 5 × 2 = 11` states.
 - **Resilience & Observability Patterns**: 4 optional features (`Timeout`, `Retry`, `CircuitBreaker`, `ELK`), which generate `2⁴ = 16` combination states.
 - **Combined Extended Multiplier**: 11 × 16 = 176 states.
 
-> **Total Validated Scenarios**: 5,040 Core Combinations × 176 Extended States = **887,040 Cases**
+> **Total Validated Scenarios**: 5,040 Core Combinations × 176 Extended States = **1,064,448 Cases**
 
 ---
 
