@@ -14,10 +14,12 @@ We built this generator to automate away the boilerplate, instantly providing yo
 
 -   **Scalability**: Choose between **MVC** for simpler projects or **Clean Architecture** for complex domain-driven services.
 -   **Flexibility**: Supports over **1.06M unique project scenarios** (covering various Architectures, Languages, Databases, Communication patterns, Caching, Auth, CI/CD, Security, Resilience, Observability, and Infrastructure configurations).
--   **Pluggable Authentication**: Built-in **JWT** support with Access/Refresh token rotation and secure logout/blacklisting.
+-   **Multi-Cloud IaC**: Automatically generates production-ready **Terraform** modules for **AWS, Google Cloud (GCP), and Azure**.
+-   **Enterprise Resilience**: Built-in distributed systems protections including **Timeout, Advanced Retry (Exponential Backoff & Jitter), and Circuit Breaker** patterns.
+-   **DevSecOps & Observability**: Ships with **Snyk/SonarCloud** CI/CD pipelines and integrates the **ELK Stack (Elasticsearch, Kibana)** for non-blocking, centralized logging.
+-   **Pluggable Authentication**: Built-in **JWT** support with token rotation and secure **Social OAuth2 (Google/GitHub)** flows via HttpOnly cookies.
 -   **Quality First**: Every project is born with **Jest** testing, **ESLint/Prettier** linting, and **80%+ unit test coverage** gates enforced out of the box.
--   **Modern Stack**: Features like **Kafka KRaft Mode**, **Apollo Server v4**, and **Zod** environment validation are standard.
--   **AI-Native**: Specifically optimized for AI-assisted development with **Cursor** and other LLM-based agents.
+-   **AI-Native**: Specifically optimized for AI-assisted development with **.cursorrules** and Agent Skill prompts ready for Cursor and other LLMs.
 
 ##  Product Roadmap
 

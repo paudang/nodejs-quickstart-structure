@@ -64,7 +64,6 @@ onMounted(async () => {
   }
 })
 </script>
-
 <div id="configurator" style="padding: 40px 0;">
   <h2 style="text-align: center; margin-bottom: 20px; border: none;"> Configure Your Project</h2>
   <GeneratorApp />

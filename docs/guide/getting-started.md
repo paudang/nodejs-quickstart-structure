@@ -24,7 +24,11 @@ nodejs-quickstart init
 
 ## Quick Start (Interactive Setup)
 
-When you run the `init` command, you'll be prompted for:
+Our generator supports the complete **6-Phase Lifecycle of a Big Tech App**, ensuring your project is production-ready from day one:
+
+![Main Flow Diagram](/main-flow.png)
+
+When you run the `init` command, you'll be prompted to configure this exact lifecycle:
 
 1.  **Project Name**: The name of your service directory.
 2.  **Language**: Choose between **TypeScript** (Recommended) or **JavaScript**.
