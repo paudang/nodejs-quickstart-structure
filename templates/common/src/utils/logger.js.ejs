@@ -1,5 +1,5 @@
-import winston from 'winston';
-<% if (withELK) { %>import { ElasticsearchTransport } from 'winston-elasticsearch';
+const winston = require('winston');
+<% if (withELK) { %>const { ElasticsearchTransport } = require('winston-elasticsearch');
 <% } %>
 const { combine, timestamp, printf, colorize } = winston.format;
 
@@ -52,4 +52,4 @@ const logger = winston.createLogger({
     transports: transports
 });
 
-export default logger;
+module.exports = logger;

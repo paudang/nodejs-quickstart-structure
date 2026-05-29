@@ -61,7 +61,7 @@ LANGUAGES.forEach(lang => {
                         config.socialAuth = ['None'];
                     }
 
-                    if (lang === 'TypeScript' && db === 'PostgreSQL' && comm === 'REST APIs' && cache === 'Redis' && res === 'Timeout,Retry,CircuitBreaker') {
+                    if ((lang === 'TypeScript' || lang === "JavaScript") && db === 'MySQL' && comm === 'REST APIs' && cache === 'Redis' && res === 'Timeout,Retry,CircuitBreaker') {
                         config.withELK = true;
                     }
 
