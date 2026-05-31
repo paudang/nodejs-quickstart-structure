@@ -1,5 +1,16 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.1] - 2026-05-31
+
+### Changed
+- **Dependencies Upgrade**: Upgraded core libraries to their latest versions:
+  - `commander`: Upgraded from `^14.0.3` to `^15.0.0`.
+  - `ejs`: Upgraded from `^5.0.1` to `^6.0.1`.
+  - `inquirer`: Upgraded from `^13.3.2` to `^14.0.1`.
+
+### Fixed
+- **CLI Validate Command**: Fixed a blocking issue in `scripts/validate-command.js` where the script hung on the interactive `withELK` prompt when `advancedOptions` was enabled. Passed `--no-with-elk` to bypass the prompt.
+
 ## [2.5.0] - 2026-05-29
 
 ### Added

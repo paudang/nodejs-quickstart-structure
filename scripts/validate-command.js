@@ -146,6 +146,8 @@ async function runTest(config, index) {
             args.push('--no-advanced-options');
         }
 
+        args.push('--no-with-elk');
+
         if (config.architecture === 'MVC') {
             args.push('--view-engine', config.viewEngine);
         }
