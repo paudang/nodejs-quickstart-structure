@@ -33,6 +33,7 @@ features:
 
 <script setup>
 import { onMounted } from 'vue'
+import SmartConfigurator from './.vitepress/components/SmartConfigurator.vue'
 
 onMounted(async () => {
   // Find all feature cards
@@ -66,7 +67,8 @@ onMounted(async () => {
 </script>
 <div id="configurator" style="padding: 40px 0;">
   <h2 style="text-align: center; margin-bottom: 20px; border: none;"> Configure Your Project</h2>
-  <GeneratorApp />
+  <SmartConfigurator />
+  <GeneratorApp style="margin-top: 20px" />
 </div>
 
 ---

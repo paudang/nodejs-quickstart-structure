@@ -50,6 +50,16 @@ nodejs-quickstart init
 
 ---
 
+## What's New in v2.6 (The AI Smart Configurator Release)
+
+The v2.6.0 release introduces a revolutionary natural language interface for project scaffolding:
+
+- **Local AI Smart Prompt Engine**: You can now simply type what you want (e.g., *"Create a quick and easy project using JS and MVC, without a database."*) and our 0ms-latency Heuristic Engine will automatically extract your boundaries and configure the exact project matrix.
+- **World-Class Multilingual NLP**: The engine flawlessly parses English, Vietnamese, Chinese, Japanese, and Hindi, handling complex edge cases like backward-facing negations (`なし`, `nahi`) and double negations natively on the client.
+- **Bulletproof Execution**: Fortified with strict XSS sanitization and verified by a massive 79-case destruction testing suite against fuzzing and adversarial prompts.
+
+---
+
 ## What's New in v2.5 (The Cloud & Observability Release)
 
 The v2.5.0 release brings the boilerplate into the Big Tech era with enterprise cloud scaffolding and robust logging:

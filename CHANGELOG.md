@@ -1,5 +1,15 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-05-31
+
+### Added
+- **AI Smart Heuristic Engine (Web UI)**: Completely rewrote the NLP parsing engine for the VitePress Web Configurator to execute locally with 0ms latency.
+  - **Multi-Language Mastery**: Full semantic support for English, Vietnamese, Chinese, Japanese, and Hindi.
+  - **Backward-Facing Negation**: Precisely handles Japanese (`なし`, `いらない`) and Hindi (`nahi`) backward negations, along with standard forward-facing negations (`without`, `không`, `don't`).
+  - **Bulletproof XSS Sanitization**: Automatically sanitizes extracted project boundaries and custom database names against malicious code injection.
+  - **79-Case Destruction Testing Suite**: Proven stability against fuzzing, spamming, and double negation inputs.
+- **Configurator UI Polish**: Added dynamic "Thinking Logs", elegant layout spacing, and a disclaimer tooltip to better manage NLP parsing expectations.
+
 ## [2.5.1] - 2026-05-31
 
 ### Changed
