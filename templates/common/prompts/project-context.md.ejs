@@ -22,6 +22,12 @@ You are an expert working on **<%= projectName %>**.
 <% if (resilience && resilience.length > 0) { -%>
 - **Resilience**: <%= resilience.join(', ') %>
 <% } -%>
+<% if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+- **Background Jobs**: BullMQ Task Queues
+<% } -%>
+<% if (withELK) { -%>
+- **Observability**: ELK Stack (Elasticsearch, Logstash, Kibana)
+<% } -%>
 
 ## High-Level Architecture
 <% if (architecture === 'Clean Architecture') { -%>
@@ -44,7 +50,10 @@ We use the MVC (Model-View-Controller) pattern.
    <% if (auth.includes('JWT')) { %>- Use `authMiddleware` for protected routes.<% } %>
    - Validate and sanitize all inputs to prevent injection and XSS.
    - Never expose sensitive data (passwords, inner keys) in API responses.
-4. **Paths & Naming**:
+4. **Logging & Observability**:
+   - NEVER use `console.log()`. Always use the centralized `logger` instance.
+   <% if (withELK) { %>- Include context (e.g., `userId`, `traceId`) in logs for Elasticsearch indexing.<% } %>
+5. **Paths & Naming**:
 <% if (language === 'TypeScript') { -%>
    - We use `@/` path aliases for internal imports.
 <% } -%>

@@ -33,6 +33,18 @@ When indexing or searching the workspace, ignore the following paths to prevent 
 - Use `HTTP_STATUS` constants from `../utils/httpCodes.js` for status codes.
 <% } -%>
 
+### 3. Logging & Observability
+- **NEVER use `console.log`, `console.error`, etc.**
+- Always use the centralized logger instance.
+<% if (language === 'TypeScript') { -%>
+- Import logger: `import { logger } from '@/infrastructure/log/logger';`
+<% } else { -%>
+- Import logger using relative paths to `../log/logger` or similar depending on the module.
+<% } -%>
+<% if (withELK) { -%>
+- This project integrates with the ELK stack. Ensure logs have contextual data (e.g., `logger.error('Message', { userId, traceId })`) so they can be indexed in Elasticsearch.
+<% } -%>
+
 ### 3. File Naming & Style
 - **Controllers**: camelCase (e.g., `userController.<% if (language === 'TypeScript') { %>ts<% } else { %>js<% } %>`).
 - **Services**: camelCase (e.g., `userService.<% if (language === 'TypeScript') { %>ts<% } else { %>js<% } %>`).
@@ -59,14 +71,30 @@ When indexing or searching the workspace, ignore the following paths to prevent 
   - `routes`: Define endpoints routing to controllers.
 <% } -%>
 
-### 5. Resilience & External Calls
+### 5. Database & Caching
+<% if (database !== 'None') { -%>
+- **Database (`<%= database %>`)**: Always use the provided database client/ORM. Do not instantiate multiple connections. Use transactions for multi-step write operations.
+<% } -%>
+<% if (caching !== 'None') { -%>
+- **Caching (`<%= caching %>`)**: Aggressively cache heavy GET requests or complex aggregations. Invalidate cache on mutations (POST/PUT/DELETE) that affect the cached data.
+<% } -%>
+
+### 6. Resilience & External Calls
 <% if (resilience && resilience.length > 0) { -%>
 - **Resilience Patterns**: You have `<%= resilience.join(', ') %>` enabled in `src/utils/resilience`. Always wrap unstable external API calls or database queries in these wrappers to prevent cascading failures.
 <% } else { -%>
 - **External Calls**: Always set a timeout when calling external APIs to prevent hanging requests.
 <% } -%>
 
-### 6. Security & Authentication
+### 7. Message Queues & Background Jobs
+<% if (communication === 'Kafka') { -%>
+- **Kafka Event-Driven**: When an action occurs that other services might care about (e.g., User Created), publish an event using the Kafka Producer. Do NOT make synchronous HTTP calls to other microservices if it can be eventual consistency.
+<% } -%>
+<% if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+- **Background Jobs (BullMQ)**: Offload heavy, slow, or retryable tasks (like sending emails, generating reports) to Redis-backed queues. Define the Job Producer in `queue` and the Consumer in `worker`.
+<% } -%>
+
+### 8. Security & Authentication
 <% if (auth.includes('JWT')) { -%>
 - **Protected Routes**: When adding new routes, consider if they need `authMiddleware`.
 - **User Identity**: Extract user info from `req.user` (populated by middleware).
