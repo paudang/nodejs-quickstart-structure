@@ -82,6 +82,15 @@ curl -X POST http://localhost:3000/api/users \
 [Kafka] Consumer: Received USER_CREATED. 
 [Kafka] Consumer:  Sending welcome email to 'kafka@example.com'... Done!
 ```
+
+```bash [Background Jobs Dashboard]
+# URL: http://localhost:3000/admin/queues
+
+# Provided by Bull-Board, this interactive UI allows you to:
+- Monitor active, delayed, and completed jobs.
+- Retry failed background jobs manually.
+- Pause and resume queues.
+```
 :::
 
 ##  Kafka Asynchronous Flow
@@ -92,6 +101,16 @@ When using **Kafka**, the project follows a non-blocking, event-driven pattern:
 2.  **Produce**: The API sends a `USER_CREATED` event to the **Kafka Broker**.
 3.  **Consume**: The **Welcome Worker** (Consumer) picks up the event from the topic.
 4.  **Execute**: The worker simulates sending an email in the background.
+
+---
+
+##  Background Jobs (BullMQ)
+
+When using **Background Jobs**, the project implements a robust Redis-based queue system:
+
+1.  **Queue**: Jobs are added to queues (e.g., `emailQueue`) via API endpoints or internal services.
+2.  **Worker**: Background workers process these jobs asynchronously to ensure the main event loop isn't blocked.
+3.  **Monitoring**: Visit `http://localhost:3000/admin/queues` to access the **Bull-Board Dashboard**. Here you can inspect job statuses, retry failures, and monitor queue health in real time.
 
 ---
 

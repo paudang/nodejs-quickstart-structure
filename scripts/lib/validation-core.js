@@ -1,7 +1,8 @@
 import fs from 'fs-extra';
 import path from 'path';
 import net from 'net';
-import { spawn } from 'child_process';
+import { spawn, exec } from 'child_process';
+import util from 'util';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -660,7 +661,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         } else {
             try {
                 log(`[DEBUG] Fetching docker logs for debugging...`, ANSI_RED);
-                const { stdout, stderr } = await require('util').promisify(require('child_process').exec)('docker compose logs', { cwd: projectPath });
+                const { stdout, stderr } = await util.promisify(exec)('docker compose logs', { cwd: projectPath });
                 log(`[DOCKER LOGS STDOUT]\n${stdout}\n[DOCKER LOGS STDERR]\n${stderr}`, ANSI_RED);
             } catch (e) {
                 log(`[DEBUG] Failed to fetch docker logs: ${e.message}`, ANSI_RED);

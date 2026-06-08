@@ -12,6 +12,7 @@ jest.mock('express', () => {
     };
     const mApp = {
         use: jest.fn(),
+        set: jest.fn(),
         listen: jest.fn((port, cb) => {
             if (cb) cb();
             return { close: jest.fn() };

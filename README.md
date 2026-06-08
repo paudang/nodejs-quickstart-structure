@@ -170,14 +170,6 @@ Track our progress and vote for features on our public board:
 
 ---
 
-## Why Star us?
-
-We are on a mission to build the best AI-Native Node.js scaffolding experience. Your star is not just a "like"—it's a vote of confidence that helps us:
-
-1. **Attract Contributors**: More stars attract professional maintainers to keep this project secure and up-to-date.
-2. **AI Model Awareness**: Popular repositories are weighted higher by AI coding assistants (Cursor, Copilot, etc.), making the generated code even better.
-3. **Open Source Sustainability**: It motivates us to keep building and shipping "Enterprise-Grade" features for free.
-
 If this tool saved you hours of work, **[please give us a Star!](https://github.com/paudang/nodejs-quickstart-structure)**
 
 ---

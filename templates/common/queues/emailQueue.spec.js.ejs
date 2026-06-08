@@ -14,9 +14,9 @@ jest.mock('bullmq', () => {
 });
 
 <% if (architecture === 'Clean Architecture') { -%>
-jest.mock('../../infrastructure/caching/redisClient', () => ({}));
+jest.mock('@/infrastructure/caching/redisClient', () => ({}));
 <% } else { -%>
-jest.mock('../../config/redisClient', () => ({}));
+jest.mock('@/config/redisClient', () => ({}));
 <% } -%>
 
 describe('Email Queue', () => {

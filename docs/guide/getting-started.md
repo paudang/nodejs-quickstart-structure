@@ -41,10 +41,11 @@ When you run the `init` command, you'll be prompted to configure this exact life
 9.  **Authentication**: Pluggable **JWT** and **(OAuth2 - Google/GitHub)** support.
 10. **CI/CD**: Generate config for **GitHub Actions**, **GitLab**, or **Jenkins**.
 11. **Security Hardening**: Opt-in for enterprise-grade security tools like **Snyk** and **SonarQube** (if CI/CD is selected).
-12. **Advanced Options**: Choose to unlock Resilience, Observability (ELK), and Terraform.
+12. **Advanced Options**: Choose to unlock Resilience, Background Jobs, Observability (ELK), and Terraform.
 13. **Resilience**: Select from **Timeout**, **Retry**, and **Circuit Breaker** patterns.
-14. **Terraform (IaC)**: Scaffold AWS/GCP/Azure infrastructure files (**Standard** or **Production**).
-15. **ELK Stack**: Optional **Elasticsearch & Kibana** integration for centralized logging.
+14. **Background Jobs**: Optional **BullMQ** + **Bull-Board** Task Queues (Requires Redis).
+15. **Terraform (IaC)**: Scaffold AWS/GCP/Azure infrastructure files (**Standard** or **Production**).
+16. **ELK Stack**: Optional **Elasticsearch & Kibana** integration for centralized logging.
 
 ## First Project Setup
 

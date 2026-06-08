@@ -18,11 +18,11 @@ jest.mock('@bull-board/express', () => ({
 }));
 
 <% if (architecture === 'Clean Architecture') { -%>
-jest.mock('../../infrastructure/queues/emailQueue', () => ({ emailQueue: {} }));
-jest.mock('../../infrastructure/queues/emailWorker', () => ({}));
+jest.mock('@/infrastructure/queues/emailQueue', () => ({ emailQueue: {} }));
+jest.mock('@/infrastructure/queues/emailWorker', () => ({}));
 <% } else { -%>
-jest.mock('../../utils/queues/emailQueue', () => ({ emailQueue: {} }));
-jest.mock('../../utils/queues/emailWorker', () => ({}));
+jest.mock('@/utils/queues/emailQueue', () => ({ emailQueue: {} }));
+jest.mock('@/utils/queues/emailWorker', () => ({}));
 <% } -%>
 
 describe('Queue Board Adapter', () => {
