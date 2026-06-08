@@ -40,6 +40,8 @@ program
     .option('--resilience <features...>', 'Application Resilience Features (Timeout, Retry, CircuitBreaker)')
     .option('--with-elk', 'Integrate ELK Stack for Centralized Logging')
     .option('--no-with-elk', 'Disable ELK Stack')
+    .option('--background-jobs', 'Enable Background Jobs (BullMQ + Bull-Board)')
+    .option('--no-background-jobs', 'Disable Background Jobs')
     .option('--advanced-options', 'Enable Advanced Options')
     .option('--no-advanced-options', 'Disable Advanced Options')
     .action(async (options) => {

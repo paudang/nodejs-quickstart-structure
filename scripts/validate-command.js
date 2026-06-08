@@ -148,6 +148,16 @@ async function runTest(config, index) {
 
         args.push('--no-with-elk');
 
+        if (index % 5 === 0) { // Test background jobs in 20% of combinations to save time
+            args.push('--background-jobs');
+            const cachingIdx = args.indexOf('--caching');
+            if (cachingIdx > -1) {
+                args[cachingIdx + 1] = '"Redis"';
+            }
+        } else {
+            args.push('--no-background-jobs');
+        }
+
         if (config.architecture === 'MVC') {
             args.push('--view-engine', config.viewEngine);
         }

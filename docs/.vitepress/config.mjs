@@ -70,6 +70,7 @@ export default defineConfig({
           { text: 'Database & Migrations', link: '/features/database' },
           { text: 'Caching Strategy', link: '/features/caching' },
           { text: 'Application Resilience', link: '/features/resilience' },
+          { text: 'Background Jobs (BullMQ)', link: '/features/background-jobs' },
           { text: 'AI-Native Development', link: '/features/ai-native' },
         ]
       },

@@ -16,7 +16,8 @@ const form = reactive({
   terraform: 'None',
   cloudProvider: 'AWS',
   resilience: [] as string[],
-  withELK: false
+  withELK: false,
+  backgroundJobs: false
 });
 
 const errors = reactive({
@@ -72,8 +73,20 @@ watch(() => form.database, (newVal) => {
   }
 });
 
+watch(() => form.caching, (newVal) => {
+  if (newVal !== 'Redis') {
+    form.backgroundJobs = false;
+  }
+});
+
 watch(() => form.ciProvider, (newVal) => {
   if (newVal === 'None') form.includeSecurity = false;
+});
+
+watch(() => form.backgroundJobs, (newVal) => {
+  if (newVal) {
+    form.caching = 'Redis';
+  }
 });
 
 const cliCommand = computed(() => {
@@ -130,6 +143,12 @@ const cliCommand = computed(() => {
     cmd += ` --with-elk`;
   } else if (isAdvanced && !form.withELK) {
     cmd += ` --no-with-elk`;
+  }
+
+  if (isAdvanced && form.backgroundJobs) {
+    cmd += ` --background-jobs`;
+  } else if (isAdvanced && !form.backgroundJobs) {
+    cmd += ` --no-background-jobs`;
   }
 
   cmd += isAdvanced ? ' --advanced-options' : ' --no-advanced-options';

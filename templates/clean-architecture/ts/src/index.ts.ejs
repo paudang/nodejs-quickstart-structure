@@ -12,8 +12,11 @@ import { setupGracefulShutdown } from '@/utils/gracefulShutdown';
 import healthRoutes from '@/interfaces/routes/healthRoute';
 <% if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 import userRoutes from '@/interfaces/routes/userRoutes';
-import swaggerUi from 'swagger-ui-express';
-import swaggerSpecs from '@/config/swagger';<% } %>
+import swaggerSpecs from '@/config/swagger';
+import swaggerUi from 'swagger-ui-express';<% } %>
+<%_ if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+import queueBoard from '@/infrastructure/queues/queueBoard';
+<%_ } -%>
 <%_ if (auth.includes('JWT')) { -%>import authRoutes from '@/interfaces/routes/authRoutes';<%_ } -%>
 
 <%_ if (communication === 'Kafka') { -%>import { kafkaService } from '@/infrastructure/messaging/kafkaClient';<%_ } -%>
@@ -63,6 +66,12 @@ app.use('/api/users', userRoutes);
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 <%_ } -%>
+
+<%_ if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+// Background Jobs Dashboard
+app.use('/admin/queues', queueBoard.getRouter());
+<%_ } -%>
+
 app.use('/health', healthRoutes);
 
 // Start Server Logic

@@ -157,6 +157,16 @@
             </label>
           </div>
         </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label class="form-label">Background Jobs & Task Queues</label>
+          <div class="checkbox-group" style="margin-top: 0.5rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9em;" :style="{ opacity: form.caching !== 'Redis' ? 0.5 : 1 }">
+              <input type="checkbox" v-model="form.backgroundJobs" :disabled="form.caching !== 'Redis'" /> 
+              Enable Background Jobs (BullMQ + Bull-Board) - <i>Requires Redis Cache</i>
+            </label>
+          </div>
+        </div>
       </div>
     </div>
 

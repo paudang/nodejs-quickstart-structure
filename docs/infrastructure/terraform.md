@@ -1,4 +1,4 @@
-# ☁️ Infrastructure as Code (Terraform)
+# Infrastructure as Code (Terraform)
 
 Our generator provides professional-grade infrastructure templates using Terraform, supporting **AWS, Google Cloud (GCP), and Microsoft Azure**. We follow Well-Architected Framework principles across all providers to ensure security, reliability, and cost-efficiency.
 

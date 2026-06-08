@@ -4,6 +4,9 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 <%_ if (communication === 'REST APIs' || communication === 'Kafka') { -%>const apiRoutes = require('./routes/api');<%_ } %>
 const healthRoutes = require('./routes/healthRoute');
+<%_ if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+const queueBoard = require('./utils/queues/queueBoard');
+<%_ } -%>
 <%_ if (communication === 'Kafka') { -%>const { connectKafka, sendMessage } = require('./services/kafkaService');<%_ } -%>
 <%_ if (auth.includes('JWT')) { -%>const authRoutes = require('./routes/authRoutes');<%_ } -%>
 
@@ -65,6 +68,12 @@ app.get('/login', (req, res) => res.render('login', { projectName: '<%= projectN
 app.get('/signup', (req, res) => res.render('signup', { projectName: '<%= projectName %>' }));
 <% } %>
 <% } -%>
+
+<%_ if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+// Background Jobs Dashboard
+app.use('/admin/queues', queueBoard.getRouter());
+<%_ } -%>
+
 app.use('/health', healthRoutes);
 
 // Start Server Logic

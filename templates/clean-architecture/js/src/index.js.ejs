@@ -5,6 +5,7 @@ const logger = require('./infrastructure/log/logger');
 <% if (communication === 'Kafka') { -%>
 const { connectKafka } = require('./infrastructure/messaging/kafkaClient');
 <% } -%>
+
 <%_ if (database !== 'None') { -%>
 // Database Sync
 <%_ if (database !== 'None') { -%>

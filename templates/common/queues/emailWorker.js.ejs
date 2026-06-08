@@ -1,0 +1,26 @@
+/* eslint-disable no-console */
+<% if (architecture === 'Clean Architecture') { -%>
+const redisClient = require('../caching/redisClient');
+<% } else { -%>
+const redisClient = require('../../config/redisClient');
+<% } -%>
+const { Worker } = require('bullmq');
+
+const emailWorker = new Worker(
+  'email-queue',
+  async (job) => {
+    console.log(`[Worker] Processing email job ${job.id} for data:`, job.data);
+    
+    // Simulate email sending delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    
+    console.log(`[Worker] Successfully processed email job ${job.id}`);
+  },
+  { connection: redisClient.client }
+);
+
+emailWorker.on('failed', (job, err) => {
+  console.error(`[Worker] Job ${job?.id} failed with error:`, err.message);
+});
+
+module.exports = { emailWorker };

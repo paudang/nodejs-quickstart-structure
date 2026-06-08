@@ -43,7 +43,8 @@ export const parsePrompt = (prompt) => {
     cloudProvider: 'None',
     terraform: 'None',
     resilience: [],
-    withELK: false
+    withELK: false,
+    backgroundJobs: false
   };
   
   const addLog = (msg) => { logs.push(msg); };
@@ -95,17 +96,26 @@ export const parsePrompt = (prompt) => {
     useCaseDetected = 'E-Commerce / Shop';
     config.architecture = 'Clean Architecture';
     config.database = 'PostgreSQL';
+    config.communication = 'GraphQL';
     config.caching = 'Redis';
     config.includeSecurity = true;
+    config.resilience = ['Retry'];
     advancedNeeded = true;
     addLog('Detected E-commerce use case. Applying recommended stack.');
-  } else if (isPositiveMatch(/chat|real-time|realtime|streaming|livestream|message|nhắn tin|socket|チャット|リアルタイム|メッセージ|配信|聊天|实时|消息|直播|baat|sandesh/i, text)) {
-    useCaseDetected = 'Real-time / Chat';
+  } else if (isPositiveMatch(/movie|phim|streaming|video|media|netflix|動画サイト|ムービー|映画|ストリーミング|视频网站|电影|मूवी|स्ट्रीमिंग/i, text)) {
+    useCaseDetected = 'Movie / Media Streaming';
+    config.architecture = 'MVC';
     config.database = 'MongoDB';
     config.caching = 'Redis';
-    config.communication = 'Kafka';
+    config.backgroundJobs = true;
     advancedNeeded = true;
-    addLog('Detected Real-time use case. Applying recommended stack.');
+    addLog('Detected Media Streaming use case. Applying recommended stack (MVC, MongoDB, Redis, Background Jobs).');
+  } else if (isPositiveMatch(/chat|real-time|realtime|livestream|message|nhắn tin|socket|game|trò chơi|チャット|リアルタイム|メッセージ|配信|ゲーム|聊天|实时|消息|直播|游戏|baat|sandesh|गेम/i, text)) {
+    useCaseDetected = 'Real-time / Game';
+    config.database = 'MongoDB';
+    config.caching = 'Redis';
+    config.communication = 'REST APIs';
+    addLog('Detected Real-time/Game use case. Applying recommended stack.');
   } else if (isPositiveMatch(/fintech|banking|finance|tài chính|ngân hàng|payment|thanh toán|ví điện tử|wallet|transaction|フィンテック|銀行|金融|決済|支払い|ウォレット|金融|银行|支付|钱包|交易|bank|paisa|bhugtan|batua/i, text)) {
     useCaseDetected = 'Fintech / Banking';
     config.architecture = 'Clean Architecture';
@@ -120,10 +130,12 @@ export const parsePrompt = (prompt) => {
     config.database = 'MongoDB';
     config.caching = 'Memory Cache';
     addLog('Detected CMS/Blog use case. Applying recommended stack.');
-  } else if (isPositiveMatch(/admin|dashboard|backoffice|quản lý|quản trị|管理|ダッシュボード|バックオフィス|后台|仪表盘|prabandhan/i, text)) {
-    useCaseDetected = 'Admin Dashboard';
-    config.database = 'PostgreSQL';
-    config.caching = 'Memory Cache';
+  } else if (isPositiveMatch(/admin|dashboard|backoffice|quản lý|quản trị|internal tool|管理画面|管理|ダッシュボード|バックオフィス|后台管理|后台|仪表盘|prabandhan|डैशबोर्ड/i, text)) {
+    useCaseDetected = 'Admin Dashboard / Internal Tool';
+    config.architecture = 'MVC';
+    config.database = 'MySQL';
+    config.auth = 'OAuth2 - Google/GitHub - JWT';
+    advancedNeeded = true;
     addLog('Detected Admin Dashboard use case. Applying recommended stack.');
   }
 
@@ -273,6 +285,16 @@ export const parsePrompt = (prompt) => {
     advancedNeeded = true;
   }
 
+  // 11. Background Jobs
+  if (isPositiveMatch(/no background jobs|no queue|không background jobs|không queue|không tác vụ ngầm/i, text)) {
+    config.backgroundJobs = false;
+  } else if (isPositiveMatch(/backg(r)?ound tasks?|backg(r)?ound jobs?|cron jobs?|\\bqueue\\b|task queue|bullmq|message queue|send email|gửi email|chạy ngầm|tác vụ ngầm|hàng đợi|バックグラウンド|メール送信|キュー|后台任务|发送邮件|队列|बैकग्राउंड|ईमेल भेजें/i, text)) {
+    addLog('Task Queues -> Enabling BullMQ Background Jobs & Redis.');
+    config.backgroundJobs = true;
+    config.caching = 'Redis';
+    advancedNeeded = true;
+  }
+
   // FINAL: Assemble HTML Response based on final config
   if (useCaseDetected) {
     responseParts.push(`<li><span style="font-weight: bold;"> Smart Suggestion:</span> Applied industry-standard <strong>${useCaseDetected}</strong> stack!</li>`);
@@ -299,6 +321,7 @@ export const parsePrompt = (prompt) => {
   
   if (config.resilience.length > 0) responseParts.push(`<li><strong>Resilience:</strong> ${config.resilience.join(', ')}</li>`);
   if (config.withELK) responseParts.push(`<li><strong>Observability:</strong> ELK Stack</li>`);
+  if (config.backgroundJobs) responseParts.push(`<li><strong>Background Jobs:</strong> BullMQ Task Queues</li>`);
   if (config.ciProvider !== 'None') responseParts.push(`<li><strong>CI/CD:</strong> ${config.ciProvider}</li>`);
 
   responseParts.push("</ul>");

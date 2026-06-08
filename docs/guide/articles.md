@@ -26,6 +26,13 @@ JSON Web Tokens (JWT) are often praised for being stateless, but this statelessn
 
 Many teams rely on the default AWS VPC setup without realizing the inherent security flaws it introduces. This article explores the vulnerabilities of default VPC configurations and provides actionable strategies for designing a robust, Zero-Trust cloud architecture to secure your infrastructure against lateral movement and unauthorized access.
 
+## Architecture & Resilience
+
+### [Weaponizing the Weakest Link: How Attackers Exploit Cascading Failures in Microservices](https://systemweakness.com/weaponizing-the-weakest-link-how-attackers-exploit-cascading-failures-in-microservices-and-how-to-31760e5818fd)
+**Published on**: System Weakness (Medium)
+
+Microservices are designed to be decoupled, but a failure in one service can easily cascade and bring down the entire system if not properly handled. This article explores how attackers can weaponize these weak links to trigger cascading failures and perform Denial of Service (DoS) attacks. We explain how to implement robust resilience patterns like Circuit Breakers, Retry mechanisms, and Timeouts to build fault-tolerant microservices that can withstand targeted disruptions.
+
 ---
 
 *Got an article about Node.js architecture or security? Feel free to submit a PR to add it to this list!*

@@ -215,6 +215,33 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 
 ---
 
+## Background Jobs & Task Queues (BullMQ)
+
+### Redis `Max retries per request` Error
+- **Error**: `MaxRetriesPerRequestError: Reached the max retries per request limit (which is 20)`
+- **Reason**: BullMQ requires `maxRetriesPerRequest` to be set to `null` in the Redis client configuration. If you override the `redisClient` or use a custom Redis instance, BullMQ will crash when it blocks waiting for jobs.
+- **Solution**: Ensure your `redisClient` passes `maxRetriesPerRequest: null` when initialized. The Quickstart Generator does this by default, but double-check your `src/config/redisClient.ts` (or `.js`) if you modified it.
+
+### Redis OOM (Out of Memory)
+- **Problem**: Redis server crashes or evicts keys unexpectedly after processing many background jobs.
+- **Reason**: By default, BullMQ stores all completed and failed jobs in Redis indefinitely. If you process millions of jobs, Redis memory will fill up.
+- **Solution**: Set `removeOnComplete` and `removeOnFail` options when adding jobs.
+  ```typescript
+  await emailQueue.add('send-email', data, {
+    removeOnComplete: true, // or a number like 100 to keep the last 100 jobs
+    removeOnFail: 1000      // Keep last 1000 failed jobs for debugging
+  });
+  ```
+
+### Duplicate Job Processing (Idempotency)
+- **Problem**: A single job (e.g., sending an email or processing a payment) gets executed multiple times.
+- **Reason**: If your worker takes too long to process a job, or the Node.js event loop blocks heavily, BullMQ might consider the worker stalled and move the job back to the waiting queue for another worker to pick up.
+- **Solution**: 
+  1. **Idempotency**: Always design your background jobs to be idempotent (e.g., check if the transaction exists in the database before processing the payment).
+  2. **Avoid Event Loop Blocking**: Do not run CPU-intensive tasks directly in the worker without yielding to the event loop.
+
+---
+
 ##  Generator Issues
 
 ### Templates not rendering correctly

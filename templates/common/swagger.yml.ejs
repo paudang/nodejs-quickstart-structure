@@ -44,11 +44,31 @@ components:
 tags:
   - name: Users
     description: The users managing API
+  - name: Health
+    description: Health check and maintenance endpoints
   <%_ if (auth.includes('JWT')) { -%>
   - name: Auth
     description: Authentication API
   <%_ } -%>
 paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      tags:
+        - Health
+      responses:
+        '200':
+          description: System is UP
+<%_ if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+  /health/test-job:
+    post:
+      summary: Enqueue a test background job
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Job enqueued successfully
+<%_ } -%>
 <%_ if (auth.includes('JWT')) { -%>
 <%_ const authPath = "/api/auth"; _%>
   <%= authPath %>/login:

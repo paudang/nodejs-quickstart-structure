@@ -10,6 +10,10 @@ import mongoose from 'mongoose';
 import sequelize from '<% if (architecture === "MVC") { %>@/config/database<% } else { %>@/infrastructure/database/database<% } %>';
 <%_ } -%>
 
+<%_ if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+import { emailQueue } from '<% if (architecture === "MVC") { %>@/utils/queues/emailQueue<% } else { %>@/infrastructure/queues/emailQueue<% } %>';
+<%_ } -%>
+
 const router = Router();
 
 router.get('/', async (req: Request, res: Response) => {
@@ -45,5 +49,12 @@ router.get('/', async (req: Request, res: Response) => {
 
   res.status(HTTP_STATUS.OK).json(healthData);
 });
+
+<%_ if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+router.post('/test-job', async (req: Request, res: Response) => {
+  await emailQueue.add('test-email', { msg: 'Hello from API' });
+  res.status(HTTP_STATUS.OK).json({ message: 'Job enqueued. Check /admin/queues' });
+});
+<%_ } -%>
 
 export default router;

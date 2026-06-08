@@ -11,6 +11,10 @@ const mongoose = require('mongoose');
 const sequelize = require('<% if (architecture === "MVC") { %>../config/database<% } else { %>../../infrastructure/database/database<% } %>');
 <%_ } -%>
 
+<%_ if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+const { emailQueue } = require('<% if (architecture === "MVC") { %>../utils/queues/emailQueue<% } else { %>../../infrastructure/queues/emailQueue<% } %>');
+<%_ } -%>
+
 router.get('/', async (req, res) => {
   const healthData = {
     status: 'UP',
@@ -46,5 +50,12 @@ router.get('/', async (req, res) => {
 
   res.status(HTTP_STATUS.OK).json(healthData);
 });
+
+<%_ if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+router.post('/test-job', async (req, res) => {
+  await emailQueue.add('test-email', { msg: 'Hello from API' });
+  res.status(HTTP_STATUS.OK).json({ message: 'Job enqueued. Check /admin/queues' });
+});
+<%_ } -%>
 
 module.exports = router;

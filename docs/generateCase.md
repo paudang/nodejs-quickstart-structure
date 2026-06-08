@@ -1,777 +1,1047 @@
 # NodeJS Quickstart Generator - Test Cases
 
-This document explains the mathematical verification matrix of the **1,064,448+ unique project scenarios** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases, communication patterns, caching, authentication options, CI/CD pipelines, security hardening, resilience patterns, observability (ELK), and Terraform infrastructure tiers.
+This document lists the **936 possible project combinations** supported by the `nodejs-quickstart` CLI. These combinations cover all supported languages, architectures, databases, communication patterns, caching, and authentication options.
 
-## Summary of Matrix Dimensions
-- **Languages**: 2 (`JavaScript`, `TypeScript`)
-- **Architectures**: 2 (`MVC`, `Clean Architecture`)
-- **View Engines (MVC only)**: 3 (`None`, `EJS`, `Pug`)
-- **Databases**: 4 (`None`, `MySQL`, `PostgreSQL`, `MongoDB`)
-- **Communication Patterns**: 3 (`REST APIs`, `GraphQL`, `Kafka`)
-- **Caching Layers**: 3 (`None`, `Redis`, `Memory Cache`) *— Note: caching defaults to `None` if database is `None`*
-- **Authentication**: 3 (`None`, `JWT`, `OAuth2 Google/GitHub + JWT`)
-- **Infrastructure (IaC - Terraform)**: 7 states (`None`, `Standard` (AWS, GCP, Azure), `Production` (AWS, GCP, Azure))
-- **Resilience & Observability**: 16 states (Combinations of `Timeout`, `Retry`, `CircuitBreaker`, and `ELK`)
+## Summary
+- **CI Providers**: `None`, `GitHub Actions`, `Jenkins`, `GitLab CI`, `CircleCI`, `Bitbucket Pipelines`
+- **MVC Architecture**: 702 Combinations
+- **Clean Architecture**: 234 Combinations
 
----
+**Total Core Combinations: 936**
 
-## Mathematical Verification Matrix Breakdown
-
-### 1. Core Combinations (6,048 Core Combinations)
-Core combinations represent the variations of the generated application code itself across Languages, View Engines, Databases, Communication, Caching, Authentication, and Infrastructure:
-
-- **MVC Architecture**: 3,780 Combinations
-  - **With Database (3,402)**: 2 Lang × 3 View × 3 DB × 3 Comm × 3 Auth × 3 Caching × 7 Terraform = 3,402
-  - **No Database (378)**: 2 Lang × 3 View × 1 DB × 3 Comm × 3 Auth × 1 Caching (None) × 7 Terraform = 378
-- **Clean Architecture**: 1,260 Combinations
-  - **With Database (1,134)**: 2 Lang × 1 View (None) × 3 DB × 3 Comm × 3 Auth × 3 Caching × 7 Terraform = 1,134
-  - **No Database (126)**: 2 Lang × 1 View (None) × 1 DB × 3 Comm × 3 Auth × 1 Caching (None) × 7 Terraform = 126
-
-**Total Core Combinations: 6,048**
+> **Note on CI/CD**: Each core combination can be generated with `None` (1 state) or any of the **5 CI Providers** in two states (with or without Enterprise Security Hardening).
+> 
+> **Total Validated Permutations**: 936 × (1 + 5 × 2) = **10296 Cases**
 
 ---
 
-### 2. DevOps, Security & Resilience Scenarios (1,064,448 Total Permutations)
-Each core combination can be deployed across multiple environments with conditional CI/CD configurations and Application Resilience patterns:
-- **CI/CD Providers**: `None` (1 state) or one of the **5 CI Providers** (`GitHub Actions`, `Jenkins`, `GitLab CI`, `CircleCI`, `Bitbucket Pipelines`) in two states (with or without **Enterprise Security Hardening**: Snyk, SonarQube).
-- **CI/CD Multiplier**: `1 + 5 × 2 = 11` states.
-- **Resilience & Observability Patterns**: 4 optional features (`Timeout`, `Retry`, `CircuitBreaker`, `ELK`), which generate `2⁴ = 16` combination states.
-- **Combined Extended Multiplier**: 11 × 16 = 176 states.
+## 1. MVC Architecture (702 Cases)
 
-> **Total Validated Scenarios**: 5,040 Core Combinations × 176 Extended States = **1,064,448 Cases**
+### JavaScript
 
----
+#### Database: MySQL
 
-## Base Application Configuration Reference (720 Base Combinations)
-To keep this document concise, the table below lists the **720 base application configurations** (without the Infrastructure and CI/CD dimension multipliers). Each base configuration in this table is validated across all 3 Infrastructure tiers (None, Standard, Production) and 11 DevOps states.
+| # | View Engine | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | None | REST APIs | None | None | None | Disabled |
+| 2 | None | REST APIs | Redis | None | None | Disabled |
+| 3 | None | REST APIs | Redis | None | None | Enabled |
+| 4 | None | REST APIs | Memory Cache | None | None | Disabled |
+| 5 | None | REST APIs | None | JWT | None | Disabled |
+| 6 | None | REST APIs | Redis | JWT | None | Disabled |
+| 7 | None | REST APIs | Redis | JWT | None | Enabled |
+| 8 | None | REST APIs | Memory Cache | JWT | None | Disabled |
+| 9 | None | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 10 | None | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 11 | None | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 12 | None | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 13 | None | GraphQL | None | None | None | Disabled |
+| 14 | None | GraphQL | Redis | None | None | Disabled |
+| 15 | None | GraphQL | Redis | None | None | Enabled |
+| 16 | None | GraphQL | Memory Cache | None | None | Disabled |
+| 17 | None | GraphQL | None | JWT | None | Disabled |
+| 18 | None | GraphQL | Redis | JWT | None | Disabled |
+| 19 | None | GraphQL | Redis | JWT | None | Enabled |
+| 20 | None | GraphQL | Memory Cache | JWT | None | Disabled |
+| 21 | None | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 22 | None | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 23 | None | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 24 | None | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 25 | None | Kafka | None | None | None | Disabled |
+| 26 | None | Kafka | Redis | None | None | Disabled |
+| 27 | None | Kafka | Redis | None | None | Enabled |
+| 28 | None | Kafka | Memory Cache | None | None | Disabled |
+| 29 | None | Kafka | None | JWT | None | Disabled |
+| 30 | None | Kafka | Redis | JWT | None | Disabled |
+| 31 | None | Kafka | Redis | JWT | None | Enabled |
+| 32 | None | Kafka | Memory Cache | JWT | None | Disabled |
+| 33 | None | Kafka | None | JWT | Google,GitHub | Disabled |
+| 34 | None | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 35 | None | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 36 | None | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+| 118 | EJS | REST APIs | None | None | None | Disabled |
+| 119 | EJS | REST APIs | Redis | None | None | Disabled |
+| 120 | EJS | REST APIs | Redis | None | None | Enabled |
+| 121 | EJS | REST APIs | Memory Cache | None | None | Disabled |
+| 122 | EJS | REST APIs | None | JWT | None | Disabled |
+| 123 | EJS | REST APIs | Redis | JWT | None | Disabled |
+| 124 | EJS | REST APIs | Redis | JWT | None | Enabled |
+| 125 | EJS | REST APIs | Memory Cache | JWT | None | Disabled |
+| 126 | EJS | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 127 | EJS | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 128 | EJS | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 129 | EJS | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 130 | EJS | GraphQL | None | None | None | Disabled |
+| 131 | EJS | GraphQL | Redis | None | None | Disabled |
+| 132 | EJS | GraphQL | Redis | None | None | Enabled |
+| 133 | EJS | GraphQL | Memory Cache | None | None | Disabled |
+| 134 | EJS | GraphQL | None | JWT | None | Disabled |
+| 135 | EJS | GraphQL | Redis | JWT | None | Disabled |
+| 136 | EJS | GraphQL | Redis | JWT | None | Enabled |
+| 137 | EJS | GraphQL | Memory Cache | JWT | None | Disabled |
+| 138 | EJS | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 139 | EJS | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 140 | EJS | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 141 | EJS | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 142 | EJS | Kafka | None | None | None | Disabled |
+| 143 | EJS | Kafka | Redis | None | None | Disabled |
+| 144 | EJS | Kafka | Redis | None | None | Enabled |
+| 145 | EJS | Kafka | Memory Cache | None | None | Disabled |
+| 146 | EJS | Kafka | None | JWT | None | Disabled |
+| 147 | EJS | Kafka | Redis | JWT | None | Disabled |
+| 148 | EJS | Kafka | Redis | JWT | None | Enabled |
+| 149 | EJS | Kafka | Memory Cache | JWT | None | Disabled |
+| 150 | EJS | Kafka | None | JWT | Google,GitHub | Disabled |
+| 151 | EJS | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 152 | EJS | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 153 | EJS | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+| 235 | Pug | REST APIs | None | None | None | Disabled |
+| 236 | Pug | REST APIs | Redis | None | None | Disabled |
+| 237 | Pug | REST APIs | Redis | None | None | Enabled |
+| 238 | Pug | REST APIs | Memory Cache | None | None | Disabled |
+| 239 | Pug | REST APIs | None | JWT | None | Disabled |
+| 240 | Pug | REST APIs | Redis | JWT | None | Disabled |
+| 241 | Pug | REST APIs | Redis | JWT | None | Enabled |
+| 242 | Pug | REST APIs | Memory Cache | JWT | None | Disabled |
+| 243 | Pug | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 244 | Pug | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 245 | Pug | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 246 | Pug | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 247 | Pug | GraphQL | None | None | None | Disabled |
+| 248 | Pug | GraphQL | Redis | None | None | Disabled |
+| 249 | Pug | GraphQL | Redis | None | None | Enabled |
+| 250 | Pug | GraphQL | Memory Cache | None | None | Disabled |
+| 251 | Pug | GraphQL | None | JWT | None | Disabled |
+| 252 | Pug | GraphQL | Redis | JWT | None | Disabled |
+| 253 | Pug | GraphQL | Redis | JWT | None | Enabled |
+| 254 | Pug | GraphQL | Memory Cache | JWT | None | Disabled |
+| 255 | Pug | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 256 | Pug | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 257 | Pug | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 258 | Pug | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 259 | Pug | Kafka | None | None | None | Disabled |
+| 260 | Pug | Kafka | Redis | None | None | Disabled |
+| 261 | Pug | Kafka | Redis | None | None | Enabled |
+| 262 | Pug | Kafka | Memory Cache | None | None | Disabled |
+| 263 | Pug | Kafka | None | JWT | None | Disabled |
+| 264 | Pug | Kafka | Redis | JWT | None | Disabled |
+| 265 | Pug | Kafka | Redis | JWT | None | Enabled |
+| 266 | Pug | Kafka | Memory Cache | JWT | None | Disabled |
+| 267 | Pug | Kafka | None | JWT | Google,GitHub | Disabled |
+| 268 | Pug | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 269 | Pug | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 270 | Pug | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
 
-| # | Language | Architecture | View Engine | Database | Communication | Caching | Auth | Social Auth |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+#### Database: PostgreSQL
 
-| 1 | JavaScript | MVC | None | MySQL | REST APIs | None | None | None |
-| 2 | JavaScript | MVC | None | MySQL | REST APIs | Redis | None | None |
-| 3 | JavaScript | MVC | None | MySQL | REST APIs | Memory Cache | None | None |
-| 4 | JavaScript | MVC | None | MySQL | REST APIs | None | JWT | None |
-| 5 | JavaScript | MVC | None | MySQL | REST APIs | Redis | JWT | None |
-| 6 | JavaScript | MVC | None | MySQL | REST APIs | Memory Cache | JWT | None |
-| 7 | JavaScript | MVC | None | MySQL | REST APIs | None | JWT | Google,GitHub |
-| 8 | JavaScript | MVC | None | MySQL | REST APIs | Redis | JWT | Google,GitHub |
-| 9 | JavaScript | MVC | None | MySQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 10 | JavaScript | MVC | None | MySQL | GraphQL | None | None | None |
-| 11 | JavaScript | MVC | None | MySQL | GraphQL | Redis | None | None |
-| 12 | JavaScript | MVC | None | MySQL | GraphQL | Memory Cache | None | None |
-| 13 | JavaScript | MVC | None | MySQL | GraphQL | None | JWT | None |
-| 14 | JavaScript | MVC | None | MySQL | GraphQL | Redis | JWT | None |
-| 15 | JavaScript | MVC | None | MySQL | GraphQL | Memory Cache | JWT | None |
-| 16 | JavaScript | MVC | None | MySQL | GraphQL | None | JWT | Google,GitHub |
-| 17 | JavaScript | MVC | None | MySQL | GraphQL | Redis | JWT | Google,GitHub |
-| 18 | JavaScript | MVC | None | MySQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 19 | JavaScript | MVC | None | MySQL | Kafka | None | None | None |
-| 20 | JavaScript | MVC | None | MySQL | Kafka | Redis | None | None |
-| 21 | JavaScript | MVC | None | MySQL | Kafka | Memory Cache | None | None |
-| 22 | JavaScript | MVC | None | MySQL | Kafka | None | JWT | None |
-| 23 | JavaScript | MVC | None | MySQL | Kafka | Redis | JWT | None |
-| 24 | JavaScript | MVC | None | MySQL | Kafka | Memory Cache | JWT | None |
-| 25 | JavaScript | MVC | None | MySQL | Kafka | None | JWT | Google,GitHub |
-| 26 | JavaScript | MVC | None | MySQL | Kafka | Redis | JWT | Google,GitHub |
-| 27 | JavaScript | MVC | None | MySQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 28 | JavaScript | MVC | None | PostgreSQL | REST APIs | None | None | None |
-| 29 | JavaScript | MVC | None | PostgreSQL | REST APIs | Redis | None | None |
-| 30 | JavaScript | MVC | None | PostgreSQL | REST APIs | Memory Cache | None | None |
-| 31 | JavaScript | MVC | None | PostgreSQL | REST APIs | None | JWT | None |
-| 32 | JavaScript | MVC | None | PostgreSQL | REST APIs | Redis | JWT | None |
-| 33 | JavaScript | MVC | None | PostgreSQL | REST APIs | Memory Cache | JWT | None |
-| 34 | JavaScript | MVC | None | PostgreSQL | REST APIs | None | JWT | Google,GitHub |
-| 35 | JavaScript | MVC | None | PostgreSQL | REST APIs | Redis | JWT | Google,GitHub |
-| 36 | JavaScript | MVC | None | PostgreSQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 37 | JavaScript | MVC | None | PostgreSQL | GraphQL | None | None | None |
-| 38 | JavaScript | MVC | None | PostgreSQL | GraphQL | Redis | None | None |
-| 39 | JavaScript | MVC | None | PostgreSQL | GraphQL | Memory Cache | None | None |
-| 40 | JavaScript | MVC | None | PostgreSQL | GraphQL | None | JWT | None |
-| 41 | JavaScript | MVC | None | PostgreSQL | GraphQL | Redis | JWT | None |
-| 42 | JavaScript | MVC | None | PostgreSQL | GraphQL | Memory Cache | JWT | None |
-| 43 | JavaScript | MVC | None | PostgreSQL | GraphQL | None | JWT | Google,GitHub |
-| 44 | JavaScript | MVC | None | PostgreSQL | GraphQL | Redis | JWT | Google,GitHub |
-| 45 | JavaScript | MVC | None | PostgreSQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 46 | JavaScript | MVC | None | PostgreSQL | Kafka | None | None | None |
-| 47 | JavaScript | MVC | None | PostgreSQL | Kafka | Redis | None | None |
-| 48 | JavaScript | MVC | None | PostgreSQL | Kafka | Memory Cache | None | None |
-| 49 | JavaScript | MVC | None | PostgreSQL | Kafka | None | JWT | None |
-| 50 | JavaScript | MVC | None | PostgreSQL | Kafka | Redis | JWT | None |
-| 51 | JavaScript | MVC | None | PostgreSQL | Kafka | Memory Cache | JWT | None |
-| 52 | JavaScript | MVC | None | PostgreSQL | Kafka | None | JWT | Google,GitHub |
-| 53 | JavaScript | MVC | None | PostgreSQL | Kafka | Redis | JWT | Google,GitHub |
-| 54 | JavaScript | MVC | None | PostgreSQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 55 | JavaScript | MVC | None | MongoDB | REST APIs | None | None | None |
-| 56 | JavaScript | MVC | None | MongoDB | REST APIs | Redis | None | None |
-| 57 | JavaScript | MVC | None | MongoDB | REST APIs | Memory Cache | None | None |
-| 58 | JavaScript | MVC | None | MongoDB | REST APIs | None | JWT | None |
-| 59 | JavaScript | MVC | None | MongoDB | REST APIs | Redis | JWT | None |
-| 60 | JavaScript | MVC | None | MongoDB | REST APIs | Memory Cache | JWT | None |
-| 61 | JavaScript | MVC | None | MongoDB | REST APIs | None | JWT | Google,GitHub |
-| 62 | JavaScript | MVC | None | MongoDB | REST APIs | Redis | JWT | Google,GitHub |
-| 63 | JavaScript | MVC | None | MongoDB | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 64 | JavaScript | MVC | None | MongoDB | GraphQL | None | None | None |
-| 65 | JavaScript | MVC | None | MongoDB | GraphQL | Redis | None | None |
-| 66 | JavaScript | MVC | None | MongoDB | GraphQL | Memory Cache | None | None |
-| 67 | JavaScript | MVC | None | MongoDB | GraphQL | None | JWT | None |
-| 68 | JavaScript | MVC | None | MongoDB | GraphQL | Redis | JWT | None |
-| 69 | JavaScript | MVC | None | MongoDB | GraphQL | Memory Cache | JWT | None |
-| 70 | JavaScript | MVC | None | MongoDB | GraphQL | None | JWT | Google,GitHub |
-| 71 | JavaScript | MVC | None | MongoDB | GraphQL | Redis | JWT | Google,GitHub |
-| 72 | JavaScript | MVC | None | MongoDB | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 73 | JavaScript | MVC | None | MongoDB | Kafka | None | None | None |
-| 74 | JavaScript | MVC | None | MongoDB | Kafka | Redis | None | None |
-| 75 | JavaScript | MVC | None | MongoDB | Kafka | Memory Cache | None | None |
-| 76 | JavaScript | MVC | None | MongoDB | Kafka | None | JWT | None |
-| 77 | JavaScript | MVC | None | MongoDB | Kafka | Redis | JWT | None |
-| 78 | JavaScript | MVC | None | MongoDB | Kafka | Memory Cache | JWT | None |
-| 79 | JavaScript | MVC | None | MongoDB | Kafka | None | JWT | Google,GitHub |
-| 80 | JavaScript | MVC | None | MongoDB | Kafka | Redis | JWT | Google,GitHub |
-| 81 | JavaScript | MVC | None | MongoDB | Kafka | Memory Cache | JWT | Google,GitHub |
-| 82 | JavaScript | MVC | None | None | REST APIs | None | None | None |
-| 83 | JavaScript | MVC | None | None | REST APIs | None | JWT | None |
-| 84 | JavaScript | MVC | None | None | REST APIs | None | JWT | Google,GitHub |
-| 85 | JavaScript | MVC | None | None | GraphQL | None | None | None |
-| 86 | JavaScript | MVC | None | None | GraphQL | None | JWT | None |
-| 87 | JavaScript | MVC | None | None | GraphQL | None | JWT | Google,GitHub |
-| 88 | JavaScript | MVC | None | None | Kafka | None | None | None |
-| 89 | JavaScript | MVC | None | None | Kafka | None | JWT | None |
-| 90 | JavaScript | MVC | None | None | Kafka | None | JWT | Google,GitHub |
-| 91 | JavaScript | MVC | EJS | MySQL | REST APIs | None | None | None |
-| 92 | JavaScript | MVC | EJS | MySQL | REST APIs | Redis | None | None |
-| 93 | JavaScript | MVC | EJS | MySQL | REST APIs | Memory Cache | None | None |
-| 94 | JavaScript | MVC | EJS | MySQL | REST APIs | None | JWT | None |
-| 95 | JavaScript | MVC | EJS | MySQL | REST APIs | Redis | JWT | None |
-| 96 | JavaScript | MVC | EJS | MySQL | REST APIs | Memory Cache | JWT | None |
-| 97 | JavaScript | MVC | EJS | MySQL | REST APIs | None | JWT | Google,GitHub |
-| 98 | JavaScript | MVC | EJS | MySQL | REST APIs | Redis | JWT | Google,GitHub |
-| 99 | JavaScript | MVC | EJS | MySQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 100 | JavaScript | MVC | EJS | MySQL | GraphQL | None | None | None |
-| 101 | JavaScript | MVC | EJS | MySQL | GraphQL | Redis | None | None |
-| 102 | JavaScript | MVC | EJS | MySQL | GraphQL | Memory Cache | None | None |
-| 103 | JavaScript | MVC | EJS | MySQL | GraphQL | None | JWT | None |
-| 104 | JavaScript | MVC | EJS | MySQL | GraphQL | Redis | JWT | None |
-| 105 | JavaScript | MVC | EJS | MySQL | GraphQL | Memory Cache | JWT | None |
-| 106 | JavaScript | MVC | EJS | MySQL | GraphQL | None | JWT | Google,GitHub |
-| 107 | JavaScript | MVC | EJS | MySQL | GraphQL | Redis | JWT | Google,GitHub |
-| 108 | JavaScript | MVC | EJS | MySQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 109 | JavaScript | MVC | EJS | MySQL | Kafka | None | None | None |
-| 110 | JavaScript | MVC | EJS | MySQL | Kafka | Redis | None | None |
-| 111 | JavaScript | MVC | EJS | MySQL | Kafka | Memory Cache | None | None |
-| 112 | JavaScript | MVC | EJS | MySQL | Kafka | None | JWT | None |
-| 113 | JavaScript | MVC | EJS | MySQL | Kafka | Redis | JWT | None |
-| 114 | JavaScript | MVC | EJS | MySQL | Kafka | Memory Cache | JWT | None |
-| 115 | JavaScript | MVC | EJS | MySQL | Kafka | None | JWT | Google,GitHub |
-| 116 | JavaScript | MVC | EJS | MySQL | Kafka | Redis | JWT | Google,GitHub |
-| 117 | JavaScript | MVC | EJS | MySQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 118 | JavaScript | MVC | EJS | PostgreSQL | REST APIs | None | None | None |
-| 119 | JavaScript | MVC | EJS | PostgreSQL | REST APIs | Redis | None | None |
-| 120 | JavaScript | MVC | EJS | PostgreSQL | REST APIs | Memory Cache | None | None |
-| 121 | JavaScript | MVC | EJS | PostgreSQL | REST APIs | None | JWT | None |
-| 122 | JavaScript | MVC | EJS | PostgreSQL | REST APIs | Redis | JWT | None |
-| 123 | JavaScript | MVC | EJS | PostgreSQL | REST APIs | Memory Cache | JWT | None |
-| 124 | JavaScript | MVC | EJS | PostgreSQL | REST APIs | None | JWT | Google,GitHub |
-| 125 | JavaScript | MVC | EJS | PostgreSQL | REST APIs | Redis | JWT | Google,GitHub |
-| 126 | JavaScript | MVC | EJS | PostgreSQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 127 | JavaScript | MVC | EJS | PostgreSQL | GraphQL | None | None | None |
-| 128 | JavaScript | MVC | EJS | PostgreSQL | GraphQL | Redis | None | None |
-| 129 | JavaScript | MVC | EJS | PostgreSQL | GraphQL | Memory Cache | None | None |
-| 130 | JavaScript | MVC | EJS | PostgreSQL | GraphQL | None | JWT | None |
-| 131 | JavaScript | MVC | EJS | PostgreSQL | GraphQL | Redis | JWT | None |
-| 132 | JavaScript | MVC | EJS | PostgreSQL | GraphQL | Memory Cache | JWT | None |
-| 133 | JavaScript | MVC | EJS | PostgreSQL | GraphQL | None | JWT | Google,GitHub |
-| 134 | JavaScript | MVC | EJS | PostgreSQL | GraphQL | Redis | JWT | Google,GitHub |
-| 135 | JavaScript | MVC | EJS | PostgreSQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 136 | JavaScript | MVC | EJS | PostgreSQL | Kafka | None | None | None |
-| 137 | JavaScript | MVC | EJS | PostgreSQL | Kafka | Redis | None | None |
-| 138 | JavaScript | MVC | EJS | PostgreSQL | Kafka | Memory Cache | None | None |
-| 139 | JavaScript | MVC | EJS | PostgreSQL | Kafka | None | JWT | None |
-| 140 | JavaScript | MVC | EJS | PostgreSQL | Kafka | Redis | JWT | None |
-| 141 | JavaScript | MVC | EJS | PostgreSQL | Kafka | Memory Cache | JWT | None |
-| 142 | JavaScript | MVC | EJS | PostgreSQL | Kafka | None | JWT | Google,GitHub |
-| 143 | JavaScript | MVC | EJS | PostgreSQL | Kafka | Redis | JWT | Google,GitHub |
-| 144 | JavaScript | MVC | EJS | PostgreSQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 145 | JavaScript | MVC | EJS | MongoDB | REST APIs | None | None | None |
-| 146 | JavaScript | MVC | EJS | MongoDB | REST APIs | Redis | None | None |
-| 147 | JavaScript | MVC | EJS | MongoDB | REST APIs | Memory Cache | None | None |
-| 148 | JavaScript | MVC | EJS | MongoDB | REST APIs | None | JWT | None |
-| 149 | JavaScript | MVC | EJS | MongoDB | REST APIs | Redis | JWT | None |
-| 150 | JavaScript | MVC | EJS | MongoDB | REST APIs | Memory Cache | JWT | None |
-| 151 | JavaScript | MVC | EJS | MongoDB | REST APIs | None | JWT | Google,GitHub |
-| 152 | JavaScript | MVC | EJS | MongoDB | REST APIs | Redis | JWT | Google,GitHub |
-| 153 | JavaScript | MVC | EJS | MongoDB | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 154 | JavaScript | MVC | EJS | MongoDB | GraphQL | None | None | None |
-| 155 | JavaScript | MVC | EJS | MongoDB | GraphQL | Redis | None | None |
-| 156 | JavaScript | MVC | EJS | MongoDB | GraphQL | Memory Cache | None | None |
-| 157 | JavaScript | MVC | EJS | MongoDB | GraphQL | None | JWT | None |
-| 158 | JavaScript | MVC | EJS | MongoDB | GraphQL | Redis | JWT | None |
-| 159 | JavaScript | MVC | EJS | MongoDB | GraphQL | Memory Cache | JWT | None |
-| 160 | JavaScript | MVC | EJS | MongoDB | GraphQL | None | JWT | Google,GitHub |
-| 161 | JavaScript | MVC | EJS | MongoDB | GraphQL | Redis | JWT | Google,GitHub |
-| 162 | JavaScript | MVC | EJS | MongoDB | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 163 | JavaScript | MVC | EJS | MongoDB | Kafka | None | None | None |
-| 164 | JavaScript | MVC | EJS | MongoDB | Kafka | Redis | None | None |
-| 165 | JavaScript | MVC | EJS | MongoDB | Kafka | Memory Cache | None | None |
-| 166 | JavaScript | MVC | EJS | MongoDB | Kafka | None | JWT | None |
-| 167 | JavaScript | MVC | EJS | MongoDB | Kafka | Redis | JWT | None |
-| 168 | JavaScript | MVC | EJS | MongoDB | Kafka | Memory Cache | JWT | None |
-| 169 | JavaScript | MVC | EJS | MongoDB | Kafka | None | JWT | Google,GitHub |
-| 170 | JavaScript | MVC | EJS | MongoDB | Kafka | Redis | JWT | Google,GitHub |
-| 171 | JavaScript | MVC | EJS | MongoDB | Kafka | Memory Cache | JWT | Google,GitHub |
-| 172 | JavaScript | MVC | EJS | None | REST APIs | None | None | None |
-| 173 | JavaScript | MVC | EJS | None | REST APIs | None | JWT | None |
-| 174 | JavaScript | MVC | EJS | None | REST APIs | None | JWT | Google,GitHub |
-| 175 | JavaScript | MVC | EJS | None | GraphQL | None | None | None |
-| 176 | JavaScript | MVC | EJS | None | GraphQL | None | JWT | None |
-| 177 | JavaScript | MVC | EJS | None | GraphQL | None | JWT | Google,GitHub |
-| 178 | JavaScript | MVC | EJS | None | Kafka | None | None | None |
-| 179 | JavaScript | MVC | EJS | None | Kafka | None | JWT | None |
-| 180 | JavaScript | MVC | EJS | None | Kafka | None | JWT | Google,GitHub |
-| 181 | JavaScript | MVC | Pug | MySQL | REST APIs | None | None | None |
-| 182 | JavaScript | MVC | Pug | MySQL | REST APIs | Redis | None | None |
-| 183 | JavaScript | MVC | Pug | MySQL | REST APIs | Memory Cache | None | None |
-| 184 | JavaScript | MVC | Pug | MySQL | REST APIs | None | JWT | None |
-| 185 | JavaScript | MVC | Pug | MySQL | REST APIs | Redis | JWT | None |
-| 186 | JavaScript | MVC | Pug | MySQL | REST APIs | Memory Cache | JWT | None |
-| 187 | JavaScript | MVC | Pug | MySQL | REST APIs | None | JWT | Google,GitHub |
-| 188 | JavaScript | MVC | Pug | MySQL | REST APIs | Redis | JWT | Google,GitHub |
-| 189 | JavaScript | MVC | Pug | MySQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 190 | JavaScript | MVC | Pug | MySQL | GraphQL | None | None | None |
-| 191 | JavaScript | MVC | Pug | MySQL | GraphQL | Redis | None | None |
-| 192 | JavaScript | MVC | Pug | MySQL | GraphQL | Memory Cache | None | None |
-| 193 | JavaScript | MVC | Pug | MySQL | GraphQL | None | JWT | None |
-| 194 | JavaScript | MVC | Pug | MySQL | GraphQL | Redis | JWT | None |
-| 195 | JavaScript | MVC | Pug | MySQL | GraphQL | Memory Cache | JWT | None |
-| 196 | JavaScript | MVC | Pug | MySQL | GraphQL | None | JWT | Google,GitHub |
-| 197 | JavaScript | MVC | Pug | MySQL | GraphQL | Redis | JWT | Google,GitHub |
-| 198 | JavaScript | MVC | Pug | MySQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 199 | JavaScript | MVC | Pug | MySQL | Kafka | None | None | None |
-| 200 | JavaScript | MVC | Pug | MySQL | Kafka | Redis | None | None |
-| 201 | JavaScript | MVC | Pug | MySQL | Kafka | Memory Cache | None | None |
-| 202 | JavaScript | MVC | Pug | MySQL | Kafka | None | JWT | None |
-| 203 | JavaScript | MVC | Pug | MySQL | Kafka | Redis | JWT | None |
-| 204 | JavaScript | MVC | Pug | MySQL | Kafka | Memory Cache | JWT | None |
-| 205 | JavaScript | MVC | Pug | MySQL | Kafka | None | JWT | Google,GitHub |
-| 206 | JavaScript | MVC | Pug | MySQL | Kafka | Redis | JWT | Google,GitHub |
-| 207 | JavaScript | MVC | Pug | MySQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 208 | JavaScript | MVC | Pug | PostgreSQL | REST APIs | None | None | None |
-| 209 | JavaScript | MVC | Pug | PostgreSQL | REST APIs | Redis | None | None |
-| 210 | JavaScript | MVC | Pug | PostgreSQL | REST APIs | Memory Cache | None | None |
-| 211 | JavaScript | MVC | Pug | PostgreSQL | REST APIs | None | JWT | None |
-| 212 | JavaScript | MVC | Pug | PostgreSQL | REST APIs | Redis | JWT | None |
-| 213 | JavaScript | MVC | Pug | PostgreSQL | REST APIs | Memory Cache | JWT | None |
-| 214 | JavaScript | MVC | Pug | PostgreSQL | REST APIs | None | JWT | Google,GitHub |
-| 215 | JavaScript | MVC | Pug | PostgreSQL | REST APIs | Redis | JWT | Google,GitHub |
-| 216 | JavaScript | MVC | Pug | PostgreSQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 217 | JavaScript | MVC | Pug | PostgreSQL | GraphQL | None | None | None |
-| 218 | JavaScript | MVC | Pug | PostgreSQL | GraphQL | Redis | None | None |
-| 219 | JavaScript | MVC | Pug | PostgreSQL | GraphQL | Memory Cache | None | None |
-| 220 | JavaScript | MVC | Pug | PostgreSQL | GraphQL | None | JWT | None |
-| 221 | JavaScript | MVC | Pug | PostgreSQL | GraphQL | Redis | JWT | None |
-| 222 | JavaScript | MVC | Pug | PostgreSQL | GraphQL | Memory Cache | JWT | None |
-| 223 | JavaScript | MVC | Pug | PostgreSQL | GraphQL | None | JWT | Google,GitHub |
-| 224 | JavaScript | MVC | Pug | PostgreSQL | GraphQL | Redis | JWT | Google,GitHub |
-| 225 | JavaScript | MVC | Pug | PostgreSQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 226 | JavaScript | MVC | Pug | PostgreSQL | Kafka | None | None | None |
-| 227 | JavaScript | MVC | Pug | PostgreSQL | Kafka | Redis | None | None |
-| 228 | JavaScript | MVC | Pug | PostgreSQL | Kafka | Memory Cache | None | None |
-| 229 | JavaScript | MVC | Pug | PostgreSQL | Kafka | None | JWT | None |
-| 230 | JavaScript | MVC | Pug | PostgreSQL | Kafka | Redis | JWT | None |
-| 231 | JavaScript | MVC | Pug | PostgreSQL | Kafka | Memory Cache | JWT | None |
-| 232 | JavaScript | MVC | Pug | PostgreSQL | Kafka | None | JWT | Google,GitHub |
-| 233 | JavaScript | MVC | Pug | PostgreSQL | Kafka | Redis | JWT | Google,GitHub |
-| 234 | JavaScript | MVC | Pug | PostgreSQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 235 | JavaScript | MVC | Pug | MongoDB | REST APIs | None | None | None |
-| 236 | JavaScript | MVC | Pug | MongoDB | REST APIs | Redis | None | None |
-| 237 | JavaScript | MVC | Pug | MongoDB | REST APIs | Memory Cache | None | None |
-| 238 | JavaScript | MVC | Pug | MongoDB | REST APIs | None | JWT | None |
-| 239 | JavaScript | MVC | Pug | MongoDB | REST APIs | Redis | JWT | None |
-| 240 | JavaScript | MVC | Pug | MongoDB | REST APIs | Memory Cache | JWT | None |
-| 241 | JavaScript | MVC | Pug | MongoDB | REST APIs | None | JWT | Google,GitHub |
-| 242 | JavaScript | MVC | Pug | MongoDB | REST APIs | Redis | JWT | Google,GitHub |
-| 243 | JavaScript | MVC | Pug | MongoDB | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 244 | JavaScript | MVC | Pug | MongoDB | GraphQL | None | None | None |
-| 245 | JavaScript | MVC | Pug | MongoDB | GraphQL | Redis | None | None |
-| 246 | JavaScript | MVC | Pug | MongoDB | GraphQL | Memory Cache | None | None |
-| 247 | JavaScript | MVC | Pug | MongoDB | GraphQL | None | JWT | None |
-| 248 | JavaScript | MVC | Pug | MongoDB | GraphQL | Redis | JWT | None |
-| 249 | JavaScript | MVC | Pug | MongoDB | GraphQL | Memory Cache | JWT | None |
-| 250 | JavaScript | MVC | Pug | MongoDB | GraphQL | None | JWT | Google,GitHub |
-| 251 | JavaScript | MVC | Pug | MongoDB | GraphQL | Redis | JWT | Google,GitHub |
-| 252 | JavaScript | MVC | Pug | MongoDB | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 253 | JavaScript | MVC | Pug | MongoDB | Kafka | None | None | None |
-| 254 | JavaScript | MVC | Pug | MongoDB | Kafka | Redis | None | None |
-| 255 | JavaScript | MVC | Pug | MongoDB | Kafka | Memory Cache | None | None |
-| 256 | JavaScript | MVC | Pug | MongoDB | Kafka | None | JWT | None |
-| 257 | JavaScript | MVC | Pug | MongoDB | Kafka | Redis | JWT | None |
-| 258 | JavaScript | MVC | Pug | MongoDB | Kafka | Memory Cache | JWT | None |
-| 259 | JavaScript | MVC | Pug | MongoDB | Kafka | None | JWT | Google,GitHub |
-| 260 | JavaScript | MVC | Pug | MongoDB | Kafka | Redis | JWT | Google,GitHub |
-| 261 | JavaScript | MVC | Pug | MongoDB | Kafka | Memory Cache | JWT | Google,GitHub |
-| 262 | JavaScript | MVC | Pug | None | REST APIs | None | None | None |
-| 263 | JavaScript | MVC | Pug | None | REST APIs | None | JWT | None |
-| 264 | JavaScript | MVC | Pug | None | REST APIs | None | JWT | Google,GitHub |
-| 265 | JavaScript | MVC | Pug | None | GraphQL | None | None | None |
-| 266 | JavaScript | MVC | Pug | None | GraphQL | None | JWT | None |
-| 267 | JavaScript | MVC | Pug | None | GraphQL | None | JWT | Google,GitHub |
-| 268 | JavaScript | MVC | Pug | None | Kafka | None | None | None |
-| 269 | JavaScript | MVC | Pug | None | Kafka | None | JWT | None |
-| 270 | JavaScript | MVC | Pug | None | Kafka | None | JWT | Google,GitHub |
-| 271 | TypeScript | MVC | None | MySQL | REST APIs | None | None | None |
-| 272 | TypeScript | MVC | None | MySQL | REST APIs | Redis | None | None |
-| 273 | TypeScript | MVC | None | MySQL | REST APIs | Memory Cache | None | None |
-| 274 | TypeScript | MVC | None | MySQL | REST APIs | None | JWT | None |
-| 275 | TypeScript | MVC | None | MySQL | REST APIs | Redis | JWT | None |
-| 276 | TypeScript | MVC | None | MySQL | REST APIs | Memory Cache | JWT | None |
-| 277 | TypeScript | MVC | None | MySQL | REST APIs | None | JWT | Google,GitHub |
-| 278 | TypeScript | MVC | None | MySQL | REST APIs | Redis | JWT | Google,GitHub |
-| 279 | TypeScript | MVC | None | MySQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 280 | TypeScript | MVC | None | MySQL | GraphQL | None | None | None |
-| 281 | TypeScript | MVC | None | MySQL | GraphQL | Redis | None | None |
-| 282 | TypeScript | MVC | None | MySQL | GraphQL | Memory Cache | None | None |
-| 283 | TypeScript | MVC | None | MySQL | GraphQL | None | JWT | None |
-| 284 | TypeScript | MVC | None | MySQL | GraphQL | Redis | JWT | None |
-| 285 | TypeScript | MVC | None | MySQL | GraphQL | Memory Cache | JWT | None |
-| 286 | TypeScript | MVC | None | MySQL | GraphQL | None | JWT | Google,GitHub |
-| 287 | TypeScript | MVC | None | MySQL | GraphQL | Redis | JWT | Google,GitHub |
-| 288 | TypeScript | MVC | None | MySQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 289 | TypeScript | MVC | None | MySQL | Kafka | None | None | None |
-| 290 | TypeScript | MVC | None | MySQL | Kafka | Redis | None | None |
-| 291 | TypeScript | MVC | None | MySQL | Kafka | Memory Cache | None | None |
-| 292 | TypeScript | MVC | None | MySQL | Kafka | None | JWT | None |
-| 293 | TypeScript | MVC | None | MySQL | Kafka | Redis | JWT | None |
-| 294 | TypeScript | MVC | None | MySQL | Kafka | Memory Cache | JWT | None |
-| 295 | TypeScript | MVC | None | MySQL | Kafka | None | JWT | Google,GitHub |
-| 296 | TypeScript | MVC | None | MySQL | Kafka | Redis | JWT | Google,GitHub |
-| 297 | TypeScript | MVC | None | MySQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 298 | TypeScript | MVC | None | PostgreSQL | REST APIs | None | None | None |
-| 299 | TypeScript | MVC | None | PostgreSQL | REST APIs | Redis | None | None |
-| 300 | TypeScript | MVC | None | PostgreSQL | REST APIs | Memory Cache | None | None |
-| 301 | TypeScript | MVC | None | PostgreSQL | REST APIs | None | JWT | None |
-| 302 | TypeScript | MVC | None | PostgreSQL | REST APIs | Redis | JWT | None |
-| 303 | TypeScript | MVC | None | PostgreSQL | REST APIs | Memory Cache | JWT | None |
-| 304 | TypeScript | MVC | None | PostgreSQL | REST APIs | None | JWT | Google,GitHub |
-| 305 | TypeScript | MVC | None | PostgreSQL | REST APIs | Redis | JWT | Google,GitHub |
-| 306 | TypeScript | MVC | None | PostgreSQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 307 | TypeScript | MVC | None | PostgreSQL | GraphQL | None | None | None |
-| 308 | TypeScript | MVC | None | PostgreSQL | GraphQL | Redis | None | None |
-| 309 | TypeScript | MVC | None | PostgreSQL | GraphQL | Memory Cache | None | None |
-| 310 | TypeScript | MVC | None | PostgreSQL | GraphQL | None | JWT | None |
-| 311 | TypeScript | MVC | None | PostgreSQL | GraphQL | Redis | JWT | None |
-| 312 | TypeScript | MVC | None | PostgreSQL | GraphQL | Memory Cache | JWT | None |
-| 313 | TypeScript | MVC | None | PostgreSQL | GraphQL | None | JWT | Google,GitHub |
-| 314 | TypeScript | MVC | None | PostgreSQL | GraphQL | Redis | JWT | Google,GitHub |
-| 315 | TypeScript | MVC | None | PostgreSQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 316 | TypeScript | MVC | None | PostgreSQL | Kafka | None | None | None |
-| 317 | TypeScript | MVC | None | PostgreSQL | Kafka | Redis | None | None |
-| 318 | TypeScript | MVC | None | PostgreSQL | Kafka | Memory Cache | None | None |
-| 319 | TypeScript | MVC | None | PostgreSQL | Kafka | None | JWT | None |
-| 320 | TypeScript | MVC | None | PostgreSQL | Kafka | Redis | JWT | None |
-| 321 | TypeScript | MVC | None | PostgreSQL | Kafka | Memory Cache | JWT | None |
-| 322 | TypeScript | MVC | None | PostgreSQL | Kafka | None | JWT | Google,GitHub |
-| 323 | TypeScript | MVC | None | PostgreSQL | Kafka | Redis | JWT | Google,GitHub |
-| 324 | TypeScript | MVC | None | PostgreSQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 325 | TypeScript | MVC | None | MongoDB | REST APIs | None | None | None |
-| 326 | TypeScript | MVC | None | MongoDB | REST APIs | Redis | None | None |
-| 327 | TypeScript | MVC | None | MongoDB | REST APIs | Memory Cache | None | None |
-| 328 | TypeScript | MVC | None | MongoDB | REST APIs | None | JWT | None |
-| 329 | TypeScript | MVC | None | MongoDB | REST APIs | Redis | JWT | None |
-| 330 | TypeScript | MVC | None | MongoDB | REST APIs | Memory Cache | JWT | None |
-| 331 | TypeScript | MVC | None | MongoDB | REST APIs | None | JWT | Google,GitHub |
-| 332 | TypeScript | MVC | None | MongoDB | REST APIs | Redis | JWT | Google,GitHub |
-| 333 | TypeScript | MVC | None | MongoDB | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 334 | TypeScript | MVC | None | MongoDB | GraphQL | None | None | None |
-| 335 | TypeScript | MVC | None | MongoDB | GraphQL | Redis | None | None |
-| 336 | TypeScript | MVC | None | MongoDB | GraphQL | Memory Cache | None | None |
-| 337 | TypeScript | MVC | None | MongoDB | GraphQL | None | JWT | None |
-| 338 | TypeScript | MVC | None | MongoDB | GraphQL | Redis | JWT | None |
-| 339 | TypeScript | MVC | None | MongoDB | GraphQL | Memory Cache | JWT | None |
-| 340 | TypeScript | MVC | None | MongoDB | GraphQL | None | JWT | Google,GitHub |
-| 341 | TypeScript | MVC | None | MongoDB | GraphQL | Redis | JWT | Google,GitHub |
-| 342 | TypeScript | MVC | None | MongoDB | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 343 | TypeScript | MVC | None | MongoDB | Kafka | None | None | None |
-| 344 | TypeScript | MVC | None | MongoDB | Kafka | Redis | None | None |
-| 345 | TypeScript | MVC | None | MongoDB | Kafka | Memory Cache | None | None |
-| 346 | TypeScript | MVC | None | MongoDB | Kafka | None | JWT | None |
-| 347 | TypeScript | MVC | None | MongoDB | Kafka | Redis | JWT | None |
-| 348 | TypeScript | MVC | None | MongoDB | Kafka | Memory Cache | JWT | None |
-| 349 | TypeScript | MVC | None | MongoDB | Kafka | None | JWT | Google,GitHub |
-| 350 | TypeScript | MVC | None | MongoDB | Kafka | Redis | JWT | Google,GitHub |
-| 351 | TypeScript | MVC | None | MongoDB | Kafka | Memory Cache | JWT | Google,GitHub |
-| 352 | TypeScript | MVC | None | None | REST APIs | None | None | None |
-| 353 | TypeScript | MVC | None | None | REST APIs | None | JWT | None |
-| 354 | TypeScript | MVC | None | None | REST APIs | None | JWT | Google,GitHub |
-| 355 | TypeScript | MVC | None | None | GraphQL | None | None | None |
-| 356 | TypeScript | MVC | None | None | GraphQL | None | JWT | None |
-| 357 | TypeScript | MVC | None | None | GraphQL | None | JWT | Google,GitHub |
-| 358 | TypeScript | MVC | None | None | Kafka | None | None | None |
-| 359 | TypeScript | MVC | None | None | Kafka | None | JWT | None |
-| 360 | TypeScript | MVC | None | None | Kafka | None | JWT | Google,GitHub |
-| 361 | TypeScript | MVC | EJS | MySQL | REST APIs | None | None | None |
-| 362 | TypeScript | MVC | EJS | MySQL | REST APIs | Redis | None | None |
-| 363 | TypeScript | MVC | EJS | MySQL | REST APIs | Memory Cache | None | None |
-| 364 | TypeScript | MVC | EJS | MySQL | REST APIs | None | JWT | None |
-| 365 | TypeScript | MVC | EJS | MySQL | REST APIs | Redis | JWT | None |
-| 366 | TypeScript | MVC | EJS | MySQL | REST APIs | Memory Cache | JWT | None |
-| 367 | TypeScript | MVC | EJS | MySQL | REST APIs | None | JWT | Google,GitHub |
-| 368 | TypeScript | MVC | EJS | MySQL | REST APIs | Redis | JWT | Google,GitHub |
-| 369 | TypeScript | MVC | EJS | MySQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 370 | TypeScript | MVC | EJS | MySQL | GraphQL | None | None | None |
-| 371 | TypeScript | MVC | EJS | MySQL | GraphQL | Redis | None | None |
-| 372 | TypeScript | MVC | EJS | MySQL | GraphQL | Memory Cache | None | None |
-| 373 | TypeScript | MVC | EJS | MySQL | GraphQL | None | JWT | None |
-| 374 | TypeScript | MVC | EJS | MySQL | GraphQL | Redis | JWT | None |
-| 375 | TypeScript | MVC | EJS | MySQL | GraphQL | Memory Cache | JWT | None |
-| 376 | TypeScript | MVC | EJS | MySQL | GraphQL | None | JWT | Google,GitHub |
-| 377 | TypeScript | MVC | EJS | MySQL | GraphQL | Redis | JWT | Google,GitHub |
-| 378 | TypeScript | MVC | EJS | MySQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 379 | TypeScript | MVC | EJS | MySQL | Kafka | None | None | None |
-| 380 | TypeScript | MVC | EJS | MySQL | Kafka | Redis | None | None |
-| 381 | TypeScript | MVC | EJS | MySQL | Kafka | Memory Cache | None | None |
-| 382 | TypeScript | MVC | EJS | MySQL | Kafka | None | JWT | None |
-| 383 | TypeScript | MVC | EJS | MySQL | Kafka | Redis | JWT | None |
-| 384 | TypeScript | MVC | EJS | MySQL | Kafka | Memory Cache | JWT | None |
-| 385 | TypeScript | MVC | EJS | MySQL | Kafka | None | JWT | Google,GitHub |
-| 386 | TypeScript | MVC | EJS | MySQL | Kafka | Redis | JWT | Google,GitHub |
-| 387 | TypeScript | MVC | EJS | MySQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 388 | TypeScript | MVC | EJS | PostgreSQL | REST APIs | None | None | None |
-| 389 | TypeScript | MVC | EJS | PostgreSQL | REST APIs | Redis | None | None |
-| 390 | TypeScript | MVC | EJS | PostgreSQL | REST APIs | Memory Cache | None | None |
-| 391 | TypeScript | MVC | EJS | PostgreSQL | REST APIs | None | JWT | None |
-| 392 | TypeScript | MVC | EJS | PostgreSQL | REST APIs | Redis | JWT | None |
-| 393 | TypeScript | MVC | EJS | PostgreSQL | REST APIs | Memory Cache | JWT | None |
-| 394 | TypeScript | MVC | EJS | PostgreSQL | REST APIs | None | JWT | Google,GitHub |
-| 395 | TypeScript | MVC | EJS | PostgreSQL | REST APIs | Redis | JWT | Google,GitHub |
-| 396 | TypeScript | MVC | EJS | PostgreSQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 397 | TypeScript | MVC | EJS | PostgreSQL | GraphQL | None | None | None |
-| 398 | TypeScript | MVC | EJS | PostgreSQL | GraphQL | Redis | None | None |
-| 399 | TypeScript | MVC | EJS | PostgreSQL | GraphQL | Memory Cache | None | None |
-| 400 | TypeScript | MVC | EJS | PostgreSQL | GraphQL | None | JWT | None |
-| 401 | TypeScript | MVC | EJS | PostgreSQL | GraphQL | Redis | JWT | None |
-| 402 | TypeScript | MVC | EJS | PostgreSQL | GraphQL | Memory Cache | JWT | None |
-| 403 | TypeScript | MVC | EJS | PostgreSQL | GraphQL | None | JWT | Google,GitHub |
-| 404 | TypeScript | MVC | EJS | PostgreSQL | GraphQL | Redis | JWT | Google,GitHub |
-| 405 | TypeScript | MVC | EJS | PostgreSQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 406 | TypeScript | MVC | EJS | PostgreSQL | Kafka | None | None | None |
-| 407 | TypeScript | MVC | EJS | PostgreSQL | Kafka | Redis | None | None |
-| 408 | TypeScript | MVC | EJS | PostgreSQL | Kafka | Memory Cache | None | None |
-| 409 | TypeScript | MVC | EJS | PostgreSQL | Kafka | None | JWT | None |
-| 410 | TypeScript | MVC | EJS | PostgreSQL | Kafka | Redis | JWT | None |
-| 411 | TypeScript | MVC | EJS | PostgreSQL | Kafka | Memory Cache | JWT | None |
-| 412 | TypeScript | MVC | EJS | PostgreSQL | Kafka | None | JWT | Google,GitHub |
-| 413 | TypeScript | MVC | EJS | PostgreSQL | Kafka | Redis | JWT | Google,GitHub |
-| 414 | TypeScript | MVC | EJS | PostgreSQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 415 | TypeScript | MVC | EJS | MongoDB | REST APIs | None | None | None |
-| 416 | TypeScript | MVC | EJS | MongoDB | REST APIs | Redis | None | None |
-| 417 | TypeScript | MVC | EJS | MongoDB | REST APIs | Memory Cache | None | None |
-| 418 | TypeScript | MVC | EJS | MongoDB | REST APIs | None | JWT | None |
-| 419 | TypeScript | MVC | EJS | MongoDB | REST APIs | Redis | JWT | None |
-| 420 | TypeScript | MVC | EJS | MongoDB | REST APIs | Memory Cache | JWT | None |
-| 421 | TypeScript | MVC | EJS | MongoDB | REST APIs | None | JWT | Google,GitHub |
-| 422 | TypeScript | MVC | EJS | MongoDB | REST APIs | Redis | JWT | Google,GitHub |
-| 423 | TypeScript | MVC | EJS | MongoDB | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 424 | TypeScript | MVC | EJS | MongoDB | GraphQL | None | None | None |
-| 425 | TypeScript | MVC | EJS | MongoDB | GraphQL | Redis | None | None |
-| 426 | TypeScript | MVC | EJS | MongoDB | GraphQL | Memory Cache | None | None |
-| 427 | TypeScript | MVC | EJS | MongoDB | GraphQL | None | JWT | None |
-| 428 | TypeScript | MVC | EJS | MongoDB | GraphQL | Redis | JWT | None |
-| 429 | TypeScript | MVC | EJS | MongoDB | GraphQL | Memory Cache | JWT | None |
-| 430 | TypeScript | MVC | EJS | MongoDB | GraphQL | None | JWT | Google,GitHub |
-| 431 | TypeScript | MVC | EJS | MongoDB | GraphQL | Redis | JWT | Google,GitHub |
-| 432 | TypeScript | MVC | EJS | MongoDB | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 433 | TypeScript | MVC | EJS | MongoDB | Kafka | None | None | None |
-| 434 | TypeScript | MVC | EJS | MongoDB | Kafka | Redis | None | None |
-| 435 | TypeScript | MVC | EJS | MongoDB | Kafka | Memory Cache | None | None |
-| 436 | TypeScript | MVC | EJS | MongoDB | Kafka | None | JWT | None |
-| 437 | TypeScript | MVC | EJS | MongoDB | Kafka | Redis | JWT | None |
-| 438 | TypeScript | MVC | EJS | MongoDB | Kafka | Memory Cache | JWT | None |
-| 439 | TypeScript | MVC | EJS | MongoDB | Kafka | None | JWT | Google,GitHub |
-| 440 | TypeScript | MVC | EJS | MongoDB | Kafka | Redis | JWT | Google,GitHub |
-| 441 | TypeScript | MVC | EJS | MongoDB | Kafka | Memory Cache | JWT | Google,GitHub |
-| 442 | TypeScript | MVC | EJS | None | REST APIs | None | None | None |
-| 443 | TypeScript | MVC | EJS | None | REST APIs | None | JWT | None |
-| 444 | TypeScript | MVC | EJS | None | REST APIs | None | JWT | Google,GitHub |
-| 445 | TypeScript | MVC | EJS | None | GraphQL | None | None | None |
-| 446 | TypeScript | MVC | EJS | None | GraphQL | None | JWT | None |
-| 447 | TypeScript | MVC | EJS | None | GraphQL | None | JWT | Google,GitHub |
-| 448 | TypeScript | MVC | EJS | None | Kafka | None | None | None |
-| 449 | TypeScript | MVC | EJS | None | Kafka | None | JWT | None |
-| 450 | TypeScript | MVC | EJS | None | Kafka | None | JWT | Google,GitHub |
-| 451 | TypeScript | MVC | Pug | MySQL | REST APIs | None | None | None |
-| 452 | TypeScript | MVC | Pug | MySQL | REST APIs | Redis | None | None |
-| 453 | TypeScript | MVC | Pug | MySQL | REST APIs | Memory Cache | None | None |
-| 454 | TypeScript | MVC | Pug | MySQL | REST APIs | None | JWT | None |
-| 455 | TypeScript | MVC | Pug | MySQL | REST APIs | Redis | JWT | None |
-| 456 | TypeScript | MVC | Pug | MySQL | REST APIs | Memory Cache | JWT | None |
-| 457 | TypeScript | MVC | Pug | MySQL | REST APIs | None | JWT | Google,GitHub |
-| 458 | TypeScript | MVC | Pug | MySQL | REST APIs | Redis | JWT | Google,GitHub |
-| 459 | TypeScript | MVC | Pug | MySQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 460 | TypeScript | MVC | Pug | MySQL | GraphQL | None | None | None |
-| 461 | TypeScript | MVC | Pug | MySQL | GraphQL | Redis | None | None |
-| 462 | TypeScript | MVC | Pug | MySQL | GraphQL | Memory Cache | None | None |
-| 463 | TypeScript | MVC | Pug | MySQL | GraphQL | None | JWT | None |
-| 464 | TypeScript | MVC | Pug | MySQL | GraphQL | Redis | JWT | None |
-| 465 | TypeScript | MVC | Pug | MySQL | GraphQL | Memory Cache | JWT | None |
-| 466 | TypeScript | MVC | Pug | MySQL | GraphQL | None | JWT | Google,GitHub |
-| 467 | TypeScript | MVC | Pug | MySQL | GraphQL | Redis | JWT | Google,GitHub |
-| 468 | TypeScript | MVC | Pug | MySQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 469 | TypeScript | MVC | Pug | MySQL | Kafka | None | None | None |
-| 470 | TypeScript | MVC | Pug | MySQL | Kafka | Redis | None | None |
-| 471 | TypeScript | MVC | Pug | MySQL | Kafka | Memory Cache | None | None |
-| 472 | TypeScript | MVC | Pug | MySQL | Kafka | None | JWT | None |
-| 473 | TypeScript | MVC | Pug | MySQL | Kafka | Redis | JWT | None |
-| 474 | TypeScript | MVC | Pug | MySQL | Kafka | Memory Cache | JWT | None |
-| 475 | TypeScript | MVC | Pug | MySQL | Kafka | None | JWT | Google,GitHub |
-| 476 | TypeScript | MVC | Pug | MySQL | Kafka | Redis | JWT | Google,GitHub |
-| 477 | TypeScript | MVC | Pug | MySQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 478 | TypeScript | MVC | Pug | PostgreSQL | REST APIs | None | None | None |
-| 479 | TypeScript | MVC | Pug | PostgreSQL | REST APIs | Redis | None | None |
-| 480 | TypeScript | MVC | Pug | PostgreSQL | REST APIs | Memory Cache | None | None |
-| 481 | TypeScript | MVC | Pug | PostgreSQL | REST APIs | None | JWT | None |
-| 482 | TypeScript | MVC | Pug | PostgreSQL | REST APIs | Redis | JWT | None |
-| 483 | TypeScript | MVC | Pug | PostgreSQL | REST APIs | Memory Cache | JWT | None |
-| 484 | TypeScript | MVC | Pug | PostgreSQL | REST APIs | None | JWT | Google,GitHub |
-| 485 | TypeScript | MVC | Pug | PostgreSQL | REST APIs | Redis | JWT | Google,GitHub |
-| 486 | TypeScript | MVC | Pug | PostgreSQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 487 | TypeScript | MVC | Pug | PostgreSQL | GraphQL | None | None | None |
-| 488 | TypeScript | MVC | Pug | PostgreSQL | GraphQL | Redis | None | None |
-| 489 | TypeScript | MVC | Pug | PostgreSQL | GraphQL | Memory Cache | None | None |
-| 490 | TypeScript | MVC | Pug | PostgreSQL | GraphQL | None | JWT | None |
-| 491 | TypeScript | MVC | Pug | PostgreSQL | GraphQL | Redis | JWT | None |
-| 492 | TypeScript | MVC | Pug | PostgreSQL | GraphQL | Memory Cache | JWT | None |
-| 493 | TypeScript | MVC | Pug | PostgreSQL | GraphQL | None | JWT | Google,GitHub |
-| 494 | TypeScript | MVC | Pug | PostgreSQL | GraphQL | Redis | JWT | Google,GitHub |
-| 495 | TypeScript | MVC | Pug | PostgreSQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 496 | TypeScript | MVC | Pug | PostgreSQL | Kafka | None | None | None |
-| 497 | TypeScript | MVC | Pug | PostgreSQL | Kafka | Redis | None | None |
-| 498 | TypeScript | MVC | Pug | PostgreSQL | Kafka | Memory Cache | None | None |
-| 499 | TypeScript | MVC | Pug | PostgreSQL | Kafka | None | JWT | None |
-| 500 | TypeScript | MVC | Pug | PostgreSQL | Kafka | Redis | JWT | None |
-| 501 | TypeScript | MVC | Pug | PostgreSQL | Kafka | Memory Cache | JWT | None |
-| 502 | TypeScript | MVC | Pug | PostgreSQL | Kafka | None | JWT | Google,GitHub |
-| 503 | TypeScript | MVC | Pug | PostgreSQL | Kafka | Redis | JWT | Google,GitHub |
-| 504 | TypeScript | MVC | Pug | PostgreSQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 505 | TypeScript | MVC | Pug | MongoDB | REST APIs | None | None | None |
-| 506 | TypeScript | MVC | Pug | MongoDB | REST APIs | Redis | None | None |
-| 507 | TypeScript | MVC | Pug | MongoDB | REST APIs | Memory Cache | None | None |
-| 508 | TypeScript | MVC | Pug | MongoDB | REST APIs | None | JWT | None |
-| 509 | TypeScript | MVC | Pug | MongoDB | REST APIs | Redis | JWT | None |
-| 510 | TypeScript | MVC | Pug | MongoDB | REST APIs | Memory Cache | JWT | None |
-| 511 | TypeScript | MVC | Pug | MongoDB | REST APIs | None | JWT | Google,GitHub |
-| 512 | TypeScript | MVC | Pug | MongoDB | REST APIs | Redis | JWT | Google,GitHub |
-| 513 | TypeScript | MVC | Pug | MongoDB | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 514 | TypeScript | MVC | Pug | MongoDB | GraphQL | None | None | None |
-| 515 | TypeScript | MVC | Pug | MongoDB | GraphQL | Redis | None | None |
-| 516 | TypeScript | MVC | Pug | MongoDB | GraphQL | Memory Cache | None | None |
-| 517 | TypeScript | MVC | Pug | MongoDB | GraphQL | None | JWT | None |
-| 518 | TypeScript | MVC | Pug | MongoDB | GraphQL | Redis | JWT | None |
-| 519 | TypeScript | MVC | Pug | MongoDB | GraphQL | Memory Cache | JWT | None |
-| 520 | TypeScript | MVC | Pug | MongoDB | GraphQL | None | JWT | Google,GitHub |
-| 521 | TypeScript | MVC | Pug | MongoDB | GraphQL | Redis | JWT | Google,GitHub |
-| 522 | TypeScript | MVC | Pug | MongoDB | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 523 | TypeScript | MVC | Pug | MongoDB | Kafka | None | None | None |
-| 524 | TypeScript | MVC | Pug | MongoDB | Kafka | Redis | None | None |
-| 525 | TypeScript | MVC | Pug | MongoDB | Kafka | Memory Cache | None | None |
-| 526 | TypeScript | MVC | Pug | MongoDB | Kafka | None | JWT | None |
-| 527 | TypeScript | MVC | Pug | MongoDB | Kafka | Redis | JWT | None |
-| 528 | TypeScript | MVC | Pug | MongoDB | Kafka | Memory Cache | JWT | None |
-| 529 | TypeScript | MVC | Pug | MongoDB | Kafka | None | JWT | Google,GitHub |
-| 530 | TypeScript | MVC | Pug | MongoDB | Kafka | Redis | JWT | Google,GitHub |
-| 531 | TypeScript | MVC | Pug | MongoDB | Kafka | Memory Cache | JWT | Google,GitHub |
-| 532 | TypeScript | MVC | Pug | None | REST APIs | None | None | None |
-| 533 | TypeScript | MVC | Pug | None | REST APIs | None | JWT | None |
-| 534 | TypeScript | MVC | Pug | None | REST APIs | None | JWT | Google,GitHub |
-| 535 | TypeScript | MVC | Pug | None | GraphQL | None | None | None |
-| 536 | TypeScript | MVC | Pug | None | GraphQL | None | JWT | None |
-| 537 | TypeScript | MVC | Pug | None | GraphQL | None | JWT | Google,GitHub |
-| 538 | TypeScript | MVC | Pug | None | Kafka | None | None | None |
-| 539 | TypeScript | MVC | Pug | None | Kafka | None | JWT | None |
-| 540 | TypeScript | MVC | Pug | None | Kafka | None | JWT | Google,GitHub |
+| # | View Engine | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 37 | None | REST APIs | None | None | None | Disabled |
+| 38 | None | REST APIs | Redis | None | None | Disabled |
+| 39 | None | REST APIs | Redis | None | None | Enabled |
+| 40 | None | REST APIs | Memory Cache | None | None | Disabled |
+| 41 | None | REST APIs | None | JWT | None | Disabled |
+| 42 | None | REST APIs | Redis | JWT | None | Disabled |
+| 43 | None | REST APIs | Redis | JWT | None | Enabled |
+| 44 | None | REST APIs | Memory Cache | JWT | None | Disabled |
+| 45 | None | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 46 | None | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 47 | None | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 48 | None | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 49 | None | GraphQL | None | None | None | Disabled |
+| 50 | None | GraphQL | Redis | None | None | Disabled |
+| 51 | None | GraphQL | Redis | None | None | Enabled |
+| 52 | None | GraphQL | Memory Cache | None | None | Disabled |
+| 53 | None | GraphQL | None | JWT | None | Disabled |
+| 54 | None | GraphQL | Redis | JWT | None | Disabled |
+| 55 | None | GraphQL | Redis | JWT | None | Enabled |
+| 56 | None | GraphQL | Memory Cache | JWT | None | Disabled |
+| 57 | None | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 58 | None | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 59 | None | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 60 | None | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 61 | None | Kafka | None | None | None | Disabled |
+| 62 | None | Kafka | Redis | None | None | Disabled |
+| 63 | None | Kafka | Redis | None | None | Enabled |
+| 64 | None | Kafka | Memory Cache | None | None | Disabled |
+| 65 | None | Kafka | None | JWT | None | Disabled |
+| 66 | None | Kafka | Redis | JWT | None | Disabled |
+| 67 | None | Kafka | Redis | JWT | None | Enabled |
+| 68 | None | Kafka | Memory Cache | JWT | None | Disabled |
+| 69 | None | Kafka | None | JWT | Google,GitHub | Disabled |
+| 70 | None | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 71 | None | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 72 | None | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+| 154 | EJS | REST APIs | None | None | None | Disabled |
+| 155 | EJS | REST APIs | Redis | None | None | Disabled |
+| 156 | EJS | REST APIs | Redis | None | None | Enabled |
+| 157 | EJS | REST APIs | Memory Cache | None | None | Disabled |
+| 158 | EJS | REST APIs | None | JWT | None | Disabled |
+| 159 | EJS | REST APIs | Redis | JWT | None | Disabled |
+| 160 | EJS | REST APIs | Redis | JWT | None | Enabled |
+| 161 | EJS | REST APIs | Memory Cache | JWT | None | Disabled |
+| 162 | EJS | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 163 | EJS | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 164 | EJS | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 165 | EJS | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 166 | EJS | GraphQL | None | None | None | Disabled |
+| 167 | EJS | GraphQL | Redis | None | None | Disabled |
+| 168 | EJS | GraphQL | Redis | None | None | Enabled |
+| 169 | EJS | GraphQL | Memory Cache | None | None | Disabled |
+| 170 | EJS | GraphQL | None | JWT | None | Disabled |
+| 171 | EJS | GraphQL | Redis | JWT | None | Disabled |
+| 172 | EJS | GraphQL | Redis | JWT | None | Enabled |
+| 173 | EJS | GraphQL | Memory Cache | JWT | None | Disabled |
+| 174 | EJS | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 175 | EJS | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 176 | EJS | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 177 | EJS | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 178 | EJS | Kafka | None | None | None | Disabled |
+| 179 | EJS | Kafka | Redis | None | None | Disabled |
+| 180 | EJS | Kafka | Redis | None | None | Enabled |
+| 181 | EJS | Kafka | Memory Cache | None | None | Disabled |
+| 182 | EJS | Kafka | None | JWT | None | Disabled |
+| 183 | EJS | Kafka | Redis | JWT | None | Disabled |
+| 184 | EJS | Kafka | Redis | JWT | None | Enabled |
+| 185 | EJS | Kafka | Memory Cache | JWT | None | Disabled |
+| 186 | EJS | Kafka | None | JWT | Google,GitHub | Disabled |
+| 187 | EJS | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 188 | EJS | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 189 | EJS | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+| 271 | Pug | REST APIs | None | None | None | Disabled |
+| 272 | Pug | REST APIs | Redis | None | None | Disabled |
+| 273 | Pug | REST APIs | Redis | None | None | Enabled |
+| 274 | Pug | REST APIs | Memory Cache | None | None | Disabled |
+| 275 | Pug | REST APIs | None | JWT | None | Disabled |
+| 276 | Pug | REST APIs | Redis | JWT | None | Disabled |
+| 277 | Pug | REST APIs | Redis | JWT | None | Enabled |
+| 278 | Pug | REST APIs | Memory Cache | JWT | None | Disabled |
+| 279 | Pug | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 280 | Pug | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 281 | Pug | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 282 | Pug | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 283 | Pug | GraphQL | None | None | None | Disabled |
+| 284 | Pug | GraphQL | Redis | None | None | Disabled |
+| 285 | Pug | GraphQL | Redis | None | None | Enabled |
+| 286 | Pug | GraphQL | Memory Cache | None | None | Disabled |
+| 287 | Pug | GraphQL | None | JWT | None | Disabled |
+| 288 | Pug | GraphQL | Redis | JWT | None | Disabled |
+| 289 | Pug | GraphQL | Redis | JWT | None | Enabled |
+| 290 | Pug | GraphQL | Memory Cache | JWT | None | Disabled |
+| 291 | Pug | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 292 | Pug | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 293 | Pug | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 294 | Pug | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 295 | Pug | Kafka | None | None | None | Disabled |
+| 296 | Pug | Kafka | Redis | None | None | Disabled |
+| 297 | Pug | Kafka | Redis | None | None | Enabled |
+| 298 | Pug | Kafka | Memory Cache | None | None | Disabled |
+| 299 | Pug | Kafka | None | JWT | None | Disabled |
+| 300 | Pug | Kafka | Redis | JWT | None | Disabled |
+| 301 | Pug | Kafka | Redis | JWT | None | Enabled |
+| 302 | Pug | Kafka | Memory Cache | JWT | None | Disabled |
+| 303 | Pug | Kafka | None | JWT | Google,GitHub | Disabled |
+| 304 | Pug | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 305 | Pug | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 306 | Pug | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
 
-## 2. Clean Architecture (180 Cases)
+#### Database: MongoDB
+
+| # | View Engine | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 73 | None | REST APIs | None | None | None | Disabled |
+| 74 | None | REST APIs | Redis | None | None | Disabled |
+| 75 | None | REST APIs | Redis | None | None | Enabled |
+| 76 | None | REST APIs | Memory Cache | None | None | Disabled |
+| 77 | None | REST APIs | None | JWT | None | Disabled |
+| 78 | None | REST APIs | Redis | JWT | None | Disabled |
+| 79 | None | REST APIs | Redis | JWT | None | Enabled |
+| 80 | None | REST APIs | Memory Cache | JWT | None | Disabled |
+| 81 | None | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 82 | None | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 83 | None | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 84 | None | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 85 | None | GraphQL | None | None | None | Disabled |
+| 86 | None | GraphQL | Redis | None | None | Disabled |
+| 87 | None | GraphQL | Redis | None | None | Enabled |
+| 88 | None | GraphQL | Memory Cache | None | None | Disabled |
+| 89 | None | GraphQL | None | JWT | None | Disabled |
+| 90 | None | GraphQL | Redis | JWT | None | Disabled |
+| 91 | None | GraphQL | Redis | JWT | None | Enabled |
+| 92 | None | GraphQL | Memory Cache | JWT | None | Disabled |
+| 93 | None | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 94 | None | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 95 | None | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 96 | None | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 97 | None | Kafka | None | None | None | Disabled |
+| 98 | None | Kafka | Redis | None | None | Disabled |
+| 99 | None | Kafka | Redis | None | None | Enabled |
+| 100 | None | Kafka | Memory Cache | None | None | Disabled |
+| 101 | None | Kafka | None | JWT | None | Disabled |
+| 102 | None | Kafka | Redis | JWT | None | Disabled |
+| 103 | None | Kafka | Redis | JWT | None | Enabled |
+| 104 | None | Kafka | Memory Cache | JWT | None | Disabled |
+| 105 | None | Kafka | None | JWT | Google,GitHub | Disabled |
+| 106 | None | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 107 | None | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 108 | None | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+| 190 | EJS | REST APIs | None | None | None | Disabled |
+| 191 | EJS | REST APIs | Redis | None | None | Disabled |
+| 192 | EJS | REST APIs | Redis | None | None | Enabled |
+| 193 | EJS | REST APIs | Memory Cache | None | None | Disabled |
+| 194 | EJS | REST APIs | None | JWT | None | Disabled |
+| 195 | EJS | REST APIs | Redis | JWT | None | Disabled |
+| 196 | EJS | REST APIs | Redis | JWT | None | Enabled |
+| 197 | EJS | REST APIs | Memory Cache | JWT | None | Disabled |
+| 198 | EJS | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 199 | EJS | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 200 | EJS | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 201 | EJS | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 202 | EJS | GraphQL | None | None | None | Disabled |
+| 203 | EJS | GraphQL | Redis | None | None | Disabled |
+| 204 | EJS | GraphQL | Redis | None | None | Enabled |
+| 205 | EJS | GraphQL | Memory Cache | None | None | Disabled |
+| 206 | EJS | GraphQL | None | JWT | None | Disabled |
+| 207 | EJS | GraphQL | Redis | JWT | None | Disabled |
+| 208 | EJS | GraphQL | Redis | JWT | None | Enabled |
+| 209 | EJS | GraphQL | Memory Cache | JWT | None | Disabled |
+| 210 | EJS | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 211 | EJS | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 212 | EJS | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 213 | EJS | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 214 | EJS | Kafka | None | None | None | Disabled |
+| 215 | EJS | Kafka | Redis | None | None | Disabled |
+| 216 | EJS | Kafka | Redis | None | None | Enabled |
+| 217 | EJS | Kafka | Memory Cache | None | None | Disabled |
+| 218 | EJS | Kafka | None | JWT | None | Disabled |
+| 219 | EJS | Kafka | Redis | JWT | None | Disabled |
+| 220 | EJS | Kafka | Redis | JWT | None | Enabled |
+| 221 | EJS | Kafka | Memory Cache | JWT | None | Disabled |
+| 222 | EJS | Kafka | None | JWT | Google,GitHub | Disabled |
+| 223 | EJS | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 224 | EJS | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 225 | EJS | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+| 307 | Pug | REST APIs | None | None | None | Disabled |
+| 308 | Pug | REST APIs | Redis | None | None | Disabled |
+| 309 | Pug | REST APIs | Redis | None | None | Enabled |
+| 310 | Pug | REST APIs | Memory Cache | None | None | Disabled |
+| 311 | Pug | REST APIs | None | JWT | None | Disabled |
+| 312 | Pug | REST APIs | Redis | JWT | None | Disabled |
+| 313 | Pug | REST APIs | Redis | JWT | None | Enabled |
+| 314 | Pug | REST APIs | Memory Cache | JWT | None | Disabled |
+| 315 | Pug | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 316 | Pug | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 317 | Pug | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 318 | Pug | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 319 | Pug | GraphQL | None | None | None | Disabled |
+| 320 | Pug | GraphQL | Redis | None | None | Disabled |
+| 321 | Pug | GraphQL | Redis | None | None | Enabled |
+| 322 | Pug | GraphQL | Memory Cache | None | None | Disabled |
+| 323 | Pug | GraphQL | None | JWT | None | Disabled |
+| 324 | Pug | GraphQL | Redis | JWT | None | Disabled |
+| 325 | Pug | GraphQL | Redis | JWT | None | Enabled |
+| 326 | Pug | GraphQL | Memory Cache | JWT | None | Disabled |
+| 327 | Pug | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 328 | Pug | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 329 | Pug | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 330 | Pug | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 331 | Pug | Kafka | None | None | None | Disabled |
+| 332 | Pug | Kafka | Redis | None | None | Disabled |
+| 333 | Pug | Kafka | Redis | None | None | Enabled |
+| 334 | Pug | Kafka | Memory Cache | None | None | Disabled |
+| 335 | Pug | Kafka | None | JWT | None | Disabled |
+| 336 | Pug | Kafka | Redis | JWT | None | Disabled |
+| 337 | Pug | Kafka | Redis | JWT | None | Enabled |
+| 338 | Pug | Kafka | Memory Cache | JWT | None | Disabled |
+| 339 | Pug | Kafka | None | JWT | Google,GitHub | Disabled |
+| 340 | Pug | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 341 | Pug | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 342 | Pug | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+
+#### Database: None
+
+| # | View Engine | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 109 | None | REST APIs | None | None | None | Disabled |
+| 110 | None | REST APIs | None | JWT | None | Disabled |
+| 111 | None | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 112 | None | GraphQL | None | None | None | Disabled |
+| 113 | None | GraphQL | None | JWT | None | Disabled |
+| 114 | None | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 115 | None | Kafka | None | None | None | Disabled |
+| 116 | None | Kafka | None | JWT | None | Disabled |
+| 117 | None | Kafka | None | JWT | Google,GitHub | Disabled |
+| 226 | EJS | REST APIs | None | None | None | Disabled |
+| 227 | EJS | REST APIs | None | JWT | None | Disabled |
+| 228 | EJS | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 229 | EJS | GraphQL | None | None | None | Disabled |
+| 230 | EJS | GraphQL | None | JWT | None | Disabled |
+| 231 | EJS | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 232 | EJS | Kafka | None | None | None | Disabled |
+| 233 | EJS | Kafka | None | JWT | None | Disabled |
+| 234 | EJS | Kafka | None | JWT | Google,GitHub | Disabled |
+| 343 | Pug | REST APIs | None | None | None | Disabled |
+| 344 | Pug | REST APIs | None | JWT | None | Disabled |
+| 345 | Pug | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 346 | Pug | GraphQL | None | None | None | Disabled |
+| 347 | Pug | GraphQL | None | JWT | None | Disabled |
+| 348 | Pug | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 349 | Pug | Kafka | None | None | None | Disabled |
+| 350 | Pug | Kafka | None | JWT | None | Disabled |
+| 351 | Pug | Kafka | None | JWT | Google,GitHub | Disabled |
+
+### TypeScript
+
+#### Database: MySQL
+
+| # | View Engine | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 352 | None | REST APIs | None | None | None | Disabled |
+| 353 | None | REST APIs | Redis | None | None | Disabled |
+| 354 | None | REST APIs | Redis | None | None | Enabled |
+| 355 | None | REST APIs | Memory Cache | None | None | Disabled |
+| 356 | None | REST APIs | None | JWT | None | Disabled |
+| 357 | None | REST APIs | Redis | JWT | None | Disabled |
+| 358 | None | REST APIs | Redis | JWT | None | Enabled |
+| 359 | None | REST APIs | Memory Cache | JWT | None | Disabled |
+| 360 | None | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 361 | None | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 362 | None | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 363 | None | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 364 | None | GraphQL | None | None | None | Disabled |
+| 365 | None | GraphQL | Redis | None | None | Disabled |
+| 366 | None | GraphQL | Redis | None | None | Enabled |
+| 367 | None | GraphQL | Memory Cache | None | None | Disabled |
+| 368 | None | GraphQL | None | JWT | None | Disabled |
+| 369 | None | GraphQL | Redis | JWT | None | Disabled |
+| 370 | None | GraphQL | Redis | JWT | None | Enabled |
+| 371 | None | GraphQL | Memory Cache | JWT | None | Disabled |
+| 372 | None | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 373 | None | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 374 | None | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 375 | None | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 376 | None | Kafka | None | None | None | Disabled |
+| 377 | None | Kafka | Redis | None | None | Disabled |
+| 378 | None | Kafka | Redis | None | None | Enabled |
+| 379 | None | Kafka | Memory Cache | None | None | Disabled |
+| 380 | None | Kafka | None | JWT | None | Disabled |
+| 381 | None | Kafka | Redis | JWT | None | Disabled |
+| 382 | None | Kafka | Redis | JWT | None | Enabled |
+| 383 | None | Kafka | Memory Cache | JWT | None | Disabled |
+| 384 | None | Kafka | None | JWT | Google,GitHub | Disabled |
+| 385 | None | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 386 | None | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 387 | None | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+| 469 | EJS | REST APIs | None | None | None | Disabled |
+| 470 | EJS | REST APIs | Redis | None | None | Disabled |
+| 471 | EJS | REST APIs | Redis | None | None | Enabled |
+| 472 | EJS | REST APIs | Memory Cache | None | None | Disabled |
+| 473 | EJS | REST APIs | None | JWT | None | Disabled |
+| 474 | EJS | REST APIs | Redis | JWT | None | Disabled |
+| 475 | EJS | REST APIs | Redis | JWT | None | Enabled |
+| 476 | EJS | REST APIs | Memory Cache | JWT | None | Disabled |
+| 477 | EJS | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 478 | EJS | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 479 | EJS | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 480 | EJS | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 481 | EJS | GraphQL | None | None | None | Disabled |
+| 482 | EJS | GraphQL | Redis | None | None | Disabled |
+| 483 | EJS | GraphQL | Redis | None | None | Enabled |
+| 484 | EJS | GraphQL | Memory Cache | None | None | Disabled |
+| 485 | EJS | GraphQL | None | JWT | None | Disabled |
+| 486 | EJS | GraphQL | Redis | JWT | None | Disabled |
+| 487 | EJS | GraphQL | Redis | JWT | None | Enabled |
+| 488 | EJS | GraphQL | Memory Cache | JWT | None | Disabled |
+| 489 | EJS | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 490 | EJS | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 491 | EJS | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 492 | EJS | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 493 | EJS | Kafka | None | None | None | Disabled |
+| 494 | EJS | Kafka | Redis | None | None | Disabled |
+| 495 | EJS | Kafka | Redis | None | None | Enabled |
+| 496 | EJS | Kafka | Memory Cache | None | None | Disabled |
+| 497 | EJS | Kafka | None | JWT | None | Disabled |
+| 498 | EJS | Kafka | Redis | JWT | None | Disabled |
+| 499 | EJS | Kafka | Redis | JWT | None | Enabled |
+| 500 | EJS | Kafka | Memory Cache | JWT | None | Disabled |
+| 501 | EJS | Kafka | None | JWT | Google,GitHub | Disabled |
+| 502 | EJS | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 503 | EJS | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 504 | EJS | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+| 586 | Pug | REST APIs | None | None | None | Disabled |
+| 587 | Pug | REST APIs | Redis | None | None | Disabled |
+| 588 | Pug | REST APIs | Redis | None | None | Enabled |
+| 589 | Pug | REST APIs | Memory Cache | None | None | Disabled |
+| 590 | Pug | REST APIs | None | JWT | None | Disabled |
+| 591 | Pug | REST APIs | Redis | JWT | None | Disabled |
+| 592 | Pug | REST APIs | Redis | JWT | None | Enabled |
+| 593 | Pug | REST APIs | Memory Cache | JWT | None | Disabled |
+| 594 | Pug | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 595 | Pug | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 596 | Pug | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 597 | Pug | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 598 | Pug | GraphQL | None | None | None | Disabled |
+| 599 | Pug | GraphQL | Redis | None | None | Disabled |
+| 600 | Pug | GraphQL | Redis | None | None | Enabled |
+| 601 | Pug | GraphQL | Memory Cache | None | None | Disabled |
+| 602 | Pug | GraphQL | None | JWT | None | Disabled |
+| 603 | Pug | GraphQL | Redis | JWT | None | Disabled |
+| 604 | Pug | GraphQL | Redis | JWT | None | Enabled |
+| 605 | Pug | GraphQL | Memory Cache | JWT | None | Disabled |
+| 606 | Pug | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 607 | Pug | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 608 | Pug | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 609 | Pug | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 610 | Pug | Kafka | None | None | None | Disabled |
+| 611 | Pug | Kafka | Redis | None | None | Disabled |
+| 612 | Pug | Kafka | Redis | None | None | Enabled |
+| 613 | Pug | Kafka | Memory Cache | None | None | Disabled |
+| 614 | Pug | Kafka | None | JWT | None | Disabled |
+| 615 | Pug | Kafka | Redis | JWT | None | Disabled |
+| 616 | Pug | Kafka | Redis | JWT | None | Enabled |
+| 617 | Pug | Kafka | Memory Cache | JWT | None | Disabled |
+| 618 | Pug | Kafka | None | JWT | Google,GitHub | Disabled |
+| 619 | Pug | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 620 | Pug | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 621 | Pug | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+
+#### Database: PostgreSQL
+
+| # | View Engine | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 388 | None | REST APIs | None | None | None | Disabled |
+| 389 | None | REST APIs | Redis | None | None | Disabled |
+| 390 | None | REST APIs | Redis | None | None | Enabled |
+| 391 | None | REST APIs | Memory Cache | None | None | Disabled |
+| 392 | None | REST APIs | None | JWT | None | Disabled |
+| 393 | None | REST APIs | Redis | JWT | None | Disabled |
+| 394 | None | REST APIs | Redis | JWT | None | Enabled |
+| 395 | None | REST APIs | Memory Cache | JWT | None | Disabled |
+| 396 | None | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 397 | None | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 398 | None | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 399 | None | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 400 | None | GraphQL | None | None | None | Disabled |
+| 401 | None | GraphQL | Redis | None | None | Disabled |
+| 402 | None | GraphQL | Redis | None | None | Enabled |
+| 403 | None | GraphQL | Memory Cache | None | None | Disabled |
+| 404 | None | GraphQL | None | JWT | None | Disabled |
+| 405 | None | GraphQL | Redis | JWT | None | Disabled |
+| 406 | None | GraphQL | Redis | JWT | None | Enabled |
+| 407 | None | GraphQL | Memory Cache | JWT | None | Disabled |
+| 408 | None | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 409 | None | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 410 | None | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 411 | None | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 412 | None | Kafka | None | None | None | Disabled |
+| 413 | None | Kafka | Redis | None | None | Disabled |
+| 414 | None | Kafka | Redis | None | None | Enabled |
+| 415 | None | Kafka | Memory Cache | None | None | Disabled |
+| 416 | None | Kafka | None | JWT | None | Disabled |
+| 417 | None | Kafka | Redis | JWT | None | Disabled |
+| 418 | None | Kafka | Redis | JWT | None | Enabled |
+| 419 | None | Kafka | Memory Cache | JWT | None | Disabled |
+| 420 | None | Kafka | None | JWT | Google,GitHub | Disabled |
+| 421 | None | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 422 | None | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 423 | None | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+| 505 | EJS | REST APIs | None | None | None | Disabled |
+| 506 | EJS | REST APIs | Redis | None | None | Disabled |
+| 507 | EJS | REST APIs | Redis | None | None | Enabled |
+| 508 | EJS | REST APIs | Memory Cache | None | None | Disabled |
+| 509 | EJS | REST APIs | None | JWT | None | Disabled |
+| 510 | EJS | REST APIs | Redis | JWT | None | Disabled |
+| 511 | EJS | REST APIs | Redis | JWT | None | Enabled |
+| 512 | EJS | REST APIs | Memory Cache | JWT | None | Disabled |
+| 513 | EJS | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 514 | EJS | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 515 | EJS | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 516 | EJS | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 517 | EJS | GraphQL | None | None | None | Disabled |
+| 518 | EJS | GraphQL | Redis | None | None | Disabled |
+| 519 | EJS | GraphQL | Redis | None | None | Enabled |
+| 520 | EJS | GraphQL | Memory Cache | None | None | Disabled |
+| 521 | EJS | GraphQL | None | JWT | None | Disabled |
+| 522 | EJS | GraphQL | Redis | JWT | None | Disabled |
+| 523 | EJS | GraphQL | Redis | JWT | None | Enabled |
+| 524 | EJS | GraphQL | Memory Cache | JWT | None | Disabled |
+| 525 | EJS | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 526 | EJS | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 527 | EJS | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 528 | EJS | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 529 | EJS | Kafka | None | None | None | Disabled |
+| 530 | EJS | Kafka | Redis | None | None | Disabled |
+| 531 | EJS | Kafka | Redis | None | None | Enabled |
+| 532 | EJS | Kafka | Memory Cache | None | None | Disabled |
+| 533 | EJS | Kafka | None | JWT | None | Disabled |
+| 534 | EJS | Kafka | Redis | JWT | None | Disabled |
+| 535 | EJS | Kafka | Redis | JWT | None | Enabled |
+| 536 | EJS | Kafka | Memory Cache | JWT | None | Disabled |
+| 537 | EJS | Kafka | None | JWT | Google,GitHub | Disabled |
+| 538 | EJS | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 539 | EJS | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 540 | EJS | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+| 622 | Pug | REST APIs | None | None | None | Disabled |
+| 623 | Pug | REST APIs | Redis | None | None | Disabled |
+| 624 | Pug | REST APIs | Redis | None | None | Enabled |
+| 625 | Pug | REST APIs | Memory Cache | None | None | Disabled |
+| 626 | Pug | REST APIs | None | JWT | None | Disabled |
+| 627 | Pug | REST APIs | Redis | JWT | None | Disabled |
+| 628 | Pug | REST APIs | Redis | JWT | None | Enabled |
+| 629 | Pug | REST APIs | Memory Cache | JWT | None | Disabled |
+| 630 | Pug | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 631 | Pug | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 632 | Pug | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 633 | Pug | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 634 | Pug | GraphQL | None | None | None | Disabled |
+| 635 | Pug | GraphQL | Redis | None | None | Disabled |
+| 636 | Pug | GraphQL | Redis | None | None | Enabled |
+| 637 | Pug | GraphQL | Memory Cache | None | None | Disabled |
+| 638 | Pug | GraphQL | None | JWT | None | Disabled |
+| 639 | Pug | GraphQL | Redis | JWT | None | Disabled |
+| 640 | Pug | GraphQL | Redis | JWT | None | Enabled |
+| 641 | Pug | GraphQL | Memory Cache | JWT | None | Disabled |
+| 642 | Pug | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 643 | Pug | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 644 | Pug | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 645 | Pug | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 646 | Pug | Kafka | None | None | None | Disabled |
+| 647 | Pug | Kafka | Redis | None | None | Disabled |
+| 648 | Pug | Kafka | Redis | None | None | Enabled |
+| 649 | Pug | Kafka | Memory Cache | None | None | Disabled |
+| 650 | Pug | Kafka | None | JWT | None | Disabled |
+| 651 | Pug | Kafka | Redis | JWT | None | Disabled |
+| 652 | Pug | Kafka | Redis | JWT | None | Enabled |
+| 653 | Pug | Kafka | Memory Cache | JWT | None | Disabled |
+| 654 | Pug | Kafka | None | JWT | Google,GitHub | Disabled |
+| 655 | Pug | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 656 | Pug | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 657 | Pug | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+
+#### Database: MongoDB
+
+| # | View Engine | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 424 | None | REST APIs | None | None | None | Disabled |
+| 425 | None | REST APIs | Redis | None | None | Disabled |
+| 426 | None | REST APIs | Redis | None | None | Enabled |
+| 427 | None | REST APIs | Memory Cache | None | None | Disabled |
+| 428 | None | REST APIs | None | JWT | None | Disabled |
+| 429 | None | REST APIs | Redis | JWT | None | Disabled |
+| 430 | None | REST APIs | Redis | JWT | None | Enabled |
+| 431 | None | REST APIs | Memory Cache | JWT | None | Disabled |
+| 432 | None | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 433 | None | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 434 | None | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 435 | None | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 436 | None | GraphQL | None | None | None | Disabled |
+| 437 | None | GraphQL | Redis | None | None | Disabled |
+| 438 | None | GraphQL | Redis | None | None | Enabled |
+| 439 | None | GraphQL | Memory Cache | None | None | Disabled |
+| 440 | None | GraphQL | None | JWT | None | Disabled |
+| 441 | None | GraphQL | Redis | JWT | None | Disabled |
+| 442 | None | GraphQL | Redis | JWT | None | Enabled |
+| 443 | None | GraphQL | Memory Cache | JWT | None | Disabled |
+| 444 | None | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 445 | None | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 446 | None | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 447 | None | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 448 | None | Kafka | None | None | None | Disabled |
+| 449 | None | Kafka | Redis | None | None | Disabled |
+| 450 | None | Kafka | Redis | None | None | Enabled |
+| 451 | None | Kafka | Memory Cache | None | None | Disabled |
+| 452 | None | Kafka | None | JWT | None | Disabled |
+| 453 | None | Kafka | Redis | JWT | None | Disabled |
+| 454 | None | Kafka | Redis | JWT | None | Enabled |
+| 455 | None | Kafka | Memory Cache | JWT | None | Disabled |
+| 456 | None | Kafka | None | JWT | Google,GitHub | Disabled |
+| 457 | None | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 458 | None | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 459 | None | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+| 541 | EJS | REST APIs | None | None | None | Disabled |
+| 542 | EJS | REST APIs | Redis | None | None | Disabled |
+| 543 | EJS | REST APIs | Redis | None | None | Enabled |
+| 544 | EJS | REST APIs | Memory Cache | None | None | Disabled |
+| 545 | EJS | REST APIs | None | JWT | None | Disabled |
+| 546 | EJS | REST APIs | Redis | JWT | None | Disabled |
+| 547 | EJS | REST APIs | Redis | JWT | None | Enabled |
+| 548 | EJS | REST APIs | Memory Cache | JWT | None | Disabled |
+| 549 | EJS | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 550 | EJS | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 551 | EJS | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 552 | EJS | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 553 | EJS | GraphQL | None | None | None | Disabled |
+| 554 | EJS | GraphQL | Redis | None | None | Disabled |
+| 555 | EJS | GraphQL | Redis | None | None | Enabled |
+| 556 | EJS | GraphQL | Memory Cache | None | None | Disabled |
+| 557 | EJS | GraphQL | None | JWT | None | Disabled |
+| 558 | EJS | GraphQL | Redis | JWT | None | Disabled |
+| 559 | EJS | GraphQL | Redis | JWT | None | Enabled |
+| 560 | EJS | GraphQL | Memory Cache | JWT | None | Disabled |
+| 561 | EJS | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 562 | EJS | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 563 | EJS | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 564 | EJS | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 565 | EJS | Kafka | None | None | None | Disabled |
+| 566 | EJS | Kafka | Redis | None | None | Disabled |
+| 567 | EJS | Kafka | Redis | None | None | Enabled |
+| 568 | EJS | Kafka | Memory Cache | None | None | Disabled |
+| 569 | EJS | Kafka | None | JWT | None | Disabled |
+| 570 | EJS | Kafka | Redis | JWT | None | Disabled |
+| 571 | EJS | Kafka | Redis | JWT | None | Enabled |
+| 572 | EJS | Kafka | Memory Cache | JWT | None | Disabled |
+| 573 | EJS | Kafka | None | JWT | Google,GitHub | Disabled |
+| 574 | EJS | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 575 | EJS | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 576 | EJS | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+| 658 | Pug | REST APIs | None | None | None | Disabled |
+| 659 | Pug | REST APIs | Redis | None | None | Disabled |
+| 660 | Pug | REST APIs | Redis | None | None | Enabled |
+| 661 | Pug | REST APIs | Memory Cache | None | None | Disabled |
+| 662 | Pug | REST APIs | None | JWT | None | Disabled |
+| 663 | Pug | REST APIs | Redis | JWT | None | Disabled |
+| 664 | Pug | REST APIs | Redis | JWT | None | Enabled |
+| 665 | Pug | REST APIs | Memory Cache | JWT | None | Disabled |
+| 666 | Pug | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 667 | Pug | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 668 | Pug | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 669 | Pug | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 670 | Pug | GraphQL | None | None | None | Disabled |
+| 671 | Pug | GraphQL | Redis | None | None | Disabled |
+| 672 | Pug | GraphQL | Redis | None | None | Enabled |
+| 673 | Pug | GraphQL | Memory Cache | None | None | Disabled |
+| 674 | Pug | GraphQL | None | JWT | None | Disabled |
+| 675 | Pug | GraphQL | Redis | JWT | None | Disabled |
+| 676 | Pug | GraphQL | Redis | JWT | None | Enabled |
+| 677 | Pug | GraphQL | Memory Cache | JWT | None | Disabled |
+| 678 | Pug | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 679 | Pug | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 680 | Pug | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 681 | Pug | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 682 | Pug | Kafka | None | None | None | Disabled |
+| 683 | Pug | Kafka | Redis | None | None | Disabled |
+| 684 | Pug | Kafka | Redis | None | None | Enabled |
+| 685 | Pug | Kafka | Memory Cache | None | None | Disabled |
+| 686 | Pug | Kafka | None | JWT | None | Disabled |
+| 687 | Pug | Kafka | Redis | JWT | None | Disabled |
+| 688 | Pug | Kafka | Redis | JWT | None | Enabled |
+| 689 | Pug | Kafka | Memory Cache | JWT | None | Disabled |
+| 690 | Pug | Kafka | None | JWT | Google,GitHub | Disabled |
+| 691 | Pug | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 692 | Pug | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 693 | Pug | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+
+#### Database: None
+
+| # | View Engine | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 460 | None | REST APIs | None | None | None | Disabled |
+| 461 | None | REST APIs | None | JWT | None | Disabled |
+| 462 | None | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 463 | None | GraphQL | None | None | None | Disabled |
+| 464 | None | GraphQL | None | JWT | None | Disabled |
+| 465 | None | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 466 | None | Kafka | None | None | None | Disabled |
+| 467 | None | Kafka | None | JWT | None | Disabled |
+| 468 | None | Kafka | None | JWT | Google,GitHub | Disabled |
+| 577 | EJS | REST APIs | None | None | None | Disabled |
+| 578 | EJS | REST APIs | None | JWT | None | Disabled |
+| 579 | EJS | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 580 | EJS | GraphQL | None | None | None | Disabled |
+| 581 | EJS | GraphQL | None | JWT | None | Disabled |
+| 582 | EJS | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 583 | EJS | Kafka | None | None | None | Disabled |
+| 584 | EJS | Kafka | None | JWT | None | Disabled |
+| 585 | EJS | Kafka | None | JWT | Google,GitHub | Disabled |
+| 694 | Pug | REST APIs | None | None | None | Disabled |
+| 695 | Pug | REST APIs | None | JWT | None | Disabled |
+| 696 | Pug | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 697 | Pug | GraphQL | None | None | None | Disabled |
+| 698 | Pug | GraphQL | None | JWT | None | Disabled |
+| 699 | Pug | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 700 | Pug | Kafka | None | None | None | Disabled |
+| 701 | Pug | Kafka | None | JWT | None | Disabled |
+| 702 | Pug | Kafka | None | JWT | Google,GitHub | Disabled |
+
+
+## 2. Clean Architecture (234 Cases)
 *Note: Clean Architecture does not use server-side view engines (EJS/Pug).*
 
-| # | Language | Architecture | View Engine | Database | Communication | Caching | Auth | Social Auth |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+### JavaScript
 
-| 541 | JavaScript | Clean Architecture | N/A | MySQL | REST APIs | None | None | None |
-| 542 | JavaScript | Clean Architecture | N/A | MySQL | REST APIs | Redis | None | None |
-| 543 | JavaScript | Clean Architecture | N/A | MySQL | REST APIs | Memory Cache | None | None |
-| 544 | JavaScript | Clean Architecture | N/A | MySQL | REST APIs | None | JWT | None |
-| 545 | JavaScript | Clean Architecture | N/A | MySQL | REST APIs | Redis | JWT | None |
-| 546 | JavaScript | Clean Architecture | N/A | MySQL | REST APIs | Memory Cache | JWT | None |
-| 547 | JavaScript | Clean Architecture | N/A | MySQL | REST APIs | None | JWT | Google,GitHub |
-| 548 | JavaScript | Clean Architecture | N/A | MySQL | REST APIs | Redis | JWT | Google,GitHub |
-| 549 | JavaScript | Clean Architecture | N/A | MySQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 550 | JavaScript | Clean Architecture | N/A | MySQL | GraphQL | None | None | None |
-| 551 | JavaScript | Clean Architecture | N/A | MySQL | GraphQL | Redis | None | None |
-| 552 | JavaScript | Clean Architecture | N/A | MySQL | GraphQL | Memory Cache | None | None |
-| 553 | JavaScript | Clean Architecture | N/A | MySQL | GraphQL | None | JWT | None |
-| 554 | JavaScript | Clean Architecture | N/A | MySQL | GraphQL | Redis | JWT | None |
-| 555 | JavaScript | Clean Architecture | N/A | MySQL | GraphQL | Memory Cache | JWT | None |
-| 556 | JavaScript | Clean Architecture | N/A | MySQL | GraphQL | None | JWT | Google,GitHub |
-| 557 | JavaScript | Clean Architecture | N/A | MySQL | GraphQL | Redis | JWT | Google,GitHub |
-| 558 | JavaScript | Clean Architecture | N/A | MySQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 559 | JavaScript | Clean Architecture | N/A | MySQL | Kafka | None | None | None |
-| 560 | JavaScript | Clean Architecture | N/A | MySQL | Kafka | Redis | None | None |
-| 561 | JavaScript | Clean Architecture | N/A | MySQL | Kafka | Memory Cache | None | None |
-| 562 | JavaScript | Clean Architecture | N/A | MySQL | Kafka | None | JWT | None |
-| 563 | JavaScript | Clean Architecture | N/A | MySQL | Kafka | Redis | JWT | None |
-| 564 | JavaScript | Clean Architecture | N/A | MySQL | Kafka | Memory Cache | JWT | None |
-| 565 | JavaScript | Clean Architecture | N/A | MySQL | Kafka | None | JWT | Google,GitHub |
-| 566 | JavaScript | Clean Architecture | N/A | MySQL | Kafka | Redis | JWT | Google,GitHub |
-| 567 | JavaScript | Clean Architecture | N/A | MySQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 568 | JavaScript | Clean Architecture | N/A | PostgreSQL | REST APIs | None | None | None |
-| 569 | JavaScript | Clean Architecture | N/A | PostgreSQL | REST APIs | Redis | None | None |
-| 570 | JavaScript | Clean Architecture | N/A | PostgreSQL | REST APIs | Memory Cache | None | None |
-| 571 | JavaScript | Clean Architecture | N/A | PostgreSQL | REST APIs | None | JWT | None |
-| 572 | JavaScript | Clean Architecture | N/A | PostgreSQL | REST APIs | Redis | JWT | None |
-| 573 | JavaScript | Clean Architecture | N/A | PostgreSQL | REST APIs | Memory Cache | JWT | None |
-| 574 | JavaScript | Clean Architecture | N/A | PostgreSQL | REST APIs | None | JWT | Google,GitHub |
-| 575 | JavaScript | Clean Architecture | N/A | PostgreSQL | REST APIs | Redis | JWT | Google,GitHub |
-| 576 | JavaScript | Clean Architecture | N/A | PostgreSQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 577 | JavaScript | Clean Architecture | N/A | PostgreSQL | GraphQL | None | None | None |
-| 578 | JavaScript | Clean Architecture | N/A | PostgreSQL | GraphQL | Redis | None | None |
-| 579 | JavaScript | Clean Architecture | N/A | PostgreSQL | GraphQL | Memory Cache | None | None |
-| 580 | JavaScript | Clean Architecture | N/A | PostgreSQL | GraphQL | None | JWT | None |
-| 581 | JavaScript | Clean Architecture | N/A | PostgreSQL | GraphQL | Redis | JWT | None |
-| 582 | JavaScript | Clean Architecture | N/A | PostgreSQL | GraphQL | Memory Cache | JWT | None |
-| 583 | JavaScript | Clean Architecture | N/A | PostgreSQL | GraphQL | None | JWT | Google,GitHub |
-| 584 | JavaScript | Clean Architecture | N/A | PostgreSQL | GraphQL | Redis | JWT | Google,GitHub |
-| 585 | JavaScript | Clean Architecture | N/A | PostgreSQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 586 | JavaScript | Clean Architecture | N/A | PostgreSQL | Kafka | None | None | None |
-| 587 | JavaScript | Clean Architecture | N/A | PostgreSQL | Kafka | Redis | None | None |
-| 588 | JavaScript | Clean Architecture | N/A | PostgreSQL | Kafka | Memory Cache | None | None |
-| 589 | JavaScript | Clean Architecture | N/A | PostgreSQL | Kafka | None | JWT | None |
-| 590 | JavaScript | Clean Architecture | N/A | PostgreSQL | Kafka | Redis | JWT | None |
-| 591 | JavaScript | Clean Architecture | N/A | PostgreSQL | Kafka | Memory Cache | JWT | None |
-| 592 | JavaScript | Clean Architecture | N/A | PostgreSQL | Kafka | None | JWT | Google,GitHub |
-| 593 | JavaScript | Clean Architecture | N/A | PostgreSQL | Kafka | Redis | JWT | Google,GitHub |
-| 594 | JavaScript | Clean Architecture | N/A | PostgreSQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 595 | JavaScript | Clean Architecture | N/A | MongoDB | REST APIs | None | None | None |
-| 596 | JavaScript | Clean Architecture | N/A | MongoDB | REST APIs | Redis | None | None |
-| 597 | JavaScript | Clean Architecture | N/A | MongoDB | REST APIs | Memory Cache | None | None |
-| 598 | JavaScript | Clean Architecture | N/A | MongoDB | REST APIs | None | JWT | None |
-| 599 | JavaScript | Clean Architecture | N/A | MongoDB | REST APIs | Redis | JWT | None |
-| 600 | JavaScript | Clean Architecture | N/A | MongoDB | REST APIs | Memory Cache | JWT | None |
-| 601 | JavaScript | Clean Architecture | N/A | MongoDB | REST APIs | None | JWT | Google,GitHub |
-| 602 | JavaScript | Clean Architecture | N/A | MongoDB | REST APIs | Redis | JWT | Google,GitHub |
-| 603 | JavaScript | Clean Architecture | N/A | MongoDB | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 604 | JavaScript | Clean Architecture | N/A | MongoDB | GraphQL | None | None | None |
-| 605 | JavaScript | Clean Architecture | N/A | MongoDB | GraphQL | Redis | None | None |
-| 606 | JavaScript | Clean Architecture | N/A | MongoDB | GraphQL | Memory Cache | None | None |
-| 607 | JavaScript | Clean Architecture | N/A | MongoDB | GraphQL | None | JWT | None |
-| 608 | JavaScript | Clean Architecture | N/A | MongoDB | GraphQL | Redis | JWT | None |
-| 609 | JavaScript | Clean Architecture | N/A | MongoDB | GraphQL | Memory Cache | JWT | None |
-| 610 | JavaScript | Clean Architecture | N/A | MongoDB | GraphQL | None | JWT | Google,GitHub |
-| 611 | JavaScript | Clean Architecture | N/A | MongoDB | GraphQL | Redis | JWT | Google,GitHub |
-| 612 | JavaScript | Clean Architecture | N/A | MongoDB | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 613 | JavaScript | Clean Architecture | N/A | MongoDB | Kafka | None | None | None |
-| 614 | JavaScript | Clean Architecture | N/A | MongoDB | Kafka | Redis | None | None |
-| 615 | JavaScript | Clean Architecture | N/A | MongoDB | Kafka | Memory Cache | None | None |
-| 616 | JavaScript | Clean Architecture | N/A | MongoDB | Kafka | None | JWT | None |
-| 617 | JavaScript | Clean Architecture | N/A | MongoDB | Kafka | Redis | JWT | None |
-| 618 | JavaScript | Clean Architecture | N/A | MongoDB | Kafka | Memory Cache | JWT | None |
-| 619 | JavaScript | Clean Architecture | N/A | MongoDB | Kafka | None | JWT | Google,GitHub |
-| 620 | JavaScript | Clean Architecture | N/A | MongoDB | Kafka | Redis | JWT | Google,GitHub |
-| 621 | JavaScript | Clean Architecture | N/A | MongoDB | Kafka | Memory Cache | JWT | Google,GitHub |
-| 622 | JavaScript | Clean Architecture | N/A | None | REST APIs | None | None | None |
-| 623 | JavaScript | Clean Architecture | N/A | None | REST APIs | None | JWT | None |
-| 624 | JavaScript | Clean Architecture | N/A | None | REST APIs | None | JWT | Google,GitHub |
-| 625 | JavaScript | Clean Architecture | N/A | None | GraphQL | None | None | None |
-| 626 | JavaScript | Clean Architecture | N/A | None | GraphQL | None | JWT | None |
-| 627 | JavaScript | Clean Architecture | N/A | None | GraphQL | None | JWT | Google,GitHub |
-| 628 | JavaScript | Clean Architecture | N/A | None | Kafka | None | None | None |
-| 629 | JavaScript | Clean Architecture | N/A | None | Kafka | None | JWT | None |
-| 630 | JavaScript | Clean Architecture | N/A | None | Kafka | None | JWT | Google,GitHub |
-| 631 | TypeScript | Clean Architecture | N/A | MySQL | REST APIs | None | None | None |
-| 632 | TypeScript | Clean Architecture | N/A | MySQL | REST APIs | Redis | None | None |
-| 633 | TypeScript | Clean Architecture | N/A | MySQL | REST APIs | Memory Cache | None | None |
-| 634 | TypeScript | Clean Architecture | N/A | MySQL | REST APIs | None | JWT | None |
-| 635 | TypeScript | Clean Architecture | N/A | MySQL | REST APIs | Redis | JWT | None |
-| 636 | TypeScript | Clean Architecture | N/A | MySQL | REST APIs | Memory Cache | JWT | None |
-| 637 | TypeScript | Clean Architecture | N/A | MySQL | REST APIs | None | JWT | Google,GitHub |
-| 638 | TypeScript | Clean Architecture | N/A | MySQL | REST APIs | Redis | JWT | Google,GitHub |
-| 639 | TypeScript | Clean Architecture | N/A | MySQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 640 | TypeScript | Clean Architecture | N/A | MySQL | GraphQL | None | None | None |
-| 641 | TypeScript | Clean Architecture | N/A | MySQL | GraphQL | Redis | None | None |
-| 642 | TypeScript | Clean Architecture | N/A | MySQL | GraphQL | Memory Cache | None | None |
-| 643 | TypeScript | Clean Architecture | N/A | MySQL | GraphQL | None | JWT | None |
-| 644 | TypeScript | Clean Architecture | N/A | MySQL | GraphQL | Redis | JWT | None |
-| 645 | TypeScript | Clean Architecture | N/A | MySQL | GraphQL | Memory Cache | JWT | None |
-| 646 | TypeScript | Clean Architecture | N/A | MySQL | GraphQL | None | JWT | Google,GitHub |
-| 647 | TypeScript | Clean Architecture | N/A | MySQL | GraphQL | Redis | JWT | Google,GitHub |
-| 648 | TypeScript | Clean Architecture | N/A | MySQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 649 | TypeScript | Clean Architecture | N/A | MySQL | Kafka | None | None | None |
-| 650 | TypeScript | Clean Architecture | N/A | MySQL | Kafka | Redis | None | None |
-| 651 | TypeScript | Clean Architecture | N/A | MySQL | Kafka | Memory Cache | None | None |
-| 652 | TypeScript | Clean Architecture | N/A | MySQL | Kafka | None | JWT | None |
-| 653 | TypeScript | Clean Architecture | N/A | MySQL | Kafka | Redis | JWT | None |
-| 654 | TypeScript | Clean Architecture | N/A | MySQL | Kafka | Memory Cache | JWT | None |
-| 655 | TypeScript | Clean Architecture | N/A | MySQL | Kafka | None | JWT | Google,GitHub |
-| 656 | TypeScript | Clean Architecture | N/A | MySQL | Kafka | Redis | JWT | Google,GitHub |
-| 657 | TypeScript | Clean Architecture | N/A | MySQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 658 | TypeScript | Clean Architecture | N/A | PostgreSQL | REST APIs | None | None | None |
-| 659 | TypeScript | Clean Architecture | N/A | PostgreSQL | REST APIs | Redis | None | None |
-| 660 | TypeScript | Clean Architecture | N/A | PostgreSQL | REST APIs | Memory Cache | None | None |
-| 661 | TypeScript | Clean Architecture | N/A | PostgreSQL | REST APIs | None | JWT | None |
-| 662 | TypeScript | Clean Architecture | N/A | PostgreSQL | REST APIs | Redis | JWT | None |
-| 663 | TypeScript | Clean Architecture | N/A | PostgreSQL | REST APIs | Memory Cache | JWT | None |
-| 664 | TypeScript | Clean Architecture | N/A | PostgreSQL | REST APIs | None | JWT | Google,GitHub |
-| 665 | TypeScript | Clean Architecture | N/A | PostgreSQL | REST APIs | Redis | JWT | Google,GitHub |
-| 666 | TypeScript | Clean Architecture | N/A | PostgreSQL | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 667 | TypeScript | Clean Architecture | N/A | PostgreSQL | GraphQL | None | None | None |
-| 668 | TypeScript | Clean Architecture | N/A | PostgreSQL | GraphQL | Redis | None | None |
-| 669 | TypeScript | Clean Architecture | N/A | PostgreSQL | GraphQL | Memory Cache | None | None |
-| 670 | TypeScript | Clean Architecture | N/A | PostgreSQL | GraphQL | None | JWT | None |
-| 671 | TypeScript | Clean Architecture | N/A | PostgreSQL | GraphQL | Redis | JWT | None |
-| 672 | TypeScript | Clean Architecture | N/A | PostgreSQL | GraphQL | Memory Cache | JWT | None |
-| 673 | TypeScript | Clean Architecture | N/A | PostgreSQL | GraphQL | None | JWT | Google,GitHub |
-| 674 | TypeScript | Clean Architecture | N/A | PostgreSQL | GraphQL | Redis | JWT | Google,GitHub |
-| 675 | TypeScript | Clean Architecture | N/A | PostgreSQL | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 676 | TypeScript | Clean Architecture | N/A | PostgreSQL | Kafka | None | None | None |
-| 677 | TypeScript | Clean Architecture | N/A | PostgreSQL | Kafka | Redis | None | None |
-| 678 | TypeScript | Clean Architecture | N/A | PostgreSQL | Kafka | Memory Cache | None | None |
-| 679 | TypeScript | Clean Architecture | N/A | PostgreSQL | Kafka | None | JWT | None |
-| 680 | TypeScript | Clean Architecture | N/A | PostgreSQL | Kafka | Redis | JWT | None |
-| 681 | TypeScript | Clean Architecture | N/A | PostgreSQL | Kafka | Memory Cache | JWT | None |
-| 682 | TypeScript | Clean Architecture | N/A | PostgreSQL | Kafka | None | JWT | Google,GitHub |
-| 683 | TypeScript | Clean Architecture | N/A | PostgreSQL | Kafka | Redis | JWT | Google,GitHub |
-| 684 | TypeScript | Clean Architecture | N/A | PostgreSQL | Kafka | Memory Cache | JWT | Google,GitHub |
-| 685 | TypeScript | Clean Architecture | N/A | MongoDB | REST APIs | None | None | None |
-| 686 | TypeScript | Clean Architecture | N/A | MongoDB | REST APIs | Redis | None | None |
-| 687 | TypeScript | Clean Architecture | N/A | MongoDB | REST APIs | Memory Cache | None | None |
-| 688 | TypeScript | Clean Architecture | N/A | MongoDB | REST APIs | None | JWT | None |
-| 689 | TypeScript | Clean Architecture | N/A | MongoDB | REST APIs | Redis | JWT | None |
-| 690 | TypeScript | Clean Architecture | N/A | MongoDB | REST APIs | Memory Cache | JWT | None |
-| 691 | TypeScript | Clean Architecture | N/A | MongoDB | REST APIs | None | JWT | Google,GitHub |
-| 692 | TypeScript | Clean Architecture | N/A | MongoDB | REST APIs | Redis | JWT | Google,GitHub |
-| 693 | TypeScript | Clean Architecture | N/A | MongoDB | REST APIs | Memory Cache | JWT | Google,GitHub |
-| 694 | TypeScript | Clean Architecture | N/A | MongoDB | GraphQL | None | None | None |
-| 695 | TypeScript | Clean Architecture | N/A | MongoDB | GraphQL | Redis | None | None |
-| 696 | TypeScript | Clean Architecture | N/A | MongoDB | GraphQL | Memory Cache | None | None |
-| 697 | TypeScript | Clean Architecture | N/A | MongoDB | GraphQL | None | JWT | None |
-| 698 | TypeScript | Clean Architecture | N/A | MongoDB | GraphQL | Redis | JWT | None |
-| 699 | TypeScript | Clean Architecture | N/A | MongoDB | GraphQL | Memory Cache | JWT | None |
-| 700 | TypeScript | Clean Architecture | N/A | MongoDB | GraphQL | None | JWT | Google,GitHub |
-| 701 | TypeScript | Clean Architecture | N/A | MongoDB | GraphQL | Redis | JWT | Google,GitHub |
-| 702 | TypeScript | Clean Architecture | N/A | MongoDB | GraphQL | Memory Cache | JWT | Google,GitHub |
-| 703 | TypeScript | Clean Architecture | N/A | MongoDB | Kafka | None | None | None |
-| 704 | TypeScript | Clean Architecture | N/A | MongoDB | Kafka | Redis | None | None |
-| 705 | TypeScript | Clean Architecture | N/A | MongoDB | Kafka | Memory Cache | None | None |
-| 706 | TypeScript | Clean Architecture | N/A | MongoDB | Kafka | None | JWT | None |
-| 707 | TypeScript | Clean Architecture | N/A | MongoDB | Kafka | Redis | JWT | None |
-| 708 | TypeScript | Clean Architecture | N/A | MongoDB | Kafka | Memory Cache | JWT | None |
-| 709 | TypeScript | Clean Architecture | N/A | MongoDB | Kafka | None | JWT | Google,GitHub |
-| 710 | TypeScript | Clean Architecture | N/A | MongoDB | Kafka | Redis | JWT | Google,GitHub |
-| 711 | TypeScript | Clean Architecture | N/A | MongoDB | Kafka | Memory Cache | JWT | Google,GitHub |
-| 712 | TypeScript | Clean Architecture | N/A | None | REST APIs | None | None | None |
-| 713 | TypeScript | Clean Architecture | N/A | None | REST APIs | None | JWT | None |
-| 714 | TypeScript | Clean Architecture | N/A | None | REST APIs | None | JWT | Google,GitHub |
-| 715 | TypeScript | Clean Architecture | N/A | None | GraphQL | None | None | None |
-| 716 | TypeScript | Clean Architecture | N/A | None | GraphQL | None | JWT | None |
-| 717 | TypeScript | Clean Architecture | N/A | None | GraphQL | None | JWT | Google,GitHub |
-| 718 | TypeScript | Clean Architecture | N/A | None | Kafka | None | None | None |
-| 719 | TypeScript | Clean Architecture | N/A | None | Kafka | None | JWT | None |
-| 720 | TypeScript | Clean Architecture | N/A | None | Kafka | None | JWT | Google,GitHub |
+#### Database: MySQL
+
+| # | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 703 | REST APIs | None | None | None | Disabled |
+| 704 | REST APIs | Redis | None | None | Disabled |
+| 705 | REST APIs | Redis | None | None | Enabled |
+| 706 | REST APIs | Memory Cache | None | None | Disabled |
+| 707 | REST APIs | None | JWT | None | Disabled |
+| 708 | REST APIs | Redis | JWT | None | Disabled |
+| 709 | REST APIs | Redis | JWT | None | Enabled |
+| 710 | REST APIs | Memory Cache | JWT | None | Disabled |
+| 711 | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 712 | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 713 | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 714 | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 715 | GraphQL | None | None | None | Disabled |
+| 716 | GraphQL | Redis | None | None | Disabled |
+| 717 | GraphQL | Redis | None | None | Enabled |
+| 718 | GraphQL | Memory Cache | None | None | Disabled |
+| 719 | GraphQL | None | JWT | None | Disabled |
+| 720 | GraphQL | Redis | JWT | None | Disabled |
+| 721 | GraphQL | Redis | JWT | None | Enabled |
+| 722 | GraphQL | Memory Cache | JWT | None | Disabled |
+| 723 | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 724 | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 725 | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 726 | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 727 | Kafka | None | None | None | Disabled |
+| 728 | Kafka | Redis | None | None | Disabled |
+| 729 | Kafka | Redis | None | None | Enabled |
+| 730 | Kafka | Memory Cache | None | None | Disabled |
+| 731 | Kafka | None | JWT | None | Disabled |
+| 732 | Kafka | Redis | JWT | None | Disabled |
+| 733 | Kafka | Redis | JWT | None | Enabled |
+| 734 | Kafka | Memory Cache | JWT | None | Disabled |
+| 735 | Kafka | None | JWT | Google,GitHub | Disabled |
+| 736 | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 737 | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 738 | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+
+#### Database: PostgreSQL
+
+| # | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 739 | REST APIs | None | None | None | Disabled |
+| 740 | REST APIs | Redis | None | None | Disabled |
+| 741 | REST APIs | Redis | None | None | Enabled |
+| 742 | REST APIs | Memory Cache | None | None | Disabled |
+| 743 | REST APIs | None | JWT | None | Disabled |
+| 744 | REST APIs | Redis | JWT | None | Disabled |
+| 745 | REST APIs | Redis | JWT | None | Enabled |
+| 746 | REST APIs | Memory Cache | JWT | None | Disabled |
+| 747 | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 748 | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 749 | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 750 | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 751 | GraphQL | None | None | None | Disabled |
+| 752 | GraphQL | Redis | None | None | Disabled |
+| 753 | GraphQL | Redis | None | None | Enabled |
+| 754 | GraphQL | Memory Cache | None | None | Disabled |
+| 755 | GraphQL | None | JWT | None | Disabled |
+| 756 | GraphQL | Redis | JWT | None | Disabled |
+| 757 | GraphQL | Redis | JWT | None | Enabled |
+| 758 | GraphQL | Memory Cache | JWT | None | Disabled |
+| 759 | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 760 | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 761 | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 762 | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 763 | Kafka | None | None | None | Disabled |
+| 764 | Kafka | Redis | None | None | Disabled |
+| 765 | Kafka | Redis | None | None | Enabled |
+| 766 | Kafka | Memory Cache | None | None | Disabled |
+| 767 | Kafka | None | JWT | None | Disabled |
+| 768 | Kafka | Redis | JWT | None | Disabled |
+| 769 | Kafka | Redis | JWT | None | Enabled |
+| 770 | Kafka | Memory Cache | JWT | None | Disabled |
+| 771 | Kafka | None | JWT | Google,GitHub | Disabled |
+| 772 | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 773 | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 774 | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+
+#### Database: MongoDB
+
+| # | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 775 | REST APIs | None | None | None | Disabled |
+| 776 | REST APIs | Redis | None | None | Disabled |
+| 777 | REST APIs | Redis | None | None | Enabled |
+| 778 | REST APIs | Memory Cache | None | None | Disabled |
+| 779 | REST APIs | None | JWT | None | Disabled |
+| 780 | REST APIs | Redis | JWT | None | Disabled |
+| 781 | REST APIs | Redis | JWT | None | Enabled |
+| 782 | REST APIs | Memory Cache | JWT | None | Disabled |
+| 783 | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 784 | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 785 | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 786 | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 787 | GraphQL | None | None | None | Disabled |
+| 788 | GraphQL | Redis | None | None | Disabled |
+| 789 | GraphQL | Redis | None | None | Enabled |
+| 790 | GraphQL | Memory Cache | None | None | Disabled |
+| 791 | GraphQL | None | JWT | None | Disabled |
+| 792 | GraphQL | Redis | JWT | None | Disabled |
+| 793 | GraphQL | Redis | JWT | None | Enabled |
+| 794 | GraphQL | Memory Cache | JWT | None | Disabled |
+| 795 | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 796 | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 797 | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 798 | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 799 | Kafka | None | None | None | Disabled |
+| 800 | Kafka | Redis | None | None | Disabled |
+| 801 | Kafka | Redis | None | None | Enabled |
+| 802 | Kafka | Memory Cache | None | None | Disabled |
+| 803 | Kafka | None | JWT | None | Disabled |
+| 804 | Kafka | Redis | JWT | None | Disabled |
+| 805 | Kafka | Redis | JWT | None | Enabled |
+| 806 | Kafka | Memory Cache | JWT | None | Disabled |
+| 807 | Kafka | None | JWT | Google,GitHub | Disabled |
+| 808 | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 809 | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 810 | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+
+#### Database: None
+
+| # | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 811 | REST APIs | None | None | None | Disabled |
+| 812 | REST APIs | None | JWT | None | Disabled |
+| 813 | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 814 | GraphQL | None | None | None | Disabled |
+| 815 | GraphQL | None | JWT | None | Disabled |
+| 816 | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 817 | Kafka | None | None | None | Disabled |
+| 818 | Kafka | None | JWT | None | Disabled |
+| 819 | Kafka | None | JWT | Google,GitHub | Disabled |
+
+### TypeScript
+
+#### Database: MySQL
+
+| # | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 820 | REST APIs | None | None | None | Disabled |
+| 821 | REST APIs | Redis | None | None | Disabled |
+| 822 | REST APIs | Redis | None | None | Enabled |
+| 823 | REST APIs | Memory Cache | None | None | Disabled |
+| 824 | REST APIs | None | JWT | None | Disabled |
+| 825 | REST APIs | Redis | JWT | None | Disabled |
+| 826 | REST APIs | Redis | JWT | None | Enabled |
+| 827 | REST APIs | Memory Cache | JWT | None | Disabled |
+| 828 | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 829 | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 830 | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 831 | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 832 | GraphQL | None | None | None | Disabled |
+| 833 | GraphQL | Redis | None | None | Disabled |
+| 834 | GraphQL | Redis | None | None | Enabled |
+| 835 | GraphQL | Memory Cache | None | None | Disabled |
+| 836 | GraphQL | None | JWT | None | Disabled |
+| 837 | GraphQL | Redis | JWT | None | Disabled |
+| 838 | GraphQL | Redis | JWT | None | Enabled |
+| 839 | GraphQL | Memory Cache | JWT | None | Disabled |
+| 840 | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 841 | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 842 | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 843 | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 844 | Kafka | None | None | None | Disabled |
+| 845 | Kafka | Redis | None | None | Disabled |
+| 846 | Kafka | Redis | None | None | Enabled |
+| 847 | Kafka | Memory Cache | None | None | Disabled |
+| 848 | Kafka | None | JWT | None | Disabled |
+| 849 | Kafka | Redis | JWT | None | Disabled |
+| 850 | Kafka | Redis | JWT | None | Enabled |
+| 851 | Kafka | Memory Cache | JWT | None | Disabled |
+| 852 | Kafka | None | JWT | Google,GitHub | Disabled |
+| 853 | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 854 | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 855 | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+
+#### Database: PostgreSQL
+
+| # | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 856 | REST APIs | None | None | None | Disabled |
+| 857 | REST APIs | Redis | None | None | Disabled |
+| 858 | REST APIs | Redis | None | None | Enabled |
+| 859 | REST APIs | Memory Cache | None | None | Disabled |
+| 860 | REST APIs | None | JWT | None | Disabled |
+| 861 | REST APIs | Redis | JWT | None | Disabled |
+| 862 | REST APIs | Redis | JWT | None | Enabled |
+| 863 | REST APIs | Memory Cache | JWT | None | Disabled |
+| 864 | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 865 | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 866 | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 867 | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 868 | GraphQL | None | None | None | Disabled |
+| 869 | GraphQL | Redis | None | None | Disabled |
+| 870 | GraphQL | Redis | None | None | Enabled |
+| 871 | GraphQL | Memory Cache | None | None | Disabled |
+| 872 | GraphQL | None | JWT | None | Disabled |
+| 873 | GraphQL | Redis | JWT | None | Disabled |
+| 874 | GraphQL | Redis | JWT | None | Enabled |
+| 875 | GraphQL | Memory Cache | JWT | None | Disabled |
+| 876 | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 877 | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 878 | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 879 | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 880 | Kafka | None | None | None | Disabled |
+| 881 | Kafka | Redis | None | None | Disabled |
+| 882 | Kafka | Redis | None | None | Enabled |
+| 883 | Kafka | Memory Cache | None | None | Disabled |
+| 884 | Kafka | None | JWT | None | Disabled |
+| 885 | Kafka | Redis | JWT | None | Disabled |
+| 886 | Kafka | Redis | JWT | None | Enabled |
+| 887 | Kafka | Memory Cache | JWT | None | Disabled |
+| 888 | Kafka | None | JWT | Google,GitHub | Disabled |
+| 889 | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 890 | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 891 | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+
+#### Database: MongoDB
+
+| # | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 892 | REST APIs | None | None | None | Disabled |
+| 893 | REST APIs | Redis | None | None | Disabled |
+| 894 | REST APIs | Redis | None | None | Enabled |
+| 895 | REST APIs | Memory Cache | None | None | Disabled |
+| 896 | REST APIs | None | JWT | None | Disabled |
+| 897 | REST APIs | Redis | JWT | None | Disabled |
+| 898 | REST APIs | Redis | JWT | None | Enabled |
+| 899 | REST APIs | Memory Cache | JWT | None | Disabled |
+| 900 | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 901 | REST APIs | Redis | JWT | Google,GitHub | Disabled |
+| 902 | REST APIs | Redis | JWT | Google,GitHub | Enabled |
+| 903 | REST APIs | Memory Cache | JWT | Google,GitHub | Disabled |
+| 904 | GraphQL | None | None | None | Disabled |
+| 905 | GraphQL | Redis | None | None | Disabled |
+| 906 | GraphQL | Redis | None | None | Enabled |
+| 907 | GraphQL | Memory Cache | None | None | Disabled |
+| 908 | GraphQL | None | JWT | None | Disabled |
+| 909 | GraphQL | Redis | JWT | None | Disabled |
+| 910 | GraphQL | Redis | JWT | None | Enabled |
+| 911 | GraphQL | Memory Cache | JWT | None | Disabled |
+| 912 | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 913 | GraphQL | Redis | JWT | Google,GitHub | Disabled |
+| 914 | GraphQL | Redis | JWT | Google,GitHub | Enabled |
+| 915 | GraphQL | Memory Cache | JWT | Google,GitHub | Disabled |
+| 916 | Kafka | None | None | None | Disabled |
+| 917 | Kafka | Redis | None | None | Disabled |
+| 918 | Kafka | Redis | None | None | Enabled |
+| 919 | Kafka | Memory Cache | None | None | Disabled |
+| 920 | Kafka | None | JWT | None | Disabled |
+| 921 | Kafka | Redis | JWT | None | Disabled |
+| 922 | Kafka | Redis | JWT | None | Enabled |
+| 923 | Kafka | Memory Cache | JWT | None | Disabled |
+| 924 | Kafka | None | JWT | Google,GitHub | Disabled |
+| 925 | Kafka | Redis | JWT | Google,GitHub | Disabled |
+| 926 | Kafka | Redis | JWT | Google,GitHub | Enabled |
+| 927 | Kafka | Memory Cache | JWT | Google,GitHub | Disabled |
+
+#### Database: None
+
+| # | Communication | Caching | Auth | Social Auth | Background Jobs |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 928 | REST APIs | None | None | None | Disabled |
+| 929 | REST APIs | None | JWT | None | Disabled |
+| 930 | REST APIs | None | JWT | Google,GitHub | Disabled |
+| 931 | GraphQL | None | None | None | Disabled |
+| 932 | GraphQL | None | JWT | None | Disabled |
+| 933 | GraphQL | None | JWT | Google,GitHub | Disabled |
+| 934 | Kafka | None | None | None | Disabled |
+| 935 | Kafka | None | JWT | None | Disabled |
+| 936 | Kafka | None | JWT | Google,GitHub | Disabled |
+

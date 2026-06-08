@@ -130,6 +130,13 @@ describe('Local Heuristic NLP Engine', () => {
     }
   );
 
+  runTest('Background Jobs keyword matching',
+    'Tôi muốn tạo project có background jobs và task queue',
+    {
+      backgroundJobs: true
+    }
+  );
+
   runTest('Chinese mix with negative words',
     '我想要一个项目名叫 commerce-app，使用 Redis 但是不要 MongoDB',
     {

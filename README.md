@@ -17,7 +17,7 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
 - [What's New](#whats-new-in-v25-the-cloud--observability-release)
 - [Key Features](#key-features)
 - [Professional Standards](#professional-standards)
-- [1.06M Project Combinations](#106m-project-combinations)
+- [1.41M Project Combinations](#141m-project-combinations)
 - [Configuration Options](#configuration-options)
 - [Generated Project Structure](#generated-project-structure)
 - [Documentation](#documentation)
@@ -96,11 +96,11 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 
 ---
 
-## 1.06M+ Project Combinations
+## 1.41M+ Project Combinations
 
 The CLI provides massive flexibility to fit your exact needs. Instead of a rigid boilerplate, it acts like architectural Lego blocks. 
 
-- **1,064,448+ Verified Scenarios**: Whether you choose `MongoDB + GraphQL + Redis` or `PostgreSQL + REST + No Cache`, the generated code compiles, runs, and passes tests out-of-the-box.
+- **1,419,264+ Verified Scenarios**: Whether you choose `MongoDB + GraphQL + Redis` or `PostgreSQL + REST + No Cache`, the generated code compiles, runs, and passes tests out-of-the-box.
 - **Mix & Match**: Seamlessly combine your preferred Database, Caching, Auth, and Communication patterns.
 - **Enterprise-Ready**: Every combination guarantees compatibility with our **80% Test Coverage** policy, Docker builds, and CI/CD pipelines.
 
@@ -125,6 +125,7 @@ The CLI will guide you through:
     - **Resilience**: (Optional) `Timeout` | `Retry` | `Circuit Breaker`
     - **Cloud Infrastructure**: (Optional IaC) Terraform for `AWS` | `GCP` | `Azure` (`None` | `Standard` | `Production`)
     - **Observability**: (Optional) Centralized Logging via `ELK Stack`
+    - **Background Jobs**: (Optional) `BullMQ` + `Bull-Board` Task Queues (Requires Redis)
 
 ---
 

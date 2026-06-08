@@ -11,6 +11,9 @@ const apiRoutes = require('../../interfaces/routes/api');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./swagger');
 <%_ } -%>
+<%_ if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+const queueBoard = require('../queues/queueBoard');
+<%_ } -%>
 <%_ if (auth.includes('JWT')) { -%>const authRoutes = require('../../interfaces/routes/authRoutes');<%_ } -%>
 
 <%_ if (communication === 'GraphQL') { -%>
@@ -72,6 +75,12 @@ const startServer = async () => {
     await apolloServer.start();
     app.use('/graphql', expressMiddleware(apolloServer, { context: gqlContext }));
     <%_ } -%>
+
+    <%_ if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+    // Background Jobs Dashboard
+    app.use('/admin/queues', queueBoard.getRouter());
+    <%_ } -%>
+
     app.use('/health', healthRoutes);
 
     app.use(errorMiddleware);

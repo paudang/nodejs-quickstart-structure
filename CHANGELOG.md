@@ -1,5 +1,16 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] - 2026-06-08
+
+### Added
+- **Background Jobs & Task Queues (BullMQ)**: Implemented BullMQ with Redis backing for asynchronous task processing (`--background-jobs`). Includes an out-of-the-box `Bull-Board` UI endpoint for real-time monitoring of queues.
+- **Smart NLP Use-Case Auto-Mapping**: Upgraded the local NLP heuristics engine in the Web Configurator to detect `Movie/Media Streaming`, `Game/Chat App`, and `Admin Dashboard` intents, automatically mapping users to optimal architectural stacks (e.g., MVC + MongoDB + Redis + Background Jobs).
+- **NLP Typo Resilience**: Enhanced the NLP regex to gracefully parse common user typos like `backgound job`.
+- **Comprehensive Troubleshooting Guide**: Added a dedicated `troubleshooting.md` documentation page detailing Queue behaviors, Idempotency patterns, and Redis `MaxRetriesPerRequestError` handling within Docker containers.
+
+### Changed
+- **E2E & Unit Testing Expansion**: Integrated robust `.spec` unit tests for Queue workflows natively into the generated project. Refactored test templates to dynamically utilize absolute path aliases (`@/`) for strict ESLint compliance and `import/no-unresolved` resolution. E2E validation matrix automatically supports `--background-jobs` flags.
+
 ## [2.6.0] - 2026-05-31
 
 ### Added
@@ -31,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ELK Native Winston Integration (Big Tech Standard)**: Replaced blocking manual streams with native `winston-elasticsearch` for automatic, background-batched log shipping to Elasticsearch without blocking the main event loop.
 
 ### Changed
-- **System Design 6-Phase Flow**: Refactored the CLI prompts and Web Configurator (UI) layout to logically follow a 6-phase System Design architecture (Core -> Architecture -> Data -> Auth -> DevOps -> Advanced). Decoupled Authentication and Caching dependencies to unlock **1.06M+ mathematically verified project scenarios** (up from 887K).
+- **System Design 6-Phase Flow**: Refactored the CLI prompts and Web Configurator (UI) layout to logically follow a 6-phase System Design architecture (Core -> Architecture -> Data -> Auth -> DevOps -> Advanced). Decoupled Authentication and Caching dependencies to unlock **1.41M+ mathematically verified project scenarios** (up from 887K).
 - **Cloud-Agnostic Validation Core**: Updated `validation-core.js` to intelligently default Docker E2E testing to AWS to optimize CI pipeline speed while guaranteeing mathematical equivalence across cloud providers.
 - **Dynamic Auth Controllers**: Optimized `authController` templates to strip out unused OAuth state cookies (dead code) when social logins are excluded.
 

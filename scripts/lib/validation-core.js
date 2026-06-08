@@ -21,12 +21,13 @@ function log(msg, color = ANSI_RESET) {
 }
 
 const LANGUAGES = ['TypeScript', 'JavaScript'];
-const DATABASES = ['None','MySQL', 'PostgreSQL', 'MongoDB'];
-const COMMUNICATIONS = ['REST APIs', 'GraphQL', 'Kafka']; 
+const DATABASES = ['None', 'MySQL', 'PostgreSQL', 'MongoDB'];
+const COMMUNICATIONS = ['REST APIs', 'GraphQL', 'Kafka'];
 const CACHING = ['None', 'Redis', 'Memory Cache'];
 const VIEW_ENGINES_MVC = ['EJS', 'Pug', 'None'];
 const AUTHS = ['None', 'JWT', 'Google - Github - JWT'];
 const RESILIENCE = ['None', 'Timeout,Retry,CircuitBreaker'];
+const BACKGROUND_JOBS = [false, true];
 
 export const combinations = [];
 
@@ -34,41 +35,46 @@ export const combinations = [];
 LANGUAGES.forEach(lang => {
     DATABASES.forEach(db => {
         COMMUNICATIONS.forEach(comm => {
-        for (const auth of AUTHS) {
-            const cachingOptions = CACHING;
+            for (const auth of AUTHS) {
+                const cachingOptions = CACHING;
 
-            cachingOptions.forEach(cache => {
-                RESILIENCE.forEach(res => {
-                    const config = {
-                        projectName: `test_clean_${lang}_${db}_${comm}_${cache}_${auth}_${res === 'None' ? 'NoRes' : 'Res'}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-                        language: lang,
-                        architecture: 'Clean Architecture',
-                        viewEngine: 'None', 
-                        database: db,
-                        dbName: db !== 'None' ? 'testdb' : undefined,
-                        communication: comm,
-                        caching: cache,
-                        ciProvider: 'GitHub Actions',
-                        includeSecurity: true,
-                        resilience: res
-                    };
+                cachingOptions.forEach(cache => {
+                    RESILIENCE.forEach(res => {
+                        BACKGROUND_JOBS.forEach(bgJob => {
+                            if (bgJob && cache !== 'Redis') return;
 
-                    if (auth === 'Google - Github - JWT') {
-                        config.auth = ['JWT'];
-                        config.socialAuth = ['Google', 'GitHub'];
-                    } else {
-                        config.auth = [auth];
-                        config.socialAuth = ['None'];
-                    }
+                            const config = {
+                                projectName: `test_clean_${lang}_${db}_${comm}_${cache}_${auth}_${res === 'None' ? 'NoRes' : 'Res'}_${bgJob ? 'Bg' : 'NoBg'}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                                language: lang,
+                                architecture: 'Clean Architecture',
+                                viewEngine: 'None',
+                                database: db,
+                                dbName: db !== 'None' ? 'testdb' : undefined,
+                                communication: comm,
+                                caching: cache,
+                                ciProvider: 'GitHub Actions',
+                                includeSecurity: true,
+                                resilience: res,
+                                backgroundJobs: bgJob
+                            };
 
-                    if ((lang === 'TypeScript' || lang === "JavaScript") && db === 'MySQL' && comm === 'REST APIs' && cache === 'Redis' && res === 'Timeout,Retry,CircuitBreaker') {
-                        config.withELK = true;
-                    }
+                            if (auth === 'Google - Github - JWT') {
+                                config.auth = ['JWT'];
+                                config.socialAuth = ['Google', 'GitHub'];
+                            } else {
+                                config.auth = [auth];
+                                config.socialAuth = ['None'];
+                            }
 
-                    combinations.push(config);
+                            if ((lang === 'TypeScript' || lang === "JavaScript") && db === 'MySQL' && comm === 'REST APIs' && cache === 'Redis' && res === 'Timeout,Retry,CircuitBreaker') {
+                                config.withELK = true;
+                            }
+
+                            combinations.push(config);
+                        });
+                    });
                 });
-            });
-        }
+            }
         });
     });
 });
@@ -79,40 +85,45 @@ LANGUAGES.forEach(lang => {
     VIEW_ENGINES_MVC.forEach(view => {
         DATABASES.forEach(db => {
             COMMUNICATIONS.forEach(comm => {
-            for (const auth of AUTHS) {
-                const cachingOptions = CACHING;
-                cachingOptions.forEach(cache => {
-                    RESILIENCE.forEach(res => {
-                        const config = {
-                            projectName: `test_mvc_${lang}_${view}_${db}_${comm}_${cache}_${auth}_${res === 'None' ? 'NoRes' : 'Res'}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
-                            language: lang,
-                            architecture: 'MVC',
-                            viewEngine: view,
-                            database: db,
-                            dbName: db !== 'None' ? 'testdb' : undefined,
-                            communication: comm,
-                            caching: cache,
-                            ciProvider: 'GitHub Actions',
-                            includeSecurity: true,
-                            resilience: res
-                        };
+                for (const auth of AUTHS) {
+                    const cachingOptions = CACHING;
+                    cachingOptions.forEach(cache => {
+                        RESILIENCE.forEach(res => {
+                            BACKGROUND_JOBS.forEach(bgJob => {
+                                if (bgJob && cache !== 'Redis') return;
 
-                        if (auth === 'Google - Github - JWT') {
-                            config.auth = ['JWT'];
-                            config.socialAuth = ['Google', 'GitHub'];
-                        } else {
-                            config.auth = [auth];
-                            config.socialAuth = ['None'];
-                        }
+                                const config = {
+                                    projectName: `test_mvc_${lang}_${view}_${db}_${comm}_${cache}_${auth}_${res === 'None' ? 'NoRes' : 'Res'}_${bgJob ? 'Bg' : 'NoBg'}`.replace(/\s+/g, '').toLowerCase().replace(/[^a-z0-9_]/g, ''),
+                                    language: lang,
+                                    architecture: 'MVC',
+                                    viewEngine: view,
+                                    database: db,
+                                    dbName: db !== 'None' ? 'testdb' : undefined,
+                                    communication: comm,
+                                    caching: cache,
+                                    ciProvider: 'GitHub Actions',
+                                    includeSecurity: true,
+                                    resilience: res,
+                                    backgroundJobs: bgJob
+                                };
 
-                        if (lang === 'JavaScript' && db === 'MongoDB' && comm === 'GraphQL' && cache === 'Redis' && res === 'None') {
-                            config.withELK = true;
-                        }
+                                if (auth === 'Google - Github - JWT') {
+                                    config.auth = ['JWT'];
+                                    config.socialAuth = ['Google', 'GitHub'];
+                                } else {
+                                    config.auth = [auth];
+                                    config.socialAuth = ['None'];
+                                }
 
-                        combinations.push(config);
+                                if (lang === 'JavaScript' && db === 'MongoDB' && comm === 'GraphQL' && cache === 'Redis' && res === 'None') {
+                                    config.withELK = true;
+                                }
+
+                                combinations.push(config);
+                            });
+                        });
                     });
-                });
-            }
+                }
             });
         });
     });
@@ -121,10 +132,10 @@ LANGUAGES.forEach(lang => {
 async function runCommand(command, cwd, env = {}, captureOutput = false) {
     return new Promise((resolve, reject) => {
         const [cmd, ...args] = command.split(' ');
-        const child = spawn(cmd, args, { 
-            cwd, 
+        const child = spawn(cmd, args, {
+            cwd,
             stdio: captureOutput ? ['ignore', 'pipe', 'pipe'] : 'inherit',
-            shell: true,      
+            shell: true,
             env: { ...process.env, ...env }
         });
 
@@ -136,7 +147,7 @@ async function runCommand(command, cwd, env = {}, captureOutput = false) {
         }
 
         child.on('error', (error) => {
-             reject(error);
+            reject(error);
         });
 
         child.on('close', (code) => {
@@ -169,11 +180,11 @@ async function getFreePort(usedPorts) {
     while (!available && attempts < MAX_ATTEMPTS) {
         attempts++;
         port = Math.floor(Math.random() * (45000 - 10000) + 10000);
-        
+
         if (!usedPorts.has(port)) {
             // Optimistically mark as used to prevent internal race conditions
             usedPorts.add(port);
-            
+
             // Check actual OS availability
             if (await isPortAvailable(port)) {
                 available = true;
@@ -182,222 +193,222 @@ async function getFreePort(usedPorts) {
             }
         }
     }
-    
+
     if (!available) {
         throw new Error("Failed to find a free port after multiple attempts");
     }
-    
+
     return port;
 }
 
 async function checkHealth(config, hostPort) {
     const port = hostPort || 3000;
     const start = Date.now();
-    while (Date.now() - start < 180000) { 
+    while (Date.now() - start < 180000) {
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000);
-            
+
             const res = await fetch(`http://127.0.0.1:${port}/health`, {
                 signal: controller.signal
             });
             clearTimeout(timeoutId);
             if (res.ok) {
-                 const healthPayload = await res.json();
-                 if (
-                    healthPayload.status !== 'UP' || 
+                const healthPayload = await res.json();
+                if (
+                    healthPayload.status !== 'UP' ||
                     typeof healthPayload.uptime !== 'number' ||
                     typeof healthPayload.memory !== 'object'
-                 ) {
-                     console.log(`!!! Health payload malformed: ${JSON.stringify(healthPayload)}`, ANSI_RED);
-                     return false;
-                 }
-                 
-                  if (config.communication === 'REST APIs' || config.communication === 'Kafka') {
+                ) {
+                    console.log(`!!! Health payload malformed: ${JSON.stringify(healthPayload)}`, ANSI_RED);
+                    return false;
+                }
+
+                if (config.communication === 'REST APIs' || config.communication === 'Kafka') {
                     try {
                         const baseUrl = `http://127.0.0.1:${port}/api/users`;
                         const authUrl = `http://127.0.0.1:${port}/api/auth/login`;
                         const testPassword = 'password123';
                         const testEmail = `test${Date.now()}@example.com`;
-                        
+
                         // 1. Create (Sign Up)
                         const postRes = await fetch(baseUrl, {
-                             method: 'POST',
-                             headers: { 'Content-Type': 'application/json' },
-                             body: JSON.stringify({ 
-                               name: 'Test User', 
-                               email: testEmail,
-                               ...(config.auth && config.auth.includes('JWT') ? { password: testPassword } : {})
-                             })
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                name: 'Test User',
+                                email: testEmail,
+                                ...(config.auth && config.auth.includes('JWT') ? { password: testPassword } : {})
+                            })
                         });
-                        
+
                         if (postRes.ok) {
-                             const user = await postRes.json();
-                             const userId = user.id || user._id;
+                            const user = await postRes.json();
+                            const userId = user.id || user._id;
 
-                             let headers = { 'Content-Type': 'application/json' };
-                             let currentRefreshToken = null;
+                            let headers = { 'Content-Type': 'application/json' };
+                            let currentRefreshToken = null;
 
-                             // 1b. Login if Auth is enabled
-                             if (config.auth && config.auth.includes('JWT')) {
-                                 const loginRes = await fetch(authUrl, {
-                                     method: 'POST',
-                                     headers: { 'Content-Type': 'application/json' },
-                                     body: JSON.stringify({ email: testEmail, password: testPassword })
-                                 });
-                                 if (!loginRes.ok) throw new Error('Login failed');
-                                 const { accessToken, refreshToken } = await loginRes.json();
-                                 headers['Authorization'] = `Bearer ${accessToken}`;
-                                 currentRefreshToken = refreshToken;
+                            // 1b. Login if Auth is enabled
+                            if (config.auth && config.auth.includes('JWT')) {
+                                const loginRes = await fetch(authUrl, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ email: testEmail, password: testPassword })
+                                });
+                                if (!loginRes.ok) throw new Error('Login failed');
+                                const { accessToken, refreshToken } = await loginRes.json();
+                                headers['Authorization'] = `Bearer ${accessToken}`;
+                                currentRefreshToken = refreshToken;
 
-                                 // 1c. Test Refresh
-                                 const refreshUrl = `http://127.0.0.1:${port}/api/auth/refresh`;
-                                 const refreshRes = await fetch(refreshUrl, {
-                                     method: 'POST',
-                                     headers: { 'Content-Type': 'application/json' },
-                                     body: JSON.stringify({ refreshToken })
-                                 });
-                                 if (!refreshRes.ok) throw new Error('Refresh token flow failed');
-                                 const refreshedTokens = await refreshRes.json();
-                                 headers['Authorization'] = `Bearer ${refreshedTokens.accessToken}`;
-                                 currentRefreshToken = refreshedTokens.refreshToken;
-                             }
+                                // 1c. Test Refresh
+                                const refreshUrl = `http://127.0.0.1:${port}/api/auth/refresh`;
+                                const refreshRes = await fetch(refreshUrl, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ refreshToken })
+                                });
+                                if (!refreshRes.ok) throw new Error('Refresh token flow failed');
+                                const refreshedTokens = await refreshRes.json();
+                                headers['Authorization'] = `Bearer ${refreshedTokens.accessToken}`;
+                                currentRefreshToken = refreshedTokens.refreshToken;
+                            }
 
-                             // 2. Update
-                             const patchRes = await fetch(`${baseUrl}/${userId}`, {
-                                 method: 'PATCH',
-                                 headers,
-                                 body: JSON.stringify({ name: 'Updated User' })
-                             });
+                            // 2. Update
+                            const patchRes = await fetch(`${baseUrl}/${userId}`, {
+                                method: 'PATCH',
+                                headers,
+                                body: JSON.stringify({ name: 'Updated User' })
+                            });
 
-                             // 3. Delete
-                             const deleteRes = await fetch(`${baseUrl}/${userId}`, {
-                                 method: 'DELETE',
-                                 headers
-                             });
+                            // 3. Delete
+                            const deleteRes = await fetch(`${baseUrl}/${userId}`, {
+                                method: 'DELETE',
+                                headers
+                            });
 
-                             // 4. Logout
-                             if (config.auth && config.auth.includes('JWT')) {
-                                 const logoutUrl = `http://127.0.0.1:${port}/api/auth/logout`;
-                                 const logoutRes = await fetch(logoutUrl, {
+                            // 4. Logout
+                            if (config.auth && config.auth.includes('JWT')) {
+                                const logoutUrl = `http://127.0.0.1:${port}/api/auth/logout`;
+                                const logoutRes = await fetch(logoutUrl, {
                                     method: 'POST',
                                     headers,
                                     body: JSON.stringify({ refreshToken: currentRefreshToken })
-                                 });
-                                 if (!logoutRes.ok) throw new Error('Logout failed');
-                             }
+                                });
+                                if (!logoutRes.ok) throw new Error('Logout failed');
+                            }
 
 
-                             if (patchRes.ok && deleteRes.ok) {
-                                 if (config.communication === 'Kafka') {
-                                     log('... Verifying Kafka Flow in Logs (Wait 5s) ...');
-                                     await new Promise(r => setTimeout(r, 5000));
-                                     try {
-                                         const logs = await runCommand(`docker compose logs`, path.join(path.resolve(__dirname, '../../temp_test_workspace'), config.projectName), {}, true);
-                                         
-                                         const requiredKafkaLogs = [
-                                             '[Kafka] Producer: Sent USER_CREATED event',
-                                             '[Kafka] Consumer: Received USER_CREATED.',
-                                             '[Kafka] Producer: Sent USER_UPDATED event',
-                                             '[Kafka] Consumer: Received USER_UPDATED.',
-                                             '[Kafka] Producer: Sent USER_DELETED event',
-                                             '[Kafka] Consumer: Received USER_DELETED.'
-                                         ];
+                            if (patchRes.ok && deleteRes.ok) {
+                                if (config.communication === 'Kafka') {
+                                    log('... Verifying Kafka Flow in Logs (Wait 5s) ...');
+                                    await new Promise(r => setTimeout(r, 5000));
+                                    try {
+                                        const logs = await runCommand(`docker compose logs`, path.join(path.resolve(__dirname, '../../temp_test_workspace'), config.projectName), {}, true);
 
-                                         let allFound = true;
-                                         for (const logText of requiredKafkaLogs) {
-                                             if (!logs.includes(logText)) {
-                                                 console.log(`!!! Missing Kafka log: "${logText}" (Retrying...)`, ANSI_RED);
-                                                 allFound = false;
-                                                 break;
-                                             }
-                                         }
-                                         
-                                         if (allFound) {
-                                             log('✓ Kafka CRUD Flow verified in logs', ANSI_GREEN);
-                                             return true;
-                                         }
-                                     } catch (err) {
-                                         console.log(`Kafka Log verification error: ${err.message}`);
-                                     }
-                                 } else {
-                                     console.log('✓ Health Check Passed (Full REST CRUD functional)', ANSI_GREEN);
-                                     return true;
-                                 }
-                             }
+                                        const requiredKafkaLogs = [
+                                            '[Kafka] Producer: Sent USER_CREATED event',
+                                            '[Kafka] Consumer: Received USER_CREATED.',
+                                            '[Kafka] Producer: Sent USER_UPDATED event',
+                                            '[Kafka] Consumer: Received USER_UPDATED.',
+                                            '[Kafka] Producer: Sent USER_DELETED event',
+                                            '[Kafka] Consumer: Received USER_DELETED.'
+                                        ];
+
+                                        let allFound = true;
+                                        for (const logText of requiredKafkaLogs) {
+                                            if (!logs.includes(logText)) {
+                                                console.log(`!!! Missing Kafka log: "${logText}" (Retrying...)`, ANSI_RED);
+                                                allFound = false;
+                                                break;
+                                            }
+                                        }
+
+                                        if (allFound) {
+                                            log('✓ Kafka CRUD Flow verified in logs', ANSI_GREEN);
+                                            return true;
+                                        }
+                                    } catch (err) {
+                                        console.log(`Kafka Log verification error: ${err.message}`);
+                                    }
+                                } else {
+                                    console.log('✓ Health Check Passed (Full REST CRUD functional)', ANSI_GREEN);
+                                    return true;
+                                }
+                            }
                         }
-                    } catch (err) {}
+                    } catch (err) { }
                 } else if (config.communication === 'GraphQL') {
-                     try {
-                         const gqlUrl = `http://127.0.0.1:${port}/graphql`;
-                         const authUrl = `http://127.0.0.1:${port}/api/auth/login`;
-                         
-                         // 1. Create Mutation
-                         const testPassword = 'password123';
-                         const testEmail = `gql${Date.now()}@test.com`;
-                         const passwordArg = config.auth && config.auth.includes('JWT') ? `, password: "${testPassword}"` : '';
-                         const createMutation = `mutation { createUser(name: "GQL Test", email: "${testEmail}"${passwordArg}) { id } }`;
-                         const createRes = await fetch(gqlUrl, {
+                    try {
+                        const gqlUrl = `http://127.0.0.1:${port}/graphql`;
+                        const authUrl = `http://127.0.0.1:${port}/api/auth/login`;
+
+                        // 1. Create Mutation
+                        const testPassword = 'password123';
+                        const testEmail = `gql${Date.now()}@test.com`;
+                        const passwordArg = config.auth && config.auth.includes('JWT') ? `, password: "${testPassword}"` : '';
+                        const createMutation = `mutation { createUser(name: "GQL Test", email: "${testEmail}"${passwordArg}) { id } }`;
+                        const createRes = await fetch(gqlUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ query: createMutation })
+                        });
+                        const createData = await createRes.json();
+                        if (createData.errors) {
+                            console.log(`!!! GraphQL Create Errors: ${JSON.stringify(createData.errors)}`, ANSI_RED);
+                            throw new Error('GraphQL mutation failed');
+                        }
+                        const userId = createData.data.createUser.id;
+
+                        let headers = { 'Content-Type': 'application/json' };
+
+                        // 1b. Login if Auth is enabled
+                        if (config.auth && config.auth.includes('JWT')) {
+                            const loginRes = await fetch(authUrl, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ query: createMutation })
-                         });
-                         const createData = await createRes.json();
-                         if (createData.errors) {
-                             console.log(`!!! GraphQL Create Errors: ${JSON.stringify(createData.errors)}`, ANSI_RED);
-                             throw new Error('GraphQL mutation failed');
-                         }
-                         const userId = createData.data.createUser.id;
+                                body: JSON.stringify({ email: testEmail, password: testPassword })
+                            });
+                            if (!loginRes.ok) throw new Error('Login failed for GraphQL user');
+                            const { accessToken } = await loginRes.json();
+                            headers['Authorization'] = `Bearer ${accessToken}`;
+                        }
 
-                         let headers = { 'Content-Type': 'application/json' };
-                         
-                         // 1b. Login if Auth is enabled
-                         if (config.auth && config.auth.includes('JWT')) {
-                             const loginRes = await fetch(authUrl, {
-                                 method: 'POST',
-                                 headers: { 'Content-Type': 'application/json' },
-                                 body: JSON.stringify({ email: testEmail, password: testPassword })
-                             });
-                             if (!loginRes.ok) throw new Error('Login failed for GraphQL user');
-                             const { accessToken } = await loginRes.json();
-                             headers['Authorization'] = `Bearer ${accessToken}`;
-                         }
+                        // 2. Update Mutation
+                        const updateMutation = `mutation { updateUser(id: "${userId}", name: "GQL Updated") { id name } }`;
+                        const updateRes = await fetch(gqlUrl, {
+                            method: 'POST',
+                            headers,
+                            body: JSON.stringify({ query: updateMutation })
+                        });
+                        const updateData = await updateRes.json();
+                        if (updateData.errors) {
+                            console.log(`!!! GraphQL Update Errors: ${JSON.stringify(updateData.errors)}`, ANSI_RED);
+                            throw new Error('GraphQL update mutation failed');
+                        }
 
-                         // 2. Update Mutation
-                         const updateMutation = `mutation { updateUser(id: "${userId}", name: "GQL Updated") { id name } }`;
-                         const updateRes = await fetch(gqlUrl, {
-                                method: 'POST',
-                                headers,
-                                body: JSON.stringify({ query: updateMutation })
-                         });
-                         const updateData = await updateRes.json();
-                         if (updateData.errors) {
-                             console.log(`!!! GraphQL Update Errors: ${JSON.stringify(updateData.errors)}`, ANSI_RED);
-                             throw new Error('GraphQL update mutation failed');
-                         }
+                        // 3. Delete Mutation
+                        const deleteMutation = `mutation { deleteUser(id: "${userId}") }`;
+                        const deleteRes = await fetch(gqlUrl, {
+                            method: 'POST',
+                            headers,
+                            body: JSON.stringify({ query: deleteMutation })
+                        });
+                        const deleteData = await deleteRes.json();
 
-                         // 3. Delete Mutation
-                         const deleteMutation = `mutation { deleteUser(id: "${userId}") }`;
-                         const deleteRes = await fetch(gqlUrl, {
-                                method: 'POST',
-                                headers,
-                                body: JSON.stringify({ query: deleteMutation })
-                         });
-                         const deleteData = await deleteRes.json();
-                         
-                         if (deleteData.data && deleteData.data.deleteUser) {
-                               console.log('✓ Health Check Passed (Full GraphQL CRUD functional with Auth)', ANSI_GREEN);
-                               return true;
-                         } else if (deleteData.errors) {
-                               console.log(`!!! GraphQL Delete Errors: ${JSON.stringify(deleteData.errors)}`, ANSI_RED);
-                         }
-                     } catch (err) {}
+                        if (deleteData.data && deleteData.data.deleteUser) {
+                            console.log('✓ Health Check Passed (Full GraphQL CRUD functional with Auth)', ANSI_GREEN);
+                            return true;
+                        } else if (deleteData.errors) {
+                            console.log(`!!! GraphQL Delete Errors: ${JSON.stringify(deleteData.errors)}`, ANSI_RED);
+                        }
+                    } catch (err) { }
                 } else {
-                     console.log('✓ Health Check Passed', ANSI_GREEN);
-                     return true;
+                    console.log('✓ Health Check Passed', ANSI_GREEN);
+                    return true;
                 }
             }
-        } catch (e) {}
+        } catch (e) { }
         await new Promise(r => setTimeout(r, 2000));
     }
     return false;
@@ -406,14 +417,14 @@ async function checkHealth(config, hostPort) {
 function pLimit(concurrency) {
     const queue = [];
     let active = 0;
-    
+
     const next = () => {
         active--;
         if (queue.length > 0) {
             queue.shift()();
         }
     };
-    
+
     return (fn) => new Promise((resolve, reject) => {
         const run = async () => {
             active++;
@@ -426,7 +437,7 @@ function pLimit(concurrency) {
                 next();
             }
         };
-        
+
         if (active < concurrency) {
             run();
         } else {
@@ -460,7 +471,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
     if (!skipDocker) {
         log(`    Ports -> APP:${TEST_ENV.PORT}, DB:${TEST_ENV.DB_PORT}, KAFKA:${TEST_ENV.KAFKA_PORT}, REDIS:${TEST_ENV.REDIS_PORT}`);
     }
-    
+
     let isSuccess = false;
     try {
         await fs.remove(projectPath);
@@ -513,6 +524,12 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             args.push('--no-with-elk');
         }
 
+        if (config.backgroundJobs) {
+            args.push('--background-jobs');
+        } else {
+            args.push('--no-background-jobs');
+        }
+
         const command = `node ${cliPath} ${args.join(' ')}`;
         await runCommand(command, testDir);
         log(`✓ Project Generated (CLI)`);
@@ -521,10 +538,10 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         await runCommand('git init', projectPath);
         // 3. Install Deps (triggers prepare -> husky install)
         log(`... Installing Dependencies ...`);
-        
+
         const baseHashKey = `${config.language}_${config.database}`;
         const cacheModulesPath = path.join(testDir, `node_modules_base_${baseHashKey}`);
-        
+
         let usedBaseCache = false;
         try {
             if (await fs.pathExists(cacheModulesPath)) {
@@ -532,16 +549,16 @@ export async function runTest(config, index, options = {}, sharedPorts) {
                 await fs.copy(cacheModulesPath, path.join(projectPath, 'node_modules'));
                 usedBaseCache = true;
             }
-        } catch(e) {
+        } catch (e) {
             usedBaseCache = false;
         }
 
         // Always run npm install to align the copied base cache with the exact package.json
         // Or to do a fresh install if no base cache existed.
-        const npmCmd = usedBaseCache 
+        const npmCmd = usedBaseCache
             ? 'npm install --no-audit --no-fund --prefer-offline --loglevel=error'
             : 'npm install --no-audit --no-fund --loglevel=error';
-            
+
         log(`... Running npm install (This can take 30-60s on Windows, please do NOT press Ctrl+C) ...`);
         await runCommand(npmCmd, projectPath);
 
@@ -553,10 +570,10 @@ export async function runTest(config, index, options = {}, sharedPorts) {
                 await fs.copy(path.join(projectPath, 'node_modules'), tempCachePath);
                 await fs.rename(tempCachePath, cacheModulesPath);
                 log(`... Base Cache Created (${baseHashKey}) ...`);
-            } catch(e) {
+            } catch (e) {
                 // If rename fails or already exists, cleanup
                 if (tempCachePath) {
-                    try { await fs.remove(tempCachePath); } catch(err) {}
+                    try { await fs.remove(tempCachePath); } catch (err) { }
                 }
             }
         }
@@ -566,17 +583,17 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         const huskyDir = path.join(projectPath, '.husky');
         const preCommitHook = path.join(huskyDir, 'pre-commit');
         if (!await fs.pathExists(preCommitHook)) {
-             log(`! WARNING: Husky pre-commit hook NOT found at ${preCommitHook}.`, ANSI_RED);
+            log(`! WARNING: Husky pre-commit hook NOT found at ${preCommitHook}.`, ANSI_RED);
         } else {
-             log(`✓ Husky Hook Verified`, ANSI_GREEN);
-             log(`... Testing lint-staged (Dry Run) ...`);
-             try {
-                 await runCommand('git add .', projectPath);
-                 await runCommand('npx lint-staged', projectPath, {}, true);
-                 log(`✓ Pre-commit logic (lint-staged) passed`, ANSI_GREEN);
-             } catch (e) {
-                 log(`! WARNING: lint-staged test failed: ${e.message}`, ANSI_RED);
-             }
+            log(`✓ Husky Hook Verified`, ANSI_GREEN);
+            log(`... Testing lint-staged (Dry Run) ...`);
+            try {
+                await runCommand('git add .', projectPath);
+                await runCommand('npx lint-staged', projectPath, {}, true);
+                log(`✓ Pre-commit logic (lint-staged) passed`, ANSI_GREEN);
+            } catch (e) {
+                log(`! WARNING: lint-staged test failed: ${e.message}`, ANSI_RED);
+            }
         }
 
         // 4. Verify Professional Standards
@@ -587,14 +604,14 @@ export async function runTest(config, index, options = {}, sharedPorts) {
                 throw new Error(`Missing Professional Standard File: ${file}`);
             }
         }
-        
+
         // 5. Run Linter & Tests
         try {
             log(`... Running Linter ...`);
-            await runCommand('npm run lint', projectPath, {}, true); 
+            await runCommand('npm run lint', projectPath, {}, true);
             log(`... Running Unit Tests & Coverage ...`);
-            const testOutput = await runCommand('npm run test:coverage', projectPath, {}, true); 
-            
+            const testOutput = await runCommand('npm run test:coverage', projectPath, {}, true);
+
             const coverageMatch = testOutput.match(/All files\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)\s+\|\s+([\d.]+)/);
             if (coverageMatch) {
                 const funcsCov = parseFloat(coverageMatch[3]);
@@ -611,7 +628,7 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             log(`! WARNING: Professional Standards Check (Linter/Tests) Failed:`, ANSI_RED);
             log(`STDOUT/STDERR: ${e.message}`, ANSI_RED);
         }
-        
+
         if (skipDocker) {
             log(`✓ Validation Passed (Docker Skipped)`);
             isSuccess = true;
@@ -623,24 +640,31 @@ export async function runTest(config, index, options = {}, sharedPorts) {
         let composeCmd = 'docker compose';
         if (config.withELK) {
             composeCmd += ' -f docker-compose.yml -f docker-compose.elk.yml';
-        } 
+        }
         try {
             await runCommand(`${composeCmd} down -v`, projectPath, TEST_ENV);
-        } catch (e) {}
-        
+        } catch (e) { }
+
         await new Promise(r => setTimeout(r, 2000));
-        await runCommand(`${composeCmd} up -d --build`, projectPath, TEST_ENV, true); 
+        await runCommand(`${composeCmd} up -d --build`, projectPath, TEST_ENV, true);
 
         // 7. Verify Health
         log(`... Waiting for Health Check ...`);
         const isHealthy = await checkHealth(config, TEST_ENV.PORT);
-        
+
         if (isHealthy) {
             log(`✓ Health Check Passed`, ANSI_GREEN);
             log(`... Running E2E Tests ...`);
             await runCommand('npm run test:e2e:run', projectPath, TEST_ENV, true);
             log(`✓ E2E Tests Passed`, ANSI_GREEN);
         } else {
+            try {
+                log(`[DEBUG] Fetching docker logs for debugging...`, ANSI_RED);
+                const { stdout, stderr } = await require('util').promisify(require('child_process').exec)('docker compose logs', { cwd: projectPath });
+                log(`[DOCKER LOGS STDOUT]\n${stdout}\n[DOCKER LOGS STDERR]\n${stderr}`, ANSI_RED);
+            } catch (e) {
+                log(`[DEBUG] Failed to fetch docker logs: ${e.message}`, ANSI_RED);
+            }
             throw new Error("Health check timeout");
         }
 
@@ -659,9 +683,9 @@ export async function runTest(config, index, options = {}, sharedPorts) {
                     cleanupCmd += ' -f docker-compose.yml -f docker-compose.elk.yml';
                 }
                 await runCommand(`${cleanupCmd} down -v`, projectPath, TEST_ENV);
-            } catch (e) {}
+            } catch (e) { }
         }
-        
+
         if (isSuccess) {
             try {
                 // Robust cleanup with retries for Windows EPERM
@@ -675,19 +699,19 @@ export async function runTest(config, index, options = {}, sharedPorts) {
                         await new Promise(r => setTimeout(r, 1000));
                     }
                 }
-            } catch (e) {}
+            } catch (e) { }
         }
     }
 }
 
 export async function runValidation(options = {}) {
     const { specificTestIndex, startIndex = 0, endIndex = combinations.length - 1, concurrency = 2 } = options;
-    
+
     log(`Running ${combinations.length} tests with concurrency ${concurrency}...`, ANSI_CYAN);
-    
+
     try {
         await fs.ensureDir(path.resolve(__dirname, '../../temp_test_workspace'));
-    } catch(e) {}
+    } catch (e) { }
 
     let passed = 0;
     let failed = 0;
@@ -697,16 +721,16 @@ export async function runValidation(options = {}) {
 
     const testPromises = combinations.map((config, i) => {
         if (specificTestIndex !== undefined) {
-            const isMatch = Array.isArray(specificTestIndex) 
+            const isMatch = Array.isArray(specificTestIndex)
                 ? specificTestIndex.includes(i)
                 : i === specificTestIndex;
             if (!isMatch) return null;
         } else {
             if (i < startIndex || (endIndex !== undefined && i > endIndex)) return null;
         }
-        
+
         return limit(async () => {
-             try {
+            try {
                 const result = await runTest(config, i, options, sharedPorts);
                 if (result.success) {
                     passed++;
@@ -719,14 +743,14 @@ export async function runValidation(options = {}) {
                     });
                 }
                 if (!result.success && specificTestIndex !== undefined) {
-                     // If it's a single specific test, exit on failure
-                     if (!Array.isArray(specificTestIndex)) {
+                    // If it's a single specific test, exit on failure
+                    if (!Array.isArray(specificTestIndex)) {
                         process.exit(1);
-                     }
+                    }
                 }
             } catch (error) {
-                 failed++;
-                 failures.push({ index: i, name: config.projectName, error: error.message });
+                failed++;
+                failures.push({ index: i, name: config.projectName, error: error.message });
             }
         });
     });

@@ -18,6 +18,9 @@ import healthRoutes from '@/routes/healthRoute';
 import apiRoutes from '@/routes/api';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpecs from '@/config/swagger';<%_ } %>
+<%_ if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+import queueBoard from '@/utils/queues/queueBoard';
+<%_ } -%>
 <%_ if (communication === 'Kafka') { -%>import { kafkaService } from '@/services/kafkaService';<%_ } -%>
 <%_ if (communication === 'GraphQL') { -%>
 import { ApolloServer } from '@apollo/server';
@@ -89,6 +92,12 @@ app.get('/login', (req: Request, res: Response) => res.render('login', { project
 app.get('/signup', (req: Request, res: Response) => res.render('signup', { projectName: '<%= projectName %>' }));
 <% } -%>
 <% } -%>
+
+<%_ if (typeof backgroundJobs !== 'undefined' && backgroundJobs) { -%>
+// Background Jobs Dashboard
+app.use('/admin/queues', queueBoard.getRouter());
+<%_ } -%>
+
 app.use('/health', healthRoutes);
 
 // Start Server Logic
