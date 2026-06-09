@@ -37,13 +37,30 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
 ### Path B: Interactive CLI
 **Scaffold your project directly from your terminal in seconds.**
 
+Run the generator using your preferred package manager (no global installation required):
+
 ```bash
+# npm
 npx nodejs-quickstart-structure@latest init
+
+# pnpm
+pnpm dlx nodejs-quickstart-structure@latest init
+
+# yarn
+yarn dlx nodejs-quickstart-structure@latest init
 ```
 
 *Or install globally:*
 ```bash
+# npm
 npm install -g nodejs-quickstart-structure
+
+# pnpm
+pnpm add -g nodejs-quickstart-structure
+
+# yarn
+yarn global add nodejs-quickstart-structure
+
 # Then run:
 nodejs-quickstart init
 ```

@@ -28,6 +28,7 @@ const errors = reactive({
 const showModal = ref(false);
 const copied = ref(false);
 const showAdvanced = ref(false);
+const packageManager = ref('npm');
 
 const nameRegex = /^[a-zA-Z0-9-_]+$/;
 
@@ -90,7 +91,14 @@ watch(() => form.backgroundJobs, (newVal) => {
 });
 
 const cliCommand = computed(() => {
-  let cmd = `npx nodejs-quickstart-structure@latest init`;
+  let baseCmd = 'npx nodejs-quickstart-structure@latest init';
+  if (packageManager.value === 'pnpm') {
+    baseCmd = 'pnpm dlx nodejs-quickstart-structure@latest init';
+  } else if (packageManager.value === 'yarn') {
+    baseCmd = 'yarn dlx nodejs-quickstart-structure@latest init';
+  }
+
+  let cmd = baseCmd;
   cmd += ` -n "${form.projectName}"`;
   cmd += ` -l "${form.language}"`;
   cmd += ` -a "${form.architecture}"`;
@@ -180,6 +188,7 @@ export function useGenerator() {
     ext,
     needsInfra,
     cliCommand,
+    packageManager,
     generateCommand,
     copyCommand
   };

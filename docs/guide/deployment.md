@@ -28,7 +28,7 @@ If you prefer deploying directly to a Virtual Private Server, we support **PM2**
 -   **Ecosystem.config.js**: Automatically generates a PM2 config file.
 -   **Cluster Mode**: Pre-configured to run in cluster mode for high availability.
 -   **Commands**:
-    -   `npm run deploy`: Starts the app with PM2.
+    -   `npm run deploy` (or `pnpm`, `yarn`): Starts the app with PM2.
     -   `npx pm2 status`: Check application status.
     -   `npx pm2 logs`: View real-time logs.
 

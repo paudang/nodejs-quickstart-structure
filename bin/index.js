@@ -58,17 +58,16 @@ program
             
             console.log(chalk.yellow('\nGenerating project files...'));
             await generateProject(answers);
+            const userAgent = process.env.npm_config_user_agent || '';
+            let pm = 'npm';
+            if (userAgent.startsWith('pnpm')) pm = 'pnpm';
+            else if (userAgent.startsWith('yarn')) pm = 'yarn';
+            
+            const cmdRun = pm === 'npm' ? 'npm run' : pm;
 
             console.log(chalk.green('\n✔ Project generated successfully!'));
-            
-            console.log(chalk.magenta('\n🚀 Project is AI-Ready!'));
-            console.log(chalk.magenta('-----------------------------------------'));
-            console.log(chalk.magenta('🤖 We detected you are using AI tools.'));
-            console.log(chalk.magenta(`📍 Use Cursor? We've configured '.cursorrules' for you.`));
-            console.log(chalk.magenta(`📍 Use ChatGPT/Gemini? Check the 'prompts/' folder for Agent Skills.`));
-            console.log(chalk.magenta('-----------------------------------------'));
 
-            let manualStartInstructions = `\n${chalk.yellow('Development:')}\n  cd ${answers.projectName}\n  npm install`;
+            let manualStartInstructions = `\n${chalk.yellow('Development:')}\n  cd ${answers.projectName}\n  ${pm} install`;
             
             const needsInfrastructure = answers.database !== 'None' || answers.caching === 'Redis' || answers.communication === 'Kafka';
             
@@ -85,13 +84,14 @@ program
                 if (answers.withELK) {
                     manualStartInstructions += `\n  docker-compose -f docker-compose.elk.yml up -d  # Start ELK Stack`;
                 }
-                manualStartInstructions += `\n  npm run dev`;
+                manualStartInstructions += `\n  ${cmdRun} dev`;
             } else {
-                manualStartInstructions += `\n  npm run dev`;
+                manualStartInstructions += `\n  ${cmdRun} dev`;
             }
             
-            console.log(chalk.cyan(`\nNext steps:\n  cd ${answers.projectName}\n  npm install\n  docker-compose up\n-----------------------${manualStartInstructions}\n\n${chalk.yellow('Production (PM2):')}\n  npm run build\n  npm run deploy\n  npx pm2 logs`));
+            let execCmd = pm === 'npm' ? 'npx' : pm;
 
+            console.log(chalk.cyan(`\nNext steps:\n-----------------------${manualStartInstructions}\n\n${chalk.yellow('Production (PM2):')}\n  ${cmdRun} build\n  ${cmdRun} deploy\n  ${execCmd} pm2 logs`));
             console.log(chalk.magenta('\n' + '★'.repeat(50)));
             console.log(chalk.white.bold('  Enjoying the Node.js Quickstart Generator?'));
             console.log(chalk.white(`  If this tool saved you 4+ hours of architecture setup,`));

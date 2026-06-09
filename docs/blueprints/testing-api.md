@@ -8,7 +8,8 @@ Your generated project includes pre-configured tools for automated testing and c
 
 ### 1. Linting & Formatting
 Ensure your code adheres to project standards:
-```bash
+::: code-group
+```bash [npm]
 # Lint check
 npm run lint
 
@@ -16,15 +17,50 @@ npm run lint
 npm run format
 ```
 
+```bash [pnpm]
+# Lint check
+pnpm lint
+
+# Auto-format
+pnpm format
+```
+
+```bash [yarn]
+# Lint check
+yarn lint
+
+# Auto-format
+yarn format
+```
+:::
+
 ### 2. Unit & Integration Testing
 Maintain high reliability with automated test suites:
-```bash
+::: code-group
+```bash [npm]
 # Run all tests
 npm test
 
-# Run tests with coverage (Minimum 80% recommended)
+# Run tests with coverage
 npm run test:coverage
 ```
+
+```bash [pnpm]
+# Run all tests
+pnpm test
+
+# Run tests with coverage
+pnpm test:coverage
+```
+
+```bash [yarn]
+# Run all tests
+yarn test
+
+# Run tests with coverage
+yarn test:coverage
+```
+:::
 
 ---
 
@@ -70,7 +106,7 @@ mutation CreateUser {
 docker-compose up -d kafka
 
 # 2. Start the app
-npm run dev
+npm run dev (or use pnpm / yarn)
 
 # 3. Trigger an event (via Postman or curl)
 curl -X POST http://localhost:3000/api/users \

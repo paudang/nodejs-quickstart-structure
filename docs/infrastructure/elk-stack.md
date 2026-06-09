@@ -41,9 +41,17 @@ You should see a JSON response with the cluster name and version `8.14.0`.
 
 Start your Node.js application normally:
 
-```bash
+::: code-group
+```bash [npm]
 npm run dev
 ```
+```bash [pnpm]
+pnpm dev
+```
+```bash [yarn]
+yarn dev
+```
+:::
 
 By default, the Winston logger will silently buffer and batch your logs. If Elasticsearch is unreachable, the transport is configured to safely catch errors and prevent infinite crashing loops.
 

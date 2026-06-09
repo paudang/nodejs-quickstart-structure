@@ -22,8 +22,8 @@ Managed via `migrate-mongo`.
 
 -   **Config**: `migrate-mongo-config.js` in the project root.
 -   **Commands**:
-    -   `npm run migrate:up`: Apply new migrations.
-    -   `npm run migrate:status`: Check migration status.
+    -   `npm run migrate:up` (or `pnpm`, `yarn`): Apply new migrations.
+    -   `npm run migrate:status` (or `pnpm`, `yarn`): Check migration status.
 
 ## "None" Database Mode
 

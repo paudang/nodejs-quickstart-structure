@@ -135,10 +135,10 @@ Testing the `POST /auth/social/exchange` endpoint (for Mobile/SPAs) requires a r
 > [!CAUTION]
 > **Single Use**: Authorization codes are single-use. If you use it once in Swagger (or if your browser hits the callback route first), the code will become invalid. You must generate a new code for every test.
 
-> [!TIP] **Deep Dive into Social Login Security**
+> [!TIP] Deep Dive into Social Login Security
 > Want to understand the architecture behind this implementation? We have published two comprehensive security articles on **System Weakness (Medium)** regarding these exact patterns:
-> - 📖 [The OAuth Integration Debt: Why Your Social Login is a CSRF Risk](https://systemweakness.com/the-oauth-integration-debt-why-your-social-login-is-a-csrf-risk-c2008099c05e)
-> - 📖 [The Social Login Trap: Architecting Defenses Against Account Takeovers](https://systemweakness.com/the-social-login-trap-architecting-defenses-against-account-takeovers-3f34948169c4)
+> - [The OAuth Integration Debt: Why Your Social Login is a CSRF Risk](https://systemweakness.com/the-oauth-integration-debt-why-your-social-login-is-a-csrf-risk-c2008099c05e)
+> - [The Social Login Trap: Architecting Defenses Against Account Takeovers](https://systemweakness.com/the-social-login-trap-architecting-defenses-against-account-takeovers-3f34948169c4)
 
 ---
 

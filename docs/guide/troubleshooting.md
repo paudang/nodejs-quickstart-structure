@@ -8,7 +8,7 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 
 ### `nodejs-quickstart: command not found`
 - **Reason**: The CLI is not installed globally or your PATH is missing.
-- **Solution**: Use `npx nodejs-quickstart-structure init` (recommended) or install globally via `npm install -g nodejs-quickstart-structure`.
+- **Solution**: Use `npx nodejs-quickstart-structure@latest init` (or `pnpm dlx` / `yarn dlx`), or install globally via your preferred package manager (e.g., `npm install -g nodejs-quickstart-structure`).
 
 ### `Invalid Node.js version`
 - **Reason**: You are likely running a version below Node.js 18.x.
@@ -50,7 +50,7 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 ##  Husky & Git Hooks
 
 ### Hooks not running after generation
-- **Reason**: `npm install` was run before `git init`.
+- **Reason**: `npm install` (or `pnpm` / `yarn`) was run before `git init`.
 - **Solution**: Run `git init`, then `npx husky install`.
 
 ---
@@ -163,7 +163,7 @@ Welcome to the central troubleshooting hub! If you're seeing an error, check the
 - **Reason**: Bitbucket Pipelines Cloud prohibits host volume mounts (bind mounts) for security. If your `docker-compose.yml` uses `- .:/app` for internal migration services or code sync, Bitbucket's security plugin will block the build.
 - **Solution**:
     1.  **CI-Specific Compose**: Create a `docker-compose.ci.yml` that removes all `volumes` sections and removes the dedicated migration service container.
-    2.  **Run Migrations on Host**: In your pipeline script, run the migration command directly (e.g., `npm run migrate`) once the database container is online. This uses the code already present in the CI runner instead of mounting it from the host.
+    2.  **Run Migrations on Host**: In your pipeline script, run the migration command directly (e.g., `npm run migrate` or `pnpm`/`yarn`) once the database container is online. This uses the code already present in the CI runner instead of mounting it from the host.
     3.  **Support CI Overrides**: Update your orchestrator (e.g., `scripts/run-e2e.js`) to detect the CI environment and use the `-f docker-compose.ci.yml` flag if it exists.
 
 ### GitLab/Jenkins: `Healthcheck Timeout`

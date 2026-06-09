@@ -24,7 +24,7 @@ When you select "Yes" for Enterprise Security Hardening during project initializ
 - **Tool**: [Husky](https://typicode.github.io/husky/) & [lint-staged](https://github.com/lint-staged/lint-staged)
 - **Purpose**: Automatically runs linting and formatting on changed files before every commit to ensure code quality.
 - **Integration**: 
-  - Automatically initialized during `npm install`.
+  - Automatically initialized during `npm install` (or `pnpm` / `yarn`).
   - Prevents "bad code" from being committed to the repository.
 
 ---
@@ -92,23 +92,39 @@ In addition to dependency scanning, the generator includes **Container Security*
 
 ###  4. Husky & Lint-Staged
 > [!IMPORTANT]
-> You **must** run `git init` **before** running `npm install` for Husky to set up the hooks correctly.
+> You **must** run `git init` **before** running `npm install` (or `pnpm` / `yarn`) for Husky to set up the hooks correctly.
 
 1. **Initialize Git**: `git init`
-2. **Install**: `npm install` (This automatically triggers `husky install`).
+2. **Install**: `npm install` (or `pnpm` / `yarn`) (This automatically triggers `husky install`).
 3. **Usage**: Just try to commit! Husky will automatically run `lint-staged`.
 
 **Troubleshooting:**
 If you see an error like `.husky/pre-commit: line 2: .husky/_/husky.sh: No such file`, it means Husky wasn't initialized correctly (usually because `git init` was skipped). To fix it:
-```bash
+::: code-group
+```bash [npm]
 npx husky install
 ```
+```bash [pnpm]
+pnpm husky install
+```
+```bash [yarn]
+yarn husky install
+```
+:::
 
 ### 4. Running Scans Locally
 You can run a security audit at any time using:
 
-```bash
+::: code-group
+```bash [npm]
 npm run security:check
 ```
+```bash [pnpm]
+pnpm security:check
+```
+```bash [yarn]
+yarn security:check
+```
+:::
 
-This command runs `npm audit` and `snyk test` in sequence.
+This command runs package audit and `snyk test` in sequence.

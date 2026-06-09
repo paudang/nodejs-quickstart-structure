@@ -9,18 +9,44 @@ Follow these steps to get your first service up and running.
 
 ## Installation
 
-You can run the generator directly using `npx`:
+You can run the generator directly using your preferred package manager:
 
-```bash
+::: code-group
+
+```bash [npm]
 npx nodejs-quickstart-structure@latest init
 ```
 
+```bash [pnpm]
+pnpm dlx nodejs-quickstart-structure@latest init
+```
+
+```bash [yarn]
+yarn dlx nodejs-quickstart-structure@latest init
+```
+
+:::
+
 *Alternatively, install it globally:*
 
-```bash
+::: code-group
+
+```bash [npm]
 npm install -g nodejs-quickstart-structure
 nodejs-quickstart init
 ```
+
+```bash [pnpm]
+pnpm add -g nodejs-quickstart-structure
+nodejs-quickstart init
+```
+
+```bash [yarn]
+yarn global add nodejs-quickstart-structure
+nodejs-quickstart init
+```
+
+:::
 
 ## Quick Start (Interactive Setup)
 
@@ -51,10 +77,27 @@ When you run the `init` command, you'll be prompted to configure this exact life
 
 Once generated, navigate to your project and install dependencies:
 
-```bash
+::: code-group
+
+```bash [npm]
 cd my-new-service
 npm install
+npm run prepare
 ```
+
+```bash [pnpm]
+cd my-new-service
+pnpm install
+pnpm prepare
+```
+
+```bash [yarn]
+cd my-new-service
+yarn install
+yarn prepare
+```
+
+:::
 
 ### Start Infrastructure
 If you selected a database, Redis, or Kafka, start them using Docker Compose:
@@ -66,6 +109,18 @@ docker-compose up -d
 ### Run the App
 Start the development server with hot-reload:
 
-```bash
+::: code-group
+
+```bash [npm]
 npm run dev
 ```
+
+```bash [pnpm]
+pnpm dev
+```
+
+```bash [yarn]
+yarn dev
+```
+
+:::

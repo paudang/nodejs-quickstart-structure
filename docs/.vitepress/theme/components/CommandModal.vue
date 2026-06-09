@@ -4,6 +4,18 @@
       <h3 class="modal-title">Ready for Launch</h3>
       <p style="margin-bottom: 12px; color: var(--vp-c-text-2);">Generate your new microservice by running this command in your terminal:</p>
       
+      <div class="pm-selector" style="display: flex; gap: 12px; margin-bottom: 8px;">
+        <label style="display: flex; align-items: center; gap: 4px; font-size: 0.9rem; cursor: pointer; color: var(--vp-c-text-2);">
+          <input type="radio" value="npm" v-model="packageManager" style="accent-color: var(--vp-c-brand-1);" /> npm (npx)
+        </label>
+        <label style="display: flex; align-items: center; gap: 4px; font-size: 0.9rem; cursor: pointer; color: var(--vp-c-text-2);">
+          <input type="radio" value="pnpm" v-model="packageManager" style="accent-color: var(--vp-c-brand-1);" /> pnpm
+        </label>
+        <label style="display: flex; align-items: center; gap: 4px; font-size: 0.9rem; cursor: pointer; color: var(--vp-c-text-2);">
+          <input type="radio" value="yarn" v-model="packageManager" style="accent-color: var(--vp-c-brand-1);" /> yarn
+        </label>
+      </div>
+
       <div class="command-box">
         {{ cliCommand }}
       </div>
@@ -43,7 +55,7 @@
 <script setup>
 import { useGenerator } from '../composables/useGenerator';
 
-const { showModal, cliCommand, copyCommand, copied, form } = useGenerator();
+const { showModal, cliCommand, copyCommand, copied, form, packageManager } = useGenerator();
 
 const closeModal = () => {
     showModal.value = false;

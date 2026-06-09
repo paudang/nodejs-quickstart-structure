@@ -16,13 +16,31 @@ The project includes a **Multi-Stage Dockerfile** optimized for production image
 ### 1. Running Locally (Development)
 To run the Node.js application locally while using Docker for the infrastructure (Database, Redis, Kafka, etc.):
 
-```bash
+::: code-group
+```bash [npm]
 # Start infrastructure
 docker-compose up -d db redis kafka
 
 # Start the application
 npm run dev
 ```
+
+```bash [pnpm]
+# Start infrastructure
+docker-compose up -d db redis kafka
+
+# Start the application
+pnpm dev
+```
+
+```bash [yarn]
+# Start infrastructure
+docker-compose up -d db redis kafka
+
+# Start the application
+yarn dev
+```
+:::
 
 ### 2. Running the App Container with Compose Infrastructure
 If you want to run the application itself inside a Docker container:
@@ -90,9 +108,17 @@ The project is pre-configured for direct deployment to a VPS/EC2 instance using 
 ### 1. Deployment Steps
 
 1.  **Install dependencies**:
-    ```bash
+    ::: code-group
+    ```bash [npm]
     npm install
     ```
+    ```bash [pnpm]
+    pnpm install
+    ```
+    ```bash [yarn]
+    yarn install
+    ```
+    :::
 
 2.  **Start Infrastructure (background services)**:
     ```bash
@@ -104,16 +130,34 @@ The project is pre-configured for direct deployment to a VPS/EC2 instance using 
 3.  **Wait 5-10s** for the database to fully initialize.
 
 4.  **Deploy the App using PM2 in Cluster Mode**:
+    **For TypeScript Projects:**
     ::: code-group
-    ```bash [TypeScript]
+    ```bash [npm]
     # Build project and deploy
     npm run build
     npm run deploy
     ```
+    ```bash [pnpm]
+    pnpm build
+    pnpm deploy
+    ```
+    ```bash [yarn]
+    yarn build
+    yarn deploy
+    ```
+    :::
     
-    ```bash [JavaScript]
+    **For JavaScript Projects:**
+    ::: code-group
+    ```bash [npm]
     # Deploy directly
     npm run deploy
+    ```
+    ```bash [pnpm]
+    pnpm deploy
+    ```
+    ```bash [yarn]
+    yarn deploy
     ```
     :::
 
