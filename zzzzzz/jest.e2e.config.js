@@ -1,7 +1,0 @@
-/* eslint-disable @typescript-eslint/no-require-imports */module.exports = {
-  ...require('./jest.config'),
-  testMatch: ['<rootDir>/tests/e2e/**/*.test.ts', '<rootDir>/tests/e2e/**/*.test.js'],
-  testPathIgnorePatterns: ['/node_modules/'],
-  testTimeout: 30000,
-  clearMocks: true
-};
