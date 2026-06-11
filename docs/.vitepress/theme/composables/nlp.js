@@ -147,7 +147,7 @@ export const parsePrompt = (prompt) => {
   }
 
   // 2. Architecture
-  if (isPositiveMatch(/clean|ca /i, text)) {
+  if (isPositiveMatch(/clean|ca |cleen/i, text)) {
     config.architecture = 'Clean Architecture';
   } else if (isPositiveMatch(/mvc/i, text)) {
     config.architecture = 'MVC';
@@ -156,10 +156,10 @@ export const parsePrompt = (prompt) => {
   // 3. Database
   if (isPositiveMatch(/no database|no db|without database|không dùng db|không database|không db|不要 db|不要 database|无 database|没 database|无 db|没 db/i, text)) {
     config.database = 'None';
-  } else if (isPositiveMatch(/mongo|nosql|mongoose|document/i, text)) {
+  } else if (isPositiveMatch(/mongo|monggo|monogodb|nosql|mongoose|document/i, text)) {
     addLog('Detected NoSQL -> Setting Database to MongoDB.');
     config.database = 'MongoDB';
-  } else if (isPositiveMatch(/postgres|psql|postgre|relational|acid/i, text)) {
+  } else if (isPositiveMatch(/postgres|psql|postgre|progre|postges|relational|acid/i, text)) {
     addLog('Detected ACID needs -> Setting Database to PostgreSQL.');
     config.database = 'PostgreSQL';
   } else if (isPositiveMatch(/mysql|my sql|mariadb/i, text)) {
@@ -178,14 +178,14 @@ export const parsePrompt = (prompt) => {
   }
 
   // 5. Communication
-  if (isPositiveMatch(/rest|api/i, text)) {
-    config.communication = 'REST APIs';
-  } else if (isPositiveMatch(/graphql|gql/, text)) {
+  if (isPositiveMatch(/graphql|gql|graphl|grapql|graph ql/i, text)) {
     addLog('API Type -> GraphQL.');
     config.communication = 'GraphQL';
-  } else if (isPositiveMatch(/kafka|event|message|broker/, text)) {
+  } else if (isPositiveMatch(/kafka|kafaka|kaftka|event|message|broker/i, text)) {
     addLog('Event-driven -> Kafka.');
     config.communication = 'Kafka';
+  } else if (isPositiveMatch(/rest|api/i, text)) {
+    config.communication = 'REST APIs';
   }
 
   // 6. CI/CD & Security
@@ -213,7 +213,7 @@ export const parsePrompt = (prompt) => {
   // 7. Auth
   if (isPositiveMatch(/no auth|without auth|không auth/i, text)) {
     config.auth = 'None';
-  } else if (isPositiveMatch(/oauth|google|github|social|sso/, text)) {
+  } else if (isPositiveMatch(/oauth|autho2|outh2|oath2|google|github|social|sso/, text)) {
     addLog('Social Auth -> OAuth2 + Google/GitHub.');
     config.auth = 'OAuth2 - Google/GitHub - JWT';
     advancedNeeded = true;
@@ -288,7 +288,7 @@ export const parsePrompt = (prompt) => {
   // 11. Background Jobs
   if (isPositiveMatch(/no background jobs|no queue|không background jobs|không queue|không tác vụ ngầm/i, text)) {
     config.backgroundJobs = false;
-  } else if (isPositiveMatch(/backg(r)?ound tasks?|backg(r)?ound jobs?|cron jobs?|\\bqueue\\b|task queue|bullmq|message queue|send email|gửi email|chạy ngầm|tác vụ ngầm|hàng đợi|バックグラウンド|メール送信|キュー|后台任务|发送邮件|队列|बैकग्राउंड|ईमेल भेजें/i, text)) {
+  } else if (isPositiveMatch(/backg(r)?ound tasks?|backg(r)?ound jobs?|\bbg jobs?\b|\bbg tasks?\b|\bworkers?\b|cron jobs?|\bqueue\b|task queue|bullmq|message queue|send email|gửi email|chạy ngầm|tác vụ ngầm|hàng đợi|バックグラウンド|メール送信|キュー|后台任务|发送邮件|队列|बैकग्राउंड|ईमेल भेजें/i, text)) {
     addLog('Task Queues -> Enabling BullMQ Background Jobs & Redis.');
     config.backgroundJobs = true;
     config.caching = 'Redis';

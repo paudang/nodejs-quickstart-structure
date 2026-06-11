@@ -64,7 +64,21 @@ const enSpecific = [
   { name: 'EN All Negations', prompt: 'no db no cache no terraform no security no kafka', expected: { database: 'None', caching: 'None', terraform: 'None', includeSecurity: false, communication: 'REST APIs' } },
   { name: 'EN Movie Streaming', prompt: 'I want to build a movie streaming site like netflix', expected: { architecture: 'MVC', database: 'MongoDB', caching: 'Redis', backgroundJobs: true } },
   { name: 'EN Admin Dashboard', prompt: 'Create an admin dashboard for internal tool', expected: { architecture: 'MVC', database: 'MySQL', auth: 'OAuth2 - Google/GitHub - JWT' } },
-  { name: 'EN Game Chat App', prompt: 'Make a real-time chat app for a game', expected: { communication: 'REST APIs', database: 'MongoDB', caching: 'Redis' } }
+  { name: 'EN Game Chat App', prompt: 'Make a real-time chat app for a game', expected: { communication: 'REST APIs', database: 'MongoDB', caching: 'Redis' } },
+  { name: 'EN Background Job Typos 1', prompt: 'I need a backgound job with redis', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'EN Background Job Typos 2', prompt: 'make a bg job app', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'EN Background Job Typos 3', prompt: 'a project with bg tasks and postgres', expected: { backgroundJobs: true, caching: 'Redis', database: 'PostgreSQL' } },
+  { name: 'EN Worker', prompt: 'project with worker and rabbitmq.. wait no just kafka', expected: { backgroundJobs: true, caching: 'Redis', communication: 'Kafka' } },
+  { name: 'EN Queue 1', prompt: 'app with queue', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'EN Edge Chaos 1', prompt: 'app bg job no db without cache wait actually use redis', expected: { backgroundJobs: true, caching: 'Redis', database: 'None' } },
+  { name: 'EN Email worker', prompt: 'app that can send email', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'EN Simple 1', prompt: 'just a simple backend with postgres', expected: { database: 'PostgreSQL' } },
+  { name: 'EN Simple 2', prompt: 'i want a basic api', expected: { communication: 'REST APIs' } },
+  { name: 'EN Simple 3', prompt: 'create a nodejs server for me', expected: { language: 'JavaScript' } },
+  { name: 'EN Simple 4', prompt: 'build a web server with mongodb and redis', expected: { database: 'MongoDB', caching: 'Redis' } },
+  { name: 'EN Simple 5', prompt: 'just a boilerplate', expected: {} },
+  { name: 'EN Typo 1', prompt: 'I need progre but without monggo', expected: { database: 'PostgreSQL' } },
+  { name: 'EN Typo 2', prompt: 'with autho2 auth', expected: { auth: 'OAuth2 - Google/GitHub - JWT' } }
 ];
 
 export const englishCases = generateCases('EN', enSpecific, ['clean', 'redis'], ['without']);
@@ -89,7 +103,20 @@ const viSpecific = [
   { name: 'MIX ZH + JA + EN', prompt: '我想要一个 project 名叫 super-system, データベースは PostgreSQL, but no Kafka', expected: { projectName: 'super-system', database: 'PostgreSQL', communication: 'REST APIs' } },
   { name: 'VI Movie Streaming', prompt: 'làm web phim streaming giống netflix', expected: { architecture: 'MVC', database: 'MongoDB', caching: 'Redis', backgroundJobs: true } },
   { name: 'VI Game Chat', prompt: 'tạo web game real-time nhắn tin', expected: { communication: 'REST APIs', database: 'MongoDB', caching: 'Redis' } },
-  { name: 'VI Admin Dashboard', prompt: 'cần 1 web quản lý backoffice nội bộ', expected: { architecture: 'MVC', database: 'MySQL', auth: 'OAuth2 - Google/GitHub - JWT' } }
+  { name: 'VI Admin Dashboard', prompt: 'cần 1 web quản lý backoffice nội bộ', expected: { architecture: 'MVC', database: 'MySQL', auth: 'OAuth2 - Google/GitHub - JWT' } },
+  { name: 'VI Background Job Typos 1', prompt: 'tạo app có bg job', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'VI Background Job Typos 2', prompt: 'cho tôi backgound job nha', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'VI Queue', prompt: 'hệ thống có hàng đợi message queue', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'VI Worker', prompt: 'app có chạy ngầm worker', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'VI Gui Email', prompt: 'tạo app có gửi email', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'VI Chaos Edge', prompt: 'tác vụ ngầm nhưng ko xài redis... ủa mà khoan bg job thì phải có redis', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'VI Simple 1', prompt: 'tạo 1 cái web đơn giản', expected: {} },
+  { name: 'VI Simple 2', prompt: 'làm một cái api bình thường thôi', expected: { communication: 'REST APIs' } },
+  { name: 'VI Simple 3', prompt: 'cần 1 con server api nối với mysql', expected: { communication: 'REST APIs', database: 'MySQL' } },
+  { name: 'VI Simple 4', prompt: 'tạo app rest api cơ bản', expected: { communication: 'REST APIs' } },
+  { name: 'VI Simple 5', prompt: 'mỗi 1 cái app rỗng thôi', expected: {} },
+  { name: 'VI Typo 1', prompt: 'dùng autho2 nha', expected: { auth: 'OAuth2 - Google/GitHub - JWT' } },
+  { name: 'VI Typo 2', prompt: 'kết nối grapql', expected: { communication: 'GraphQL' } }
 ];
 
 export const vietnameseCases = generateCases('VI', viSpecific, ['clean', 'redis'], ['không cần']);
@@ -103,10 +130,15 @@ const zhSpecific = [
   { name: 'ZH Edge 1', prompt: '不使用 aws 没 cache', expected: { caching: 'None' } },
   { name: 'ZH Typo/English Mix', prompt: '我需要一个 project 叫 shopping-cart 不要 mongo', expected: { projectName: 'shopping-cart', database: 'PostgreSQL' } },
   { name: 'ZH Background Jobs', prompt: '我要一个项目名叫 queue-service, 使用 background jobs 和 Redis', expected: { projectName: 'queue-service', backgroundJobs: true, caching: 'Redis' } },
-  { name: 'ZH Background Jobs Negation', prompt: '项目 worker-app 不要 task queue 不要 bullmq', expected: { projectName: 'worker-app', backgroundJobs: false } },
+  { name: 'ZH Background Jobs Negation', prompt: '项目 demo-app 不要 task queue 不要 bullmq', expected: { projectName: 'demo-app', backgroundJobs: false } },
   { name: 'ZH Movie Streaming', prompt: '我想做一个视频网站 电影', expected: { architecture: 'MVC', database: 'MongoDB', caching: 'Redis', backgroundJobs: true } },
   { name: 'ZH Game Chat App', prompt: '实时聊天 游戏', expected: { communication: 'REST APIs', database: 'MongoDB', caching: 'Redis' } },
-  { name: 'ZH Admin Dashboard', prompt: '后台管理 仪表盘', expected: { architecture: 'MVC', database: 'MySQL', auth: 'OAuth2 - Google/GitHub - JWT' } }
+  { name: 'ZH Admin Dashboard', prompt: '后台管理 仪表盘', expected: { architecture: 'MVC', database: 'MySQL', auth: 'OAuth2 - Google/GitHub - JWT' } },
+  { name: 'ZH Background Job Typos', prompt: '我要 bg job', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'ZH Worker Chaos', prompt: '项目需要 worker 但是不要 postgres', expected: { backgroundJobs: true, caching: 'Redis', database: 'None' } },
+  { name: 'ZH Queue', prompt: '后台任务 queue', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'ZH Typo 1', prompt: '使用 kafaka', expected: { communication: 'Kafka' } },
+  { name: 'ZH Typo 2', prompt: '架构 cleen', expected: { architecture: 'Clean Architecture' } }
 ];
 
 export const chineseCases = generateCases('ZH', zhSpecific, ['mvc', 'kafka'], ['不要']);
@@ -123,7 +155,12 @@ const jaSpecific = [
   { name: 'JA Background Jobs Negation', prompt: 'background jobs はなし で', expected: { backgroundJobs: false } },
   { name: 'JA Movie Streaming', prompt: '動画サイトを作りたい 映画', expected: { architecture: 'MVC', database: 'MongoDB', caching: 'Redis', backgroundJobs: true } },
   { name: 'JA Game Chat App', prompt: 'リアルタイム チャット ゲーム', expected: { communication: 'REST APIs', database: 'MongoDB', caching: 'Redis' } },
-  { name: 'JA Admin Dashboard', prompt: '管理画面のダッシュボード', expected: { architecture: 'MVC', database: 'MySQL', auth: 'OAuth2 - Google/GitHub - JWT' } }
+  { name: 'JA Admin Dashboard', prompt: '管理画面のダッシュボード', expected: { architecture: 'MVC', database: 'MySQL', auth: 'OAuth2 - Google/GitHub - JWT' } },
+  { name: 'JA Background Job Typos', prompt: 'bg task を追加して', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'JA Worker Chaos', prompt: 'worker は使うが Postgres なし', expected: { backgroundJobs: true, caching: 'Redis', database: 'None' } },
+  { name: 'JA Queue', prompt: 'メッセージ queue を使いたい', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'JA Typo 1', prompt: 'DBは postges', expected: { database: 'PostgreSQL' } },
+  { name: 'JA Typo 2', prompt: '認証 oath2', expected: { auth: 'OAuth2 - Google/GitHub - JWT' } }
 ];
 
 export const japaneseCases = generateCases('JA', jaSpecific, ['aws', 'postgres'], ['なし']);
@@ -140,7 +177,12 @@ const hiSpecific = [
   { name: 'HI Background Jobs Negation', prompt: 'Bina background job ke', expected: { backgroundJobs: false } },
   { name: 'HI Movie Streaming', prompt: 'Muje ek movie streaming website chahiye', expected: { architecture: 'MVC', database: 'MongoDB', caching: 'Redis', backgroundJobs: true } },
   { name: 'HI Game Chat App', prompt: 'Realtime game chat app', expected: { communication: 'REST APIs', database: 'MongoDB', caching: 'Redis' } },
-  { name: 'HI Admin Dashboard', prompt: 'Admin dashboard chahiye', expected: { architecture: 'MVC', database: 'MySQL', auth: 'OAuth2 - Google/GitHub - JWT' } }
+  { name: 'HI Admin Dashboard', prompt: 'Admin dashboard chahiye', expected: { architecture: 'MVC', database: 'MySQL', auth: 'OAuth2 - Google/GitHub - JWT' } },
+  { name: 'HI Background Job Typos', prompt: 'Muje ek bg job chahiye', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'HI Worker Chaos', prompt: 'worker chahiye bina postgres ke', expected: { backgroundJobs: true, caching: 'Redis', database: 'None' } },
+  { name: 'HI Queue', prompt: 'ek queue bana do', expected: { backgroundJobs: true, caching: 'Redis' } },
+  { name: 'HI Typo 1', prompt: 'mujhe monogodb chahiye', expected: { database: 'MongoDB' } },
+  { name: 'HI Typo 2', prompt: 'api graphl me banao', expected: { communication: 'GraphQL' } }
 ];
 
 export const hindiCases = generateCases('HI', hiSpecific, ['kafka', 'azure'], ['bina']);

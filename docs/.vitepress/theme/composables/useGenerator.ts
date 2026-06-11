@@ -90,6 +90,12 @@ watch(() => form.backgroundJobs, (newVal) => {
   }
 });
 
+watch(() => form.terraform, (newVal, oldVal) => {
+  if (oldVal === 'None' && newVal !== 'None') {
+    form.cloudProvider = 'AWS';
+  }
+});
+
 const cliCommand = computed(() => {
   let baseCmd = 'npx nodejs-quickstart-structure@latest init';
   if (packageManager.value === 'pnpm') {

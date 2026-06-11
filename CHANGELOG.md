@@ -1,6 +1,6 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.7.0] - 2026-06-08
+## [2.7.0] - 2026-06-11
 
 ### Added
 - **Background Jobs & Task Queues (BullMQ)**: Implemented BullMQ with Redis backing for asynchronous task processing (`--background-jobs`). Includes an out-of-the-box `Bull-Board` UI endpoint for real-time monitoring of queues.
