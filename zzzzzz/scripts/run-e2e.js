@@ -1,0 +1,79 @@
+/* eslint-disable */
+const { execSync } = require('child_process');
+const path = require('path');
+
+// Set a specific port for E2E tests to avoid collisions with local development
+const TEST_PORT = process.env.PORT || '3001';
+const WAIT_ON_HOST = process.env.WAIT_ON_HOST || '127.0.0.1';
+
+const execute = (command) => {
+  console.log(`\n> ${command}`);
+  // Run commands from the project root instead of the scripts folder
+  execSync(command, {
+    stdio: 'inherit',
+    cwd: path.resolve(__dirname, '../'),
+    env: {
+      ...process.env,
+      PORT: TEST_PORT,
+      DB_PORT: process.env.DB_PORT || '3306'
+    }
+  });
+};
+
+let composeCmd = 'docker-compose';
+try {
+    execSync('docker compose version', { stdio: 'ignore' });
+    composeCmd = 'docker compose';
+} catch (e) {
+    // fallback to docker-compose
+}
+
+let currentProcessStartedDocker = false;
+
+try {
+    let isAlreadyUp = false;
+    try {
+        // Silently check if the endpoint is already live (1.5-second timeout)
+        execSync(`npx wait-on http-get://${WAIT_ON_HOST}:${TEST_PORT}/health -t 1500`, {
+            stdio: 'ignore',
+            cwd: path.resolve(__dirname, '../')
+        });
+        isAlreadyUp = true;
+    } catch (e) {
+        isAlreadyUp = false;
+    }
+
+    if (isAlreadyUp) {
+        console.log('Infrastructure is already running! Skipping Docker spin-up...');
+    } else {
+        console.log(`Starting Docker Compose infrastructure using '${composeCmd}'...`);
+        execute(`${composeCmd} up -d --build`);
+        currentProcessStartedDocker = true;
+
+        console.log(`Waiting for application healthcheck to turn green (420s timeout)...`);
+        try {
+            // Using WAIT_ON_HOST to allow containerized CI to hit host ports (e.g. host.docker.internal)
+            execute(`npx wait-on http-get://${WAIT_ON_HOST}:${TEST_PORT}/health -t 420000`);
+            console.log('Infrastructure is healthy!');
+        } catch (e) {
+            console.error('\n❌ Healthcheck timed out! Printing infrastructure logs for debugging:');
+            console.error('------------------------------------------------------------');
+            execute(`${composeCmd} logs --tail=100`);
+            console.error('------------------------------------------------------------');
+            throw e;
+        }
+    }
+
+    console.log('Running E2E tests...');
+    execute('npm run test:e2e:run');
+} catch (error) {
+    console.error('E2E tests failed or infrastructure did not boot in time.');
+    process.exitCode = 1;
+} finally {
+    if (currentProcessStartedDocker) {
+        console.log('Tearing down isolated Docker Compose infrastructure...');
+        execute(`${composeCmd} down`);
+    } else {
+        console.log('Leaving preexisting infrastructure running.');
+    }
+}

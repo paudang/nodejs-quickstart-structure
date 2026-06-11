@@ -1,0 +1,48 @@
+services:
+  app:
+    build: .
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      - db
+    environment:
+      - PORT=3000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+      - DB_HOST=db
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - DB_NAME=demo
+      - DB_PORT=5432
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: demo
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - ./flyway/sql:/docker-entrypoint-initdb.d
+  flyway:
+    image: flyway/flyway
+    command: -connectRetries=60 migrate
+    volumes:
+      - ./flyway/sql:/flyway/sql
+    environment:
+      FLYWAY_URL: jdbc:postgresql://db:5432/demo
+      FLYWAY_USER: postgres
+      FLYWAY_PASSWORD: root
+      FLYWAY_BASELINE_ON_MIGRATE: "true"
+    depends_on:
+      - db
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+volumes:
+  postgresql_data:

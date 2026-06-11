@@ -23,6 +23,7 @@
     "snyk:test": "snyk test"<% } %>
   },
   "overrides": {
+    "ws": "^8.21.0",
     "brace-expansion": "^5.0.5",
     "jake": "^11.9.5",
     "micromatch": "^4.0.8",
@@ -73,7 +74,7 @@
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^5.0.0",
     "morgan": "^1.10.0",
-    "pm2": "^5.3.1"<% if (withELK) { %>,
+    "pm2": "^7.0.1"<% if (withELK) { %>,
     "winston-elasticsearch": "^0.19.0",
     "@elastic/elasticsearch": "^8.14.0"<% } %><% if (communication === 'REST APIs' || communication === 'Kafka') { %>,
     "swagger-ui-express": "^5.0.0",

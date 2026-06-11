@@ -1,0 +1,30 @@
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+import cacheService from '@/infrastructure/caching/redisClient';
+import logger from '@/infrastructure/log/logger';
+
+export default class GetAllUsers {
+    constructor(private userRepository: UserRepository) {}
+
+    async execute() {
+        const cacheKey = 'users:all';
+        try {
+            const cachedUsers = await cacheService.get(cacheKey);
+            if (cachedUsers) {
+                logger.info('Serving users from cache');
+                return cachedUsers;
+            }
+        } catch (error) {
+            logger.error('Cache error (get):', error);
+        }
+
+        const users = await this.userRepository.getUsers();
+
+        try {
+            await cacheService.set(cacheKey, users, 60);
+        } catch (error) {
+            logger.error('Cache error (set):', error);
+        }
+
+        return users;
+    }
+}

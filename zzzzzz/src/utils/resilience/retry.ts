@@ -1,0 +1,37 @@
+import logger from '@/infrastructure/log/logger';
+
+/**
+ * Retries an asynchronous operation with exponential backoff and jitter.
+ * Useful for handling transient network blips and rate-limiting from external APIs.
+ *
+ * @example
+ * ```typescript
+ * const data = await withRetry(() => fetchUserData(userId), 3, 500);
+ * ```
+ *
+ * @param operation - A function that returns a Promise to be retried.
+ * @param maxRetries - Maximum number of retries (default: 3).
+ * @param baseDelay - Base delay in milliseconds (default: 1000).
+ * @returns A promise resolving to the result of the operation.
+ */
+export const withRetry = async <T>(operation: () => Promise<T>, maxRetries: number = 3, baseDelay: number = 1000): Promise<T> => {
+    let attempt = 0;
+    while (attempt < maxRetries) {
+        try {
+            return await operation();
+        } catch (error) {
+            attempt++;
+            if (attempt >= maxRetries) {
+                logger.error(`[Retry] Operation failed after ${maxRetries} attempts.`, error);
+                throw error;
+            }
+            // Exponential backoff: baseDelay * 2^(attempt - 1)
+            const delay = baseDelay * Math.pow(2, attempt - 1);
+            // Add a little jitter to avoid thundering herd problem
+            const jitter = Math.random() * 200;
+            logger.warn(`[Retry] Operation failed (Attempt ${attempt}/${maxRetries}). Retrying in ${Math.round(delay + jitter)}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay + jitter));
+        }
+    }
+    throw new Error('Unreachable');
+};

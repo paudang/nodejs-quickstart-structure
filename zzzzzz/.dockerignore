@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+dist
+.env
+.git
+.gitignore
+README.md
+docker-compose.yml
+test_results.log
+flyway/sql
+.cursorrules
+prompts

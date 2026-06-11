@@ -1,0 +1,47 @@
+import GetUserById from '@/usecases/getUserById';
+import { UserRepository } from '@/infrastructure/repositories/UserRepository';
+
+jest.mock('@/infrastructure/repositories/UserRepository', () => ({
+    UserRepository: jest.fn().mockImplementation(() => ({
+        save: jest.fn(),
+        findById: jest.fn(),
+        getUsers: jest.fn(),
+        update: jest.fn(),
+        delete: jest.fn()
+    }))
+}));
+
+jest.mock('@/infrastructure/caching/redisClient', () => ({
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn()
+}));
+
+describe('GetUserById Use Case', () => {
+    let getUserById: GetUserById;
+    let userRepository: jest.Mocked<UserRepository>;
+
+    beforeEach(() => {
+        userRepository = new UserRepository() as jest.Mocked<UserRepository>;
+        getUserById = new GetUserById(userRepository);
+    });
+
+    it('should return a user if found', async () => {
+        const mockUser = { id: '1', name: 'John Doe', email: 'john@example.com' };
+        userRepository.findById.mockResolvedValue(mockUser);
+
+        const result = await getUserById.execute('1');
+
+        expect(result).toEqual(mockUser);
+        expect(userRepository.findById).toHaveBeenCalledWith('1');
+    });
+
+    it('should return null if user is not found', async () => {
+        userRepository.findById.mockResolvedValue(null);
+
+        const result = await getUserById.execute('999');
+
+        expect(result).toBeNull();
+        expect(userRepository.findById).toHaveBeenCalledWith('999');
+    });
+});

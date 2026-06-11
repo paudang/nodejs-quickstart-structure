@@ -1,0 +1,32 @@
+import { withRetry } from '@/utils/resilience/retry';
+
+jest.mock('@/infrastructure/log/logger', () => ({
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn()
+}));
+
+describe('Retry Utility', () => {
+    it('should return result if operation succeeds on first try', async () => {
+        const operation = jest.fn().mockResolvedValue('success');
+        const result = await withRetry(operation, 3, 10);
+        expect(result).toBe('success');
+        expect(operation).toHaveBeenCalledTimes(1);
+    });
+
+    it('should retry and succeed if operation fails initially', async () => {
+        const operation = jest.fn()
+            .mockRejectedValueOnce(new Error('fail 1'))
+            .mockResolvedValueOnce('success');
+
+        const result = await withRetry(operation, 3, 10);
+        expect(result).toBe('success');
+        expect(operation).toHaveBeenCalledTimes(2);
+    });
+
+    it('should throw error if operation fails all retries', async () => {
+        const operation = jest.fn().mockRejectedValue(new Error('fatal error'));
+        await expect(withRetry(operation, 3, 10)).rejects.toThrow('fatal error');
+        expect(operation).toHaveBeenCalledTimes(3);
+    });
+});
