@@ -18,6 +18,10 @@ If you enable Background Jobs (`--background-jobs`), the generator scaffolds the
 - `emailWorker.ts`: A consumer that listens to the queue and processes jobs asynchronously.
 - `queueBoard.ts`: Automatically sets up `@bull-board/express`, exposing a UI to view job status.
 
+### Architecture Flow
+
+![Background Jobs Flow Diagram](/backgound-job.png)
+
 ## Usage Guide
 
 ### 1. Enqueue a Job
