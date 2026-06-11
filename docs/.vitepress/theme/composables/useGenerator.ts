@@ -128,7 +128,7 @@ const cliCommand = computed(() => {
     cmd += ` --auth JWT`;
   } else if (form.auth === 'OAuth2 - Google/GitHub - JWT') {
     cmd += ` --auth JWT --social-auth Google GitHub`;
-  } else if (isAdvanced && form.auth === 'None') {
+  } else if (form.auth === 'None') {
     cmd += ` --auth None`;
   }
 

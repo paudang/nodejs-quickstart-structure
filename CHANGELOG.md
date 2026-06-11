@@ -1,5 +1,13 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.1] - 2026-06-11
+
+### Fixed
+- **CLI Auto-Gen Execution Halt**: Resolved an issue where the CLI generator inadvertently paused to prompt for Authentication Mode when users executed an auto-generated command using the `--no-advanced-options` flag.
+  - Reverted the `authChoice` interactive prompt sequence to its original chronological location to maintain UX familiarity.
+  - Patched the VitePress Web Configurator to explicitly output the `--auth None` flag when advanced options are disabled, guaranteeing 100% automated scaffolding without manual blocking.
+- **Web UI Cloud Provider Fallback**: Fixed an issue in the Web Configurator where toggling Infrastructure (Terraform) from 'None' to an active state could result in an empty Cloud Provider. It now reliably forces `AWS` as the default provider upon toggle.
+
 ## [2.7.0] - 2026-06-11
 
 ### Added
