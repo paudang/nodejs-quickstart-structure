@@ -58,16 +58,10 @@ program
             
             console.log(chalk.yellow('\nGenerating project files...'));
             await generateProject(answers);
-            const userAgent = process.env.npm_config_user_agent || '';
-            let pm = 'npm';
-            if (userAgent.startsWith('pnpm')) pm = 'pnpm';
-            else if (userAgent.startsWith('yarn')) pm = 'yarn';
             
-            const cmdRun = pm === 'npm' ? 'npm run' : pm;
-
             console.log(chalk.green('\n✔ Project generated successfully!'));
 
-            let manualStartInstructions = `\n${chalk.yellow('Development:')}\n  cd ${answers.projectName}\n  ${pm} install`;
+            let manualStartInstructions = `\n${chalk.yellow('Development:')}\n  cd ${answers.projectName}\n  npm install (or pnpm / yarn)`;
             
             const needsInfrastructure = answers.database !== 'None' || answers.caching === 'Redis' || answers.communication === 'Kafka';
             
@@ -84,14 +78,12 @@ program
                 if (answers.withELK) {
                     manualStartInstructions += `\n  docker-compose -f docker-compose.elk.yml up -d  # Start ELK Stack`;
                 }
-                manualStartInstructions += `\n  ${cmdRun} dev`;
+                manualStartInstructions += `\n  npm run dev`;
             } else {
-                manualStartInstructions += `\n  ${cmdRun} dev`;
+                manualStartInstructions += `\n  npm run dev`;
             }
             
-            let execCmd = pm === 'npm' ? 'npx' : pm;
-
-            console.log(chalk.cyan(`\nNext steps:\n-----------------------${manualStartInstructions}\n\n${chalk.yellow('Production (PM2):')}\n  ${cmdRun} build\n  ${cmdRun} deploy\n  ${execCmd} pm2 logs`));
+            console.log(chalk.cyan(`\nNext steps:\n-----------------------${manualStartInstructions}\n\n${chalk.yellow('Production (PM2):')}\n  npm run build\n  npm run deploy\n  npx pm2 logs`));
             console.log(chalk.magenta('\n' + '★'.repeat(50)));
             console.log(chalk.white.bold('  Enjoying the Node.js Quickstart Generator?'));
             console.log(chalk.white(`  If this tool saved you 4+ hours of architecture setup,`));

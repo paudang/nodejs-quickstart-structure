@@ -16,12 +16,12 @@ This project follows a strict **7-Step Production-Ready Process** to ensure qual
 ## 7-Step Production-Ready Process
 
 1.  **Initialize Git**: `git init` (Required for Husky hooks and security gates).
-2.  **Install Dependencies**: `<%= packageManager %> install`.
+2.  **Install Dependencies**: `npm install` (or pnpm / yarn).
 3.  **Setup Environment**: `cp .env.example .env` and fill in necessary keys.
 4.  **Start Infrastructure**: `docker-compose up -d` (If you chose databases or Kafka).
-5.  **Run Development**: `<%= cmdRun %> dev`.
-6.  **Verify Standards**: `<%= cmdRun %> lint` and `<%= packageManager %> test` (Enforce 80% coverage).
-7.  **Build & Deploy**: `<%= cmdRun %> build` followed by `<%= cmdRun %> deploy` (via PM2).
+5.  **Run Development**: `npm run dev` (or `pnpm dev` / `yarn dev`).
+6.  **Verify Standards**: `npm run lint` and `npm test` (Enforce 80% coverage).
+7.  **Build & Deploy**: `npm run build` followed by `npm run deploy` (via PM2).
 
 ---
 
@@ -70,7 +70,7 @@ cp .env.example .env
 git init
 
 # Install dependencies
-<%= packageManager %> install
+npm install # (or pnpm install / yarn install)
 
 # Start required services
 docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> kafka<% } %>
@@ -79,7 +79,7 @@ docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching ===
 docker-compose -f docker-compose.elk.yml up -d
 <% } %>
 # Run the app in development mode
-<%= cmdRun %> dev
+npm run dev # (or pnpm dev / yarn dev)
 ```
 
 <% if (withELK) { -%>
@@ -100,12 +100,12 @@ When you run `docker-compose -f docker-compose.elk.yml up -d`, the following ser
 ### 4. Quality & Standards
 ```bash
 # Lint & Format
-<%= cmdRun %> lint
-<%= cmdRun %> format
+npm run lint
+npm run format
 
 # Run Unit/Integration Tests
-<%= packageManager %> test
-<%= cmdRun %> test:coverage
+npm test
+npm run test:coverage
 ```
 
 <% if (communication === 'Kafka') { -%>
@@ -249,7 +249,7 @@ This project demonstrates a production-ready Kafka flow:
 
 ### How to verify:
 1. Ensure infrastructure is running: `docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> kafka<% } %>`
-2. Start the app: `<%= cmdRun %> dev`
+2. Start the app: `npm run dev` (or `pnpm dev` / `yarn dev`)
 3. Trigger internal events:
  
 **Create User (Sign Up - Public):**
@@ -322,7 +322,7 @@ To run the Node.js application locally while using Docker for the infrastructure
 docker-compose up -d<% if (database !== 'None') { %> db<% } %><% if (caching === 'Redis') { %> redis<% } %><% if (communication === 'Kafka') { %> kafka<% } %>
 
 # Start the application
-<%= cmdRun %> dev
+npm run dev # (or pnpm dev / yarn dev)
 ```
 
 ### 2. Running the App Container with Compose Infrastructure
@@ -361,7 +361,7 @@ docker run -p 3000:3000 <%= projectName %>
 This project is pre-configured for direct deployment to a VPS/EC2 instance using **PM2** (via `ecosystem.config.js`).
 1. Install dependencies
 ```bash
-<%= packageManager %> install
+npm install # (or pnpm install / yarn install)
 ```
 2. **Start Infrastructure (DB, Redis, Kafka, etc.) in the background**
 *(This specifically starts the background services without running the application inside Docker, allowing PM2 to handle it).*
@@ -374,16 +374,16 @@ docker-compose -f docker-compose.elk.yml up -d
 3. **Wait 5-10s** for the database to fully initialize.
 4. **Deploy the App using PM2 in Cluster Mode**
 ```bash
-<% if (language === 'TypeScript') { %><%= cmdRun %> build
-<% } %><%= cmdRun %> deploy
+<% if (language === 'TypeScript') { %>npm run build
+<% } %>npm run deploy
 ```
 5. **Check logs**
 ```bash
-<%= packageManager === 'npm' ? 'npx' : packageManager %> pm2 logs
+npx pm2 logs
 ```
 6. Stop and remove the PM2 application
 ```bash
-<%= packageManager === 'npm' ? 'npx' : packageManager %> pm2 delete <%= projectName %>
+npx pm2 delete <%= projectName %>
 ```
 7. Stop and remove the Docker infrastructure
 ```bash
@@ -400,7 +400,7 @@ docker-compose -f docker-compose.elk.yml down
 -   **HPP**: Prevents HTTP Parameter Pollution attacks.
 <% if (includeSecurity) { %>
 ### Enterprise Hardening (Big Tech Standard)
--   **Snyk SCA**: Run `<%= cmdRun %> snyk:test` for dependency scanning.
+-   **Snyk SCA**: Run `npm run snyk:test` for dependency scanning.
 -   **SonarCloud**: Automated SAST on every Push/PR.
 -   **Digital Guardians**: Recommended Gitleaks integration for secret protection.
 -   **Security Policy**: Standard `SECURITY.md` for vulnerability reporting.

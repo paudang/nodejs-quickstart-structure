@@ -183,3 +183,9 @@ async function robustApiCall() {
 ```
 
 :::
+
+> [!TIP] Deep Dive into Resilience Layer
+> Want to understand the architecture behind this implementation? We have published two comprehensive resilience articles on **System Weakness (Medium)** regarding these exact patterns:
+[Weaponizing the Weakest Link: How Attackers Exploit Cascading Failures in Microservices](https://systemweakness.com/weaponizing-the-weakest-link-how-attackers-exploit-cascading-failures-in-microservices-and-how-to-31760e5818fd)
+
+---

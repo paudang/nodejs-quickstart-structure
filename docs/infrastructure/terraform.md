@@ -207,3 +207,9 @@ If `terraform plan` succeeds and lists the resources (e.g., `+ azurerm_virtual_n
 To do a full End-to-End test for GCP or Azure, the standard practice is to deploy to an isolated cloud environment:
 - **GCP**: Create a separate "Sandbox" GCP Project. Deploy the resources, test them, and then run `terraform destroy` to tear them down immediately.
 - **Azure**: Create a free-tier "Dev/Test" Subscription or a temporary Resource Group. Deploy, test, and then delete the entire Resource Group to avoid billing.
+
+> [!TIP] Deep Dive into Infrastructure Zero-Trust AWS Architecture
+> Want to understand the architecture behind this implementation? We have published two comprehensive infrastructure articles on **System Weakness (Medium)** regarding these exact patterns:
+[Why Your Default VPC is a Hacker’s Playground: Designing a Zero-Trust AWS Architecture](https://medium.com/system-weakness/why-your-default-vpc-is-a-hackers-playground-designing-a-zero-trust-aws-architecture-7551102193cd)
+
+---

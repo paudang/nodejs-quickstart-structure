@@ -67,6 +67,16 @@ nodejs-quickstart init
 
 ---
 
+## What's New in v2.7 (The Background Jobs Release)
+
+The v2.7.0 release brings robust asynchronous processing and architectural purity to your microservices:
+
+- **Enterprise Background Jobs**: Fully integrated **BullMQ** with Redis for high-performance, asynchronous job processing, complete with **Bull-Board UI** for real-time monitoring and queue management.
+- **Package Manager Agnosticism**: A completely refactored generation engine that provides a flawless, zero-friction experience across `npm`, `yarn`, and `pnpm` without tying your `package.json` to any specific tool.
+- **VitePress Docs Sync**: Tabbed Markdown synchronization across the entire documentation site, ensuring your reading experience perfectly matches your chosen package manager.
+
+---
+
 ## What's New in v2.6 (The AI Smart Configurator Release)
 
 The v2.6.0 release introduces a revolutionary natural language interface for project scaffolding:
@@ -74,16 +84,6 @@ The v2.6.0 release introduces a revolutionary natural language interface for pro
 - **Local AI Smart Prompt Engine**: You can now simply type what you want (e.g., *"Create a quick and easy project using JS and MVC, without a database."*) and our 0ms-latency Heuristic Engine will automatically extract your boundaries and configure the exact project matrix.
 - **World-Class Multilingual NLP**: The engine flawlessly parses English, Vietnamese, Chinese, Japanese, and Hindi, handling complex edge cases like backward-facing negations (`なし`, `nahi`) and double negations natively on the client.
 - **Bulletproof Execution**: Fortified with strict XSS sanitization and verified by a massive 79-case destruction testing suite against fuzzing and adversarial prompts.
-
----
-
-## What's New in v2.5 (The Cloud & Observability Release)
-
-The v2.5.0 release brings the boilerplate into the Big Tech era with enterprise cloud scaffolding and robust logging:
-
-- **Multi-Cloud Terraform**: Production-ready IaC templates for **GCP** (Cloud SQL, Compute Engine, VPC) and **Azure** (Flexible Server, Virtual Machines, VNet), joining our existing AWS support.
-- **ELK Native Winston Integration**: Swapped blocking streams for `winston-elasticsearch`, enabling asynchronous, batched log forwarding that doesn't block the Node.js event loop.
-- **Dynamic Boilerplate Trimming**: Intelligent dead code elimination (e.g., stripping unused OAuth controllers) based on your precise stack combinations.
 
 ---
 
