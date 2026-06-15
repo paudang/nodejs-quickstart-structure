@@ -1,6 +1,6 @@
 {
   "name": "nodejs-quickstart-structure",
-  "version": "2.7.1",
+  "version": "2.7.2",
   "type": "module",
   "description": "The ultimate nodejs quickstart structure CLI to scaffold Node.js microservices with MVC or Clean Architecture",
   "main": "bin/index.js",
@@ -64,7 +64,7 @@
     "inquirer": "^14.0.1"
   },
   "overrides": {
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.28.1",
     "vite": "^6.4.2",
     "postcss": "^8.5.10"
   },
