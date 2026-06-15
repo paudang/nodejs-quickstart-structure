@@ -107,5 +107,15 @@ export default defineConfig({
       message: 'Released under the ISC License. <br> Architected by Technical Writers on <a href="https://systemweakness.com/" target="_blank" style="color: var(--vp-c-brand); font-weight: 500;">System Weakness</a>. <span class="footer-badges" style="margin-left: 8px;"> <a href="https://www.npmjs.com/package/nodejs-quickstart-structure" target="_blank"><img src="https://img.shields.io/npm/dt/nodejs-quickstart-structure?style=social" alt="NPM Downloads"></a> <a href="https://github.com/paudang/nodejs-quickstart-structure" target="_blank"><img src="https://img.shields.io/github/stars/paudang/nodejs-quickstart-structure?style=social" alt="GitHub Stars"></a> </span>',
       copyright: 'Copyright © 2026-present Pau Dang'
     }
+  },
+  vite: {
+    build: {
+      target: 'esnext'
+    },
+    optimizeDeps: {
+      esbuildOptions: {
+        target: 'esnext'
+      }
+    }
   }
 })

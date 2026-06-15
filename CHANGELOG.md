@@ -1,5 +1,9 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.2] - 2026-06-15
+
+### Fixed
+- **VitePress & esbuild Dependency Resolution**: Fixed a vulnerability in `esbuild` by updating the `package.json` override to `^0.28.1`. Resolved subsequent Vite build errors ("Transforming destructuring to the configured target environment is not supported yet") by explicitly configuring Vite's `esbuildOptions.target` and `build.target` to `esnext` in `docs/.vitepress/config.mjs`.
 ## [2.7.1] - 2026-06-11
 
 ### Fixed
