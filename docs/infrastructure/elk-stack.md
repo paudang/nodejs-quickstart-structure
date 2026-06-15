@@ -160,3 +160,8 @@ For production environments, deploying and managing your own ELK stack can be co
    Never expose port 9200 to the public internet.
 ```
 :::
+
+> [!TIP] Deep Dive into ELK
+> Want to understand the architecture behind this implementation? Check out our infrastructure deep-dive published on **System Weakness (Medium)**:
+> 
+> **[Weaponizing Logs: How Attackers Crash Apps via Synchronous Logging (And How ELK Fixes It)](https://systemweakness.com/weaponizing-logs-how-attackers-crash-apps-via-synchronous-logging-and-how-elk-fixes-it-373d0bb84729)**
