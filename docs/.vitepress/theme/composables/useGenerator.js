@@ -15,7 +15,7 @@ const form = reactive({
   auth: 'None',
   terraform: 'None',
   cloudProvider: 'AWS',
-  resilience: [] as string[],
+  resilience: [],
   withELK: false,
   backgroundJobs: false
 });

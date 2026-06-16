@@ -26,6 +26,7 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
+      { text: '🎮 Play Game', link: '/play' },
       { text: 'Guide', link: '/guide/getting-started' },
       { text: 'Articles', link: '/guide/articles' },
       { text: 'Roadmap', link: 'https://trello.com/b/TPTo8ylF/nodejs-quickstart-structure-product' },

@@ -6,13 +6,20 @@ jest.mock('express', () => {
     const mRouter = {
         get: jest.fn(),
         post: jest.fn(),
+        put: jest.fn(),
         patch: jest.fn(),
         delete: jest.fn(),
         use: jest.fn(),
     };
     const mApp = {
         use: jest.fn(),
-        set: jest.fn(),
+        get: jest.fn(),
+        post: jest.fn(),
+        put: jest.fn(),
+        patch: jest.fn(),
+        delete: jest.fn(),
+        set: jest.fn().mockReturnThis(),
+        engine: jest.fn(),
         listen: jest.fn((port, cb) => {
             if (cb) cb();
             return { close: jest.fn() };
