@@ -27,8 +27,9 @@ features:
     details: Hardened with Snyk & SonarCloud, plus multi-stage Docker and Flyway migrations out of the box.
   - title: "Community Insights"
     details: "Real-time ecosystem impact: [Live Metrics] (Deep architectural research)."
-  - title: "Interactive Web Configurator"
-    details: Instantly design your architecture and generate commands using our real-time visual tool below.
+  - title: "🎮 Interactive Web Configurator"
+    details: "Instantly design your architecture below, or enter the Generator Multiverse to play our Arcade Builder games!"
+    link: /play
 ---
 
 <script setup>

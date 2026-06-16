@@ -1,5 +1,21 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.8.0] - 2026-06-16
+
+### Added
+- **The Generator Multiverse (Gamification)**: Introduced a revolutionary interactive web configurator experience featuring two distinct "Arcade" modes:
+  - **The Architecture Skill Tree**: An RPG-style tech tree that teaches users how to build an enterprise application systematically from the ground up.
+  - **Backend Factorio Builder**: A drag-and-drop puzzle game where users build pipelines capable of handling 1000 Req/s load.
+- **Dynamic 100% Feature Parity**: The gamified modes map 1:1 with the CLI commands, fully supporting complex options like Cloud IaC (Terraform), CI/CD (GitHub/GitLab), Auth, and ELK Stack.
+- **Comprehensive Unit Testing Coverage**: Enforced mathematical correctness between the gamified UI and the core validation engine (`13/13` test scenarios).
+- **VitePress UI Polish**: Revamped the `docs/index.md` homepage with a new "Gamified Builder" hero button and a combined 6-grid feature layout. Added a dedicated `/play` interactive route.
+
+### Security
+- **0-Vulnerability Baseline (Snyk & NPM Audit)**: 
+  - Resolved `High Severity` vulnerabilities by updating `express` to `^4.21.2` in generated templates.
+  - Mitigated `eval` vulnerabilities in `elastic-apm-node` by bumping `@elastic/elasticsearch` to `^8.17.0`.
+  - Added strict package `overrides` for `vite` (`^6.4.3`), `js-yaml` (`^4.1.2`), `cookie` (`^0.7.2`), `cross-spawn` (`^7.0.6`), and `@opentelemetry/core` (`^1.30.1`) across the main CLI repository and generated project templates to guarantee a pristine `npm audit` and `snyk test` status.
+
 ## [2.7.2] - 2026-06-15
 
 ### Fixed
