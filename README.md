@@ -67,6 +67,15 @@ nodejs-quickstart init
 
 ---
 
+## What's New in v2.8 (The Generator Multiverse Release)
+
+The v2.8.0 release introduces a revolutionary Gamification layer to the scaffolding experience:
+
+- **The Architecture Skill Tree**: An RPG-style interactive tech tree designed to help developers systematically build an enterprise application from the ground up.
+- **Backend Factorio Builder**: A drag-and-drop puzzle mode where users connect nodes to construct production-ready microservice pipelines.
+- **Dynamic 100% Feature Parity**: The interactive games map 1:1 with the CLI, seamlessly generating complex setups like Multi-Cloud Terraform, CI/CD, Authentication, and ELK Stack.
+- **Zero-Vulnerability Baseline**: Strictly enforced package overrides to guarantee pristine `snyk test` and `npm audit` reports out-of-the-box.
+
 ## What's New in v2.7 (The Background Jobs Release)
 
 The v2.7.0 release brings robust asynchronous processing and architectural purity to your microservices:
@@ -74,16 +83,6 @@ The v2.7.0 release brings robust asynchronous processing and architectural purit
 - **Enterprise Background Jobs**: Fully integrated **BullMQ** with Redis for high-performance, asynchronous job processing, complete with **Bull-Board UI** for real-time monitoring and queue management.
 - **Package Manager Agnosticism**: A completely refactored generation engine that provides a flawless, zero-friction experience across `npm`, `yarn`, and `pnpm` without tying your `package.json` to any specific tool.
 - **VitePress Docs Sync**: Tabbed Markdown synchronization across the entire documentation site, ensuring your reading experience perfectly matches your chosen package manager.
-
----
-
-## What's New in v2.6 (The AI Smart Configurator Release)
-
-The v2.6.0 release introduces a revolutionary natural language interface for project scaffolding:
-
-- **Local AI Smart Prompt Engine**: You can now simply type what you want (e.g., *"Create a quick and easy project using JS and MVC, without a database."*) and our 0ms-latency Heuristic Engine will automatically extract your boundaries and configure the exact project matrix.
-- **World-Class Multilingual NLP**: The engine flawlessly parses English, Vietnamese, Chinese, Japanese, and Hindi, handling complex edge cases like backward-facing negations (`なし`, `nahi`) and double negations natively on the client.
-- **Bulletproof Execution**: Fortified with strict XSS sanitization and verified by a massive 79-case destruction testing suite against fuzzing and adversarial prompts.
 
 ---
 
