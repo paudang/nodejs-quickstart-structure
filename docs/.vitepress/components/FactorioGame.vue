@@ -211,6 +211,9 @@ const inventory = [
 
   { id: 'ci_git', type: 'cicd', icon: '🐙', name: 'GitHub Action', displayStat: 'Security On', config: { ciProvider: 'GitHub Actions', includeSecurity: true } },
   { id: 'ci_gitlab', type: 'cicd', icon: '🦊', name: 'GitLab CI', displayStat: 'Security On', config: { ciProvider: 'GitLab CI', includeSecurity: true } },
+  { id: 'ci_bitbucket', type: 'cicd', icon: '🪣', name: 'Bitbucket', displayStat: 'Security On', config: { ciProvider: 'Bitbucket Pipelines', includeSecurity: true } },
+  { id: 'ci_circle', type: 'cicd', icon: '⭕', name: 'CircleCI', displayStat: 'Security On', config: { ciProvider: 'CircleCI', includeSecurity: true } },
+  { id: 'ci_jenkins', type: 'cicd', icon: '🤵', name: 'Jenkins', displayStat: 'Security On', config: { ciProvider: 'Jenkins', includeSecurity: true } },
   { id: 'ci_none', type: 'cicd', icon: '❌', name: 'No CI/CD', displayStat: 'Manual Deploy', config: { ciProvider: 'None', includeSecurity: false } },
 
   { id: 'cloud_aws', type: 'cloud', icon: '☁️', name: 'AWS Prod', displayStat: 'Terraform', config: { terraform: 'Production', cloudProvider: 'AWS' } },

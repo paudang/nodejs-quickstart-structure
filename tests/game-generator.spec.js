@@ -271,6 +271,23 @@ describe('Game Generator (useGenerator) Logic', () => {
             expect(cmd).toContain('--cloud-provider "GCP"');
         });
 
+        it('FactorioGame: Alternate CI/CD Pipelines (Bitbucket, CircleCI, Jenkins)', () => {
+            const { form, cliCommand, showAdvanced } = generator;
+            form.projectName = 'factory-alt-ci';
+            showAdvanced.value = true;
+            
+            form.ciProvider = 'Bitbucket Pipelines';
+            form.includeSecurity = true;
+            expect(cliCommand.value).toContain('--ci-provider "Bitbucket Pipelines"');
+            expect(cliCommand.value).toContain('--include-security');
+
+            form.ciProvider = 'CircleCI';
+            expect(cliCommand.value).toContain('--ci-provider "CircleCI"');
+
+            form.ciProvider = 'Jenkins';
+            expect(cliCommand.value).toContain('--ci-provider "Jenkins"');
+        });
+
         it('FactorioGame: Complete "None" Infrastructure (No CI/CD, No Cloud) with MVC', () => {
             const { form, cliCommand, showAdvanced } = generator;
             form.projectName = 'factory-none-infra';
