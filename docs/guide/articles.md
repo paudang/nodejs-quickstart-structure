@@ -14,6 +14,11 @@ Logging is essential for visibility, but when done synchronously under high load
 *This article was featured on the **Trending** section of System Weakness:*
 ![- Trending on System Weakness](/trending.png)
 
+### [Why Your Node.js API Will Crash at 1,000 Req/s (And How to Fix It)](https://systemweakness.com/why-your-node-js-api-will-crash-at-1-000-req-s-and-how-to-fix-it-c73515a32426)
+**Published on**: System Weakness (Medium)
+
+A sudden spike in traffic can easily overwhelm your database connection pool, causing queries to time out and blocking web server threads. This article explores the anatomy of architectural weaknesses like TCP exhaustion and database bottlenecks under high load (1,000 Req/s). Discover how to prevent cascading failures by decoupling your ingestion layer from your persistence layer using asynchronous message brokers (Kafka, BullMQ) and Redis caching.
+
 ### [Weaponizing the Weakest Link: How Attackers Exploit Cascading Failures in Microservices](https://systemweakness.com/weaponizing-the-weakest-link-how-attackers-exploit-cascading-failures-in-microservices-and-how-to-31760e5818fd)
 **Published on**: System Weakness (Medium)
 
