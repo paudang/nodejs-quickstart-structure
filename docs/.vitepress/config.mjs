@@ -41,14 +41,6 @@ export default defineConfig({
           { text: 'Articles', link: '/guide/articles' },
           { text: 'Roadmap', link: 'https://trello.com/b/TPTo8ylF/nodejs-quickstart-structure-product' },
           { text: 'Changelog', link: 'https://github.com/paudang/nodejs-quickstart-structure/blob/main/CHANGELOG.md' },
-          {
-            text: '🇬🇧 English',
-            items: [
-              { text: '🇬🇧 English', link: '/' },
-              { text: '🇻🇳 Tiếng Việt', link: '/vi/' },
-              { text: '🇨🇳 简体中文', link: '/zh/' }
-            ]
-          },
           { text: '☕ Sponsor', link: 'https://ko-fi.com/paudang' }
         ],
         editLink: {
@@ -136,14 +128,6 @@ export default defineConfig({
           { text: 'Bài viết', link: '/vi/guide/articles' },
           { text: 'Lộ trình', link: 'https://trello.com/b/TPTo8ylF/nodejs-quickstart-structure-product' },
           { text: 'Lịch sử thay đổi', link: 'https://github.com/paudang/nodejs-quickstart-structure/blob/main/CHANGELOG.md' },
-          {
-            text: '🇻🇳 Tiếng Việt',
-            items: [
-              { text: '🇬🇧 English', link: '/' },
-              { text: '🇻🇳 Tiếng Việt', link: '/vi/' },
-              { text: '🇨🇳 简体中文', link: '/zh/' }
-            ]
-          },
           { text: '☕ Tài trợ', link: 'https://ko-fi.com/paudang' }
         ],
         editLink: {
@@ -231,14 +215,6 @@ export default defineConfig({
           { text: '文章', link: '/zh/guide/articles' },
           { text: '路线图', link: 'https://trello.com/b/TPTo8ylF/nodejs-quickstart-structure-product' },
           { text: '更新日志', link: 'https://github.com/paudang/nodejs-quickstart-structure/blob/main/CHANGELOG.md' },
-          {
-            text: '🇨🇳 简体中文',
-            items: [
-              { text: '🇬🇧 English', link: '/' },
-              { text: '🇻🇳 Tiếng Việt', link: '/vi/' },
-              { text: '🇨🇳 简体中文', link: '/zh/' }
-            ]
-          },
           { text: '☕ 赞助', link: 'https://ko-fi.com/paudang' }
         ],
         editLink: {
