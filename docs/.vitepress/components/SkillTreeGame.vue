@@ -1,8 +1,8 @@
 <template>
   <div class="skill-tree-wrapper">
     <div class="tree-header">
-      <h1 class="title">The Architecture Skill Tree</h1>
-      <p class="subtitle">Design your backend systematically from the ground up.</p>
+      <h1 class="title">{{ t.skillTree }}</h1>
+      <p class="subtitle">{{ t.designBackend }}</p>
     </div>
 
     <div class="tree-container">
@@ -46,12 +46,12 @@
 
     <div class="forge-section" :class="{ 'ready': isComplete }">
       <button class="forge-btn" @click="forgeCode" :disabled="!isComplete">
-        GENERATE CONFIGURATION
+        {{ t.generateConfig }}
       </button>
 
       <div class="command-box" v-if="showResult">
         <div class="command-header">
-          <p>Run this command in your terminal:</p>
+          <p>{{ t.runCommand }}</p>
           <div class="pkg-tabs">
             <button :class="{ active: packageManager === 'npm' }" @click="packageManager = 'npm'">npx</button>
             <button :class="{ active: packageManager === 'yarn' }" @click="packageManager = 'yarn'">yarn</button>
@@ -60,7 +60,7 @@
         </div>
         <code>{{ cliCommand }}</code>
         <button class="copy-btn" @click="copyCommand">
-          {{ copied ? 'COPIED!' : 'COPY COMMAND' }}
+          {{ copied ? t.copied : t.copyCommand }}
         </button>
       </div>
     </div>
@@ -70,24 +70,121 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
 import { useGenerator } from '../theme/composables/useGenerator.js';
+import { useData } from 'vitepress';
 
 const { form, cliCommand, showAdvanced, packageManager } = useGenerator();
+const { lang } = useData();
 
 const currentIndex = ref(0);
 const showResult = ref(false);
 const copied = ref(false);
 
+const i18n = {
+  'en-US': {
+    skillTree: 'The Architecture Skill Tree',
+    designBackend: 'Design your backend systematically from the ground up.',
+    generateConfig: 'GENERATE CONFIGURATION',
+    runCommand: 'Run this command in your terminal:',
+    copied: 'COPIED!',
+    copyCommand: 'COPY COMMAND',
+    tierFoundation: 'Foundation',
+    tierArchitecture: 'Architecture',
+    tierViewEngine: 'View Engine',
+    tierDataStorage: 'Data Storage',
+    tierCaching: 'Caching Layer',
+    tierApis: 'Network APIs',
+    tierFeatures: 'Enterprise Features (Select Multiple)',
+    tierCicd: 'CI/CD Pipeline',
+    tierIac: 'Infrastructure (Terraform)',
+    tierCloud: 'Cloud Provider'
+  },
+  'vi-VN': {
+    skillTree: 'Cây Kỹ Năng Kiến Trúc',
+    designBackend: 'Thiết kế hệ thống backend của bạn một cách hệ thống ngay từ đầu.',
+    generateConfig: 'TẠO CẤU HÌNH DỰ ÁN',
+    runCommand: 'Chạy lệnh này trong terminal của bạn:',
+    copied: 'ĐÃ SAO CHÉP!',
+    copyCommand: 'SAO CHÉP LỆNH',
+    tierFoundation: 'Nền tảng',
+    tierArchitecture: 'Kiến trúc',
+    tierViewEngine: 'View Engine (Giao diện)',
+    tierDataStorage: 'Lưu trữ Dữ liệu',
+    tierCaching: 'Tầng Caching (Bộ đệm)',
+    tierApis: 'Cổng giao tiếp mạng (APIs)',
+    tierFeatures: 'Tính năng Doanh nghiệp (Chọn nhiều)',
+    tierCicd: 'Quy trình CI/CD',
+    tierIac: 'Cơ sở hạ tầng (Terraform)',
+    tierCloud: 'Nhà cung cấp Đám mây'
+  },
+  'vi': {
+    skillTree: 'Cây Kỹ Năng Kiến Trúc',
+    designBackend: 'Thiết kế hệ thống backend của bạn một cách hệ thống ngay từ đầu.',
+    generateConfig: 'TẠO CẤU HÌNH DỰ ÁN',
+    runCommand: 'Chạy lệnh này trong terminal của bạn:',
+    copied: 'ĐÃ SAO CHÉP!',
+    copyCommand: 'SAO CHÉP LỆNH',
+    tierFoundation: 'Nền tảng',
+    tierArchitecture: 'Kiến trúc',
+    tierViewEngine: 'View Engine (Giao diện)',
+    tierDataStorage: 'Lưu trữ Dữ liệu',
+    tierCaching: 'Tầng Caching (Bộ đệm)',
+    tierApis: 'Cổng giao tiếp mạng (APIs)',
+    tierFeatures: 'Tính năng Doanh nghiệp (Chọn nhiều)',
+    tierCicd: 'Quy trình CI/CD',
+    tierIac: 'Cơ sở hạ tầng (Terraform)',
+    tierCloud: 'Nhà cung cấp Đám mây'
+  },
+  'zh-CN': {
+    skillTree: '架构技能树',
+    designBackend: '从头开始系统地设计您的后端。',
+    generateConfig: '生成配置',
+    runCommand: '在终端中运行以下命令：',
+    copied: '已复制！',
+    copyCommand: '复制命令',
+    tierFoundation: '基础',
+    tierArchitecture: '架构',
+    tierViewEngine: '模板引擎',
+    tierDataStorage: '数据存储',
+    tierCaching: '缓存层',
+    tierApis: '网络 API',
+    tierFeatures: '企业功能 (可多选)',
+    tierCicd: 'CI/CD 流程',
+    tierIac: '基础设施 (Terraform)',
+    tierCloud: '云服务商'
+  },
+  'zh': {
+    skillTree: '架构技能树',
+    designBackend: '从头开始系统地设计您的后端。',
+    generateConfig: '生成配置',
+    runCommand: '在终端中运行以下命令：',
+    copied: '已复制！',
+    copyCommand: '复制命令',
+    tierFoundation: '基础',
+    tierArchitecture: '架构',
+    tierViewEngine: '模板引擎',
+    tierDataStorage: '数据存储',
+    tierCaching: '缓存层',
+    tierApis: '网络 API',
+    tierFeatures: '企业功能 (可多选)',
+    tierCicd: 'CI/CD 流程',
+    tierIac: '基础设施 (Terraform)',
+    tierCloud: '云服务商'
+  }
+};
+
+const t = computed(() => i18n[lang.value] || i18n['en-US']);
+
 const tiers = computed(() => {
   const result = [
     {
-      id: 'lang', title: 'Foundation', multiple: false,
+      id: 'lang', title: t.value.tierFoundation, multiple: false,
       nodes: [
         { key: 'language', value: 'TypeScript', icon: '🟦', name: 'TypeScript', desc: 'Type Safety' },
         { key: 'language', value: 'JavaScript', icon: '🟨', name: 'JavaScript', desc: 'Dynamic Fast' }
       ]
     },
     {
-      id: 'arch', title: 'Architecture', multiple: false,
+      id: 'arch', title: t.value.tierArchitecture, multiple: false,
       nodes: [
         { key: 'architecture', value: 'Clean Architecture', icon: '🏛️', name: 'Clean Arch', desc: 'Decoupled' },
         { key: 'architecture', value: 'MVC', icon: '📦', name: 'MVC', desc: 'Rapid Dev' }
@@ -97,7 +194,7 @@ const tiers = computed(() => {
 
   if (form.architecture === 'MVC') {
     result.push({
-      id: 'view', title: 'View Engine', multiple: false,
+      id: 'view', title: t.value.tierViewEngine, multiple: false,
       nodes: [
         { key: 'viewEngine', value: 'Pug', icon: '🐶', name: 'Pug', desc: 'Indentation' },
         { key: 'viewEngine', value: 'EJS', icon: '📝', name: 'EJS', desc: 'HTML-like' },
@@ -107,7 +204,7 @@ const tiers = computed(() => {
   }
 
   result.push({
-    id: 'db', title: 'Data Storage', multiple: false,
+    id: 'db', title: t.value.tierDataStorage, multiple: false,
     nodes: [
       { key: 'database', value: 'PostgreSQL', icon: '🐘', name: 'PostgreSQL', desc: 'Relational' },
       { key: 'database', value: 'MySQL', icon: '🐬', name: 'MySQL', desc: 'Classic SQL' },
@@ -117,7 +214,7 @@ const tiers = computed(() => {
   });
 
   result.push({
-    id: 'cache', title: 'Caching Layer', multiple: false,
+    id: 'cache', title: t.value.tierCaching, multiple: false,
     nodes: [
       { key: 'caching', value: 'Redis', icon: '🔴', name: 'Redis', desc: 'Distributed' },
       { key: 'caching', value: 'Memory Cache', icon: '🧠', name: 'Memory', desc: 'Local RAM' },
@@ -126,7 +223,7 @@ const tiers = computed(() => {
   });
 
   result.push({
-    id: 'api', title: 'Network APIs', multiple: false,
+    id: 'api', title: t.value.tierApis, multiple: false,
     nodes: [
       { key: 'communication', value: 'REST APIs', icon: '🌐', name: 'REST APIs', desc: 'Standard HTTP' },
       { key: 'communication', value: 'GraphQL', icon: '🔗', name: 'GraphQL', desc: 'Flexible Queries' },
@@ -135,7 +232,7 @@ const tiers = computed(() => {
   });
 
   result.push({
-    id: 'feat', title: 'Enterprise Features (Select Multiple)', multiple: true,
+    id: 'feat', title: t.value.tierFeatures, multiple: true,
     nodes: [
       { key: 'auth', value: 'OAuth2 - Google/GitHub - JWT', toggleValue: 'None', icon: '🔐', name: 'OAuth2', desc: 'Social Login' },
       { key: 'auth', value: 'JWT Authentication', toggleValue: 'None', icon: '🔑', name: 'JWT Only', desc: 'Standard Auth' },
@@ -146,7 +243,7 @@ const tiers = computed(() => {
   });
 
   result.push({
-    id: 'ci', title: 'CI/CD Pipeline', multiple: false,
+    id: 'ci', title: t.value.tierCicd, multiple: false,
     nodes: [
       { key: 'ciProvider', value: 'GitHub Actions', icon: '🐙', name: 'GitHub', desc: 'Native CI' },
       { key: 'ciProvider', value: 'GitLab CI', icon: '🦊', name: 'GitLab', desc: 'GitLab CI' },
@@ -158,7 +255,7 @@ const tiers = computed(() => {
   });
 
   result.push({
-    id: 'iac', title: 'Infrastructure (Terraform)', multiple: false,
+    id: 'iac', title: t.value.tierIac, multiple: false,
     nodes: [
       { key: 'terraform', value: 'Standard', icon: '🏗️', name: 'Standard', desc: 'Single VM' },
       { key: 'terraform', value: 'Production', icon: '🏭', name: 'Production', desc: 'HA + WAF + LB' },
@@ -168,7 +265,7 @@ const tiers = computed(() => {
 
   if (form.terraform !== 'None') {
     result.push({
-      id: 'cloud', title: 'Cloud Provider', multiple: false,
+      id: 'cloud', title: t.value.tierCloud, multiple: false,
       nodes: [
         { key: 'cloudProvider', value: 'AWS', icon: '☁️', name: 'AWS Cloud', desc: 'Amazon' },
         { key: 'cloudProvider', value: 'GCP', icon: '🌍', name: 'Google Cloud', desc: 'GCP' },

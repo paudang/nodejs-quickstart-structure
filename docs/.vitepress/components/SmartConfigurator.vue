@@ -1,7 +1,10 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useData } from 'vitepress';
 import { useGenerator } from '../theme/composables/useGenerator';
 import { parsePrompt } from '../theme/composables/nlp';
+
+const { lang } = useData();
 
 const prompt = ref('');
 const isThinking = ref(false);
@@ -9,6 +12,32 @@ const logs = ref([]);
 const aiResponse = ref('');
 
 const { form, showAdvanced } = useGenerator();
+
+const i18n = {
+  'en-US': {
+    placeholder: 'Smart Prompt: Generate a scalable project without Redis but with Postgres...',
+    generate: 'Generate',
+    processing: 'Processing...',
+    engine: 'Smart Engine:',
+    disclaimer: 'AI parsing may not be 100% accurate. Please review and adjust the settings below.'
+  },
+  'vi-VN': {
+    placeholder: 'Smart Prompt: Tạo dự án có khả năng mở rộng với Postgres nhưng không dùng Redis...',
+    generate: 'Tạo dự án',
+    processing: 'Đang xử lý...',
+    engine: 'Động cơ thông minh:',
+    disclaimer: 'Phân tích AI có thể không chính xác 100%. Vui lòng kiểm tra và điều chỉnh cấu hình bên dưới.'
+  },
+  'zh-CN': {
+    placeholder: 'Smart Prompt: 生成一个包含 Postgres 但不包含 Redis 的高可用项目...',
+    generate: '生成',
+    processing: '处理中...',
+    engine: '智能引擎：',
+    disclaimer: 'AI 解析可能不会 100% 准确，请在下方检查并调整配置。'
+  }
+};
+
+const t = computed(() => i18n[lang.value] || i18n['en-US']);
 
 const processPrompt = async () => {
   if (!prompt.value.trim() || isThinking.value) return;
@@ -54,13 +83,13 @@ const processPrompt = async () => {
         <input 
           v-model="prompt" 
           @keydown.enter.prevent="processPrompt"
-          placeholder="Smart Prompt: Generate a scalable project without Redis but with Postgres..."
+          :placeholder="t.placeholder"
           class="ai-input"
           :disabled="isThinking"
         />
         <button @click="processPrompt" :disabled="isThinking || !prompt.trim()" class="generate-btn">
-          <span v-if="!isThinking">Generate</span>
-          <span v-else>Processing...</span>
+          <span v-if="!isThinking">{{ t.generate }}</span>
+          <span v-else>{{ t.processing }}</span>
         </button>
       </div>
     </div>
@@ -75,10 +104,10 @@ const processPrompt = async () => {
 
     <!-- Response -->
     <div v-if="aiResponse && !isThinking" class="ai-response">
-      <strong>Smart Engine:</strong> <span v-html="aiResponse"></span>
+      <strong>{{ t.engine }}</strong> <span v-html="aiResponse"></span>
       <div class="ai-disclaimer">
         <span class="info-icon">ℹ️</span>
-        AI parsing may not be 100% accurate. Please review and adjust the settings below.
+        {{ t.disclaimer }}
       </div>
     </div>
   </div>
