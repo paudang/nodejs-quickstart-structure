@@ -2,19 +2,19 @@
   <div class="arcade-hub-wrapper">
     <div v-if="!selectedGame" class="hub-screen">
       <div class="hub-header">
-        <h1>THE GENERATOR MULTIVERSE</h1>
-        <p>Choose your preferred interactive experience to generate your backend infrastructure.</p>
+        <h1>{{ t.multiverse }}</h1>
+        <p>{{ t.chooseExperience }}</p>
       </div>
 
       <div class="game-cards">
         <div class="game-card" @click="selectGame('SkillTree')">
           <div class="card-icon">🌳</div>
           <div class="card-content">
-            <h3>The Architecture Skill Tree</h3>
-            <p>A comprehensive RPG-style tech tree. Unlock enterprise features systematically.</p>
+            <h3>{{ t.skillTreeTitle }}</h3>
+            <p>{{ t.skillTreeDesc }}</p>
             <div class="tags">
-              <span class="tag">Educational</span>
-              <span class="tag">Full Config</span>
+              <span class="tag">{{ t.tagEducational }}</span>
+              <span class="tag">{{ t.tagFullConfig }}</span>
             </div>
           </div>
         </div>
@@ -22,11 +22,11 @@
         <div class="game-card" @click="selectGame('Factorio')">
           <div class="card-icon">🏭</div>
           <div class="card-content">
-            <h3>Backend Factorio</h3>
-            <p>Drag and drop nodes to build a pipeline capable of handling 1000 Req/s load.</p>
+            <h3>{{ t.factorioTitle }}</h3>
+            <p>{{ t.factorioDesc }}</p>
             <div class="tags">
-              <span class="tag">Puzzle</span>
-              <span class="tag">Drag & Drop</span>
+              <span class="tag">{{ t.tagPuzzle }}</span>
+              <span class="tag">{{ t.tagDragDrop }}</span>
             </div>
           </div>
         </div>
@@ -36,7 +36,7 @@
     <div v-else class="game-view">
       <div class="nav-bar">
         <button class="back-btn" @click="selectedGame = null">
-          <span class="arrow">←</span> BACK TO ARCADE HUB
+          <span class="arrow">←</span> {{ t.backToHub }}
         </button>
       </div>
       
@@ -49,15 +49,87 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useData } from 'vitepress';
 import SkillTreeGame from './SkillTreeGame.vue';
 import FactorioGame from './FactorioGame.vue';
 
+const { lang } = useData();
 const selectedGame = ref(null);
 
 const selectGame = (gameType) => {
   selectedGame.value = gameType;
 };
+
+const i18n = {
+  'en-US': {
+    multiverse: 'THE GENERATOR MULTIVERSE',
+    chooseExperience: 'Choose your preferred interactive experience to generate your backend infrastructure.',
+    skillTreeTitle: 'The Architecture Skill Tree',
+    skillTreeDesc: 'A comprehensive RPG-style tech tree. Unlock enterprise features systematically.',
+    tagEducational: 'Educational',
+    tagFullConfig: 'Full Config',
+    factorioTitle: 'Backend Factorio',
+    factorioDesc: 'Drag and drop nodes to build a pipeline capable of handling 1000 Req/s load.',
+    tagPuzzle: 'Puzzle',
+    tagDragDrop: 'Drag & Drop',
+    backToHub: 'BACK TO ARCADE HUB'
+  },
+  'vi-VN': {
+    multiverse: 'ĐA VŨ TRỤ TRÌNH TẠO',
+    chooseExperience: 'Chọn trải nghiệm tương tác ưa thích của bạn để tạo cơ sở hạ tầng backend.',
+    skillTreeTitle: 'Cây Kỹ Năng Kiến Trúc',
+    skillTreeDesc: 'Cây công nghệ phong cách RPG toàn diện. Mở khóa các tính năng doanh nghiệp một cách hệ thống.',
+    tagEducational: 'Học tập',
+    tagFullConfig: 'Cấu hình đầy đủ',
+    factorioTitle: 'Xưởng Máy Backend',
+    factorioDesc: 'Kéo và thả các nút để xây dựng một đường ống có khả năng xử lý tải 1000 Req/s.',
+    tagPuzzle: 'Giải đố',
+    tagDragDrop: 'Kéo & Thả',
+    backToHub: 'QUAY LẠI TRANG CHỦ GAME'
+  },
+  'vi': {
+    multiverse: 'ĐA VŨ TRỤ TRÌNH TẠO',
+    chooseExperience: 'Chọn trải nghiệm tương tác ưa thích của bạn để tạo cơ sở hạ tầng backend.',
+    skillTreeTitle: 'Cây Kỹ Năng Kiến Trúc',
+    skillTreeDesc: 'Cây công nghệ phong cách RPG toàn diện. Mở khóa các tính năng doanh nghiệp một cách hệ thống.',
+    tagEducational: 'Học tập',
+    tagFullConfig: 'Cấu hình đầy đủ',
+    factorioTitle: 'Xưởng Máy Backend',
+    factorioDesc: 'Kéo và thả các nút để xây dựng một đường ống có khả năng xử lý tải 1000 Req/s.',
+    tagPuzzle: 'Giải đố',
+    tagDragDrop: 'Kéo & Thả',
+    backToHub: 'QUAY LẠI TRANG CHỦ GAME'
+  },
+  'zh-CN': {
+    multiverse: '生成器多重宇宙',
+    chooseExperience: '选择您喜欢的交互式体验以生成您的后端基础设施。',
+    skillTreeTitle: '架构技能树',
+    skillTreeDesc: '一个全面的 RPG 风格技术树。系统地解锁企业功能。',
+    tagEducational: '教育性',
+    tagFullConfig: '完整配置',
+    factorioTitle: '后端工厂',
+    factorioDesc: '拖放节点以构建能够处理 1000 Req/s 负载的管道。',
+    tagPuzzle: '益智',
+    tagDragDrop: '拖放',
+    backToHub: '返回游戏中心'
+  },
+  'zh': {
+    multiverse: '生成器多重宇宙',
+    chooseExperience: '选择您喜欢的交互式体验以生成您的后端基础设施。',
+    skillTreeTitle: '架构技能树',
+    skillTreeDesc: '一个全面的 RPG 风格技术树。系统地解锁企业功能。',
+    tagEducational: '教育性',
+    tagFullConfig: '完整配置',
+    factorioTitle: '后端工厂',
+    factorioDesc: '拖放节点以构建能够处理 1000 Req/s 负载的管道。',
+    tagPuzzle: '益智',
+    tagDragDrop: '拖放',
+    backToHub: '返回游戏中心'
+  }
+};
+
+const t = computed(() => i18n[lang.value] || i18n['en-US']);
 </script>
 
 <style scoped>

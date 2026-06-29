@@ -1,16 +1,16 @@
 <template>
   <div class="factorio-wrapper">
     <div class="factory-header">
-      <h1 class="factory-title">BACKEND FACTORY BUILDER</h1>
+      <h1 class="factory-title">{{ t.factoryBuilder }}</h1>
       <p class="status-panel">
-        INCOMING TRAFFIC: <span class="traffic-text">1000 Req/s</span><br>
-        <span class="sub-text">Build a pipeline capable of handling the load without crashing.</span>
+        {{ t.incomingTraffic }}<span class="traffic-text">1000 Req/s</span><br>
+        <span class="sub-text">{{ t.buildPipeline }}</span>
       </p>
     </div>
 
     <!-- Inventory / Conveyor Belt -->
     <div class="inventory-panel">
-      <h3>COMPONENT INVENTORY (Drag & Drop)</h3>
+      <h3>{{ t.componentInventory }}</h3>
       <div class="inventory-grid">
         <div 
           v-for="item in inventory" 
@@ -34,7 +34,7 @@
       <div class="pipeline-row">
         <div class="traffic-source">
           <div class="source-icon">🌐</div>
-          <div>CLIENT<br>1000/s</div>
+          <div>{{ t.client }}<br>1000/s</div>
         </div>
 
         <div class="arrow">➡️</div>
@@ -48,13 +48,13 @@
           @drop="onDrop($event, 'app')"
           @dblclick="removeSlot('app')"
         >
-          <div class="slot-label">APP SERVER</div>
+          <div class="slot-label">{{ t.appServer }}</div>
           <div v-if="slots.app" class="placed-item" :class="`type-app`">
             <span class="item-icon">{{ slots.app.icon }}</span>
             {{ slots.app.name }}
-            <div class="remove-hint">(Double click to remove)</div>
+            <div class="remove-hint">{{ t.doubleClickRemove }}</div>
           </div>
-          <div v-else class="slot-placeholder">Drop App Server here</div>
+          <div v-else class="slot-placeholder">{{ t.dropAppServer }}</div>
         </div>
 
         <div class="arrow">➡️</div>
@@ -66,13 +66,13 @@
           @drop="onDrop($event, 'queue')"
           @dblclick="removeSlot('queue')"
         >
-          <div class="slot-label">BROKER/QUEUE</div>
+          <div class="slot-label">{{ t.brokerQueue }}</div>
           <div v-if="slots.queue" class="placed-item" :class="`type-queue`">
             <span class="item-icon">{{ slots.queue.icon }}</span>
             {{ slots.queue.name }}
-            <div class="remove-hint">(Double click to remove)</div>
+            <div class="remove-hint">{{ t.doubleClickRemove }}</div>
           </div>
-          <div v-else class="slot-placeholder">Drop Broker here</div>
+          <div v-else class="slot-placeholder">{{ t.dropBroker }}</div>
         </div>
 
         <div class="arrow">➡️</div>
@@ -84,13 +84,13 @@
           @drop="onDrop($event, 'db')"
           @dblclick="removeSlot('db')"
         >
-          <div class="slot-label">DATA VAULT</div>
+          <div class="slot-label">{{ t.dataVault }}</div>
           <div v-if="slots.db" class="placed-item" :class="`type-db`">
             <span class="item-icon">{{ slots.db.icon }}</span>
             {{ slots.db.name }}
-            <div class="remove-hint">(Double click to remove)</div>
+            <div class="remove-hint">{{ t.doubleClickRemove }}</div>
           </div>
-          <div v-else class="slot-placeholder">Drop Database here</div>
+          <div v-else class="slot-placeholder">{{ t.dropDatabase }}</div>
         </div>
 
         <div class="arrow">➡️</div>
@@ -102,13 +102,13 @@
           @drop="onDrop($event, 'cache')"
           @dblclick="removeSlot('cache')"
         >
-          <div class="slot-label">CACHE LAYER</div>
+          <div class="slot-label">{{ t.cacheLayer }}</div>
           <div v-if="slots.cache" class="placed-item" :class="`type-cache`">
             <span class="item-icon">{{ slots.cache.icon }}</span>
             {{ slots.cache.name }}
-            <div class="remove-hint">(Double click to remove)</div>
+            <div class="remove-hint">{{ t.doubleClickRemove }}</div>
           </div>
-          <div v-else class="slot-placeholder">Drop Cache here</div>
+          <div v-else class="slot-placeholder">{{ t.dropCache }}</div>
         </div>
       </div>
 
@@ -121,13 +121,13 @@
           @drop="onDrop($event, 'cicd')"
           @dblclick="removeSlot('cicd')"
         >
-          <div class="slot-label">CI/CD PIPELINE</div>
+          <div class="slot-label">{{ t.cicdPipeline }}</div>
           <div v-if="slots.cicd" class="placed-item" :class="`type-cicd`">
             <span class="item-icon">{{ slots.cicd.icon }}</span>
             {{ slots.cicd.name }}
-            <div class="remove-hint">(Double click to remove)</div>
+            <div class="remove-hint">{{ t.doubleClickRemove }}</div>
           </div>
-          <div v-else class="slot-placeholder">Drop CI/CD here</div>
+          <div v-else class="slot-placeholder">{{ t.dropCicd }}</div>
         </div>
 
         <div class="plus-icon">➕</div>
@@ -139,13 +139,13 @@
           @drop="onDrop($event, 'cloud')"
           @dblclick="removeSlot('cloud')"
         >
-          <div class="slot-label">CLOUD INFRA</div>
+          <div class="slot-label">{{ t.cloudInfra }}</div>
           <div v-if="slots.cloud" class="placed-item" :class="`type-cloud`">
             <span class="item-icon">{{ slots.cloud.icon }}</span>
             {{ slots.cloud.name }}
-            <div class="remove-hint">(Double click to remove)</div>
+            <div class="remove-hint">{{ t.doubleClickRemove }}</div>
           </div>
-          <div v-else class="slot-placeholder">Drop Cloud here</div>
+          <div v-else class="slot-placeholder">{{ t.dropCloud }}</div>
         </div>
       </div>
     </div>
@@ -157,23 +157,23 @@
         :disabled="!canSimulate || simStatus === 'running'"
         @click="runSimulation"
       >
-        {{ simStatus === 'running' ? 'SIMULATING...' : 'RUN FACTORY' }}
+        {{ simStatus === 'running' ? t.simulating : t.runFactory }}
       </button>
 
-      <!-- Results -->
+    <!-- Results -->
       <div v-if="simStatus === 'exploded'" class="result-box exploded">
-        <h3>💥 FACTORY EXPLODED!</h3>
-        <p>{{ failMessage }}</p>
-        <button class="retry-btn" @click="resetSimulation">Fix Pipeline</button>
+        <h3>💥 {{ t.factoryExploded }}</h3>
+        <p>{{ getFailMessage() }}</p>
+        <button class="retry-btn" @click="resetSimulation">{{ t.fixPipeline }}</button>
       </div>
 
       <div v-if="simStatus === 'success'" class="result-box success">
-        <h3>✅ PIPELINE STABLE!</h3>
-        <p>The architecture successfully buffered and processed 1000 Req/s!</p>
+        <h3>✅ {{ t.pipelineStable }}</h3>
+        <p>{{ t.pipelineStableDesc }}</p>
         
         <div class="command-box">
           <div class="command-header">
-            <p>Extracting Blueprints...</p>
+            <p>{{ t.extractingBlueprints }}</p>
             <div class="pkg-tabs">
               <button :class="{ active: packageManager === 'npm' }" @click="packageManager = 'npm'">npx</button>
               <button :class="{ active: packageManager === 'yarn' }" @click="packageManager = 'yarn'">yarn</button>
@@ -181,7 +181,7 @@
             </div>
           </div>
           <code>{{ cliCommand }}</code>
-          <button class="copy-btn" @click="copyCommand">{{ copied ? 'COPIED!' : 'COPY COMMAND' }}</button>
+          <button class="copy-btn" @click="copyCommand">{{ copied ? t.copied : t.copyCommand }}</button>
         </div>
       </div>
     </div>
@@ -191,8 +191,175 @@
 <script setup>
 import { ref, computed, reactive } from 'vue';
 import { useGenerator } from '../theme/composables/useGenerator.js';
+import { useData } from 'vitepress';
 
 const { form, cliCommand, showAdvanced, packageManager } = useGenerator();
+const { lang } = useData();
+
+const i18n = {
+  'en-US': {
+    factoryBuilder: 'BACKEND FACTORY BUILDER',
+    incomingTraffic: 'INCOMING TRAFFIC: ',
+    buildPipeline: 'Build a pipeline capable of handling the load without crashing.',
+    componentInventory: 'COMPONENT INVENTORY (Drag & Drop)',
+    client: 'CLIENT',
+    appServer: 'APP SERVER',
+    doubleClickRemove: '(Double click to remove)',
+    dropAppServer: 'Drop App Server here',
+    brokerQueue: 'BROKER/QUEUE',
+    dropBroker: 'Drop Broker here',
+    dataVault: 'DATA VAULT',
+    dropDatabase: 'Drop Database here',
+    cacheLayer: 'CACHE LAYER',
+    dropCache: 'Drop Cache here',
+    cicdPipeline: 'CI/CD PIPELINE',
+    dropCicd: 'Drop CI/CD here',
+    cloudInfra: 'CLOUD INFRA',
+    dropCloud: 'Drop Cloud here',
+    simulating: 'SIMULATING...',
+    runFactory: 'RUN FACTORY',
+    factoryExploded: 'FACTORY EXPLODED!',
+    fixPipeline: 'Fix Pipeline',
+    pipelineStable: 'PIPELINE STABLE!',
+    pipelineStableDesc: 'The architecture successfully buffered and processed 1000 Req/s!',
+    extractingBlueprints: 'Extracting Blueprints...',
+    copied: 'COPIED!',
+    copyCommand: 'COPY COMMAND',
+    failBullMQ: 'You selected BullMQ but did not provide Redis Cache! BullMQ REQUIRES Redis to store background jobs. The factory halted!',
+    failRest: 'Direct REST API causes synchronous blocking. Your pipeline only handles {cap} Req/s. It crashed under 1000 Req/s load!',
+    failCapacity: 'Your architecture capacity ({cap} Req/s) couldn\'t handle the load. Upgrade your nodes or caching layer!'
+  },
+  'vi-VN': {
+    factoryBuilder: 'XƯỞNG MÁY XÂY DỰNG BACKEND',
+    incomingTraffic: 'LƯU LƯỢNG TRUY CẬP: ',
+    buildPipeline: 'Xây dựng một đường ống có khả năng chịu tải mà không bị sập.',
+    componentInventory: 'KHO LINH KIỆN (Kéo & Thả)',
+    client: 'CLIENT',
+    appServer: 'MÁY CHỦ APP',
+    doubleClickRemove: '(Nhấp đúp chuột để gỡ)',
+    dropAppServer: 'Thả máy chủ App vào đây',
+    brokerQueue: 'HÀNG ĐỢI/BROKER',
+    dropBroker: 'Thả Broker vào đây',
+    dataVault: 'KHO DỮ LIỆU',
+    dropDatabase: 'Thả Cực dữ liệu vào đây',
+    cacheLayer: 'BỘ ĐỆM CACHE',
+    dropCache: 'Thả Cache vào đây',
+    cicdPipeline: 'QUY TRÌNH CI/CD',
+    dropCicd: 'Thả CI/CD vào đây',
+    cloudInfra: 'HẠ TẦNG CLOUD',
+    dropCloud: 'Thả Cloud vào đây',
+    simulating: 'ĐANG MÔ PHỎNG...',
+    runFactory: 'KHỞI CHẠY XƯỞNG MÁY',
+    factoryExploded: 'XƯỞNG MÁY BỊ NỔ!',
+    fixPipeline: 'Sửa lỗi Đường ống',
+    pipelineStable: 'ĐƯỜNG ỐNG ỔN ĐỊNH!',
+    pipelineStableDesc: 'Kiến trúc đã phân tải và xử lý thành công 1000 Req/s!',
+    extractingBlueprints: 'Đang trích xuất thiết kế...',
+    copied: 'ĐÃ SAO CHÉP!',
+    copyCommand: 'SAO CHÉP LỆNH',
+    failBullMQ: 'Bạn đã chọn BullMQ nhưng không cung cấp Redis Cache! BullMQ BẮT BUỘC cần Redis để lưu trữ các tác vụ nền. Xưởng máy đã tạm dừng!',
+    failRest: 'Gọi API REST trực tiếp gây ra tắc nghẽn đồng bộ. Đường ống của bạn chỉ chịu được {cap} Req/s. Hệ thống đã sập dưới tải 1000 Req/s!',
+    failCapacity: 'Khả năng chịu tải của kiến trúc ({cap} Req/s) không đủ để đáp ứng lưu lượng. Hãy nâng cấp các node hoặc thêm bộ đệm caching!'
+  },
+  'vi': {
+    factoryBuilder: 'XƯỞNG MÁY XÂY DỰNG BACKEND',
+    incomingTraffic: 'LƯU LƯỢNG TRUY CẬP: ',
+    buildPipeline: 'Xây dựng một đường ống có khả năng chịu tải mà không bị sập.',
+    componentInventory: 'KHO LINH KIỆN (Kéo & Thả)',
+    client: 'CLIENT',
+    appServer: 'MÁY CHỦ APP',
+    doubleClickRemove: '(Nhấp đúp chuột để gỡ)',
+    dropAppServer: 'Thả máy chủ App vào đây',
+    brokerQueue: 'HÀNG ĐỢI/BROKER',
+    dropBroker: 'Thả Broker vào đây',
+    dataVault: 'KHO DỮ LIỆU',
+    dropDatabase: 'Thả Cực dữ liệu vào đây',
+    cacheLayer: 'BỘ ĐỆM CACHE',
+    dropCache: 'Thả Cache vào đây',
+    cicdPipeline: 'QUY TRÌNH CI/CD',
+    dropCicd: 'Thả CI/CD vào đây',
+    cloudInfra: 'HẠ TẦNG CLOUD',
+    dropCloud: 'Thả Cloud vào đây',
+    simulating: 'ĐANG MÔ PHỎNG...',
+    runFactory: 'KHỞI CHẠY XƯỞNG MÁY',
+    factoryExploded: 'XƯỞNG MÁY BỊ NỔ!',
+    fixPipeline: 'Sửa lỗi Đường ống',
+    pipelineStable: 'ĐƯỜNG ỐNG ỔN ĐỊNH!',
+    pipelineStableDesc: 'Kiến trúc đã phân tải và xử lý thành công 1000 Req/s!',
+    extractingBlueprints: 'Đang trích xuất thiết kế...',
+    copied: 'ĐÃ SAO CHÉP!',
+    copyCommand: 'SAO CHÉP LỆNH',
+    failBullMQ: 'Bạn đã chọn BullMQ nhưng không cung cấp Redis Cache! BullMQ BẮT BUỘC cần Redis để lưu trữ các tác vụ nền. Xưởng máy đã tạm dừng!',
+    failRest: 'Gọi API REST trực tiếp gây ra tắc nghẽn đồng bộ. Đường ống của bạn chỉ chịu được {cap} Req/s. Hệ thống đã sập dưới tải 1000 Req/s!',
+    failCapacity: 'Khả năng chịu tải của kiến trúc ({cap} Req/s) không đủ để đáp ứng lưu lượng. Hãy nâng cấp các node hoặc thêm bộ đệm caching!'
+  },
+  'zh-CN': {
+    factoryBuilder: '后端工厂生成器',
+    incomingTraffic: '实时流量：',
+    buildPipeline: '构建一个能够处理流量而不崩溃的管道。',
+    componentInventory: '组件清单 (拖放)',
+    client: '客户端',
+    appServer: '应用服务器',
+    doubleClickRemove: '(双击移除)',
+    dropAppServer: '将应用拖放到此处',
+    brokerQueue: '消息队列/Broker',
+    dropBroker: '将消息队列拖放到此处',
+    dataVault: '数据存储',
+    dropDatabase: '将数据库拖放到此处',
+    cacheLayer: '缓存层',
+    dropCache: '将缓存拖放到此处',
+    cicdPipeline: 'CI/CD 流程',
+    dropCicd: '将 CI/CD 拖放到此处',
+    cloudInfra: '云基础设施',
+    dropCloud: '将云配置拖放到此处',
+    simulating: '模拟中...',
+    runFactory: '运行工厂',
+    factoryExploded: '工厂爆炸了！',
+    fixPipeline: '修复管道',
+    pipelineStable: '管道稳定！',
+    pipelineStableDesc: '架构成功缓冲并处理了 1000 Req/s 的流量！',
+    extractingBlueprints: '正在提取蓝图...',
+    copied: '已复制！',
+    copyCommand: '复制命令',
+    failBullMQ: '你选择了 BullMQ 但没有提供 Redis 缓存！BullMQ 需要 Redis 来存储后台任务。工厂已停机！',
+    failRest: '直接 REST API 会导致同步阻塞。你的管道只能处理 {cap} Req/s。在 1000 Req/s 负载下它崩溃了！',
+    failCapacity: '你的架构承载能力 ({cap} Req/s) 无法应对此流量。请升级节点或添加缓存层！'
+  },
+  'zh': {
+    factoryBuilder: '后端工厂生成器',
+    incomingTraffic: '实时流量：',
+    buildPipeline: '构建一个能够处理流量而不崩溃的管道。',
+    componentInventory: '组件清单 (拖放)',
+    client: '客户端',
+    appServer: '应用服务器',
+    doubleClickRemove: '(双击移除)',
+    dropAppServer: '将应用拖放到此处',
+    brokerQueue: '消息队列/Broker',
+    dropBroker: '将消息队列拖放到此处',
+    dataVault: '数据存储',
+    dropDatabase: '将数据库拖放到此处',
+    cacheLayer: '缓存层',
+    dropCache: '将缓存拖放到此处',
+    cicdPipeline: 'CI/CD 流程',
+    dropCicd: '将 CI/CD 拖放到此处',
+    cloudInfra: '云基础设施',
+    dropCloud: '将云配置拖放到此处',
+    simulating: '模拟中...',
+    runFactory: '运行工厂',
+    factoryExploded: '工厂爆炸了！',
+    fixPipeline: '修复管道',
+    pipelineStable: '管道稳定！',
+    pipelineStableDesc: '架构成功缓冲并处理了 1000 Req/s 的流量！',
+    extractingBlueprints: '正在提取蓝图...',
+    copied: '已复制！',
+    copyCommand: '复制命令',
+    failBullMQ: '你选择了 BullMQ 但没有提供 Redis 缓存！BullMQ 需要 Redis 来存储后台任务。工厂已停机！',
+    failRest: '直接 REST API 会导致同步阻塞。你的管道只能处理 {cap} Req/s。在 1000 Req/s 负载下它崩溃了！',
+    failCapacity: '你的架构承载能力 ({cap} Req/s) 无法应对此流量。请升级节点或添加缓存层！'
+  }
+};
+
+const t = computed(() => i18n[lang.value] || i18n['en-US']);
 
 const inventory = [
   { id: 'app_mvc', type: 'app', icon: '⛺', name: 'MVC Node', load: 300, displayStat: 'Cap: 300/s', config: { architecture: 'MVC', language: 'JavaScript' } },
@@ -232,7 +399,8 @@ const slots = reactive({
 
 const draggedType = ref(null);
 const simStatus = ref('idle');
-const failMessage = ref('');
+const failType = ref('');
+const failCapacityVal = ref(0);
 const copied = ref(false);
 
 const isItemPlaced = (id) => {
@@ -273,7 +441,7 @@ const runSimulation = () => {
   // Enforce specific logic for game rules
   if (slots.queue.id === 'queue_bull' && slots.cache.id !== 'cache_redis') {
     simStatus.value = 'exploded';
-    failMessage.value = `You selected BullMQ but did not provide Redis Cache! BullMQ REQUIRES Redis to store background jobs. The factory halted!`;
+    failType.value = 'bullmq';
     return;
   }
 
@@ -283,16 +451,30 @@ const runSimulation = () => {
     
     if (totalCapacity < 1000) {
       simStatus.value = 'exploded';
+      failCapacityVal.value = Math.floor(totalCapacity);
       if (slots.queue.id === 'queue_rest') {
-        failMessage.value = `Direct REST API causes synchronous blocking. Your pipeline only handles ${Math.floor(totalCapacity)} Req/s. It crashed under 1000 Req/s load!`;
+        failType.value = 'rest';
       } else {
-        failMessage.value = `Your architecture capacity (${Math.floor(totalCapacity)} Req/s) couldn't handle the load. Upgrade your nodes or caching layer!`;
+        failType.value = 'capacity';
       }
     } else {
       applyConfigToForm();
       simStatus.value = 'success';
     }
   }, 1000);
+};
+
+const getFailMessage = () => {
+  if (failType.value === 'bullmq') {
+    return t.value.failBullMQ;
+  }
+  if (failType.value === 'rest') {
+    return t.value.failRest.replace('{cap}', failCapacityVal.value);
+  }
+  if (failType.value === 'capacity') {
+    return t.value.failCapacity.replace('{cap}', failCapacityVal.value);
+  }
+  return '';
 };
 
 const applyConfigToForm = () => {

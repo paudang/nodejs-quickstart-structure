@@ -3,7 +3,7 @@
     <h3 class="generator-card-title" style="display: flex; justify-content: space-between; align-items: center;">
       <div style="display: flex; align-items: center; gap: 8px;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-        Configuration
+        {{ t.configuration }}
       </div>
       <a href="https://github.com/paudang/nodejs-quickstart-structure" target="_blank" class="github-star-link" title="Star on GitHub">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="star-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
@@ -149,7 +149,7 @@
         </div>
 
         <div class="form-group" style="grid-column: 1 / -1;">
-          <label class="form-label">Centralized Logging</label>
+          <label class="form-label">{{ t.centralizedLogging }}</label>
           <div class="checkbox-group" style="margin-top: 0.5rem;">
             <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9em;">
               <input type="checkbox" v-model="form.withELK" /> 
@@ -172,13 +172,36 @@
 
     <button class="btn-primary" @click="generateCommand" :disabled="hasErrors">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2l.5-.5a5.4 5.4 0 0 0 1-4.09V11c0-.55-.45-1-1-1h-3.91c-1.57.04-3.07.64-4.09 1.5l-.5.5Z"></path><path d="m12 12 7-7"></path><path d="m14 8 4-4"></path><path d="m16 10 4-4"></path></svg>
-      Confirm and Generate
+      {{ t.confirmGenerate }}
     </button>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue';
+import { useData } from 'vitepress';
 import { useGenerator } from '../composables/useGenerator';
 
+const { lang } = useData();
 const { form, errors, hasErrors, showAdvanced, validateName, generateCommand } = useGenerator();
+
+const i18n = {
+  'en-US': {
+    configuration: 'Configuration',
+    centralizedLogging: 'Centralized Logging',
+    confirmGenerate: 'Confirm and Generate'
+  },
+  'vi-VN': {
+    configuration: 'Cấu hình dự án',
+    centralizedLogging: 'Quản lý log tập trung (Centralized Logging)',
+    confirmGenerate: 'Xác nhận và Tạo mã'
+  },
+  'zh-CN': {
+    configuration: '项目配置',
+    centralizedLogging: '集中式日志 (Centralized Logging)',
+    confirmGenerate: '确认并生成代码'
+  }
+};
+
+const t = computed(() => i18n[lang.value] || i18n['en-US']);
 </script>

@@ -2,7 +2,7 @@
   <div class="generator-card simulation-area">
     <h3 class="generator-card-title">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg>
-      Structure Simulation
+      {{ t.structureSimulation }}
     </h3>
     <div class="tree-container" v-if="form.projectName">
       <div class="tree-item" style="--depth: 0">
@@ -83,7 +83,7 @@
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.flyway }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           flyway
-          <span class="tree-comment"># Database migrations management</span>
+          <span class="tree-comment">{{ t.dbMigration }}</span>
         </div>
         <div v-show="expanded.flyway">
           <div class="tree-item clickable" style="--depth: 2" @click="toggle('flyway_sql')">
@@ -106,14 +106,14 @@
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.terraform }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           terraform
-          <span class="tree-comment"># Infrastructure as Code (AWS Modular)</span>
+          <span class="tree-comment">{{ t.tfIaC }}</span>
         </div>
         <div v-show="expanded.terraform">
           <div class="tree-item clickable" style="--depth: 2" @click="toggle('tf_modules')">
             <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.tf_modules }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
             modules
-            <span class="tree-comment"># Reusable infrastructure components</span>
+            <span class="tree-comment">{{ t.tfModules }}</span>
           </div>
           <div v-show="expanded.tf_modules">
              <div class="tree-item" style="--depth: 3" v-for="m in ['vpc', 'security', 'compute', 'database', 'cache'].filter(x => (x !== 'cache' || form.caching !== 'None') && (x !== 'database' || form.database !== 'None'))" :key="m">
@@ -124,17 +124,17 @@
           <div class="tree-item" style="--depth: 2">
             <svg class="tree-item-icon" style="color: #623ce4;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
             main.tf
-            <span class="tree-comment"># Root orchestration and module linking</span>
+            <span class="tree-comment">{{ t.tfMain }}</span>
           </div>
           <div class="tree-item" style="--depth: 2">
             <svg class="tree-item-icon" style="color: #623ce4;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
             variables.tf
-            <span class="tree-comment"># Infrastructure input parameters</span>
+            <span class="tree-comment">{{ t.tfVars }}</span>
           </div>
           <div class="tree-item" style="--depth: 2">
             <svg class="tree-item-icon" style="color: #623ce4;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
             outputs.tf
-            <span class="tree-comment"># Deployment results (URLs, IPs, Endpoints)</span>
+            <span class="tree-comment">{{ t.tfOutputs }}</span>
           </div>
         </div>
       </template>
@@ -144,7 +144,7 @@
         <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.prompts }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
         <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
         prompts
-        <span class="tree-comment"># AI agent system prompts</span>
+        <span class="tree-comment">{{ t.promptsComment }}</span>
       </div>
       <div v-show="expanded.prompts">
         <div class="tree-item" style="--depth: 2">
@@ -171,7 +171,7 @@
         <div class="tree-item" style="--depth: 2">
           <svg class="tree-item-icon icon-file-js" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
           run-e2e.js
-          <span class="tree-comment"># E2E test orchestrator (starts server and runs tests)</span>
+          <span class="tree-comment">{{ t.runE2eComment }}</span>
         </div>
       </div>
 
@@ -211,7 +211,7 @@
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.config }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           config
-          <span class="tree-comment"># System-wide configurations (DB, Cache, Swagger)</span>
+          <span class="tree-comment">{{ t.configMvcComment }}</span>
         </div>
         <div v-show="expanded.config">
         <div class="tree-item" style="--depth: 3">
@@ -244,7 +244,7 @@
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.controllers }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           controllers
-          <span class="tree-comment"># Request handling & input validation</span>
+          <span class="tree-comment">{{ t.controllersComment }}</span>
         </div>
         <div v-show="expanded.controllers">
         <div class="tree-item" style="--depth: 3">
@@ -273,7 +273,7 @@
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.models }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           models
-          <span class="tree-comment"># Data schemas & business entities</span>
+          <span class="tree-comment">{{ t.modelsComment }}</span>
         </div>
         <div v-show="expanded.models">
           <div class="tree-item" style="--depth: 3">
@@ -286,7 +286,7 @@
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.services }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           services
-          <span class="tree-comment"># Business logic and authentication services</span>
+          <span class="tree-comment">{{ t.servicesComment }}</span>
         </div>
         <div v-show="expanded.services" v-if="form.communication === 'Kafka' || form.auth !== 'None'">
           <div class="tree-item" style="--depth: 3" v-if="form.communication === 'Kafka'">
@@ -307,7 +307,7 @@
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.routes_mvc }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           routes
-          <span class="tree-comment"># Express API routing endpoints</span>
+          <span class="tree-comment">{{ t.routesComment }}</span>
         </div>
         <div v-show="expanded.routes_mvc">
           <div class="tree-item" style="--depth: 3">
@@ -329,7 +329,7 @@
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.graphql_mvc }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           graphql
-          <span class="tree-comment"># GraphQL schemas and resolvers</span>
+          <span class="tree-comment">{{ t.graphqlComment }}</span>
         </div>
         <div v-show="expanded.graphql_mvc" v-if="form.communication === 'GraphQL'">
           <div class="tree-item clickable" style="--depth: 3" @click="toggle('resolvers_mvc')">
@@ -377,7 +377,7 @@
             <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.messaging }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
             messaging
-            <span class="tree-comment"># Event contracts & schemas</span>
+            <span class="tree-comment">{{ t.messagingSchemasComment }}</span>
           </div>
           <div v-show="expanded.messaging">
             <div class="tree-item" style="--depth: 3">
@@ -406,7 +406,7 @@
         <div class="tree-item" style="--depth: 2">
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           domain
-          <span class="tree-comment"># Core business logic and enterprise rules</span>
+          <span class="tree-comment">{{ t.domainComment }}</span>
         </div>
 
         <div class="tree-item clickable" style="--depth: 2" @click="toggle('infrastructure')">
@@ -501,7 +501,7 @@
           <div class="tree-item" style="--depth: 4">
             <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
             models
-            <span class="tree-comment"># Data schemas & business entities</span>
+            <span class="tree-comment">{{ t.modelsComment }}</span>
           </div>
           <div class="tree-item" style="--depth: 4" v-if="form.database !== 'None'">
             <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
@@ -513,7 +513,7 @@
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.repositories_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           repositories
-          <span class="tree-comment"># Data access</span>
+          <span class="tree-comment">{{ t.repositoriesComment }}</span>
         </div>
         <div v-show="expanded.repositories_clean">
           <div class="tree-item" style="--depth: 4">
@@ -525,14 +525,14 @@
         <div class="tree-item" style="--depth: 3" v-if="form.communication === 'Kafka'">
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           messaging
-          <span class="tree-comment"># Event-driven messaging implementation</span>
+          <span class="tree-comment">{{ t.messagingImplComment }}</span>
         </div>
 
         <div class="tree-item clickable" style="--depth: 3" v-if="form.language === 'JavaScript' || form.auth !== 'None'" @click="toggle('webserver_clean')">
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.webserver_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           webserver
-          <span class="tree-comment" v-if="form.language === 'TypeScript'"># Infrastructure for auth middleware</span>
+          <span class="tree-comment" v-if="form.language === 'TypeScript'">{{ t.webserverComment }}</span>
         </div>
         <div v-show="expanded.webserver_clean" v-if="form.language === 'JavaScript' || form.auth !== 'None'">
           <div class="tree-item clickable" style="--depth: 4" v-if="form.language === 'JavaScript' || form.auth !== 'None'" @click="toggle('middleware_clean')">
@@ -574,7 +574,7 @@
             <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.controllers_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
             controllers
-            <span class="tree-comment"># Request handling & input validation</span>
+            <span class="tree-comment">{{ t.controllersComment }}</span>
           </div>
           <div v-show="expanded.controllers_clean">
             <div class="tree-item clickable" style="--depth: 4" v-if="form.auth !== 'None'" @click="toggle('auth_controllers')">
@@ -598,7 +598,7 @@
             <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.routes_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
             routes
-            <span class="tree-comment"># Express API routing endpoints</span>
+            <span class="tree-comment">{{ t.routesComment }}</span>
           </div>
           <div v-show="expanded.routes_clean">
              <div class="tree-item" style="--depth: 4">
@@ -619,7 +619,7 @@
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.graphql_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           graphql
-          <span class="tree-comment"># GraphQL schemas and resolvers</span>
+          <span class="tree-comment">{{ t.graphqlComment }}</span>
         </div>
         <div v-show="expanded.graphql_clean" v-if="form.communication === 'GraphQL'">
           <div class="tree-item clickable" style="--depth: 4" @click="toggle('resolvers_clean')">
@@ -668,7 +668,7 @@
             <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.messaging_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
             messaging
-            <span class="tree-comment"># Event contracts & schemas</span>
+            <span class="tree-comment">{{ t.messagingSchemasComment }}</span>
           </div>
           <div v-show="expanded.messaging_clean">
             <div class="tree-item" style="--depth: 4">
@@ -691,7 +691,7 @@
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.usecases }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           usecases
-          <span class="tree-comment"># Application business rules & use cases</span>
+          <span class="tree-comment">{{ t.usecasesComment }}</span>
         </div>
         <div v-show="expanded.usecases">
           <div class="tree-item clickable" style="--depth: 3" v-if="form.auth === 'OAuth2 - Google/GitHub - JWT'" @click="toggle('usecases_auth')">
@@ -715,7 +715,7 @@
           <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.config_root_clean }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
           <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
           config
-          <span class="tree-comment"># System-wide configurations</span>
+          <span class="tree-comment">{{ t.configCleanComment }}</span>
         </div>
         <div v-show="expanded.config_root_clean" v-if="form.language === 'TypeScript'">
           <div class="tree-item" style="--depth: 3">
@@ -798,19 +798,19 @@
       <div class="tree-item" style="--depth: 3" v-if="form.language === 'TypeScript'">
         <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         errorMiddleware.ts
-        <span class="tree-comment"># Global error handling (Architect standard)</span>
+        <span class="tree-comment">{{ t.errorMiddlewareComment }}</span>
       </div>
       <div class="tree-item" style="--depth: 3">
         <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         gracefulShutdown.{{ ext }}
-        <span class="tree-comment"># Safe process termination on SIGTERM/SIGINT</span>
+        <span class="tree-comment">{{ t.gracefulShutdownComment }}</span>
       </div>
       </div>
 
       <div class="tree-item" style="--depth: 2">
         <svg class="tree-item-icon" :class="form.language === 'TypeScript' ? 'icon-file-ts' : 'icon-file-js'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         index.{{ ext }}
-        <span class="tree-comment"># Application entry file</span>
+        <span class="tree-comment">{{ t.appEntryComment }}</span>
       </div>
       
       </div>
@@ -826,7 +826,7 @@
         <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.e2e }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
         <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
         e2e
-        <span class="tree-comment"># High-level integration tests (Testing full flows)</span>
+        <span class="tree-comment">{{ t.e2eComment }}</span>
       </div>
       <div v-show="expanded.e2e">
       <div class="tree-item" style="--depth: 3">
@@ -837,7 +837,7 @@
       <div class="tree-item" style="--depth: 2">
         <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
         unit
-        <span class="tree-comment"># Testing isolated business logic</span>
+        <span class="tree-comment">{{ t.unitComment }}</span>
       </div>
       <div class="tree-item" style="--depth: 2" v-if="form.language === 'TypeScript'">
         <svg class="tree-item-icon icon-file-json" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
@@ -864,17 +864,17 @@
       <div class="tree-item" style="--depth: 1">
         <svg class="tree-item-icon icon-file-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         .gitattributes
-        <span class="tree-comment"># Git repository configurations</span>
+        <span class="tree-comment">{{ t.gitAttributesComment }}</span>
       </div>
       <div class="tree-item" style="--depth: 1">
         <svg class="tree-item-icon icon-file-json" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         .lintstagedrc
-        <span class="tree-comment"># Pre-commit formatting and linting rules</span>
+        <span class="tree-comment">{{ t.lintStagedComment }}</span>
       </div>
       <div class="tree-item" style="--depth: 1">
         <svg class="tree-item-icon icon-file-json" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         .prettierrc
-        <span class="tree-comment"># Code style preferences</span>
+        <span class="tree-comment">{{ t.prettierComment }}</span>
       </div>
       <div class="tree-item" style="--depth: 1">
         <svg class="tree-item-icon icon-file-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
@@ -883,7 +883,7 @@
       <div class="tree-item" style="--depth: 1">
         <svg class="tree-item-icon icon-file-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         .env.example
-        <span class="tree-comment"># Environment variables</span>
+        <span class="tree-comment">{{ t.envExampleComment }}</span>
       </div>
       
       <div class="tree-item" style="--depth: 1" v-if="form.database === 'MongoDB'">
@@ -894,12 +894,12 @@
       <div class="tree-item" style="--depth: 1">
         <svg class="tree-item-icon icon-file-js" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         eslint.config.mjs
-        <span class="tree-comment"># Enforces code quality and style.</span>
+        <span class="tree-comment">{{ t.eslintComment }}</span>
       </div>
       <div class="tree-item" style="--depth: 1" v-if="form.language === 'JavaScript'">
         <svg class="tree-item-icon icon-file-js" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         babel.config.js
-        <span class="tree-comment"># Transpiles modern JavaScript for Node</span>
+        <span class="tree-comment">{{ t.babelComment }}</span>
       </div>
       <div class="tree-item" style="--depth: 1">
         <svg class="tree-item-icon icon-file-js" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
@@ -921,19 +921,19 @@
         <svg class="tree-item-icon icon-file-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         .dockerignore
       </div>
-
+ 
       <div class="tree-item" style="--depth: 1" v-if="needsInfra">
         <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         docker-compose.yml
-        <span class="tree-comment"># Local multi-container infrastructure</span>
+        <span class="tree-comment">{{ t.dockerComposeComment }}</span>
       </div>
       
       <div class="tree-item" style="--depth: 1" v-if="form.withELK">
         <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
         docker-compose.elk.yml
-        <span class="tree-comment"># ELK Stack configuration</span>
+        <span class="tree-comment">{{ t.elkComment }}</span>
       </div>
-
+ 
       <!-- CI/CD Workflows -->
       <template v-if="form.ciProvider === 'GitLab CI'">
         <div class="tree-item" style="--depth: 1">
@@ -948,14 +948,14 @@
           bitbucket-pipelines.yml
         </div>
       </template>
-
+ 
       <template v-if="form.ciProvider === 'Jenkins'">
         <div class="tree-item" style="--depth: 1">
           <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
           Jenkinsfile
         </div>
       </template>
-
+ 
       <template v-if="form.includeSecurity && form.ciProvider !== 'None'">
         <div class="tree-item" style="--depth: 1">
           <svg class="tree-item-icon icon-file-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
@@ -964,12 +964,12 @@
         <div class="tree-item" style="--depth: 1">
           <svg class="tree-item-icon icon-file-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
           sonar-project.properties
-          <span class="tree-comment"># Code quality and security analysis config</span>
+          <span class="tree-comment">{{ t.sonarComment }}</span>
         </div>
         <div class="tree-item" style="--depth: 1">
           <svg class="tree-item-icon icon-file-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
           .snyk
-          <span class="tree-comment"># Security policy for vulnerability scanning</span>
+          <span class="tree-comment">{{ t.snykComment }}</span>
         </div>
       </template>
     </div>
@@ -978,9 +978,133 @@
 
 <script setup>
 import { useGenerator } from '../composables/useGenerator';
-import { reactive } from 'vue';
+import { reactive, computed } from 'vue';
+import { useData } from 'vitepress';
 
+const { lang } = useData();
 const { form, ext, needsInfra } = useGenerator();
+
+const i18n = {
+  'en-US': {
+    structureSimulation: 'Structure Simulation',
+    dbMigration: '# Database migrations management',
+    tfIaC: '# Infrastructure as Code (AWS Modular)',
+    tfModules: '# Reusable infrastructure components',
+    tfMain: '# Root orchestration and module linking',
+    tfVars: '# Infrastructure input parameters',
+    tfOutputs: '# Deployment results (URLs, IPs, Endpoints)',
+    promptsComment: '# AI agent system prompts',
+    runE2eComment: '# E2E test orchestrator (starts server and runs tests)',
+    configMvcComment: '# System-wide configurations (DB, Cache, Swagger)',
+    controllersComment: '# Request handling & input validation',
+    modelsComment: '# Data schemas & business entities',
+    servicesComment: '# Business logic and authentication services',
+    routesComment: '# Express API routing endpoints',
+    graphqlComment: '# GraphQL schemas and resolvers',
+    messagingSchemasComment: '# Event contracts & schemas',
+    domainComment: '# Core business logic and enterprise rules',
+    repositoriesComment: '# Data access',
+    messagingImplComment: '# Event-driven messaging implementation',
+    webserverComment: '# Infrastructure for auth middleware',
+    usecasesComment: '# Application business rules & use cases',
+    configCleanComment: '# System-wide configurations',
+    errorMiddlewareComment: '# Global error handling (Architect standard)',
+    gracefulShutdownComment: '# Safe process termination on SIGTERM/SIGINT',
+    appEntryComment: '# Application entry file',
+    e2eComment: '# High-level integration tests (Testing full flows)',
+    unitComment: '# Testing isolated business logic',
+    gitAttributesComment: '# Git repository configurations',
+    lintStagedComment: '# Pre-commit formatting and linting rules',
+    prettierComment: '# Code style preferences',
+    envExampleComment: '# Environment variables',
+    eslintComment: '# Enforces code quality and style.',
+    babelComment: '# Transpiles modern JavaScript for Node',
+    dockerComposeComment: '# Local multi-container infrastructure',
+    elkComment: '# ELK Stack configuration',
+    sonarComment: '# Code quality and security analysis config',
+    snykComment: '# Security policy for vulnerability scanning'
+  },
+  'vi-VN': {
+    structureSimulation: 'Mô phỏng cấu trúc thư mục',
+    dbMigration: '# Quản lý migration cơ sở dữ liệu',
+    tfIaC: '# Cơ sở hạ tầng dưới dạng mã (AWS Modular)',
+    tfModules: '# Các thành phần hạ tầng có thể tái sử dụng',
+    tfMain: '# Điều phối chính và liên kết các module',
+    tfVars: '# Các tham số đầu vào của hạ tầng',
+    tfOutputs: '# Kết quả triển khai (URL, IP, Điểm cuối)',
+    promptsComment: '# Các prompt hệ thống cho AI agent',
+    runE2eComment: '# Trình điều phối test E2E (khởi động server và chạy test)',
+    configMvcComment: '# Cấu hình toàn hệ thống (DB, Cache, Swagger)',
+    controllersComment: '# Xử lý yêu cầu & xác thực dữ liệu đầu vào',
+    modelsComment: '# Schema dữ liệu & thực thể nghiệp vụ',
+    servicesComment: '# Logic nghiệp vụ và dịch vụ xác thực',
+    routesComment: '# Các điểm cuối định tuyến Express API',
+    graphqlComment: '# GraphQL schema và resolver',
+    messagingSchemasComment: '# Hợp đồng sự kiện & schema',
+    domainComment: '# Logic nghiệp vụ cốt lõi & quy tắc doanh nghiệp',
+    repositoriesComment: '# Truy cập dữ liệu',
+    messagingImplComment: '# Triển khai nhắn tin dựa trên sự kiện',
+    webserverComment: '# Hạ tầng cho middleware xác thực',
+    usecasesComment: '# Quy tắc nghiệp vụ ứng dụng & các use case',
+    configCleanComment: '# Cấu hình toàn hệ thống',
+    errorMiddlewareComment: '# Xử lý lỗi toàn cục (Chuẩn kiến trúc)',
+    gracefulShutdownComment: '# Tắt tiến trình an toàn khi nhận SIGTERM/SIGINT',
+    appEntryComment: '# File đầu vào của ứng dụng',
+    e2eComment: '# Kiểm thử tích hợp cấp cao (Kiểm thử toàn bộ luồng)',
+    unitComment: '# Kiểm thử logic nghiệp vụ cô lập',
+    gitAttributesComment: '# Cấu hình kho lưu trữ Git',
+    lintStagedComment: '# Quy tắc định dạng và lint trước khi commit',
+    prettierComment: '# Tùy chọn phong cách code',
+    envExampleComment: '# Biến môi trường',
+    eslintComment: '# Thực thi chất lượng và phong cách code.',
+    babelComment: '# Biên dịch JavaScript hiện đại cho Node',
+    dockerComposeComment: '# Cơ sở hạ tầng đa container cục bộ',
+    elkComment: '# Cấu hình ELK Stack',
+    sonarComment: '# Cấu hình phân tích bảo mật và chất lượng code',
+    snykComment: '# Chính sách bảo mật quét lỗ hổng'
+  },
+  'zh-CN': {
+    structureSimulation: '项目结构模拟',
+    dbMigration: '# 数据库迁移管理',
+    tfIaC: '# 基础设施即代码 (AWS模块化)',
+    tfModules: '# 可重用的基础设施组件',
+    tfMain: '# 根编排与模块链接',
+    tfVars: '# 基础设施输入参数',
+    tfOutputs: '# 部署结果 (URL, IP, 端点)',
+    promptsComment: '# AI 代理系统提示词',
+    runE2eComment: '# E2E 测试编排器 (启动服务器并运行测试)',
+    configMvcComment: '# 系统范围配置 (数据库, 缓存, Swagger)',
+    controllersComment: '# 请求处理与输入验证',
+    modelsComment: '# 数据模式与业务实体',
+    servicesComment: '# 业务逻辑与身份验证服务',
+    routesComment: '# Express API 路由端点',
+    graphqlComment: '# GraphQL 模式与解析器',
+    messagingSchemasComment: '# 事件契约与模式',
+    domainComment: '# 核心业务逻辑与企业规则',
+    repositoriesComment: '# 数据访问',
+    messagingImplComment: '# 事件驱动消息传递实现',
+    webserverComment: '# 身份验证中间件的基础设施',
+    usecasesComment: '# 应用业务规则与用例',
+    configCleanComment: '# 系统范围配置',
+    errorMiddlewareComment: '# 全局错误处理 (架构标准)',
+    gracefulShutdownComment: '# 收到 SIGTERM/SIGINT 时安全终止进程',
+    appEntryComment: '# 应用入口文件',
+    e2eComment: '# 高级集成测试 (测试完整流程)',
+    unitComment: '# 测试隔离的业务逻辑',
+    gitAttributesComment: '# Git 仓库配置',
+    lintStagedComment: '# 提交前格式化与联检规则',
+    prettierComment: '# 代码风格偏好',
+    envExampleComment: '# 环境变量',
+    eslintComment: '# 强制执行代码质量和风格。',
+    babelComment: '# 为 Node 转译现代 JavaScript',
+    dockerComposeComment: '# 本地多容器基础设施',
+    elkComment: '# ELK 堆栈配置',
+    sonarComment: '# 代码质量和安全分析配置',
+    snykComment: '# 漏洞扫描安全策略'
+  }
+};
+
+const t = computed(() => i18n[lang.value] || i18n['en-US']);
 
 const expanded = reactive({
   github: true,

@@ -1,5 +1,17 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.8.1] - 2026-06-29
+
+### Added
+- **Multi-Language (i18n) Documentation Parity**: Fully localized all core blueprints, features, guide, and infrastructure pages into 100% Vietnamese and Simplified Chinese.
+- **Client-Side Locale Routing Interception**: Overrode `router.go` in VitePress theme configuration to preserve subpage paths when changing languages, ensuring a seamless user experience instead of redirecting to the homepage.
+- **Localized Alert Containers**: Localized custom container headings (`[!TIP]`, `[!WARNING]`, `[!IMPORTANT]`, `[!CAUTION]`) into native Vietnamese (`Mẹo`, `Cảnh báo`, `Quan trọng`, `Cẩn trọng`) and Chinese (`提示`, `警告`, `重要`, `注意`).
+- **Global Theme Localization**: Added native translation configurations for outline headers ("On this page") and top buttons ("Return to top") for Vietnamese and Chinese locales.
+- **Game Localization**: Fully translated titles, hubs, configurations, drag-and-drop labels, and verification logs in `ArcadeHub.vue`, `SkillTreeGame.vue`, and `FactorioGame.vue`.
+
+### Fixed
+- **Markdown Rendering Layouts**: Resolved syntax formatting errors where un-escaped code blocks and headers merged on the same line, fixing broken sidebar and page layouts in localized documentation.
+
 ## [2.8.0] - 2026-06-16
 
 ### Added
