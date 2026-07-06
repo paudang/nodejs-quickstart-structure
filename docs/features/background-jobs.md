@@ -1,6 +1,7 @@
 # Background Jobs & Task Queues (BullMQ)
 
-The Node.js Quickstart Generator provides built-in, out-of-the-box support for **Enterprise Background Jobs** utilizing `BullMQ` and `Redis`. It automatically provisions queues, workers, and a monitoring dashboard (`Bull-Board`) into your project, keeping your architecture decoupled and highly scalable.
+The Node.js Quickstart Generator provides built-in, out-of-the-box support for **Enterprise <VocabLink category="backend-apis" term="background-job" text="Background Jobs" />** utilizing `BullMQ` and `Redis`. It automatically provisions queues, workers, and a monitoring dashboard (`Bull-Board`) into your project, keeping your architecture decoupled and highly scalable.
+
 
 ## Why Background Jobs?
 Handling long-running tasks synchronously blocks the Node.js Event Loop, drastically reducing application throughput.

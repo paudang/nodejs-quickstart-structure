@@ -166,7 +166,7 @@ Authorization: Bearer <accessToken>
 }
 ```
 
-> [!TIP] **Deep Dive into JWT Security**
+> [!TIP] Deep Dive into <VocabLink category="auth-security" term="authentication" text="JWT" /> Security
 > We've covered the complex challenges of scaling JWT stateless security and how our Redis blacklist approach solves them. Read our featured article on **System Weakness**:
 > - 📖 [The Illusion of Stateless Security: Rethinking JWT Revocation at Scale](https://systemweakness.com/the-illusion-of-stateless-security-rethinking-jwt-revocation-at-scale-8426472c5022)
 

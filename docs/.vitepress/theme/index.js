@@ -1,12 +1,16 @@
 import DefaultTheme from 'vitepress/theme';
 import './custom.css';
 import GeneratorApp from './components/GeneratorApp.vue';
+import CollaboratorBanner from './components/CollaboratorBanner.vue';
+import VocabLink from './components/VocabLink.vue';
 import { inBrowser } from 'vitepress';
 
 export default {
   extends: DefaultTheme,
   enhanceApp({ app, router }) {
     app.component('GeneratorApp', GeneratorApp);
+    app.component('CollaboratorBanner', CollaboratorBanner);
+    app.component('VocabLink', VocabLink);
 
     // Force synchronize package manager tabs globally on the page
     if (inBrowser) {

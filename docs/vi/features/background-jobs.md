@@ -1,6 +1,7 @@
 # Công việc Nền & Hàng đợi Nhiệm vụ (BullMQ)
 
-Node.js Quickstart Generator cung cấp tính năng hỗ trợ tích hợp sẵn cho **Công việc Nền Doanh nghiệp (Enterprise Background Jobs)** sử dụng `BullMQ` và `Redis`. Hệ thống tự động thiết lập các hàng đợi (queues), các worker và bảng điều khiển giám sát trực quan (`Bull-Board`) trong dự án của bạn, giúp kiến trúc luôn phân tách (decoupled) và có khả năng mở rộng cao.
+Node.js Quickstart Generator cung cấp tính năng hỗ trợ tích hợp sẵn cho **Công việc Nền Doanh nghiệp (Enterprise <VocabLink category="backend-apis" term="background-job" text="Background Jobs" />)** sử dụng `BullMQ` và `Redis`. Hệ thống tự động thiết lập các hàng đợi (queues), các worker và bảng điều khiển giám sát trực quan (`Bull-Board`) trong dự án của bạn, giúp kiến trúc luôn phân tách (decoupled) và có khả năng mở rộng cao.
+
 
 ## Tại sao cần Công việc Nền?
 Việc xử lý các tác vụ tốn thời gian một cách đồng bộ sẽ làm chặn Event Loop của Node.js, làm giảm mạnh hiệu năng và băng thông xử lý của ứng dụng.

@@ -29,7 +29,7 @@
 
 ## 身份验证与授权鉴权
 
-在所有的通信协议中，安全性均由生成的 **可插拔 JWT 系统** 统一接管：
+在所有的通信协议中，<VocabLink category="auth-security" term="authentication" text="身份验证" />及安全性均由生成的 **可插拔 JWT 系统** 统一接管：
 
 - **REST**：基于中间件鉴权模式 (`authMiddleware.ts`)。
 - **GraphQL**：基于 context 的全局注入鉴权以及 guarded resolvers 防护。

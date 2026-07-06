@@ -121,6 +121,7 @@ export default defineConfig({
         outline: {
           label: 'Mục lục trang này'
         },
+        sidebarMenuLabel: 'Danh mục',
         returnToTopLabel: 'Quay lại đầu trang',
         nav: [
           { text: 'Trang chủ', link: '/vi/' },
@@ -208,6 +209,7 @@ export default defineConfig({
         outline: {
           label: '本页大纲'
         },
+        sidebarMenuLabel: '菜单',
         returnToTopLabel: '返回顶部',
         nav: [
           { text: '首页', link: '/zh/' },

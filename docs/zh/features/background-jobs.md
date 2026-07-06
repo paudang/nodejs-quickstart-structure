@@ -1,6 +1,7 @@
 # 后台作业与任务队列 (BullMQ)
 
-Node.js Quickstart Generator 提供了对**企业级后台任务**的内置开箱即用支持，这得益于 `BullMQ` 和 `Redis` 的结合。它会自动为您的项目搭建任务队列、任务执行器 (Workers) 以及直观的监控看板 (`Bull-Board`)，确保您的微服务架构处于松耦合且具备极高的水平扩展性。
+Node.js Quickstart Generator 提供了对**企业级<VocabLink category="backend-apis" term="background-job" text="后台任务" />**的内置开箱即用支持，这得益于 `BullMQ` 和 `Redis` 的结合。它会自动为您的项目搭建任务队列、任务执行器 (Workers) 以及直观的监控看板 (`Bull-Board`)，确保您的微服务架构处于松耦合且具备极高的水平扩展性。
+
 
 ## 为什么需要后台任务？
 在 Node.js 中同步执行耗时较长的操作会阻塞单线程的事件循环 (Event Loop)，导致应用吞吐量急剧下降。

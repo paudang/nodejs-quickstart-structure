@@ -1,6 +1,7 @@
 # Chiến lược bộ nhớ đệm
 
-Tối ưu hóa hiệu suất với hỗ trợ bộ nhớ đệm tích hợp cho cả môi trường cục bộ và phân tán.
+Tối ưu hóa hiệu suất với hỗ trợ <VocabLink category="backend-apis" term="caching" text="bộ nhớ đệm" /> tích hợp cho cả môi trường cục bộ và phân tán.
+
 
 ## Redis (Bộ nhớ đệm được phân phối)
 

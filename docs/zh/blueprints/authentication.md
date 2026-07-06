@@ -165,7 +165,7 @@ Authorization: Bearer <accessToken>
 }
 ```
 
-> [!TIP] **关于 JWT 无状态安全的探索**
+> [!TIP] **关于 <VocabLink category="auth-security" term="authentication" text="JWT" /> 无状态安全的探索**
 > 我们详细剖析了 JWT 撤销难题及 Redis 黑名单的最佳实践。欢迎阅读我们在 **System Weakness** 上发表的推荐长文：
 > - 📖 [The Illusion of Stateless Security: Rethinking JWT Revocation at Scale](https://systemweakness.com/the-illusion-of-stateless-security-rethinking-jwt-revocation-at-scale-8426472c5022)
 

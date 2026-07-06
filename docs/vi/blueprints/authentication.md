@@ -166,7 +166,7 @@ Authorization: Bearer <accessToken>
 }
 ```
 
-> [!TIP] Tìm hiểu sâu về bảo mật JWT
+> [!TIP] Tìm hiểu sâu về bảo mật <VocabLink category="auth-security" term="authentication" text="JWT" />
 > Chúng tôi đã thảo luận chi tiết về các thách thức phức tạp khi mở rộng hệ thống bảo mật không trạng thái của JWT và cách tiếp cận danh sách đen bằng Redis giải quyết chúng. Hãy đọc bài viết tiêu biểu của chúng tôi trên **System Weakness**:
 > - 📖 [The Illusion of Stateless Security: Rethinking JWT Revocation at Scale](https://systemweakness.com/the-illusion-of-stateless-security-rethinking-jwt-revocation-at-scale-8426472c5022)
 

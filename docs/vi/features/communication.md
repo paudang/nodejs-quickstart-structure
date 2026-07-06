@@ -28,7 +28,7 @@ Nhắn tin hiệu suất cao cho các dịch vụ vi mô không đồng bộ.
 
 ## Xác thực & Ủy quyền
 
-Trên tất cả các giao thức truyền thông, bảo mật được xử lý thông qua **Hệ thống JWT có thể cắm**.
+Trên tất cả các giao thức truyền thông, <VocabLink category="auth-security" term="authentication" text="xác thực" /> và bảo mật được xử lý thông qua **Hệ thống JWT có thể cắm**.
 
 - **REST**: Ủy quyền dựa trên phần mềm trung gian (`authMiddleware.ts`).
 - **GraphQL**: ủy quyền dựa trên ngữ cảnh và trình phân giải được bảo vệ.

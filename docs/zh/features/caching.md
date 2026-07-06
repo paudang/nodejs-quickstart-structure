@@ -1,6 +1,7 @@
 # 缓存策略 (Caching Strategy)
 
-生成的项目内置了对本地缓存和分布式缓存的全面支持，以最大程度地优化微服务的读写性能。
+生成的项目内置了对本地<VocabLink category="backend-apis" term="caching" text="缓存" />和分布式缓存的全面支持，以最大程度地优化微服务的读写性能。
+
 
 ## Redis (分布式缓存)
 

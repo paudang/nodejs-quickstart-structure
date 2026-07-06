@@ -1,6 +1,7 @@
 # Cơ sở Dữ liệu & Di di trú (Migrations)
 
-Quản lý dữ liệu mạnh mẽ là tính năng cốt lõi của trình tạo này. Chúng tôi hỗ trợ cả cơ sở dữ liệu SQL và NoSQL với các đường ống di di trú (migration pipelines) tự động.
+Quản lý dữ liệu mạnh mẽ là tính năng cốt lõi của trình tạo này. Chúng tôi hỗ trợ cả <VocabLink category="database" term="database" text="cơ sở dữ liệu" /> SQL và NoSQL với các đường ống di di trú (migration pipelines) tự động.
+
 
 ## Các Cơ sở Dữ liệu được Hỗ trợ
 

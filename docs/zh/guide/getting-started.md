@@ -61,15 +61,15 @@ nodejs-quickstart init
 3. **Architecture (架构)**: 选择 **MVC** 或 **清洁架构 (Clean Architecture)**。
 4. **View Engine (模板引擎)**: 如果选择了 MVC，请选择 **None** (纯 API)、**EJS** 或 **Pug**。
 5. **Communication (通信)**: 选择 **REST APIs**、**GraphQL** 或 **Kafka**。
-6. **Database (数据库)**: 选择 **MySQL**、**PostgreSQL**、**MongoDB** 或 **None**。
+6. **Database (数据库)**: 选择 **MySQL**、**PostgreSQL**、**MongoDB** (<VocabLink category="database" term="database" text="数据库" />) 或 **None**。
 7. **Database Name (数据库名)**: 指定数据库名称 (如果选择了数据库)。
-8. **Caching (缓存)**: 添加 **Redis** 或 **内存缓存 (Memory Cache)**。
-9. **Authentication (身份验证)**: 可插拔的 **JWT** 和 **(OAuth2 - Google/GitHub)** 支持。
+8. **Caching (缓存)**: 添加 **Redis** 或 **内存<VocabLink category="backend-apis" term="caching" text="缓存" /> (Memory Cache)**。
+9. **Authentication (身份验证)**: 可插拔的 **<VocabLink category="auth-security" term="authentication" text="JWT" />** 和 **(OAuth2 - Google/GitHub)** 支持。
 10. **CI/CD**: 生成 **GitHub Actions**、**GitLab** 或 **Jenkins** 配置。
 11. **Security Hardening (安全强化)**: 选择加入企业级安全工具，如 **Snyk** 和 **SonarQube** (如果启用了 CI/CD)。
 12. **Advanced Options (高级选项)**: 解锁弹性、后台作业、可观测性 (ELK) 以及 Terraform。
 13. **Resilience (弹性)**: 选择 **超时 (Timeout)**、**重试 (Retry)** 和 **熔断器 (Circuit Breaker)** 模式。
-14. **Background Jobs (后台任务)**: 可选 **BullMQ** + **Bull-Board** 任务队列 (需要 Redis)。
+14. **Background Jobs (后台任务)**: 可选 **BullMQ** + **Bull-Board** <VocabLink category="backend-apis" term="background-job" text="任务队列" /> (需要 Redis)。
 15. **Terraform (IaC)**: 生成 AWS/GCP/Azure 基础设施文件 (**标准版** 或 **生产版**)。
 16. **ELK Stack**: 可选的 **Elasticsearch & Kibana** 集中式日志集成。
 

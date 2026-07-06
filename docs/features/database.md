@@ -1,6 +1,7 @@
 # Database & Migrations
 
-Robust data management is a core feature of this generator. We support both SQL and NoSQL databases with automated migration pipelines.
+Robust data management is a core feature of this generator. We support both SQL and NoSQL <VocabLink category="database" term="database" text="databases" /> with automated migration pipelines.
+
 
 ## Supported Databases
 

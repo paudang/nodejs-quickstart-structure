@@ -1,6 +1,7 @@
 # 数据库与迁移 (Database & Migrations)
 
-稳健的数据管理是本生成器的核心能力。我们支持 SQL 和 NoSQL 两种数据库类型，并集成了自动化的数据结构变更迁移管道。
+稳健的数据管理是本生成器的核心能力。我们支持 SQL 和 NoSQL 两种<VocabLink category="database" term="database" text="数据库" />类型，并集成了自动化的数据结构变更迁移管道。
+
 
 ## 支持的数据库
 

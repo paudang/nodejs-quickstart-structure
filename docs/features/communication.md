@@ -4,7 +4,7 @@
 
 ## REST APIs (Standard)
 
-Standard RESTful endpoints powered by **Express.js**.
+Standard REST APIs powered by **Express.js**.
 
 -   **Documentation**: Automatically generates a Swagger UI at `http://localhost:3000/api-docs`.
 -   **Error Handling**: Centralized middleware with standard HTTP status codes.
@@ -29,7 +29,7 @@ High-performance messaging for asynchronous microservices.
 
 ## Authentication & Authorization
 
-Across all communication protocols, security is handled via a **Pluggable JWT System**.
+Across all communication protocols, <VocabLink category="auth-security" term="authentication" text="authentication" /> and security are handled via a **Pluggable JWT System**.
 
 - **REST**: Middleware based authorization (`authMiddleware.ts`).
 - **GraphQL**: context-based authorization and guarded resolvers.

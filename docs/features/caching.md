@@ -1,6 +1,7 @@
 # Caching Strategy
 
-Optimized performance with built-in caching support for both local and distributed environments.
+Optimized performance with built-in <VocabLink category="backend-apis" term="caching" text="caching" /> support for both local and distributed environments.
+
 
 ## Redis (Distributed Cache)
 
