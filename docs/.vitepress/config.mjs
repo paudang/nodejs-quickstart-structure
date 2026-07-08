@@ -95,6 +95,7 @@ export default defineConfig({
             items: [
               { text: 'Testing (Unit & E2E)', link: '/guide/testing' },
               { text: 'Enterprise Security Setup', link: '/guide/security-hardening' },
+              { text: 'ArchGuard AI Code Review', link: '/guide/archguard-ai' },
               { text: 'Deployment (Docker/PM2)', link: '/guide/deployment' },
               { text: 'Troubleshooting FAQ', link: '/guide/troubleshooting' },
             ]
@@ -183,6 +184,7 @@ export default defineConfig({
             items: [
               { text: 'Kiểm thử (Unit & E2E)', link: '/vi/guide/testing' },
               { text: 'Bảo mật cấp Doanh nghiệp', link: '/vi/guide/security-hardening' },
+              { text: 'ArchGuard AI Code Review', link: '/vi/guide/archguard-ai' },
               { text: 'Triển khai (Docker/PM2)', link: '/vi/guide/deployment' },
               { text: 'Giải quyết sự cố (FAQ)', link: '/vi/guide/troubleshooting' },
             ]
@@ -271,6 +273,7 @@ export default defineConfig({
             items: [
               { text: '测试 (单元 & E2E)', link: '/zh/guide/testing' },
               { text: '企业级安全加固', link: '/zh/guide/security-hardening' },
+              { text: 'ArchGuard AI 代码审查', link: '/zh/guide/archguard-ai' },
               { text: '项目部署 (Docker/PM2)', link: '/zh/guide/deployment' },
               { text: '常见问题答疑 (FAQ)', link: '/zh/guide/troubleshooting' },
             ]
