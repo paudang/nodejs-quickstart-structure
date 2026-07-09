@@ -1,0 +1,19 @@
+name: Auto review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  issue_comment:
+    types: [created]
+jobs:
+  archguard-review:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write # Required for ArchGuard to publish PR comments
+      contents: read       # Required to read the PR diff
+      id-token: write      # Required for Zero-Trust OIDC Authentication
+    steps:
+      - name: Run ArchGuard AI Auditor
+        uses: archguard-labs/action@main  # Replace @main with @v1.x tags for stable production environments
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
