@@ -67,6 +67,17 @@ nodejs-quickstart init
 
 ---
 
+## What's New in v2.9 (The API Gateway Release)
+
+The v2.9.0 release brings enterprise-grade edge routing and intelligent natural language processing to your architecture:
+
+- **API Gateway Integration**: Spin up production-ready **Nginx** (Rate Limiting, Security Headers) or **Kong DB-less** (Key-Auth Plugin) seamlessly in front of your Node.js application.
+- **AI/NLP Prompting Engine**: Upgraded heuristic parsing handles complex, multi-lingual, and double-negative prompts flawlessly (e.g., "bỏ qua Gateway", "不要网关").
+- **Gamification Mechanics Updated**: The "Backend Factorio Builder" now computes true rate limits, rewarding players who implement API Gateways to survive `1000 Req/s` loads.
+- **Massive Matrix Expansion**: The total architectural combinations possible have expanded from 1.41 Million to **2.69 Million** robust blueprints!
+
+---
+
 ## What's New in v2.8 (The Generator Multiverse Release)
 
 The v2.8.0 release introduces a revolutionary Gamification layer to the scaffolding experience:
