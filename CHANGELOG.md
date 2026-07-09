@@ -1,5 +1,13 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.0] - 2026-07-09
+
+### Added
+- **Optional API Gateway Integration**: You can now optionally deploy your microservice behind a hardened API Gateway when enabling Advanced Options.
+  - **Nginx Blueprint**: A high-performance reverse proxy pre-configured with standard Big Tech security headers and rate limiting.
+  - **Kong (DB-less)**: A declarative, stateless Kong configuration featuring `rate-limiting` and `key-auth` plugins.
+  - Dynamic documentation updates and interactive CLI prompts that cleanly bypass the Gateway when Kafka is selected as the primary communication mode.
+
 ## [2.8.1] - 2026-06-29
 
 ### Added

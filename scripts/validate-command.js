@@ -21,6 +21,7 @@ const AUTH_MODES = ['None', 'JWT'];
 const SOCIAL_AUTH_MODES = ['None', 'Google,GitHub'];
 const TERRAFORM_TIERS = ['None', 'Standard', 'Production'];
 const CLOUD_PROVIDERS = ['AWS', 'GCP', 'Azure'];
+const API_GATEWAYS = ['None', 'Nginx', 'Kong (DB-less)'];
 
 const combinations = [];
 
@@ -42,22 +43,27 @@ LANGUAGES.forEach(lang => {
                                         TERRAFORM_TIERS.forEach(tf => {
                                             const cloudOptions = tf !== 'None' ? CLOUD_PROVIDERS : ['AWS'];
                                             cloudOptions.forEach(cloud => {
-                                                combinations.push({
-                                                    projectName: `t190080_${Math.random().toString(36).substring(2, 8)}`,
-                                                    language: lang,
-                                                    architecture: arch,
-                                                    viewEngine: view,
-                                                    database: db,
-                                                    dbName: db !== 'None' ? 'testdb' : undefined,
-                                                    communication: comm,
-                                                    caching: cache,
-                                                    ciProvider: ci,
-                                                    includeSecurity: sec,
-                                                    auth: auth,
-                                                    socialAuth: socialAuth,
-                                                    advancedOptions: auth !== 'None' || tf !== 'None',
-                                                    terraform: tf,
-                                                    cloudProvider: cloud
+                                                const apiGatewaysOptions = comm !== 'Kafka' ? API_GATEWAYS : ['None'];
+                                                apiGatewaysOptions.forEach(gateway => {
+                                                    combinations.push({
+                                                        projectName: `t190080_${Math.random().toString(36).substring(2, 8)}`,
+                                                        language: lang,
+                                                        architecture: arch,
+                                                        viewEngine: view,
+                                                        database: db,
+                                                        dbName: db !== 'None' ? 'testdb' : undefined,
+                                                        communication: comm,
+                                                        apiGateway: gateway,
+                                                        useApiGateway: gateway !== 'None' ? 'Yes' : 'No',
+                                                        caching: cache,
+                                                        ciProvider: ci,
+                                                        includeSecurity: sec,
+                                                        auth: auth,
+                                                        socialAuth: socialAuth,
+                                                        advancedOptions: auth !== 'None' || tf !== 'None' || gateway !== 'None',
+                                                        terraform: tf,
+                                                        cloudProvider: cloud
+                                                    });
                                                 });
                                             });
                                         });
@@ -128,6 +134,12 @@ async function runTest(config, index) {
         if (config.ciProvider !== 'None') {
             if (config.includeSecurity) args.push('--include-security');
             else args.push('--no-include-security');
+        }
+
+        if (config.apiGateway !== 'None') {
+            args.push('--use-api-gateway', 'Yes', '--api-gateway', `"${config.apiGateway}"`);
+        } else {
+            args.push('--use-api-gateway', 'No');
         }
 
         args.push('--caching', `"${config.caching}"`);

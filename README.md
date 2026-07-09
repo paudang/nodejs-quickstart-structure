@@ -17,7 +17,7 @@ A powerful ecosystem to scaffold production-ready Node.js microservices with bui
 - [What's New](#whats-new-in-v25-the-cloud--observability-release)
 - [Key Features](#key-features)
 - [Professional Standards](#professional-standards)
-- [1.41M Project Combinations](#141m-project-combinations)
+- [2.69M Project Combinations](#269m-project-combinations)
 - [Configuration Options](#configuration-options)
 - [Generated Project Structure](#generated-project-structure)
 - [Documentation](#documentation)
@@ -76,14 +76,6 @@ The v2.8.0 release introduces a revolutionary Gamification layer to the scaffold
 - **Dynamic 100% Feature Parity**: The interactive games map 1:1 with the CLI, seamlessly generating complex setups like Multi-Cloud Terraform, CI/CD, Authentication, and ELK Stack.
 - **Zero-Vulnerability Baseline**: Strictly enforced package overrides to guarantee pristine `snyk test` and `npm audit` reports out-of-the-box.
 
-## What's New in v2.7 (The Background Jobs Release)
-
-The v2.7.0 release brings robust asynchronous processing and architectural purity to your microservices:
-
-- **Enterprise Background Jobs**: Fully integrated **BullMQ** with Redis for high-performance, asynchronous job processing, complete with **Bull-Board UI** for real-time monitoring and queue management.
-- **Package Manager Agnosticism**: A completely refactored generation engine that provides a flawless, zero-friction experience across `npm`, `yarn`, and `pnpm` without tying your `package.json` to any specific tool.
-- **VitePress Docs Sync**: Tabbed Markdown synchronization across the entire documentation site, ensuring your reading experience perfectly matches your chosen package manager.
-
 ---
 
 ## Key Features
@@ -112,7 +104,7 @@ We don't just generate boilerplate; we generate **production-ready** foundations
 
 ---
 
-## 1.41M+ Project Combinations
+## 2.69M+ Project Combinations
 
 The CLI provides massive flexibility to fit your exact needs. Instead of a rigid boilerplate, it acts like architectural Lego blocks. 
 

@@ -13,7 +13,7 @@ We built this generator to automate away the boilerplate, instantly providing yo
 ## Why use this generator?
 
 -   **Scalability**: Choose between **MVC** for simpler projects or **Clean Architecture** for complex domain-driven services.
--   **Flexibility**: Supports over **1.41M unique project scenarios** (covering various Architectures, Languages, Databases, Communication patterns, Caching, Auth, CI/CD, Security, Resilience, Observability, Background Jobs, and Infrastructure configurations).
+-   **Flexibility**: Supports over **2.69M unique project scenarios** (covering various Architectures, Languages, Databases, Communication patterns, Caching, Auth, CI/CD, Security, Resilience, Observability, Background Jobs, API Gateways, and Infrastructure configurations).
 -   **Multi-Cloud IaC**: Automatically generates production-ready **Terraform** modules for **AWS, Google Cloud (GCP), and Azure**.
 -   **Enterprise Resilience**: Built-in distributed systems protections including **Timeout, Advanced Retry (Exponential Backoff & Jitter), and Circuit Breaker** patterns.
 -   **DevSecOps & Observability**: Ships with **Snyk/SonarCloud** CI/CD pipelines and integrates the **ELK Stack (Elasticsearch, Kibana)** for non-blocking, centralized logging.

@@ -17,7 +17,8 @@ const form = reactive({
   cloudProvider: 'AWS',
   resilience: [],
   withELK: false,
-  backgroundJobs: false
+  backgroundJobs: false,
+  apiGateway: 'None'
 });
 
 const errors = reactive({
@@ -163,6 +164,11 @@ const cliCommand = computed(() => {
     cmd += ` --background-jobs`;
   } else if (isAdvanced && !form.backgroundJobs) {
     cmd += ` --no-background-jobs`;
+  }
+
+  if (isAdvanced && form.apiGateway && form.apiGateway !== 'None' && form.communication !== 'Kafka') {
+    cmd += ` --use-api-gateway Yes`;
+    cmd += ` --api-gateway "${form.apiGateway}"`;
   }
 
   cmd += isAdvanced ? ' --advanced-options' : ' --no-advanced-options';

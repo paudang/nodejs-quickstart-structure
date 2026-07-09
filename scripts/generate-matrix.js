@@ -13,6 +13,7 @@ const cachings = ['None', 'Redis', 'Memory Cache'];
 const auths = ['None', 'JWT'];
 const socialAuths = ['None', 'Google,GitHub'];
 const backgroundJobs = ['Disabled', 'Enabled'];
+const apiGateways = ['None', 'Nginx', 'Kong (DB-less)'];
 
 let mvcCases = {};
 let cleanArchCases = {};
@@ -36,8 +37,11 @@ for (const lang of languages) {
                         for (const cache of applicableCachings) {
                             for (const bgJob of backgroundJobs) {
                                 if (bgJob === 'Enabled' && cache !== 'Redis') continue;
-                                const group = initGroup(mvcCases, lang, db);
-                                group.push(`| ${counter++} | ${view} | ${comm} | ${cache} | ${auth} | ${social} | ${bgJob} |`);
+                                const applicableGateways = comm !== 'Kafka' ? apiGateways : ['None'];
+                                for (const gateway of applicableGateways) {
+                                    const group = initGroup(mvcCases, lang, db);
+                                    group.push(`| ${counter++} | ${view} | ${comm} | ${gateway} | ${cache} | ${auth} | ${social} | ${bgJob} |`);
+                                }
                             }
                         }
                     }
@@ -58,8 +62,11 @@ for (const lang of languages) {
                     for (const cache of applicableCachings) {
                         for (const bgJob of backgroundJobs) {
                             if (bgJob === 'Enabled' && cache !== 'Redis') continue;
-                            const group = initGroup(cleanArchCases, lang, db);
-                            group.push(`| ${counter++} | ${comm} | ${cache} | ${auth} | ${social} | ${bgJob} |`);
+                            const applicableGateways = comm !== 'Kafka' ? apiGateways : ['None'];
+                            for (const gateway of applicableGateways) {
+                                const group = initGroup(cleanArchCases, lang, db);
+                                group.push(`| ${counter++} | ${comm} | ${gateway} | ${cache} | ${auth} | ${social} | ${bgJob} |`);
+                            }
                         }
                     }
                 }
@@ -76,11 +83,11 @@ const renderGrouped = (groupedCases, isMvc) => {
             if (!groupedCases[lang][db] || groupedCases[lang][db].length === 0) continue;
             md += `\n#### Database: ${db}\n\n`;
             if (isMvc) {
-                md += `| # | View Engine | Communication | Caching | Auth | Social Auth | Background Jobs |\n`;
-                md += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+                md += `| # | View Engine | Communication | API Gateway | Caching | Auth | Social Auth | Background Jobs |\n`;
+                md += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
             } else {
-                md += `| # | Communication | Caching | Auth | Social Auth | Background Jobs |\n`;
-                md += `| :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+                md += `| # | Communication | API Gateway | Caching | Auth | Social Auth | Background Jobs |\n`;
+                md += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
             }
             md += groupedCases[lang][db].join('\n') + '\n';
         }

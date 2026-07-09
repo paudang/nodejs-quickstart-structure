@@ -167,6 +167,15 @@
             </label>
           </div>
         </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;" v-if="form.communication !== 'Kafka'">
+          <label class="form-label">API Gateway</label>
+          <select class="form-control" v-model="form.apiGateway">
+            <option value="None">None</option>
+            <option value="Nginx">Nginx</option>
+            <option value="Kong (DB-less)">Kong (DB-less)</option>
+          </select>
+        </div>
       </div>
     </div>
 
