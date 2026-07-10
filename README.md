@@ -145,6 +145,7 @@ The CLI will guide you through:
     - **Cloud Infrastructure**: (Optional IaC) Terraform for `AWS` | `GCP` | `Azure` (`None` | `Standard` | `Production`)
     - **Observability**: (Optional) Centralized Logging via `ELK Stack`
     - **Background Jobs**: (Optional) `BullMQ` + `Bull-Board` Task Queues (Requires Redis)
+    - **API Gateway**: (Optional) `Nginx` | `Kong DB-less`
 
 ---
 
