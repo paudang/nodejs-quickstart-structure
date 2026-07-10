@@ -41,6 +41,24 @@
 
         <div 
           class="slot" 
+          :class="{'has-item': slots.gateway, 'drop-zone': draggedType === 'gateway'}"
+          @dragover.prevent
+          @drop="onDrop($event, 'gateway')"
+          @dblclick="removeSlot('gateway')"
+        >
+          <div class="slot-label">{{ t.apiGateway || 'API Gateway' }}</div>
+          <div v-if="slots.gateway" class="placed-item" :class="`type-gateway`">
+            <span class="item-icon">{{ slots.gateway.icon }}</span>
+            {{ slots.gateway.name }}
+            <div class="remove-hint">{{ t.doubleClickRemove }}</div>
+          </div>
+          <div v-else class="slot-placeholder">{{ t.dropGateway || 'Drop Gateway Here' }}</div>
+        </div>
+
+        <div class="arrow">➡️</div>
+
+        <div 
+          class="slot" 
           :class="{'has-item': slots.app, 'drop-zone': draggedType === 'app'}"
           @dragover.prevent
           @dragenter.prevent="draggedType === 'app' ? highlightSlot = 'app' : null"
@@ -365,6 +383,10 @@ const inventory = [
   { id: 'app_mvc', type: 'app', icon: '⛺', name: 'MVC Node', load: 300, displayStat: 'Cap: 300/s', config: { architecture: 'MVC', language: 'JavaScript' } },
   { id: 'app_clean', type: 'app', icon: '🏛️', name: 'Clean Node', load: 500, displayStat: 'Cap: 500/s', config: { architecture: 'Clean Architecture', language: 'TypeScript' } },
   
+  { id: 'gateway_nginx', type: 'gateway', icon: '🛡️', name: 'Nginx', multiplier: 1.5, displayStat: 'Rate Limit', config: { apiGateway: 'Nginx' } },
+  { id: 'gateway_kong', type: 'gateway', icon: '🦍', name: 'Kong', multiplier: 1.5, displayStat: 'API Gateway', config: { apiGateway: 'Kong (DB-less)' } },
+  { id: 'gateway_none', type: 'gateway', icon: '❌', name: 'No Gateway', multiplier: 1, displayStat: 'Direct', config: { apiGateway: 'None' } },
+  
   { id: 'queue_rest', type: 'queue', icon: '🌐', name: 'REST API', multiplier: 1, displayStat: 'Sync x1', config: { communication: 'REST APIs', backgroundJobs: false } },
   { id: 'queue_kafka', type: 'queue', icon: '📬', name: 'Kafka Bus', multiplier: 3, displayStat: 'Async x3', config: { communication: 'Kafka', backgroundJobs: false } },
   { id: 'queue_bull', type: 'queue', icon: '🐂', name: 'BullMQ', multiplier: 2.5, displayStat: 'Queue x2.5', config: { communication: 'REST APIs', backgroundJobs: true } }, // caching handled by drop logic
@@ -389,6 +411,7 @@ const inventory = [
 ];
 
 const slots = reactive({
+  gateway: null,
   app: null,
   queue: null,
   db: null,
@@ -404,7 +427,7 @@ const failCapacityVal = ref(0);
 const copied = ref(false);
 
 const isItemPlaced = (id) => {
-  return slots.app?.id === id || slots.queue?.id === id || slots.db?.id === id || 
+  return slots.gateway?.id === id || slots.app?.id === id || slots.queue?.id === id || slots.db?.id === id || 
          slots.cache?.id === id || slots.cicd?.id === id || slots.cloud?.id === id;
 };
 
@@ -430,7 +453,7 @@ const removeSlot = (slotName) => {
 };
 
 const canSimulate = computed(() => {
-  return slots.app && slots.queue && slots.db && slots.cache && slots.cicd && slots.cloud;
+  return slots.gateway && slots.app && slots.queue && slots.db && slots.cache && slots.cicd && slots.cloud;
 });
 
 const runSimulation = () => {
@@ -447,7 +470,7 @@ const runSimulation = () => {
 
   setTimeout(() => {
     const baseCapacity = (slots.app.load + slots.db.load) / 2;
-    const totalCapacity = baseCapacity * slots.queue.multiplier * slots.cache.multiplier;
+    const totalCapacity = baseCapacity * slots.queue.multiplier * slots.cache.multiplier * slots.gateway.multiplier;
     
     if (totalCapacity < 1000) {
       simStatus.value = 'exploded';
@@ -639,6 +662,7 @@ form.cloudProvider = '';
   align-items: center;
   justify-content: center;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .infra-row {
@@ -702,6 +726,15 @@ form.cloudProvider = '';
   font-size: 0.8rem;
   text-align: center;
   padding: 0 10px;
+}
+
+.slot.type-cache {
+  border-top: 3px solid #f39c12;
+  background-color: rgba(243, 156, 18, 0.1);
+}
+.slot.type-gateway {
+  border-top: 3px solid #9b59b6;
+  background-color: rgba(155, 89, 182, 0.1);
 }
 
 .slot.drop-zone {

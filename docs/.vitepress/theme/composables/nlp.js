@@ -44,7 +44,8 @@ export const parsePrompt = (prompt) => {
     terraform: 'None',
     resilience: [],
     withELK: false,
-    backgroundJobs: false
+    backgroundJobs: false,
+    apiGateway: 'None'
   };
   
   const addLog = (msg) => { logs.push(msg); };
@@ -58,7 +59,7 @@ export const parsePrompt = (prompt) => {
     return noAccents.replace(/[^a-zA-Z0-9-_]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').toLowerCase();
   };
 
-  const restrictedTech = "postgres|redis|mongo|mysql|aws|gcp|azure|clean|mvc|kafka|graphql";
+  const restrictedTech = "postgres|redis|mongo|mysql|aws|gcp|azure|clean|mvc|kafka|graphql|nginx|kong|gateway";
   const forbiddenStart = `${restrictedTech}|is|là|called|named|tên|có|dùng|xài|use|with|name`;
 
   // 0. Extract Project Name (Heuristic)
@@ -295,6 +296,19 @@ export const parsePrompt = (prompt) => {
     advancedNeeded = true;
   }
 
+  // 12. API Gateway
+  if (isPositiveMatch(/no api gateway|no gateway|no nginx|no kong|không api gateway|không gateway|不要网关|无网关|bina gateway|bina proxy/i, text)) {
+    config.apiGateway = 'None';
+  } else if (isPositiveMatch(/kong/i, text)) {
+    addLog('API Gateway -> Kong (DB-less).');
+    config.apiGateway = 'Kong (DB-less)';
+    advancedNeeded = true;
+  } else if (isPositiveMatch(/api gateway|gateway|nginx proxy|nginx gateway|reverse proxy|proxy|cổng api|cổng kết nối|网关|代理|गेटवे/i, text) || isPositiveMatch(/nginx/i, text)) {
+    addLog('API Gateway -> Nginx.');
+    config.apiGateway = 'Nginx';
+    advancedNeeded = true;
+  }
+
   // FINAL: Assemble HTML Response based on final config
   if (useCaseDetected) {
     responseParts.push(`<li><span style="font-weight: bold;"> Smart Suggestion:</span> Applied industry-standard <strong>${useCaseDetected}</strong> stack!</li>`);
@@ -322,6 +336,7 @@ export const parsePrompt = (prompt) => {
   if (config.resilience.length > 0) responseParts.push(`<li><strong>Resilience:</strong> ${config.resilience.join(', ')}</li>`);
   if (config.withELK) responseParts.push(`<li><strong>Observability:</strong> ELK Stack</li>`);
   if (config.backgroundJobs) responseParts.push(`<li><strong>Background Jobs:</strong> BullMQ Task Queues</li>`);
+  if (config.apiGateway !== 'None') responseParts.push(`<li><strong>API Gateway:</strong> ${config.apiGateway}</li>`);
   if (config.ciProvider !== 'None') responseParts.push(`<li><strong>CI/CD:</strong> ${config.ciProvider}</li>`);
 
   responseParts.push("</ul>");

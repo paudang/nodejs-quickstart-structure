@@ -393,6 +393,39 @@ docker-compose -f docker-compose.elk.yml down
 <% } -%>
 ```
 
+<% if (typeof apiGateway !== 'undefined' && apiGateway !== 'None') { -%>
+## 🌐 API Gateway Integration
+
+This project is configured with a hardened **<%= apiGateway %>** API Gateway to handle inbound traffic, rate limiting, and security rules before reaching your Node.js application.
+
+### Deployment Instructions
+The API Gateway configurations are located in the `deploy/gateway/` directory.
+
+To start the API Gateway along with your Node.js application:
+
+1. Ensure the Node application is built and running (or use `docker-compose up -d` in the root).
+2. Navigate to the gateway directory:
+```bash
+cd deploy/gateway
+```
+3. Start the gateway services:
+```bash
+docker-compose -f docker-compose.<%= apiGateway === 'Nginx' ? 'nginx' : 'kong' %>.yml up -d
+```
+<% if (apiGateway === 'Nginx') { -%>
+**Nginx Details:**
+- Runs on port `80`.
+- Includes strict Rate Limiting (`10 req/sec` with burst).
+- Hardened with standard Big Tech security headers.
+- Proxies traffic to the Node.js application.
+<% } else if (apiGateway === 'Kong (DB-less)') { -%>
+**Kong Details:**
+- Proxy runs on port `8000`, Admin on `8001`.
+- Configured via Declarative config (`kong.yml`) for stateless, DB-less deployment.
+- Enforces Rate Limiting and Key Authentication natively.
+<% } -%>
+<% } -%>
+
 ## 🔒 Security Features
 -   **Helmet**: Sets secure HTTP headers.
 -   **CORS**: Configured for cross-origin requests.

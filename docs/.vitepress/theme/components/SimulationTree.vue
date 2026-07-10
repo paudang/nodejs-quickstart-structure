@@ -815,6 +815,48 @@
       
       </div>
 
+      <!-- Deploy Folder -->
+      <template v-if="form.apiGateway && form.apiGateway !== 'None' && form.communication !== 'Kafka'">
+        <div class="tree-item clickable" style="--depth: 1" @click="toggle('deploy')">
+          <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.deploy }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+          deploy
+        </div>
+        <div v-show="expanded.deploy">
+          <div class="tree-item clickable" style="--depth: 2" @click="toggle('gateway')">
+            <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.gateway }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            <svg class="tree-item-icon icon-folder" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg>
+            gateway
+          </div>
+          <div v-show="expanded.gateway">
+            <template v-if="form.apiGateway === 'Nginx'">
+              <div class="tree-item" style="--depth: 3">
+                <svg class="tree-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                nginx.conf
+              </div>
+              <div class="tree-item" style="--depth: 3">
+                <svg class="tree-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                Dockerfile
+              </div>
+              <div class="tree-item" style="--depth: 3">
+                <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                docker-compose.nginx.yml
+              </div>
+            </template>
+            <template v-if="form.apiGateway === 'Kong (DB-less)'">
+              <div class="tree-item" style="--depth: 3">
+                <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                kong.yml
+              </div>
+              <div class="tree-item" style="--depth: 3">
+                <svg class="tree-item-icon icon-file-yml" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                docker-compose.kong.yml
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+
       <!-- Tests Module -->
       <div class="tree-item clickable" style="--depth: 1" @click="toggle('tests')">
         <svg class="tree-toggle-icon" :class="{ 'expanded': expanded.tests }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -1128,6 +1170,8 @@ const expanded = reactive({
   infrastructure: true,
   interfaces: true,
   tests: false,
+  deploy: true,
+  gateway: true,
   e2e: false,
   config: true,
   controllers: true,

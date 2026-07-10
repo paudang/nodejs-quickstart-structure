@@ -17,7 +17,7 @@ hero:
       link: https://ko-fi.com/paudang
   
 features:
-  - title: 1.41 Triệu Tổ Hợp
+  - title: 2.69 Triệu Tổ Hợp
     details: Lựa chọn Ngôn ngữ (TS/JS), Kiến trúc (MVC/Clean), Auth, Giao tiếp (REST/GraphQL/Kafka), Background Jobs, CI/CD/Bảo mật, Cơ chế Resilience, Quan sát hệ thống (ELK), và Terraform.
   - title: Sẵn sàng cho AI-Native
     details: Cấu hình sẵn .cursorrules và các prompt Agent Skill giúp tăng tốc năng suất lập trình cùng các công cụ AI.

@@ -42,6 +42,8 @@ program
     .option('--no-with-elk', 'Disable ELK Stack')
     .option('--background-jobs', 'Enable Background Jobs (BullMQ + Bull-Board)')
     .option('--no-background-jobs', 'Disable Background Jobs')
+    .option('--use-api-gateway <use>', 'Include API Gateway (Yes/No)')
+    .option('--api-gateway <type>', 'API Gateway Type (Nginx, Kong (DB-less), None)')
     .option('--advanced-options', 'Enable Advanced Options')
     .option('--no-advanced-options', 'Disable Advanced Options')
     .action(async (options) => {

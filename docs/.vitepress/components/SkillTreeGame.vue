@@ -94,6 +94,7 @@ const i18n = {
     tierCaching: 'Caching Layer',
     tierApis: 'Network APIs',
     tierFeatures: 'Enterprise Features (Select Multiple)',
+    tierGateway: 'API Gateway',
     tierCicd: 'CI/CD Pipeline',
     tierIac: 'Infrastructure (Terraform)',
     tierCloud: 'Cloud Provider'
@@ -112,6 +113,7 @@ const i18n = {
     tierCaching: 'Tầng Caching (Bộ đệm)',
     tierApis: 'Cổng giao tiếp mạng (APIs)',
     tierFeatures: 'Tính năng Doanh nghiệp (Chọn nhiều)',
+    tierGateway: 'Cổng API (Gateway)',
     tierCicd: 'Quy trình CI/CD',
     tierIac: 'Cơ sở hạ tầng (Terraform)',
     tierCloud: 'Nhà cung cấp Đám mây'
@@ -130,6 +132,7 @@ const i18n = {
     tierCaching: 'Tầng Caching (Bộ đệm)',
     tierApis: 'Cổng giao tiếp mạng (APIs)',
     tierFeatures: 'Tính năng Doanh nghiệp (Chọn nhiều)',
+    tierGateway: 'Cổng API (Gateway)',
     tierCicd: 'Quy trình CI/CD',
     tierIac: 'Cơ sở hạ tầng (Terraform)',
     tierCloud: 'Nhà cung cấp Đám mây'
@@ -148,6 +151,7 @@ const i18n = {
     tierCaching: '缓存层',
     tierApis: '网络 API',
     tierFeatures: '企业功能 (可多选)',
+    tierGateway: 'API 网关',
     tierCicd: 'CI/CD 流程',
     tierIac: '基础设施 (Terraform)',
     tierCloud: '云服务商'
@@ -166,6 +170,7 @@ const i18n = {
     tierCaching: '缓存层',
     tierApis: '网络 API',
     tierFeatures: '企业功能 (可多选)',
+    tierGateway: 'API 网关',
     tierCicd: 'CI/CD 流程',
     tierIac: '基础设施 (Terraform)',
     tierCloud: '云服务商'
@@ -230,6 +235,17 @@ const tiers = computed(() => {
       { key: 'communication', value: 'Kafka', icon: '📬', name: 'Kafka', desc: 'Event Stream' }
     ]
   });
+
+  if (form.communication !== 'Kafka') {
+    result.push({
+      id: 'gateway', title: t.value.tierGateway || 'API Gateway', multiple: false,
+      nodes: [
+        { key: 'apiGateway', value: 'Nginx', icon: '🛡️', name: 'Nginx', desc: 'Reverse Proxy' },
+        { key: 'apiGateway', value: 'Kong (DB-less)', icon: '🦍', name: 'Kong', desc: 'API Gateway' },
+        { key: 'apiGateway', value: 'None', icon: '❌', name: 'None', desc: 'Direct Connect' }
+      ]
+    });
+  }
 
   result.push({
     id: 'feat', title: t.value.tierFeatures, multiple: true,

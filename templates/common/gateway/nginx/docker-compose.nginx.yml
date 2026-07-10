@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  nginx:
+    build:
+      context: .
+    ports:
+      - "80:80"
+    depends_on:
+      - app

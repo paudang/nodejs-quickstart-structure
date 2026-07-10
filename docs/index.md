@@ -17,7 +17,7 @@ hero:
       link: https://ko-fi.com/paudang
   
 features:
-  - title: 1.41M Combinations
+  - title: 2.69M Combinations
     details: Language (TS/JS), Architecture (MVC/Clean), Auth, Communication (REST/GraphQL/Kafka), Background Jobs, CI/CD/Security, Resilience patterns, Observability (ELK), and Terraform.
   - title: AI-Native Ready
     details: Pre-configured .cursorrules and Agent Skill prompts to boost your productivity with AI tools.

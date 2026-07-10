@@ -519,6 +519,13 @@ export async function runTest(config, index, options = {}, sharedPorts) {
             args.push('--resilience', ...config.resilience.split(','));
         }
 
+        if (config.communication !== 'Kafka') {
+            args.push('--use-api-gateway', '"Yes"');
+            args.push('--api-gateway', config.communication === 'REST APIs' ? '"Nginx"' : '"Kong (DB-less)"');
+        } else {
+            args.push('--use-api-gateway', '"No"');
+        }
+
         if (config.withELK) {
             args.push('--with-elk');
         } else {

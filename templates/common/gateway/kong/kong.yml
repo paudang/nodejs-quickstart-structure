@@ -1,0 +1,92 @@
+# ==============================================================================
+# Enterprise Kong API Gateway Configuration (DB-less Mode)
+# ==============================================================================
+# This configuration file declaratively provisions Routes, Services, and Plugins
+# following Big Tech microservice API Gateway standards.
+
+_format_version: "3.0"
+_transform: true
+
+# ------------------------------------------------------------------------------
+# 1. Services & Routes Definition
+# ------------------------------------------------------------------------------
+services:
+  - name: node_app_service
+    # The internal URL of the backend Node.js microservice
+    url: http://app:3000
+    # Retry logic (Resilience): Automatically retry on 5xx errors or timeouts
+    retries: 5
+    connect_timeout: 60000
+    write_timeout: 60000
+    read_timeout: 60000
+    
+    routes:
+      - name: node_app_route
+        # Match all traffic hitting the root path
+        paths:
+          - /
+        # Strip the path before proxying if necessary (set to false to forward as-is)
+        strip_path: false
+
+    # --------------------------------------------------------------------------
+    # 2. Enterprise Plugin Ecosystem
+    # --------------------------------------------------------------------------
+    plugins:
+      # --- A. Traffic Control (Rate Limiting) ---
+      # Protects the backend from DDoS and abusive scraping.
+      - name: rate-limiting
+        config:
+          minute: 600       # 600 requests per minute per IP/Consumer
+          policy: local     # Use in-memory counters (for single node). Use 'redis' for cluster.
+          fault_tolerant: true
+
+      # --- B. Security (API Key Authentication) ---
+      # Enforces that clients must provide an 'apikey' header.
+      - name: key-auth
+        config:
+          key_names:
+            - apikey
+          hide_credentials: true # Do not forward the apikey to the backend Node.js service
+
+      # --- C. Observability (Correlation IDs for Tracing) ---
+      # Injects a unique 'X-Correlation-ID' into every request and response.
+      # Essential for tracing a request across multiple microservices (ELK, Datadog).
+      - name: correlation-id
+        config:
+          header_name: X-Correlation-ID
+          generator: uuid
+          echo_downstream: true
+
+      # --- D. Security (CORS headers) ---
+      # Standard Cross-Origin Resource Sharing protection
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+          headers:
+            - Accept
+            - Accept-Version
+            - Content-Length
+            - Content-MD5
+            - Content-Type
+            - Date
+            - apikey
+          exposed_headers:
+            - X-Correlation-ID
+          credentials: true
+          max_age: 3600
+
+# ------------------------------------------------------------------------------
+# 3. Consumers (Clients)
+# ------------------------------------------------------------------------------
+consumers:
+  - username: default_client
+    # Assigns the secret key to this consumer for the 'key-auth' plugin
+    keyauth_credentials:
+      - key: "super-secret-key"

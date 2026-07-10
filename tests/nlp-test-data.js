@@ -78,7 +78,10 @@ const enSpecific = [
   { name: 'EN Simple 4', prompt: 'build a web server with mongodb and redis', expected: { database: 'MongoDB', caching: 'Redis' } },
   { name: 'EN Simple 5', prompt: 'just a boilerplate', expected: {} },
   { name: 'EN Typo 1', prompt: 'I need progre but without monggo', expected: { database: 'PostgreSQL' } },
-  { name: 'EN Typo 2', prompt: 'with autho2 auth', expected: { auth: 'OAuth2 - Google/GitHub - JWT' } }
+  { name: 'EN Typo 2', prompt: 'with autho2 auth', expected: { auth: 'OAuth2 - Google/GitHub - JWT' } },
+  { name: 'EN Gateway Nginx', prompt: 'app with nginx gateway', expected: { apiGateway: 'Nginx' } },
+  { name: 'EN Gateway Kong', prompt: 'use kong proxy', expected: { apiGateway: 'Kong (DB-less)' } },
+  { name: 'EN Gateway Negation', prompt: 'no api gateway please', expected: { apiGateway: 'None' } }
 ];
 
 export const englishCases = generateCases('EN', enSpecific, ['clean', 'redis'], ['without']);
@@ -116,7 +119,10 @@ const viSpecific = [
   { name: 'VI Simple 4', prompt: 'tạo app rest api cơ bản', expected: { communication: 'REST APIs' } },
   { name: 'VI Simple 5', prompt: 'mỗi 1 cái app rỗng thôi', expected: {} },
   { name: 'VI Typo 1', prompt: 'dùng autho2 nha', expected: { auth: 'OAuth2 - Google/GitHub - JWT' } },
-  { name: 'VI Typo 2', prompt: 'kết nối grapql', expected: { communication: 'GraphQL' } }
+  { name: 'VI Typo 2', prompt: 'kết nối grapql', expected: { communication: 'GraphQL' } },
+  { name: 'VI Gateway Nginx', prompt: 'tạo app có cổng api nginx', expected: { apiGateway: 'Nginx' } },
+  { name: 'VI Gateway Kong', prompt: 'nhớ dùng kong gateway nha', expected: { apiGateway: 'Kong (DB-less)' } },
+  { name: 'VI Gateway Negation', prompt: 'không cần api gateway', expected: { apiGateway: 'None' } }
 ];
 
 export const vietnameseCases = generateCases('VI', viSpecific, ['clean', 'redis'], ['không cần']);
@@ -138,7 +144,10 @@ const zhSpecific = [
   { name: 'ZH Worker Chaos', prompt: '项目需要 worker 但是不要 postgres', expected: { backgroundJobs: true, caching: 'Redis', database: 'None' } },
   { name: 'ZH Queue', prompt: '后台任务 queue', expected: { backgroundJobs: true, caching: 'Redis' } },
   { name: 'ZH Typo 1', prompt: '使用 kafaka', expected: { communication: 'Kafka' } },
-  { name: 'ZH Typo 2', prompt: '架构 cleen', expected: { architecture: 'Clean Architecture' } }
+  { name: 'ZH Typo 2', prompt: '架构 cleen', expected: { architecture: 'Clean Architecture' } },
+  { name: 'ZH Gateway Nginx', prompt: '使用 nginx 网关', expected: { apiGateway: 'Nginx' } },
+  { name: 'ZH Gateway Kong', prompt: '我要 kong 代理', expected: { apiGateway: 'Kong (DB-less)' } },
+  { name: 'ZH Gateway Negation', prompt: '不要网关', expected: { apiGateway: 'None' } }
 ];
 
 export const chineseCases = generateCases('ZH', zhSpecific, ['mvc', 'kafka'], ['不要']);
@@ -160,7 +169,10 @@ const jaSpecific = [
   { name: 'JA Worker Chaos', prompt: 'worker は使うが Postgres なし', expected: { backgroundJobs: true, caching: 'Redis', database: 'None' } },
   { name: 'JA Queue', prompt: 'メッセージ queue を使いたい', expected: { backgroundJobs: true, caching: 'Redis' } },
   { name: 'JA Typo 1', prompt: 'DBは postges', expected: { database: 'PostgreSQL' } },
-  { name: 'JA Typo 2', prompt: '認証 oath2', expected: { auth: 'OAuth2 - Google/GitHub - JWT' } }
+  { name: 'JA Typo 2', prompt: '認証 oath2', expected: { auth: 'OAuth2 - Google/GitHub - JWT' } },
+  { name: 'JA Gateway Nginx', prompt: 'nginx proxy を追加', expected: { apiGateway: 'Nginx' } },
+  { name: 'JA Gateway Kong', prompt: 'kong api gateway を使う', expected: { apiGateway: 'Kong (DB-less)' } },
+  { name: 'JA Gateway Negation', prompt: 'gateway なし', expected: { apiGateway: 'None' } }
 ];
 
 export const japaneseCases = generateCases('JA', jaSpecific, ['aws', 'postgres'], ['なし']);
@@ -182,7 +194,10 @@ const hiSpecific = [
   { name: 'HI Worker Chaos', prompt: 'worker chahiye bina postgres ke', expected: { backgroundJobs: true, caching: 'Redis', database: 'None' } },
   { name: 'HI Queue', prompt: 'ek queue bana do', expected: { backgroundJobs: true, caching: 'Redis' } },
   { name: 'HI Typo 1', prompt: 'mujhe monogodb chahiye', expected: { database: 'MongoDB' } },
-  { name: 'HI Typo 2', prompt: 'api graphl me banao', expected: { communication: 'GraphQL' } }
+  { name: 'HI Typo 2', prompt: 'api graphl me banao', expected: { communication: 'GraphQL' } },
+  { name: 'HI Gateway Nginx', prompt: 'nginx proxy chahiye', expected: { apiGateway: 'Nginx' } },
+  { name: 'HI Gateway Kong', prompt: 'kong api gateway use karo', expected: { apiGateway: 'Kong (DB-less)' } },
+  { name: 'HI Gateway Negation', prompt: 'bina gateway ke', expected: { apiGateway: 'None' } }
 ];
 
 export const hindiCases = generateCases('HI', hiSpecific, ['kafka', 'azure'], ['bina']);

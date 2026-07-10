@@ -27,8 +27,8 @@ To provide a 1.41M scenario-verified foundation for modern developers, optimized
 - `/src/interfaces`: HTTP controllers, Express routes, GraphQL resolvers, and Kafka consumers.
 
 ## Social Proof
-- 🚀 **5,000+ Downloads**
-- 🔥 **9,000+ Recent Clones**
+- 🚀 **7,000+ Downloads**
+- 🔥 **11,000+ Recent Clones**
 - 🌍 Used by teams at **Google**, **Viblo**, and global tech startups.
 
 ## Documentation

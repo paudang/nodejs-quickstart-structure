@@ -80,6 +80,7 @@ export default defineConfig({
               { text: 'Caching Strategy', link: '/features/caching' },
               { text: 'Application Resilience', link: '/features/resilience' },
               { text: 'Background Jobs (BullMQ)', link: '/features/background-jobs' },
+              { text: 'API Gateway (Nginx/Kong)', link: '/features/api-gateway' },
               { text: 'AI-Native Development', link: '/features/ai-native' },
             ]
           },
@@ -169,6 +170,7 @@ export default defineConfig({
               { text: 'Chiến lược Caching', link: '/vi/features/caching' },
               { text: 'Khả năng phục hồi (Resilience)', link: '/vi/features/resilience' },
               { text: 'Background Jobs (BullMQ)', link: '/vi/features/background-jobs' },
+              { text: 'API Gateway (Nginx/Kong)', link: '/vi/features/api-gateway' },
               { text: 'Phát triển AI-Native', link: '/vi/features/ai-native' },
             ]
           },
@@ -258,6 +260,7 @@ export default defineConfig({
               { text: '缓存策略', link: '/zh/features/caching' },
               { text: '高可用容错机制 (Resilience)', link: '/zh/features/resilience' },
               { text: '后台任务队列 (BullMQ)', link: '/zh/features/background-jobs' },
+              { text: 'API 网关 (Nginx/Kong)', link: '/zh/features/api-gateway' },
               { text: 'AI 原生开发', link: '/zh/features/ai-native' },
             ]
           },
