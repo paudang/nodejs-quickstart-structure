@@ -1,6 +1,6 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.9.0] - 2026-07-09
+## [2.9.0] - 2026-07-10
 
 ### Added
 - **Optional API Gateway Integration**: You can now optionally deploy your microservice behind a hardened API Gateway when enabling Advanced Options.
