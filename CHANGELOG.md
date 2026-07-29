@@ -1,5 +1,18 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.2] - 2026-07-29
+
+### Security
+- **Patch `js-yaml` Vulnerability (GHSA-52cp-r559-cp3m)**:
+  - Updated `js-yaml` override in `package.json` to `^4.3.0` to eliminate quadratic CPU consumption vulnerability without forcing any downgrade of `jest` or other core dependencies.
+  - Mitigated additional transitively flagged advisories for `postcss` (`^8.5.24`) and `brace-expansion` (`^5.0.8`), maintaining a pristine `0-vulnerability` baseline across `npm audit`.
+
+### Fixed
+- **TypeScript Queue & Worker Type Safety**:
+  - Removed stale `// @ts-expect-error` directives in `emailQueue.ts.ejs` and `emailWorker.ts.ejs` to resolve `error TS2578: Unused '@ts-expect-error' directive` during `tsc` compilation.
+  - Resolved `TS2322: Type 'BullMQAdapter' is not assignable to type 'BaseAdapter'` in `queueBoard.ts.ejs` using type-safe double casting (`Parameters<typeof createBullBoard>[0]['queues'][number]`) without using `any` or `@ts-expect-error`.
+  - Refactored `baseConsumer.spec.ts.ejs` to use `(BaseConsumer as unknown as new () => void)` for strict type safety.
+
 ## [2.9.0] - 2026-07-10
 
 ### Added

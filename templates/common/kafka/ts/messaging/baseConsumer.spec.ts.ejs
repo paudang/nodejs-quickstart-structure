@@ -23,8 +23,7 @@ describe('BaseConsumer', () => {
     });
 
     it('should throw error if instantiated directly', () => {
-        // @ts-expect-error: Abstract class cannot be instantiated
-        expect(() => new BaseConsumer()).toThrow("Abstract class 'BaseConsumer' cannot be instantiated.");
+        expect(() => new (BaseConsumer as unknown as new () => void)()).toThrow("Abstract class 'BaseConsumer' cannot be instantiated.");
     });
 
     it('should process a valid message', async () => {

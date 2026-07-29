@@ -13,8 +13,7 @@ const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/queues');
 
 createBullBoard({
-  // @ts-expect-error: BullMQAdapter types might mismatch with bullmq due to version differences
-  queues: [new BullMQAdapter(emailQueue)],
+  queues: [new BullMQAdapter(emailQueue) as unknown as Parameters<typeof createBullBoard>[0]['queues'][number]],
   serverAdapter: serverAdapter,
 });
 

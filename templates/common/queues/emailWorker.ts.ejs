@@ -16,7 +16,6 @@ export const emailWorker = new Worker(
     
     console.log(`[Worker] Successfully processed email job ${job.id}`);
   },
-  // @ts-expect-error: BullMQ and IORedis type mismatch
   { connection: redisClient.client }
 );
 
