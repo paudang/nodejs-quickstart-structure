@@ -57,7 +57,7 @@
   "license": "ISC",
   "funding": "https://ko-fi.com/paudang",
   "dependencies": {
-    "chalk": "^5.4.1",
+    "chalk": "^6.0.0",
     "commander": "^15.0.0",
     "ejs": "^6.0.1",
     "fs-extra": "^11.3.0",
