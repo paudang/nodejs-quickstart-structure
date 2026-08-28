@@ -20,7 +20,7 @@
     "test:e2e:run": "jest --config ./jest.e2e.config.js --passWithNoTests",
     "test:e2e": "node scripts/run-e2e.js"<% if (includeSecurity) { %>,
     "security:check": "npm audit && npm run snyk:test",
-    "snyk:test": "snyk test"<% } %>
+    "snyk:test": "npx snyk test"<% } %>
   },
   "overrides": {
     "ws": "^8.21.0",
@@ -47,11 +47,7 @@
     "shell-quote": "^1.10.0",
     "undici": "^6.28.0",
     "semver": "^7.7.1",
-    "snyk": {
-      "global-agent": {
-        "semver": "^7.7.1"
-      }
-    }
+    "nanoid": "^3.3.18"
   },
   "dependencies": {
     "express": "^4.21.2",
@@ -132,8 +128,7 @@
     "eslint-plugin-import-x": "^4.6.1",
     "eslint-import-resolver-typescript": "^3.7.0",
     "husky": "^8.0.3",
-    "lint-staged": "^15.4.3",
-    "snyk": "^1.1307.0"<% if (language === 'TypeScript') { %>,
+    "lint-staged": "^15.4.3"<% if (language === 'TypeScript') { %>,
     "typescript-eslint": "^8.24.1",<%_ if (communication === 'REST APIs' || communication === 'Kafka') { %>
     "@types/swagger-ui-express": "^4.1.6",
     "@types/yamljs": "^0.2.34",<%_ } %>

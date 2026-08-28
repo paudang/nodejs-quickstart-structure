@@ -18,7 +18,7 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "security:check": "npm audit && npm run snyk:test",
-    "snyk:test": "snyk test"
+    "snyk:test": "npx snyk test"
   },
   "keywords": [
     "nodejs",
@@ -75,16 +75,11 @@
     "shell-quote": "^1.10.0",
     "undici": "^6.28.0",
     "semver": "^7.7.1",
-    "snyk": {
-      "global-agent": {
-        "semver": "^7.7.1"
-      }
-    }
+    "nanoid": "^3.3.18"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
     "jest": "^30.4.2",
-    "snyk": "^1.1307.0",
     "vitepress": "^1.6.4"
   },
   "files": [
