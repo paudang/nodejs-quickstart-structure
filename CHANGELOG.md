@@ -6,10 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Strict Dependency & Template Security Hardening**:
   - **`js-yaml` DoS & Compatibility Fix**: Pinned `js-yaml` to `^4.3.2` in package overrides across `package.json` and `templates/common/package.json.ejs`, fixing quadratic CPU consumption advisories (GHSA-52cp-r559-cp3m, GHSA-5p4m-2wfm-xmqj) while preserving full compatibility with `jest@30.4.2` and preventing forced dependency downgrades.
   - **`brace-expansion` DoS Mitigation**: Updated `brace-expansion` override to `^5.0.9` (GHSA-3jxr-9vmj-r5cp, GHSA-mh99-v99m-4gvg, GHSA-rgw5-rvv9-x895), eliminating exponential-time CPU loop vulnerability.
-  - **Daily Template Audit Hardening**: Added strict overrides for `body-parser` (`^1.20.6`), `ip-address` (`^10.5.0`), `shell-quote` (`^1.10.0`), `undici` (`^6.28.0`), `semver` (`^7.7.1`), and upgraded `mongoose` to `^8.24.4` and `snyk` to `^1.1307.0` to maintain a pristine 0-vulnerability baseline in `daily-audit.yml`.
+  - **Daily Template & Root Audit Hardening**: Added strict overrides for `body-parser` (`^1.20.6`), `ip-address` (`^10.5.0`), `shell-quote` (`^1.10.0`), `undici` (`^6.28.0`), `semver` (`^7.7.1`), `nanoid` (`^3.3.18`), and upgraded `mongoose` to `^8.24.4` to maintain a pristine 0-vulnerability baseline in `daily-audit.yml` and root workspace.
+  - **Snyk CLI Bundling Remediation**: Updated `snyk:test` scripts to execute `npx snyk test` dynamically instead of storing `snyk` as a local `devDependency`, preventing bundled tarball sub-dependency vulnerability flags (ReDoS in `semver`) in `npm audit`.
 
 ### Fixed
-- **Nested Override Template Audit Extraction**: Updated `scripts/audit-template-deps.js` to strip EJS template tags cleanly and parse complete template JSON, ensuring nested package overrides (such as `snyk` / `global-agent` overrides) are accurately extracted during automated daily security audits.
+- **Nested Override Template Audit Extraction**: Updated `scripts/audit-template-deps.js` to strip EJS template tags cleanly and parse complete template JSON, ensuring nested package overrides are accurately extracted during automated daily security audits.
 
 ## [2.9.2] - 2026-07-29
 
