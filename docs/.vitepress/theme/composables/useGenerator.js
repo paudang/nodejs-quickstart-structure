@@ -166,9 +166,13 @@ const cliCommand = computed(() => {
     cmd += ` --no-background-jobs`;
   }
 
-  if (isAdvanced && form.apiGateway && form.apiGateway !== 'None' && form.communication !== 'Kafka') {
-    cmd += ` --use-api-gateway Yes`;
-    cmd += ` --api-gateway "${form.apiGateway}"`;
+  if (isAdvanced) {
+    if (form.apiGateway && form.apiGateway !== 'None' && form.communication !== 'Kafka') {
+      cmd += ` --use-api-gateway Yes`;
+      cmd += ` --api-gateway "${form.apiGateway}"`;
+    } else {
+      cmd += ` --api-gateway None`;
+    }
   }
 
   cmd += isAdvanced ? ' --advanced-options' : ' --no-advanced-options';

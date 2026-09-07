@@ -1,5 +1,13 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.5] - 2026-09-07
+
+### Security
+- **Dependabot & Template Security Hardening**:
+  - **`browserslist` Vulnerability Patch**: Pinned `browserslist` to `^4.28.9` in package overrides across `package.json` and `templates/common/package.json.ejs`, eliminating the transitive security alert flagged by Dependabot under `jest` (affecting versions `<= 4.28.6`).
+  - **`qs` Vulnerability Mitigation**: Added `qs` override (`^6.16.0`) across `package.json` and `templates/common/package.json.ejs` to patch Moderate severity array-limit and DoS advisories (GHSA-x5fp-wj9c-mxmx, GHSA-4mjr-xmp4-gh2g).
+  - **Zero-Vulnerability Verification**: Re-verified root workspace and daily template audit script (`daily-audit.yml`), ensuring `0 vulnerabilities` across all 1,074 audited template dependencies and 486 root packages.
+
 ## [2.9.3] - 2026-08-28
 
 ### Security
