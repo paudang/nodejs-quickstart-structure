@@ -1,5 +1,14 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.6] - 2026-10-05
+
+### Security
+- **Root & Template Dependency Security Hardening**:
+  - **`chokidar` Modernization & `braces` Elimination**: Upgraded `chokidar` to `^4.0.3` in package overrides across `package.json` and `templates/common/package.json.ejs`, eliminating obsolete `braces` v3 dependencies from file watching pipelines and resolving `braces` advisory GHSA-vfj7-8cjw-p6xm cleanly without breaking `fast-glob`/`tsc-alias` TypeScript Docker builds.
+  - **`basic-ftp` DoS Patch**: Pinned `basic-ftp` to `^6.2.2` in package overrides across `package.json` and `templates/common/package.json.ejs` (GHSA-c475-qrg2-pj4r).
+  - **`jest` Core Ecosystem Upgrade**: Upgraded `jest` and `babel-jest` to `^30.5.2` and `@types/jest` to `^30.0.0` in both root and template configurations.
+  - **Zero-Vulnerability Baseline**: Verified root repository `npm audit` report and template dependency audit (`scripts/audit-template-deps.js`) achieve **`0 vulnerabilities`** across all audited packages.
+
 ## [2.9.5] - 2026-09-07
 
 ### Security
