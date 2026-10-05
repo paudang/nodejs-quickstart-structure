@@ -23,7 +23,7 @@ jest.mock('<%= cachePath %>', () => ({
     set: jest.fn(),
     del: jest.fn()
   }
-}), { virtual: true });
+}));
 import cacheService from '<%= cachePath %>';
 <%_ } _%>
 

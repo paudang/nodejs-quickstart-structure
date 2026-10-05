@@ -34,6 +34,13 @@ async function extractDependencies() {
             fs.mkdirSync(dir, { recursive: true });
         }
         fs.writeFileSync(outputPath, JSON.stringify(dummyPackage, null, 2), 'utf-8');
+
+        const patchSrc = path.join(__dirname, '../templates/common/braces-patch');
+        const patchDest = path.join(dir, 'braces-patch');
+        if (fs.existsSync(patchSrc) && dir && dir !== '.') {
+            fs.cpSync(patchSrc, patchDest, { recursive: true });
+        }
+
         console.log(`Dependencies extracted successfully to ${outputPath}`);
 
     } catch (error) {

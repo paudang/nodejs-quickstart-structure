@@ -45,7 +45,7 @@ jest.mock('<%= cachePath %>', () => ({
     get: jest.fn(),
     set: jest.fn(),
     del: jest.fn()
-}), { virtual: true });
+}));
 const cacheService = require('<%= cachePath %>');
 <%_ } _%>
 

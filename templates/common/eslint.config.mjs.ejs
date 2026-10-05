@@ -5,6 +5,7 @@ import importPlugin from 'eslint-plugin-import-x';
 <% if (language === 'TypeScript') { %>import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
+  { ignores: ['braces-patch/**', 'dist/**', 'coverage/**', 'node_modules/**'] },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   eslintConfigPrettier,
@@ -52,6 +53,7 @@ export default tseslint.config(
   }
 );<% } else { %>
 export default [
+  { ignores: ['braces-patch/**', 'dist/**', 'coverage/**', 'node_modules/**'] },
   eslint.configs.recommended,
   eslintConfigPrettier,
   {

@@ -79,7 +79,8 @@
     "browserslist": "^4.28.9",
     "qs": "^6.16.0",
     "basic-ftp": "^6.2.2",
-    "chokidar": "^4.0.3"
+    "chokidar": "^4.0.3",
+    "braces": "file:./templates/common/braces-patch"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",

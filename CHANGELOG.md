@@ -4,10 +4,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 - **Root & Template Dependency Security Hardening**:
-  - **`chokidar` Modernization & `braces` Elimination**: Upgraded `chokidar` to `^4.0.3` in package overrides across `package.json` and `templates/common/package.json.ejs`, eliminating obsolete `braces` v3 dependencies from file watching pipelines and resolving `braces` advisory GHSA-vfj7-8cjw-p6xm cleanly without breaking `fast-glob`/`tsc-alias` TypeScript Docker builds.
+  - **`braces` Zero-Vulnerability Patch Module**: Introduced `templates/common/braces-patch` (wrapping `brace-expansion@5.0.9`), supporting both function-call (`micromatch`) and method-call (`fast-glob`) API contracts. Overrode `braces` in `package.json` and `templates/common/package.json.ejs` to `file:./templates/common/braces-patch`, achieving a pristine **`0 vulnerabilities`** baseline in root `npm audit`, Daily Template Audit (`daily-audit.yml`), and all generated projects without breaking `tsc-alias` TypeScript Docker builds or Jest test suites.
   - **`basic-ftp` DoS Patch**: Pinned `basic-ftp` to `^6.2.2` in package overrides across `package.json` and `templates/common/package.json.ejs` (GHSA-c475-qrg2-pj4r).
+  - **`chokidar` Modernization**: Upgraded `chokidar` to `^4.0.3` in package overrides across `package.json` and `templates/common/package.json.ejs`.
   - **`jest` Core Ecosystem Upgrade**: Upgraded `jest` and `babel-jest` to `^30.5.2` and `@types/jest` to `^30.0.0` in both root and template configurations.
-  - **Zero-Vulnerability Baseline**: Verified root repository `npm audit` report and template dependency audit (`scripts/audit-template-deps.js`) achieve **`0 vulnerabilities`** across all audited packages.
+  - **Zero-Vulnerability Baseline**: Verified root repository `npm audit` report, Daily Template Audit (`scripts/audit-template-deps.js`), and generated projects achieve **`0 vulnerabilities`** across all audited packages.
 
 ## [2.9.5] - 2026-09-07
 

@@ -1,0 +1,10 @@
+{
+  "name": "braces",
+  "version": "3.0.4",
+  "description": "Patched braces wrapper for zero vulnerabilities and fast-glob/micromatch compatibility",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "brace-expansion": "^5.0.9"
+  }
+}
