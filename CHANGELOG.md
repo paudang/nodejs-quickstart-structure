@@ -1,5 +1,22 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.7] - 2026-10-22
+
+### Security
+- **Root & Template Dependency Security Hardening**:
+  - **`source-map-js` Event-Loop DoS Patch**: Added `source-map-js` override (`^1.2.2`) in root `package.json`, patching the transitive dependency introduced via `vitepress` → `postcss` / `vue` that failed to validate indexed source-map section offsets (Dependabot alert #12, High).
+  - **`handlebars` JavaScript Injection Patch**: Added `handlebars` override (`^4.7.10`) in `templates/common/package.json.ejs`, fixing Critical advisories in the `ts-jest` dependency chain (GHSA-xw65-4hp5-5hc7, GHSA-8r5x-fm3f-whwj, GHSA-p8wg-vrv2-v86f).
+  - **`sprintf-js` DoS Mitigation**: Added scoped override `yamljs > argparse` (`^2.0.1`) in `templates/common/package.json.ejs`, removing the unpatched `sprintf-js` dependency (GHSA-hp3w-g68c-fv3c) without downgrading `yamljs` (avoids the breaking `npm audit fix --force` to `yamljs@0.2.7`). Swagger `YAML.load` usage is unaffected.
+  - **Zero-Vulnerability Verification**: Re-verified the Daily Template Audit (`daily-audit.yml`) reports **`0 vulnerabilities`**.
+
+### Fixed
+- **Windows `lint-staged` "The command line is too long"**: Replaced `templates/common/.lintstagedrc` with `templates/common/lint-staged.config.mjs`, which chunks staged files (20 per command) for `eslint --fix` and `prettier --write`, preventing failures on the initial commit of generated projects on Windows.
+  - Removed the duplicate `lint-staged` block from `templates/common/package.json.ejs` (it took precedence over the config file).
+  - Updated `lib/modules/config-files.js`, `scripts/lib/validation-core.js` and `docs/internal/generatorFlow.md` to reference the new config file.
+- **Docker Build `Cannot find module 'braces'` (TypeScript `tsc-alias`)**: A bare `file:` override was resolved relative to the dependent package, writing an invalid lockfile path (`node_modules/micromatch/braces-patch`) that broke `npm ci` inside Docker.
+  - Declared `braces` as a devDependency (`file:./braces-patch`) and changed the override to `"braces": "$braces"` in `templates/common/package.json.ejs`, so the lockfile links `node_modules/braces` → `braces-patch` correctly.
+  - `templates/common/Dockerfile` now copies `braces-patch/` before `npm ci` in both builder and production stages.
+
 ## [2.9.6] - 2026-10-05
 
 ### Security

@@ -15,6 +15,8 @@ RUN corepack enable && corepack prepare npm@11.6.4 --activate
 
 COPY package*.json ./
 COPY tsconfig*.json ./
+# Local override target for "braces" (file:./braces-patch) must exist before npm ci
+COPY braces-patch ./braces-patch
 
 # Install ALL dependencies (including devDeps for build)
 RUN npm ci --no-audit --no-fund || npm ci --no-audit --no-fund || npm ci --no-audit --no-fund
@@ -42,6 +44,7 @@ ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 RUN corepack enable && corepack prepare npm@11.6.4 --activate
 
 COPY package*.json ./
+COPY braces-patch ./braces-patch
 
 # Install ONLY production dependencies
 RUN npm ci --omit=dev --ignore-scripts --no-audit --no-fund || npm ci --omit=dev --ignore-scripts --no-audit --no-fund || npm ci --omit=dev --ignore-scripts --no-audit --no-fund

@@ -101,7 +101,7 @@ The `generateProject` function in `lib/generator.js` executes the following step
     *   If **REST APIs** is selected, generates `swagger.yml` and `swagger.{ts|js}` config.
     *   Cleans up `.ejs` template copies for non-REST configs (GraphQL, Kafka).
 17. **Code Quality Setup**:
-    *   Generates `.eslintrc.json`, `.prettierrc`, `.lintstagedrc`.
+    *   Generates `.eslintrc.json`, `.prettierrc`, `lint-staged.config.mjs`.
 18. **Test Setup**:
     *   Generates `jest.config.js` and a sample `health.test.{js|ts}`.
 19. **CI/CD Setup**:
