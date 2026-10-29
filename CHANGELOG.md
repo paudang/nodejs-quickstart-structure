@@ -1,5 +1,16 @@
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.8] - 2026-10-29
+
+### Security
+- **Template Dependency Security Hardening**:
+  - **`zod` Memory Exhaustion Patch**: Upgraded `zod` from `^3.22.4` to `^4.6.7` (dependency + override) in `templates/common/package.json.ejs`, fixing the High severity advisory where validating oversized constrained collections could exhaust memory (GHSA-mrhx-c7xc-m3w5).
+  - **`deepmerge` Prototype Poisoning Mitigation**: Added `deepmerge` override pinned to `4.1.2` in `templates/common/package.json.ejs`. No patched release exists (advisory covers `>=4.2.0`, GHSA-gcqx-w48m-w2h4); `4.1.2` predates the regression and keeps the `deepmerge()` / `deepmerge.all()` API used by `jest-config`, avoiding the breaking `npm audit fix --force` downgrade to `jest@25`.
+  - **Zero-Vulnerability Verification**: Re-verified the Daily Template Audit (`daily-audit.yml`) reports **`0 vulnerabilities`**.
+
+### Changed
+- **Zod v4 Compatibility**: Reordered `PORT` schema to `z.string().default('3000').transform(Number)` in MVC and Clean Architecture `env` templates (JS & TS), since Zod v4 applies `.default()` to the output type after `.transform()`.
+
 ## [2.9.7] - 2026-10-22
 
 ### Security
