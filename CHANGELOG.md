@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **`deepmerge` Prototype Poisoning Mitigation**: Added `deepmerge` override pinned to `4.1.2` in `templates/common/package.json.ejs`. No patched release exists (advisory covers `>=4.2.0`, GHSA-gcqx-w48m-w2h4); `4.1.2` predates the regression and keeps the `deepmerge()` / `deepmerge.all()` API used by `jest-config`, avoiding the breaking `npm audit fix --force` downgrade to `jest@25`.
   - **Zero-Vulnerability Verification**: Re-verified the Daily Template Audit (`daily-audit.yml`) reports **`0 vulnerabilities`**.
 
+- **Root Dependabot Alerts (#13–#19, PR #28)**:
+  - **`@vue/server-renderer` XSS (High, #13)**: Added `vue` override (`^3.5.44`), incorporating Dependabot PR #28 (`dependabot/npm_and_yarn/multi-6ad8c7e44f`) which bumps the `vue` / `@vue/*` chain from `3.5.33` to `3.5.44` under `vitepress`.
+  - **`vite` (#17 Moderate, #18 Low)**: Bumped `vite` override from `^6.4.3` to `^6.4.5`, patching `server.fs.allow` bypass and cross-origin script execution via custom middleware.
+  - **`launch-editor` (#14, #15, #16)**: Added `launch-editor` override (`^2.14.2`) fixing Windows `fs.existsSync()` bypass, `%` escaping, and editor CLI flag injection.
+  - **`deepmerge` (Low, #19)**: Added `deepmerge` override pinned to `4.1.2` in root `package.json` (same mitigation as templates).
+  - Root `npm audit` now reports **`0 vulnerabilities`**.
+
 ### Changed
 - **Zod v4 Compatibility**: Reordered `PORT` schema to `z.string().default('3000').transform(Number)` in MVC and Clean Architecture `env` templates (JS & TS), since Zod v4 applies `.default()` to the output type after `.transform()`.
 
